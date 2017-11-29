@@ -1,0 +1,157 @@
+body {
+    font-family: "Pratt", Georgia, Palatino, "Book Antiqua", "Times New Roman", serif;
+    background-color: #F9F9F8;
+}
+
+.error {
+    background-color: #F2DEDE;
+}
+
+.hide {
+    display: none;
+}
+
+.conversion-rate {
+    font-weight: bold;
+    padding-top: 10px;
+    padding-right: 15px;
+    text-align: right;
+}
+
+.positive {
+    color: green;
+}
+
+.negative {
+    color: red;
+}
+
+@keyframes priceUp {
+    0%, 100% {
+        background-color: rgba(217, 236, 217, 0);
+    }
+    50% {
+        background-color: rgba(217, 236, 217, 1);
+    }
+}
+
+.price_up {
+    animation: priceUp 600ms linear;
+    animation-iteration-count: 1;
+}
+
+@keyframes priceDown {
+    0%, 100% {
+        background-color: rgba(255, 217, 217, 0);
+    }
+    50% {
+        background-color: rgba(255, 217, 217, 1);
+    }
+}
+
+.price_down {
+    animation-iteration-count: 1;
+    animation: priceDown 600ms linear;
+}
+
+.right {
+    text-align: right;
+}
+
+.error-icon {
+    font-size: 18px;
+    top: 30%;
+    left: 45%;
+    position: absolute;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    margin-top: 100px;
+    color: #A94442
+}
+
+.error-text {
+    font-size: 18px;
+    top: 38%;
+    left: 45%;
+    position: absolute;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    margin-top: 160px;
+    color: #A94442;
+}
+
+.dropped-positions {
+    background-color: #F2DEDE;
+    padding: 10px;
+    margin: 15px;
+    color: #A94442;
+    border: 1px solid #A94442;
+}
+
+.dropped-positions2 {
+    background-color: rgba(255, 189, 54, 0.18);
+    padding: 10px;
+    margin: 15px;
+    color: #bd802b;
+    border: 1px solid #bd802b;
+}
+
+.head-border {
+    margin-left: 15px;
+    margin-right: 15px;
+    border: solid #d6d6d6 1px;
+    padding: 10px;
+    background-color: white;
+}
+
+.no-padding {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.no-margin {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.default-margin {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.header-color {
+    color: #7C7C7C;
+}
+
+.barchart-table {
+    font-size: 13px;
+}
+
+.bc-button {
+    border-color: #4F97C1;
+    color: #4F97C1;
+    background-color: #FFFFFF;
+    background-image: none;
+}
+
+.bc-button:hover {
+    border-color: #4F97C1;
+    color: #FFFFFF;
+    background-color: #337ab7;
+    background-image: none;
+}
+
+.row-disabled {
+    background-color: rgba(83, 86, 87, 0.14);
+}
+
+.active {
+    background-color: #337ab7;
+    color: white;
+}
+
+.popover{
+    width:300px;
+}
+
+

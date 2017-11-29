@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+
+    <title>Barchart Portfolio Client API</title>
+
+    <script src="./../../dist/barchart-portfolio-client.js"></script>
+    <script src="./../../node_modules/barchart-ondemand-client-js/dist/barchart-ondemand-client-js.js"></script>
+    <script src="./spin.min.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified CSS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="./font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./portfolio.css">
+</head>
+<body class="container-fluid" style="padding-left: 0px">
+<div class="row row-cognito">
+    <barchart-cognito></barchart-cognito>
+</div>
+<div class="row row-portfolio" style="display:none">
+    <div class="col-md-3 col" style="padding-left: 25px; position: fixed;">
+        <barchart-search-box></barchart-search-box>
+        <span style="margin-left: 15px; font-weight: bold">Version: 1.0</span>
+    </div>
+    <div class="col-md-9 col-md-offset-3">
+        <div id="spinner" style="position:fixed; top: 40%; left: 50%"></div>
+        <barchart-portfolio></barchart-portfolio>
+    </div>
+</div>
+</body>
+</html>

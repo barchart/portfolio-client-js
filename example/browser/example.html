@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+
+    <title>Barchart Portfolio Client API</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="./../../node_modules/barchart-ondemand-client-js/dist/barchart-ondemand-client-js.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="./../../dist/barchart-portfolio-client.js"></script>
+
+    <script type="text/javascript">
+        var portfolioApp = angular.module('portfolioApp', []);
+        portfolioApp.controller('PortfolioController', function ($scope, $timeout) {
+
+            var host = '6e15z4hmta.execute-api.us-east-1.amazonaws.com';
+            var port = null;
+            var secure = true;
+
+            var portfolioClient = new Barchart.Portfolio.PortfolioClient(host, port, secure);
+
+            $scope.user = '08fa5de9-5377-4618-9323-c2dfe345956e';
+	        $scope.portfolio = '1786af8b-4fa1-46fb-bc3f-8782c6dc0beb';
+            $scope.position = 'CASH-CAD-1';
+
+            $scope.result = null;
+
+            $scope.getData = function getData() {
+                if ($scope.user && $scope.portfolio && $scope.position) {
+                    portfolioClient.getTransactions($scope.user, $scope.portfolio, $scope.position)
+                            .then(function (transactions) {
+                                $timeout(function () {
+                                    $scope.result = JSON.stringify(transactions, null, 2);
+                                })
+                            });
+                } else if ($scope.user && $scope.portfolio) {
+					portfolioClient.getPositions($scope.user, $scope.portfolio)
+						.then(function (positions) {
+							$timeout(function () {
+								$scope.result = JSON.stringify(positions, null, 2);
+							})
+						});
+				} else if ($scope.user) {
+					portfolioClient.getPortfolios($scope.user)
+						.then(function (portfolios) {
+							$timeout(function () {
+								$scope.result = JSON.stringify(portfolios, null, 2);
+							})
+						});
+				}
+			};
+
+			var onDemand = new OnDemandClient();
+
+			onDemand.setAPIKey('d5bd16ec4b8d226b68641640ddd27826');
+			onDemand.setJsonP(true);
+
+			$scope.getClosePrice = function getClosePrice() {
+				onDemand.getClosePrice({symbols: 'IBM,TSLA,GOOGL', date: '2017-08-01'}, function (err, data) {
+					console.log("getClosePrice: ", err, data.results)
+				});
+			};
+        });
+    </script>
+
+</head>
+<body ng-app="portfolioApp">
+<div ng-controller="PortfolioController">
+    <div class="row" style="margin-left:10px">
+        <h1>Barchart Portfolio Client API</h1>
+        <div class="col-md-2" style="padding-left:0px">
+            <form ng-submit="getData()">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Type user..." ng-model="user">
+                    <input class="form-control" type="text" placeholder="Type portfolio..." ng-model="portfolio">
+                    <input class="form-control" type="text" placeholder="Type position..." ng-model="position">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">Go</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <br>
+    <div class="row" style="margin-left:10px; margin-right: 10px;" ng-show="result">
+        <pre>{{result}}</pre>
+    </div>
+</div>
+</body>
+</html>
