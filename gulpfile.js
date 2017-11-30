@@ -11,7 +11,7 @@ var rename = require('gulp-rename');
 var replace = require('gulp-replace');
 var runSequence = require('run-sequence');
 var source = require('vinyl-source-stream');
-var uglify = require('gulp-uglify');
+var uglify = require('gulp-uglify-es').default;
 var util = require('gulp-util');
 var partialify = require('partialify');
 
@@ -89,7 +89,10 @@ gulp.task('build-browser', function () {
 		.pipe(buffer())
 		.pipe(gulp.dest('./dist'))
 		.pipe(rename('barchart-portfolio-client-' + getVersionForComponent() + '.js'))
-		.pipe(gulp.dest('./dist'));
+		.pipe(gulp.dest('./dist'))
+		.pipe(uglify())
+		.pipe(rename('barchart-portfolio-client-' + getVersionForComponent() + '-min.js'))
+		.pipe(gulp.dest('dist/'));
 });
 
 gulp.task('build', ['build-browser']);
