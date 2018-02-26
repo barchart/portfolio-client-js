@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+
+    <title>Barchart Portfolio Client API</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="example.css" type="text/css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script src="example.js"></script>
+
+    <script type="text/javascript">
+		'use strict';
+
+		var PageModel = function() {
+			var that = this;
+
+			that.gateway = null;
+
+			that.user = ko.observable('22e59613-d393-4069-814c-f0b5a3e4b31e');
+
+			that.connected = ko.observable(false);
+			that.connecting = ko.observable(false);
+
+			that.activeTemplate = ko.observable('disconnected-template');
+			that.console = ko.observableArray([ ]);
+
+			that.clientVersion = ko.observable(Barchart.Portfolio.version);
+            
+			that.canConnect = ko.computed(function() {
+				return !that.connecting() && !that.connected();
+			});
+			that.canDisconnect = ko.computed(function() {
+				return that.connected();
+			});
+
+			var writeConsoleText = function(text, clear) {
+				if (clear) {
+					that.console.removeAll();
+				}
+
+				that.console.push(text);
+			};
+
+			var writeConsoleObject = function(data) {
+				that.console.push(JSON.stringify(data, null, 2));
+			};
+
+			that.setConsoleMode = function() {
+				that.activeTemplate('portfolio-console-template');
+			};
+
+			that.connect = function() {
+				that.disconnect();
+				
+				if (!that.user()) {
+					return;
+                }
+
+				that.connecting(true);
+
+				Barchart.Portfolio.PortfolioGateway.forDevelopment(Barchart.Portfolio.JwtGateway.forDevelopmentClient(that.user()))
+                    .then((gateway) => {
+					    that.gateway = gateway;
+
+	                    var action = 'portfolioGateway.readPortfolios()';
+
+	                    that.gateway.readPortfolios()
+                            .then((portfolios) => {
+                                writeConsoleText(action);
+                                writeConsoleObject(portfolios);
+
+                                that.connecting(false);
+                                that.connected(true);
+
+                                that.clientVersion();
+
+                                that.setConsoleMode();
+
+                                return true;
+                            }).catch((e) => {
+                                writeConsoleText(action, true);
+                                writeConsoleObject(e);
+
+		                        that.setConsoleMode();
+
+                                return false;
+                            });
+                    });
+			};
+			that.disconnect = function() {
+				if (that.gateway === null) {
+					return;
+                }
+
+                if (that.gateway) {
+	                that.gateway.dispose();
+	                that.gateway = null;
+                }
+
+				that.console.removeAll();
+
+				that.connecting(false);
+				that.connected(false);
+
+				that.activeTemplate('disconnected-template');
+			};
+
+			that.handleLoginKeypress = function(d, e) {
+				var enterKey = e.keyCode === 13;
+
+				if (enterKey) {
+					that.connect();
+				}
+
+				return !enterKey;
+			};
+		};
+
+		$(document).ready(function() {
+			var pageModel = new PageModel();
+
+            ko.applyBindings(pageModel, $('body')[0]);
+		});
+    </script>
+
+    <script type="text/html" id="disconnected-template">
+        <div class="container-center-outer">
+            <div class="container-center-inner">
+                <form class="form-horizontal login">
+                    <div class="form-group" data-bind="css: { 'has-error': user().length === 0 }, event: { keypress: handleLoginKeypress }">
+                        <label class="pull-left">User</label>
+                        <input class="form-control" data-bind="textInput: user" type="text" placeholder="User">
+                    </div>
+                    <div class="form-group buttons">
+                        <button class="form-control btn btn-primary" type="button" data-bind="click: connect, enable: canConnect">Connect</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="portfolio-header-template">
+        <div class="pull-left">
+            <h4 class="pull-left">Barchart Portfolio API <span data-bind="visible: connected"> -- <span data-bind="text: user"></span></span></h4>
+
+            <div class="pull-right" data-bind="visible: connected() === true">
+                <div class="header-action-buttons form-inline">
+                    <!-- <span class="text-button glyphicon glyphicon-floppy-disk" data-bind="click: writeUser"></span> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="pull-right">
+            <div class="header-action-buttons pull-right form-inline" data-bind="visible: connected() === true">
+                <span class="text-button glyphicon glyphicon-remove" data-bind="click: disconnect"></span>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="portfolio-console-template">
+        <div data-bind="foreach: console">
+            <pre data-bind="text: $data" style="font-size: 10px;"></pre>
+        </div>
+    </script>
+
+    <script type="text/html" id="footer-template">
+        <h4 class="pull-left" data-bind="visible: connected">
+        </h4>
+        <h4 class="pull-right">Client Version: <span data-bind="text: clientVersion"></span></h4>
+    </script>
+</head>
+<body>
+<div class="header" data-bind="template: { name: 'portfolio-header-template' }"></div>
+<div class="main" data-bind="template: { name: activeTemplate }"></div>
+<div class="footer" data-bind="template: { name: 'footer-template' }">
+</div>
+</body>
+</html>
