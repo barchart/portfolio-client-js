@@ -9,7 +9,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "@barchart/common-js": "3.2.35"
+    "@barchart/common-js": "~3.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
