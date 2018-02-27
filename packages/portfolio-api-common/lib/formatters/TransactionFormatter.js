@@ -1,5 +1,6 @@
 const assert = require('@barchart/common-js/lang/assert'),
-	is = require('@barchart/common-js/lang/is');
+	is = require('@barchart/common-js/lang/is'),
+	numberFormatter = require('@barchart/common-js/lang/formatter');
 
 const TransactionType = require('./../data/TransactionType');
 
@@ -36,7 +37,7 @@ module.exports = (() => {
 
 			positions.map((p) => positionMap[p.position] = p.instrument);
 
-			return transactions.map((transaction) => {
+			return transactions.filter((t) => positionMap[t.position]).map((transaction) => {
 				transaction.instrument = positionMap[transaction.position];
 
 				let formatted = getBasicTransaction(transaction);
@@ -44,7 +45,17 @@ module.exports = (() => {
 				if (formatters.has(transaction.type)) {
 					const formatterFunction = formatters.get(transaction.type);
 
-					formatted = Object.assign({}, formatted, formatterFunction(transaction));
+					const formattedTransaction = formatterFunction(transaction);
+
+					Object.keys(formattedTransaction).map((key) => {
+						if (!is.undefined(formattedTransaction[key]) && is.fn(formattedTransaction[key].toFloat)) {
+							const precision = transaction.instrument.currency.precision;
+
+							formattedTransaction[key] = numberFormatter.numberToString(formattedTransaction[key].toFloat(), precision, ',');
+						}
+					});
+
+					formatted = Object.assign({}, formatted, formattedTransaction);
 				}
 
 				if (returnType === 'append') {
