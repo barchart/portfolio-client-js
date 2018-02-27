@@ -56,7 +56,18 @@
                     });
 			};
 			var getPositions = function() {
+				var action = 'portfolioGateway.readPositions()';
 
+				that.gateway.readPositions(that.portfolio() || null, that.position() || null)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
 			};
 			var getTransactions = function() {
 				var action = 'portfolioGateway.readTransactions()';
@@ -149,6 +160,8 @@
 
 			that.setMode = function(mode) {
                 that.mode(mode);
+
+                that.execute();
             };
 			that.execute = function() {
 				that.mode().action();
