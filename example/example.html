@@ -91,8 +91,36 @@
                         that.setConsoleMode();
                     });
 			};
+			var getTransactionsReport = function() {
+				var action = 'portfolioGateway.getTransactionsReport()';
 
-			that.modes = ko.observableArray([ { text: 'Get Portfolios', action: getPortfolios }, { text: 'Get Positions', action: getPositions }, { text: 'Get Transactions', action: getTransactions } ]);
+				var portfolio = that.portfolio();
+				var position = that.position();
+
+				if (!portfolio) {
+					toastr.info('A "portfolio" is required.');
+					return;
+				}
+
+				that.gateway.getTransactionsReport(that.portfolio(), that.position() || null)
+                    .then((data) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(data);
+                    }).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+
+			that.modes = ko.observableArray([
+				{ text: 'Get Portfolios', action: getPortfolios },
+                { text: 'Get Positions', action: getPositions },
+                { text: 'Get Transactions', action: getTransactions },
+                { text: 'Get Transactions (Report)', action: getTransactionsReport }
+            ]);
+
 			that.mode = ko.observable(that.modes()[0]);
 
 
@@ -215,7 +243,7 @@
         <div class="pull-left">
             <div class="pull-left header-action-buttons form-inline" data-bind="visible: connected() === true">
                 <div class="dropdown" style="margin-top: 8px;">
-                    <button class="btn btn-default dropdown-toggle" style="width: 125px;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <button class="btn btn-default dropdown-toggle" style="width: 175px;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span data-bind="text: mode().text"></span>
                     </button>
                     <ul class="dropdown-menu" data-bind="foreach: modes">
