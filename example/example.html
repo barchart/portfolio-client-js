@@ -74,7 +74,7 @@
 
 	                    var action = 'portfolioGateway.readPortfolios()';
 
-	                    that.gateway.readPortfolios()
+	                    that.gateway.readTransactions('97b3b0c1-bb13-4b5a-a31e-1dbd411fd906')
                             .then((portfolios) => {
                                 writeConsoleText(action);
                                 writeConsoleObject(portfolios);
