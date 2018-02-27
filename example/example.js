@@ -138,7 +138,11 @@ module.exports = function () {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
-			_this._readTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read portfolio transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+			_this._readPositionsEndpoint = EndpointBuilder.for('read-positions', 'read positions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
+			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
+			_this._readTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForTransactionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 			return _this;
@@ -198,6 +202,54 @@ module.exports = function () {
 			}
 
 			/**
+    * Retrieves positions for a user, a user's portfolio, or a single position.
+    *
+    * @public
+    * @param {String=} portfolio
+    * @param {String=} position
+    * @returns {Promise.<Position[]>}
+    */
+
+		}, {
+			key: 'readPositions',
+			value: function readPositions(portfolio, position) {
+				var _this4 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this4);
+
+					assert.argumentIsOptional(portfolio, 'portfolio', String);
+					assert.argumentIsOptional(position, 'position', String);
+
+					return Gateway.invoke(_this4._readPositionsEndpoint, { portfolio: portfolio, position: position || '*' });
+				});
+			}
+
+			/**
+    * Retrieves transactions for a portfolio, or a single position.
+    *
+    * @public
+    * @param {String} portfolio
+    * @param {String=} position
+    * @returns {Promise.<Transaction[]>}
+    */
+
+		}, {
+			key: 'readTransactions',
+			value: function readTransactions(portfolio, position) {
+				var _this5 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this5);
+
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+					assert.argumentIsOptional(position, 'position', String);
+
+					return Gateway.invoke(_this5._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
+				});
+			}
+
+			/**
     * Creates and starts a new {@link PortfolioGateway} for use in the development environment.
     *
     * @public
@@ -250,6 +302,10 @@ module.exports = function () {
 	}(Disposable);
 
 	var responseInterceptorForPortfolioDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
+		return response.data;
+	});
+
+	var responseInterceptorForPositionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		return response.data;
 	});
 
@@ -588,7 +644,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.0'
+		version: '1.1.1'
 	};
 }();
 
@@ -719,7 +775,7 @@ module.exports = function () {
     * Returns an HTTP status code that would be suitable for use with the
     * failure reason.
     *
-    * @param {FailureType} reason
+    * @param {FailureReason} reason
     * @returns {Number}
     */
 
@@ -1025,7 +1081,7 @@ module.exports = function () {
 	var requestConstructionFailure = new FailureType('REQUEST_CONSTRUCTION_FAILURE', 'An attempt to {L|root.endpoint.description} failed because some required information is missing.');
 	var requestParameterMissing = new FailureType('REQUEST_PARAMETER_MISSING', 'The "{L|name}" field is required.');
 	var requestIdentifyFailure = new FailureType('REQUEST_IDENTITY_FAILURE', 'An attempt to {L|root.endpoint.description} failed because your identity could not be determined.');
-	var requestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed due to authentication failure.');
+	var requestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed. You are not authorized to perform this action.');
 	var requestInputMalformed = new FailureType('REQUEST_INPUT_MALFORMED', 'An attempt to {L|root.endpoint.description} failed, the data structure is invalid.');
 	var requestGeneralFailure = new FailureType('REQUEST_GENERAL_FAILURE', 'An attempt to {L|root.endpoint.description} failed for unspecified reason(s).');
 
@@ -5238,7 +5294,7 @@ module.exports = function () {
 	'use strict';
 
 	/**
-  * Web service gateway for invoking the Watchlist API.
+  * Web service gateway for obtaining JWT tokens from TGAM (The Globe and Mail).
   *
   * @public
   * @param {Enpoint} endpoint
@@ -5260,9 +5316,8 @@ module.exports = function () {
 			_this._started = false;
 			_this._startPromise = null;
 
-			_this._refreshInterval = refreshInterval || null;
-
 			_this._endpoint = endpoint;
+			_this._refreshInterval = refreshInterval || null;
 			return _this;
 		}
 
@@ -5395,7 +5450,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {String} userId - The identifier of the user to impersonate.
+    * @param {Promise.<Endpoint>|Endpoint} endpoint - The endpoint which vends JWT tokens.
     * @returns {Promise.<JwtGateway>}
     */
 
@@ -5411,8 +5466,10 @@ module.exports = function () {
 			}
 		}], [{
 			key: 'forDevelopment',
-			value: function forDevelopment(userId) {
-				return start(new JwtGateway(_forDevelopment('54eorn43h5.execute-api.us-east-1.amazonaws.com/dev', userId), 60000));
+			value: function forDevelopment(endpoint) {
+				return Promise.resolve(endpoint).then(function (e) {
+					return start(new JwtGateway(e, 60000));
+				});
 			}
 
 			/**
@@ -5420,14 +5477,14 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {String} userId - The identifier of the user to impersonate.
+    * @param {Promise.<Endpoint>|Endpoint}endpoint - The endpoint which vends JWT tokens.
     * @returns {Promise.<RequestInterceptor>}
     */
 
 		}, {
 			key: 'forDevelopmentClient',
-			value: function forDevelopmentClient(userId) {
-				return JwtGateway.forDevelopment(userId).then(function (jwtGateway) {
+			value: function forDevelopmentClient(endpoint) {
+				return JwtGateway.forDevelopment(endpoint).then(function (jwtGateway) {
 					return jwtGateway.toRequestInterceptor();
 				});
 			}
@@ -5451,7 +5508,6 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {String} userId - The identifier of the user to impersonate.
     * @returns {Promise.<RequestInterceptor>}
     */
 
@@ -5481,14 +5537,6 @@ module.exports = function () {
 		if (!this._started) {
 			throw new Error('Unable to use gateway, the gateway has not started.');
 		}
-	}
-
-	function _forDevelopment(host, userId) {
-		return EndpointBuilder.for('read-jwt-token-for-development', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(host).withPathBuilder(function (pb) {
-			return pb.withLiteralParameter('version', 'v1').withLiteralParameter('token', 'token');
-		}).withQueryBuilder(function (qb) {
-			return qb.withLiteralParameter('user', 'userId', userId);
-		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
 	function _forProduction(host) {
