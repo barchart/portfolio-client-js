@@ -21,9 +21,9 @@
     "API"
   ],
   "dependencies": {
-    "@barchart/common-js": "3.2.33",
-    "@barchart/tgam-jwt-js": "1.0.30",
-    "@barchart/watchlist-api-common": "1.1.25"
+    "@barchart/common-js": "3.2.35",
+    "@barchart/tgam-jwt-js": "1.0.32",
+    "@barchart/portfolio-api-common": "1.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
