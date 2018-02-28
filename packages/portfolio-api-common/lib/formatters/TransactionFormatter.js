@@ -62,9 +62,9 @@ module.exports = (() => {
 					transaction.formatted = formatted;
 
 					return transaction;
+				} else {
+					return formatted;
 				}
-
-				return formatted;
 			});
 		}
 
@@ -81,9 +81,11 @@ module.exports = (() => {
 			instrument: t.instrument
 		};
 
-		delete basic.instrument.id;
+		if (basic.instrument) {
+			delete basic.instrument.id;
+		}
 
-		return instrument;
+		return basic;
 	};
 
 	const formatters = new Map();
