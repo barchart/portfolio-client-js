@@ -74,12 +74,16 @@ module.exports = (() => {
 	}
 
 	const getBasicTransaction = (t) => {
-		return {
+		const basic = {
 			date: t.date,
 			type: t.type,
 			sequence: t.sequence,
 			instrument: t.instrument
 		};
+
+		delete basic.instrument.id;
+
+		return instrument;
 	};
 
 	const formatters = new Map();
