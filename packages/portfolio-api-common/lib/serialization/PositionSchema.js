@@ -31,10 +31,6 @@ module.exports = (() => {
 			return complete;
 		}
 
-		static get SIMPLE() {
-			return simple;
-		}
-
 		toString() {
 			return '[PositionSchema]';
 		}
@@ -69,26 +65,6 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
-		.schema
-	);
-
-	const simple = new PositionSchema(SchemaBuilder.withName('Simple')
-		.withField('position', DataType.STRING)
-		.withField('instrument.id', DataType.STRING)
-		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.STRING)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
-		.withField('instrument.delist', DataType.DAY, true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
-		.withField('snapshot.date', DataType.DAY)
-		.withField('snapshot.open', DataType.DECIMAL)
-		.withField('snapshot.buys', DataType.DECIMAL)
-		.withField('snapshot.sells', DataType.DECIMAL)
-		.withField('snapshot.gain', DataType.DECIMAL)
-		.withField('snapshot.basis', DataType.DECIMAL)
-		.withField('snapshot.income', DataType.DECIMAL)
-		.withField('snapshot.value', DataType.DECIMAL)
 		.schema
 	);
 

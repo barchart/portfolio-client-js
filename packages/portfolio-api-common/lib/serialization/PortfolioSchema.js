@@ -28,12 +28,12 @@ module.exports = (() => {
 			return this._schema;
 		}
 
-		static get COMPLETE() {
-			return complete;
+		static get CREATE() {
+			return create;
 		}
 
-		static get SIMPLE() {
-			return simple;
+		static get COMPLETE() {
+			return complete;
 		}
 
 		toString() {
@@ -60,14 +60,19 @@ module.exports = (() => {
 		.schema
 	);
 
-	const simple = new PortfolioSchema(SchemaBuilder.withName('Simple')
+	const create = new PortfolioSchema(SchemaBuilder.withName('Create')
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
+		.withField('dates.create', DataType.DAY)
+		.withField('dates.cash', DataType.DAY, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
-		.withField('legacy.warnings', DataType.NUMBER, true)
-		.withField('legacy.drops', DataType.NUMBER, true)
+		.withField('defaults.reinvest', DataType.BOOLEAN, true)
+		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('legacy.system', DataType.STRING, true)
+		.withField('legacy.user', DataType.STRING, true)
+		.withField('system.version', DataType.NUMBER, true)
 		.schema
 	);
 
