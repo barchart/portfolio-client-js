@@ -135,14 +135,14 @@ module.exports = (() => {
 			fee: t.fee,
 			total: t.quantity,
 			rate: t.dividend.rate
-		}
+		};
 	});
 
 	formatters.set(TransactionType.DISTRIBUTION_FUND, (t) => {
 		return {
 			shares: t.snapshot.open.subtract(t.quantity),
 			fee: t.fee
-		}
+		};
 	});
 
 	formatters.set(TransactionType.INCOME, (t) => {
