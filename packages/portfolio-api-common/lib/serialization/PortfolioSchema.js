@@ -76,7 +76,6 @@ module.exports = (() => {
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('Update')
-		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.cash', DataType.DAY, true)
