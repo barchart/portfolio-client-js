@@ -102,7 +102,7 @@
 					return;
 				}
 
-				that.gateway.getTransactionsFormatted(that.portfolio(), that.position() || null)
+				that.gateway.readTransactionsFormatted(that.portfolio(), that.position() || null)
                     .then((data) => {
                         writeConsoleText(action, true);
                         writeConsoleObject(data);
