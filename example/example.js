@@ -332,8 +332,6 @@ module.exports = function () {
 	});
 
 	var responseInterceptorForTransactionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
-		debugger;
-
 		var reviver = TransactionSchema.COMPLETE.schema.getReviver();
 
 		return JSON.parse(response.data, reviver);
@@ -670,7 +668,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.2'
+		version: '1.1.3'
 	};
 }();
 
