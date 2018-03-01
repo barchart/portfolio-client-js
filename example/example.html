@@ -28,6 +28,7 @@
 			that.gateway = null;
 
 			that.user = ko.observable('22e59613-d393-4069-814c-f0b5a3e4b31e');
+			that.userLegacy = ko.observable('16399446');
 
 			that.connected = ko.observable(false);
 			that.connecting = ko.observable(false);
@@ -150,13 +151,13 @@
 			that.connect = function() {
 				that.disconnect();
 				
-				if (!that.user()) {
+				if (!that.user() || !that.userLegacy()) {
 					return;
                 }
 
 				that.connecting(true);
 
-				Barchart.Portfolio.PortfolioGateway.forDevelopment(Barchart.Portfolio.JwtGateway.forDevelopmentClient(that.user()))
+				Barchart.Portfolio.PortfolioGateway.forDevelopment(Barchart.Portfolio.JwtGateway.forDevelopmentClient(that.user(), that.userLegacy()))
                     .then((gateway) => {
 					    that.gateway = gateway;
 
@@ -220,6 +221,10 @@
                     <div class="form-group" data-bind="css: { 'has-error': user().length === 0 }, event: { keypress: handleLoginKeypress }">
                         <label class="pull-left">User</label>
                         <input class="form-control" data-bind="textInput: user" type="text" placeholder="User">
+                    </div>
+                    <div class="form-group" data-bind="css: { 'has-error': user().length === 0 }, event: { keypress: handleLoginKeypress }">
+                        <label class="pull-left">Legacy User</label>
+                        <input class="form-control" data-bind="textInput: userLegacy" type="text" placeholder="Legacy User">
                     </div>
                     <div class="form-group buttons">
                         <button class="form-control btn btn-primary" type="button" data-bind="click: connect, enable: canConnect">Connect</button>
