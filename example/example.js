@@ -257,8 +257,8 @@ module.exports = function () {
 				});
 			}
 		}, {
-			key: 'getTransactionsFormatted',
-			value: function getTransactionsFormatted(portfolio, position) {
+			key: 'readTransactionsFormatted',
+			value: function readTransactionsFormatted(portfolio, position) {
 				var _this6 = this;
 
 				return Promise.resolve().then(function () {
@@ -668,7 +668,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.3'
+		version: '1.1.4'
 	};
 }();
 
