@@ -65,8 +65,6 @@ module.exports = (() => {
 	);
 
 	const create = new PortfolioSchema(SchemaBuilder.withName('Create')
-		.withField('user', DataType.STRING)
-		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.create', DataType.DAY)
@@ -79,7 +77,6 @@ module.exports = (() => {
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('Update')
-		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
