@@ -36,6 +36,10 @@ module.exports = (() => {
 			return complete;
 		}
 
+		static get UPDATE() {
+			return update;
+		}
+
 		toString() {
 			return '[PortfolioSchema]';
 		}
@@ -73,6 +77,16 @@ module.exports = (() => {
 		.withField('legacy.system', DataType.STRING, true)
 		.withField('legacy.user', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
+		.schema
+	);
+
+	const update = new PortfolioSchema(SchemaBuilder.withName('Update')
+		.withField('name', DataType.STRING)
+		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
+		.withField('dates.cash', DataType.DAY, true)
+		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('defaults.reinvest', DataType.BOOLEAN, true)
+		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
 		.schema
 	);
 
