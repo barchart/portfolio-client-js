@@ -74,8 +74,6 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('legacy.system', DataType.STRING, true)
-		.withField('legacy.user', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
 		.schema
 	);
