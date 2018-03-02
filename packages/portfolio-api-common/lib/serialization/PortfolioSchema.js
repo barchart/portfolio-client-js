@@ -73,7 +73,7 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('data', DataType.STRING)
+		.withField('data', DataType.OBJECT, true)
 		.schema
 	);
 
@@ -84,7 +84,7 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('data', DataType.STRING)
+		.withField('data', DataType.OBJECT, true)
 		.schema
 	);
 
