@@ -56,6 +56,61 @@
                         that.setConsoleMode();
                     });
 			};
+			var createPortfolio = function () {
+				var action = 'portfolioGateway.createPortfolio()';
+
+				var portfolio = {
+					name: `Random ${Math.random()}`,
+					timezone: 'America/New_York',
+					dates: {
+						create: '2018-02-28',
+						cash: '2018-02-28'
+					},
+					defaults: {
+						currency: 'CAD',
+						reinvest: true,
+						valuation: 'AVG'
+					}
+				};
+
+				that.gateway.createPortfolio(portfolio)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var updatePortfolio = function() {
+				var action = 'portfolioGateway.createPortfolio()';
+
+				var portfolio = {
+					name: `Random ${Math.random()}`,
+					timezone: 'America/New_York',
+					dates: {
+						cash: '2018-02-28'
+					},
+					defaults: {
+						currency: 'CAD',
+						reinvest: true,
+						valuation: 'AVG'
+					}
+				};
+
+				that.gateway.updatePortfolio(that.portfolio(), portfolio)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
 			var getPositions = function() {
 				var action = 'portfolioGateway.readPositions()';
 
@@ -117,6 +172,8 @@
 
 			that.modes = ko.observableArray([
 				{ text: 'Get Portfolios', action: getPortfolios },
+                { text: 'Create Portfolio', action: createPortfolio },
+                { text: 'Update Portfolio', action: updatePortfolio },
                 { text: 'Get Positions', action: getPositions },
                 { text: 'Get Transactions', action: getTransactions },
                 { text: 'Get Transactions (Formatted)', action: getTransactionsFormatted }
@@ -207,8 +264,10 @@
 			};
 		};
 
+		var pageModel
+
 		$(document).ready(function() {
-			var pageModel = new PageModel();
+			pageModel = new PageModel();
 
             ko.applyBindings(pageModel, $('body')[0]);
 		});
