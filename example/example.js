@@ -8681,18 +8681,24 @@ module.exports = (() => {
 			return this._schema;
 		}
 
+<<<<<<< 4b1332970ddbb3d3552f15cf50346c56cf0d16f9
 		static get CREATE() {
 			return create;
 		}
 
+=======
+>>>>>>> Release. Bump version number
 		static get COMPLETE() {
 			return complete;
 		}
 
+<<<<<<< 4b1332970ddbb3d3552f15cf50346c56cf0d16f9
 		static get UPDATE() {
 			return update;
 		}
 
+=======
+>>>>>>> Release. Bump version number
 		toString() {
 			return '[PortfolioSchema]';
 		}
@@ -8717,6 +8723,7 @@ module.exports = (() => {
 		.schema
 	);
 
+<<<<<<< 4b1332970ddbb3d3552f15cf50346c56cf0d16f9
 	const create = new PortfolioSchema(SchemaBuilder.withName('Create')
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
@@ -8819,6 +8826,8 @@ module.exports = (() => {
 		.schema
 	);
 
+=======
+>>>>>>> Release. Bump version number
 	return TransactionSchema;
 })();
 
