@@ -739,7 +739,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.5'
+		version: '1.1.6'
 	};
 }();
 
@@ -751,7 +751,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var assert = require('./../../lang/assert'),
-    attributes = require('./../../lang/attributes'),
     is = require('./../../lang/is');
 
 var FailureReasonItem = require('./FailureReasonItem'),
@@ -892,37 +891,6 @@ module.exports = function () {
 
 				return returnVal;
 			}
-
-			/**
-    * Validates that a candidate conforms to a schema
-    * 
-    * @param {Schema} schema
-    * @param {Object} candidate
-    */
-
-		}, {
-			key: 'validateSchema',
-			value: function validateSchema(schema, candidate) {
-				return Promise.resolve().then(function () {
-					var failure = void 0;
-
-					schema.schema.fields.map(function (field) {
-						if (attributes.read(candidate, field.name) === undefined) {
-							if (!failure) {
-								failure = FailureReason.forRequest({ endpoint: { description: 'serialize data into ' + schema } });
-							}
-
-							failure.addItem(FailureType.REQUEST_PARAMETER_MISSING, { name: field.name });
-						}
-					});
-
-					if (failure) {
-						throw failure.format();
-					}
-
-					return candidate;
-				});
-			}
 		}]);
 
 		return FailureReason;
@@ -931,7 +899,7 @@ module.exports = function () {
 	return FailureReason;
 }();
 
-},{"./../../collections/Tree":24,"./../../lang/assert":36,"./../../lang/attributes":37,"./../../lang/is":39,"./FailureReasonItem":7,"./FailureType":8}],7:[function(require,module,exports){
+},{"./../../collections/Tree":24,"./../../lang/assert":36,"./../../lang/is":39,"./FailureReasonItem":7,"./FailureType":8}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8681,24 +8649,18 @@ module.exports = (() => {
 			return this._schema;
 		}
 
-<<<<<<< 4b1332970ddbb3d3552f15cf50346c56cf0d16f9
 		static get CREATE() {
 			return create;
 		}
 
-=======
->>>>>>> Release. Bump version number
 		static get COMPLETE() {
 			return complete;
 		}
 
-<<<<<<< 4b1332970ddbb3d3552f15cf50346c56cf0d16f9
 		static get UPDATE() {
 			return update;
 		}
 
-=======
->>>>>>> Release. Bump version number
 		toString() {
 			return '[PortfolioSchema]';
 		}
@@ -8723,7 +8685,6 @@ module.exports = (() => {
 		.schema
 	);
 
-<<<<<<< 4b1332970ddbb3d3552f15cf50346c56cf0d16f9
 	const create = new PortfolioSchema(SchemaBuilder.withName('Create')
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
@@ -8826,8 +8787,6 @@ module.exports = (() => {
 		.schema
 	);
 
-=======
->>>>>>> Release. Bump version number
 	return TransactionSchema;
 })();
 
