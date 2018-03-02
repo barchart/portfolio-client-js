@@ -63,14 +63,15 @@
 					name: `Random ${Math.random()}`,
 					timezone: 'America/New_York',
 					dates: {
-						create: '2018-02-28',
-						cash: '2018-02-28'
+						create: Barchart.Day.getToday(),
+						cash: Barchart.Day.getToday()
 					},
 					defaults: {
 						currency: 'CAD',
 						reinvest: true,
 						valuation: 'AVG'
-					}
+					},
+					data: {}
 				};
 
 				that.gateway.createPortfolio(portfolio)
@@ -85,20 +86,26 @@
                     });
 			};
 			var updatePortfolio = function() {
-				var action = 'portfolioGateway.createPortfolio()';
+				var action = 'portfolioGateway.updatePortfolio()';
 
 				var portfolio = {
 					name: `Random ${Math.random()}`,
 					timezone: 'America/New_York',
 					dates: {
-						cash: '2018-02-28'
+						cash: Barchart.Day.getToday()
 					},
 					defaults: {
 						currency: 'CAD',
 						reinvest: true,
 						valuation: 'AVG'
-					}
+					},
+					data: {}
 				};
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
 
 				that.gateway.updatePortfolio(that.portfolio(), portfolio)
 					.then((data) => {

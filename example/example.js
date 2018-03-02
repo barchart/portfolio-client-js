@@ -3,15 +3,19 @@
 
 var JwtGateway = require('@barchart/tgam-jwt-js/lib/JwtGateway');
 
+var Day = require('@barchart/common-js/lang/Day');
+
 module.exports = function () {
 	'use strict';
 
 	window.Barchart = window.Barchart || {};
 	window.Barchart.Jwt = window.Barchart.Jwt || {};
 	window.Barchart.Jwt.JwtProvider = JwtGateway;
+
+	window.Barchart.Day = Day;
 }();
 
-},{"@barchart/tgam-jwt-js/lib/JwtGateway":54}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":28,"@barchart/tgam-jwt-js/lib/JwtGateway":54}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -380,17 +384,25 @@ module.exports = function () {
 	}(Disposable);
 
 	var createPortfolioRequestInterceptor = function createPortfolioRequestInterceptor(request) {
-		FailureReason.validateSchema(PortfolioSchema.CREATE, request.data);
+		return FailureReason.validateSchema(PortfolioSchema.CREATE, request.data).then(function () {
+			return Promise.resolve(request);
+		}).catch(function (e) {
+			console.error('Error serializing data to create a portfolio', e);
 
-		return request;
+			return Promise.reject();
+		});
 	};
 
 	var updatePortfolioRequestInterceptor = function updatePortfolioRequestInterceptor(request) {
-		FailureReason.validateSchema(PortfolioSchema.UPDATE, request.data.portfolioData);
+		return FailureReason.validateSchema(PortfolioSchema.UPDATE, request.data.portfolioData).then(function () {
+			request.data = request.data.portfolioData;
 
-		request.data = request.data.portfolioData;
+			return Promise.resolve(request);
+		}).catch(function (e) {
+			console.error('Error serializing data to create a portfolio', e);
 
-		return request;
+			return Promise.reject();
+		});
 	};
 
 	var responseInterceptorForPortfolioDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
@@ -751,10 +763,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var assert = require('./../../lang/assert'),
+    attributes = require('./../../lang/attributes'),
     is = require('./../../lang/is');
 
 var FailureReasonItem = require('./FailureReasonItem'),
     FailureType = require('./FailureType'),
+    Schema = require('./../../serialization/json/Schema'),
     Tree = require('./../../collections/Tree');
 
 module.exports = function () {
@@ -891,6 +905,39 @@ module.exports = function () {
 
 				return returnVal;
 			}
+
+			/**
+    * Validates that a candidate conforms to a schema
+    * 
+    * @param {Schema} schema
+    * @param {Object} candidate
+    */
+
+		}, {
+			key: 'validateSchema',
+			value: function validateSchema(schema, candidate) {
+				var _this2 = this;
+
+				return Promise.resolve().then(function () {
+					var failure = void 0;
+
+					schema.schema.fields.map(function (field) {
+						if (!attributes.has(candidate, field.name) || !field.dataType.validator.call(_this2, attributes.read(candidate, field.name))) {
+							if (!failure) {
+								failure = FailureReason.forRequest({ endpoint: { description: 'serialize data into ' + schema } }).addItem(FailureType.REQUEST_INPUT_MALFORMED, {}, true);
+							}
+
+							failure.addItem(FailureType.REQUEST_PARAMETER_MALFORMED, { name: field.name });
+						}
+					});
+
+					if (failure) {
+						return Promise.reject(failure.format());
+					} else {
+						return Promise.resolve(null);
+					}
+				});
+			}
 		}]);
 
 		return FailureReason;
@@ -899,7 +946,7 @@ module.exports = function () {
 	return FailureReason;
 }();
 
-},{"./../../collections/Tree":24,"./../../lang/assert":36,"./../../lang/is":39,"./FailureReasonItem":7,"./FailureType":8}],7:[function(require,module,exports){
+},{"./../../collections/Tree":24,"./../../lang/assert":36,"./../../lang/attributes":37,"./../../lang/is":39,"./../../serialization/json/Schema":46,"./FailureReasonItem":7,"./FailureType":8}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7148,12 +7195,13 @@ module.exports = function () {
   */
 
 	var DataType = function () {
-		function DataType(description, enumerationType, reviver) {
+		function DataType(description, enumerationType, reviver, validator) {
 			_classCallCheck(this, DataType);
 
 			assert.argumentIsRequired(description, 'description', String);
 			assert.argumentIsOptional(enumerationType, 'enumerationType', Function);
 			assert.argumentIsOptional(reviver, 'reviver', Function);
+			assert.argumentIsOptional(validator, 'validator', Function);
 
 			if (enumerationType) {
 				assert.argumentIsValid(enumerationType, 'enumerationType', extendsEnumeration, 'is an enumeration');
@@ -7177,6 +7225,9 @@ module.exports = function () {
 			}
 
 			this._reviver = reviverToUse;
+			this._validator = validator || function (candidate) {
+				return true;
+			};
 		}
 
 		/**
@@ -7215,13 +7266,26 @@ module.exports = function () {
     * A function which "revives" a value after serialization to JSON.
     *
     * @public
-    * @returns {Function}reviver
+    * @returns {Function} reviver
     */
 
 		}, {
 			key: 'reviver',
 			get: function get() {
 				return this._reviver;
+			}
+
+			/**
+    * A function validates data, returning true or false.
+    *
+    * @public
+    * @returns {Function} reviver
+    */
+
+		}, {
+			key: 'validator',
+			get: function get() {
+				return this._validator;
 			}
 
 			/**
@@ -7338,19 +7402,25 @@ module.exports = function () {
 		return is.extension(Enum, EnumerationType);
 	}
 
-	var dataTypeString = new DataType('String');
-	var dataTypeNumber = new DataType('Number');
-	var dataTypeBoolean = new DataType('Boolean');
-	var dataTypeObject = new DataType('Object');
+	var dataTypeString = new DataType('String', null, null, is.string);
+	var dataTypeNumber = new DataType('Number', null, null, is.number);
+	var dataTypeBoolean = new DataType('Boolean', null, null, is.boolean);
+	var dataTypeObject = new DataType('Object', null, null, is.object);
 
 	var dataTypeDecimal = new DataType('Decimal', null, function (x) {
 		return Decimal.parse(x);
+	}, function (x) {
+		return x instanceof Decimal;
 	});
 	var dataTypeDay = new DataType('Day', null, function (x) {
 		return Day.parse(x);
+	}, function (x) {
+		return x instanceof Day;
 	});
 	var dataTypeTimestamp = new DataType('Timestamp', null, function (x) {
 		return Timestamp.parse(x);
+	}, function (x) {
+		return x instanceof Timestamp;
 	});
 
 	var dataTypes = [dataTypeString, dataTypeNumber, dataTypeBoolean, dataTypeObject, dataTypeDecimal, dataTypeDay, dataTypeTimestamp];
@@ -8682,6 +8752,7 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('system.version', DataType.NUMBER, true)
+		.withField('data', DataType.OBJECT, true)
 		.schema
 	);
 
@@ -8693,6 +8764,7 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('data', DataType.OBJECT)
 		.schema
 	);
 
@@ -8703,6 +8775,7 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('data', DataType.OBJECT)
 		.schema
 	);
 
