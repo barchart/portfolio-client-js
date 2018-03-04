@@ -81,6 +81,13 @@ module.exports = (() => {
 	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges);
 	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges);
 
+	function getRange(start, end) {
+		return {
+			start: start,
+			end: end
+		};
+	}
+
 	function getYearlyRanges(transactions) {
 		const ranges = [ ];
 
@@ -99,13 +106,8 @@ module.exports = (() => {
 				lastYear = Day.getToday().year;
 			}
 
-			let e = new Day(firstDate.year, 12, 31);
-
 			for (let end = new Day(firstDate.year, 12, 31); end.year < lastYear; end = end.addYears(1)) {
-				ranges.push({
-					start: end.subtractYears(1),
-					end: end
-				});
+				ranges.push(getRange(end.subtractYears(1), end));
 			}
 		}
 
@@ -121,7 +123,23 @@ module.exports = (() => {
 	}
 
 	function getYearToDateRanges(transactions) {
-		return [ ];
+		const ranges = [ ];
+
+		if (transactions.length !== 0) {
+			const first = array.first(transactions);
+			const last = array.last(transactions);
+
+			const currentYear = Day.getToday().year;
+
+			if (!last.snapshot.open.getIsZero() || last.date.year === currentYear) {
+				let end = new Day(Day.getToday().year, 12, 31);
+				let start = end.subtractYears(1);
+
+				ranges.push(getRange(start, end));
+			}
+		}
+
+		return ranges;
 	}
 
 	return PositionSummaryFrame;

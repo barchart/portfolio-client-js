@@ -1,1 +1,3515 @@
-(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({},{},[]);
+(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+const array = require('@barchart/common-js/lang/array'),
+	assert = require('@barchart/common-js/lang/assert'),
+	Day = require('@barchart/common-js/lang/Day'),
+	Enum = require('@barchart/common-js/lang/Enum'),
+	is = require('@barchart/common-js/lang/is');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * An enumeration used to define timeframes for position summaries.
+	 *
+	 * @public
+	 * @extends {Enum}
+	 * @param {String} code
+	 * @param {String} description
+	 * @param {Function} rangeCalculator
+	 */
+	class PositionSummaryFrame extends Enum {
+		constructor(code, description, rangeCalculator) {
+			super(code, description);
+
+			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
+
+			this._rangeCalculator = rangeCalculator;
+		}
+
+		getRanges(transactions) {
+			assert.argumentIsArray(transactions, 'transactions');
+
+			return this._rangeCalculator(transactions);
+		}
+
+		/**
+		 * A summary for a calendar year.
+		 *
+		 * @public
+		 * @returns {PositionSummaryFrame}
+		 */
+		static get YEARLY() {
+			return yearly;
+		}
+
+		/**
+		 * A summary for a quarter.
+		 *
+		 * @public
+		 * @returns {PositionSummaryFrame}
+		 */
+		static get QUARTERLY() {
+			return quarterly;
+		}
+
+		/**
+		 * A summary for a calendar month.
+		 *
+		 * @public
+		 * @returns {PositionSummaryFrame}
+		 */
+		static get MONTHLY() {
+			return monthly;
+		}
+
+		/**
+		 * A summary the current year (to date).
+		 *
+		 * @public
+		 * @returns {PositionSummaryFrame}
+		 */
+		static get YTD() {
+			return ytd;
+		}
+
+		toString() {
+			return '[PositionSummaryFrame]';
+		}
+	}
+
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges);
+
+	function getRange(start, end) {
+		return {
+			start: start,
+			end: end
+		};
+	}
+
+	function getYearlyRanges(transactions) {
+		const ranges = [ ];
+
+		if (transactions.length !== 0) {
+			const first = array.first(transactions);
+			const last = array.last(transactions);
+
+			const firstDate = first.date;
+			const lastDate = last.date;
+
+			let lastYear;
+
+			if (last.snapshot.open.getIsZero()) {
+				lastYear = last.date.year + 1;
+			} else {
+				lastYear = Day.getToday().year;
+			}
+
+			for (let end = new Day(firstDate.year, 12, 31); end.year < lastYear; end = end.addYears(1)) {
+				ranges.push(getRange(end.subtractYears(1), end));
+			}
+		}
+
+		return ranges;
+	}
+
+	function getQuarterlyRanges(transactions) {
+		return [ ];
+	}
+
+	function getMonthlyRanges(transactions) {
+		return [ ];
+	}
+
+	function getYearToDateRanges(transactions) {
+		const ranges = [ ];
+
+		if (transactions.length !== 0) {
+			const first = array.first(transactions);
+			const last = array.last(transactions);
+
+			const currentYear = Day.getToday().year;
+
+			if (!last.snapshot.open.getIsZero() || last.date.year === currentYear) {
+				let end = new Day(Day.getToday().year, 12, 31);
+				let start = end.subtractYears(1);
+
+				ranges.push(getRange(start, end));
+			}
+		}
+
+		return ranges;
+	}
+
+	return PositionSummaryFrame;
+})();
+
+},{"@barchart/common-js/lang/Day":4,"@barchart/common-js/lang/Enum":6,"@barchart/common-js/lang/array":7,"@barchart/common-js/lang/assert":8,"@barchart/common-js/lang/is":9}],2:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./../../lang/assert'),
+    comparators = require('./comparators');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A builder for compound comparator functions (e.g. sort by last name,
+  * then by first name, then by social security number) that uses a fluent
+  * interface.
+  *
+  * @public
+  * @param {Function} comparator - The initial comparator.
+  * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
+  */
+
+	var ComparatorBuilder = function () {
+		function ComparatorBuilder(comparator, invert, previous) {
+			_classCallCheck(this, ComparatorBuilder);
+
+			assert.argumentIsRequired(comparator, 'comparator', Function);
+			assert.argumentIsOptional(invert, 'invert', Boolean);
+
+			this._comparator = comparator;
+			this._invert = invert || false;
+			this._previous = previous || null;
+		}
+
+		/**
+   * Adds a new comparator to the list of comparators to use.
+   *
+   * @public
+   * @param {Function} comparator - The next comparator function.
+   * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
+   * @returns {ComparatorBuilder}
+   */
+
+
+		_createClass(ComparatorBuilder, [{
+			key: 'thenBy',
+			value: function thenBy(comparator, invert) {
+				assert.argumentIsRequired(comparator, 'comparator', Function);
+				assert.argumentIsOptional(invert, 'invert', Boolean);
+
+				return new ComparatorBuilder(comparator, invert, this);
+			}
+
+			/**
+    * Flips the order of the comparator (e.g. ascending to descending).
+    *
+    * @public
+    * @returns {ComparatorBuilder}
+    */
+
+		}, {
+			key: 'invert',
+			value: function invert() {
+				var previous = void 0;
+
+				if (this._previous) {
+					previous = this._previous.invert();
+				} else {
+					previous = null;
+				}
+
+				return new ComparatorBuilder(this._comparator, !this._invert, previous);
+			}
+
+			/**
+    * Returns the comparator function.
+    *
+    * @public
+    * @returns {Function}
+    */
+
+		}, {
+			key: 'toComparator',
+			value: function toComparator() {
+				var _this = this;
+
+				var previousComparator = void 0;
+
+				if (this._previous) {
+					previousComparator = this._previous.toComparator();
+				} else {
+					previousComparator = comparators.empty;
+				}
+
+				return function (a, b) {
+					var result = previousComparator(a, b);
+
+					if (result === 0) {
+						var sortA = void 0;
+						var sortB = void 0;
+
+						if (_this._invert) {
+							sortA = b;
+							sortB = a;
+						} else {
+							sortA = a;
+							sortB = b;
+						}
+
+						result = _this._comparator(sortA, sortB);
+					}
+
+					return result;
+				};
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[ComparatorBuilder]';
+			}
+
+			/**
+    * Creates a {@link ComparatorBuilder}, given an initial comparator function.
+    *
+    * @public
+    * @param {Function} comparator - The initial comparator.
+    * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
+    * @returns {ComparatorBuilder}
+    */
+
+		}], [{
+			key: 'startWith',
+			value: function startWith(comparator, invert) {
+				return new ComparatorBuilder(comparator, invert);
+			}
+		}]);
+
+		return ComparatorBuilder;
+	}();
+
+	return ComparatorBuilder;
+}();
+
+},{"./../../lang/assert":8,"./comparators":3}],3:[function(require,module,exports){
+'use strict';
+
+var assert = require('./../../lang/assert');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * Functions that can be used as comparators.
+  *
+  * @public
+  * @module collections/sorting/comparators
+  */
+
+	return {
+		/**
+   * Compares two dates (in ascending order).
+   *
+   * @static
+   * @param {Date} a
+   * @param {Date} b
+   * @returns {Number}
+   */
+		compareDates: function compareDates(a, b) {
+			assert.argumentIsRequired(a, 'a', Date);
+			assert.argumentIsRequired(b, 'b', Date);
+
+			return a - b;
+		},
+
+		/**
+   * Compares two numbers (in ascending order).
+   *
+   * @static
+   * @param {Number} a
+   * @param {Number} b
+   * @returns {Number}
+   */
+		compareNumbers: function compareNumbers(a, b) {
+			assert.argumentIsRequired(a, 'a', Number);
+			assert.argumentIsRequired(b, 'b', Number);
+
+			return a - b;
+		},
+
+		/**
+   * Compares two strings (in ascending order), using {@link String#localeCompare}.
+   *
+   * @static
+   * @param {Number} a
+   * @param {Number} b
+   * @returns {Number}
+   */
+		compareStrings: function compareStrings(a, b) {
+			assert.argumentIsRequired(a, 'a', String);
+			assert.argumentIsRequired(b, 'b', String);
+
+			return a.localeCompare(b);
+		},
+
+		/**
+   * Compares two objects, always returning zero.
+   *
+   * @static
+   * @param {*} a
+   * @param {*} b
+   * @returns {Number}
+   */
+		empty: function empty(a, b) {
+			return 0;
+		}
+	};
+}();
+
+},{"./../../lang/assert":8}],4:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./assert'),
+    ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder'),
+    comparators = require('./../collections/sorting/comparators'),
+    is = require('./is');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A data structure that represents a day (year, month, and day)
+  * without consideration for time or timezone.
+  *
+  * @public
+  * @param {Number} year
+  * @param {Number} month
+  * @param {Number} day
+  */
+
+	var Day = function () {
+		function Day(year, month, day) {
+			_classCallCheck(this, Day);
+
+			if (!Day.validate(year, month, day)) {
+				throw new Error('Unable to instantiate Day, input is invalid [' + year + '], [' + month + '], [' + day + ']');
+			}
+
+			this._year = year;
+			this._month = month;
+			this._day = day;
+		}
+
+		/**
+   * Calculates a new {@link Day} in the future (or past).
+   *
+   * @public
+   * @param {Number} days - The number of days to add (negative numbers can be used for subtraction).
+   * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+   * @returns {Day}
+   */
+
+
+		_createClass(Day, [{
+			key: 'addDays',
+			value: function addDays(days, inverse) {
+				assert.argumentIsRequired(days, 'days', Number);
+				assert.argumentIsOptional(inverse, inverse, Boolean);
+				assert.argumentIsValid(days, 'days', is.large, 'is an integer');
+
+				var totalDaysToShift = void 0;
+
+				if (is.boolean(inverse) && inverse) {
+					totalDaysToShift = days * -1;
+				} else {
+					totalDaysToShift = days;
+				}
+
+				var positive = is.positive(totalDaysToShift);
+
+				var shiftedDay = this._day;
+				var shiftedMonth = this._month;
+				var shiftedYear = this._year;
+
+				while (totalDaysToShift !== 0) {
+					var monthDaysAvailable = void 0;
+					var monthDaysToShift = void 0;
+
+					if (positive) {
+						monthDaysAvailable = Day.getDaysInMonth(shiftedYear, shiftedMonth) - shiftedDay;
+						monthDaysToShift = Math.min(totalDaysToShift, monthDaysAvailable);
+					} else {
+						monthDaysAvailable = 1 - shiftedDay;
+						monthDaysToShift = Math.max(totalDaysToShift, monthDaysAvailable);
+					}
+
+					totalDaysToShift = totalDaysToShift - monthDaysToShift;
+
+					if (totalDaysToShift === 0) {
+						shiftedDay = shiftedDay + monthDaysToShift;
+					} else if (positive) {
+						shiftedMonth++;
+
+						if (shiftedMonth > 12) {
+							shiftedYear++;
+							shiftedMonth = 1;
+						}
+
+						shiftedDay = 0;
+					} else {
+						shiftedMonth--;
+
+						if (shiftedMonth < 1) {
+							shiftedYear--;
+							shiftedMonth = 12;
+						}
+
+						shiftedDay = Day.getDaysInMonth(shiftedYear, shiftedMonth) + 1;
+					}
+				}
+
+				return new Day(shiftedYear, shiftedMonth, shiftedDay);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the past (or future).
+    *
+    * @public
+    * @param {Number} days - The number of days to subtract (negative numbers can be used for addition).
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'subtractDays',
+			value: function subtractDays(days) {
+				return this.addDays(days, true);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
+    * the month and the new month has fewer days than the current month, days will be subtracted
+    * as necessary (e.g. adding one month to March 31 will return April 30).
+    *
+    * @public
+    * @param {Number} months - The number of months to add (negative numbers can be used for subtraction).
+    * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'addMonths',
+			value: function addMonths(months, inverse) {
+				assert.argumentIsRequired(months, 'months', Number);
+				assert.argumentIsOptional(inverse, inverse, Boolean);
+				assert.argumentIsValid(months, 'months', is.large, 'is an integer');
+
+				var totalMonthsToShift = void 0;
+
+				if (is.boolean(inverse) && inverse) {
+					totalMonthsToShift = months * -1;
+				} else {
+					totalMonthsToShift = months;
+				}
+
+				var monthsToShift = totalMonthsToShift % 12;
+				var yearsToShift = (totalMonthsToShift - monthsToShift) / 12;
+
+				var shiftedYear = this.year + yearsToShift;
+				var shiftedMonth = this.month + monthsToShift;
+				var shiftedDay = this.day;
+
+				if (shiftedMonth > 12) {
+					shiftedYear = shiftedYear + 1;
+					shiftedMonth = shiftedMonth - 12;
+				}
+
+				if (shiftedMonth < 1) {
+					shiftedYear = shiftedYear - 1;
+					shiftedMonth = shiftedMonth + 12;
+				}
+
+				while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
+					shiftedDay = shiftedDay - 1;
+				}
+
+				return new Day(shiftedYear, shiftedMonth, shiftedDay);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the past (or future).
+    *
+    * @public
+    * @param {Number} months - The number of months to subtract (negative numbers can be used for addition).
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'subtractMonths',
+			value: function subtractMonths(months) {
+				return this.addMonths(months, true);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
+    * the month and the new month has fewer days than the current month, days will be subtracted
+    * as necessary (e.g. adding one year to February 29 will return February 28).
+    *
+    * @public
+    * @param {Number} years - The number of years to add (negative numbers can be used for subtraction).
+    * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'addYears',
+			value: function addYears(years, inverse) {
+				assert.argumentIsRequired(years, 'years', Number);
+				assert.argumentIsOptional(inverse, inverse, Boolean);
+				assert.argumentIsValid(years, 'years', is.large, 'is an integer');
+
+				var yearsToShift = void 0;
+
+				if (is.boolean(inverse) && inverse) {
+					yearsToShift = years * -1;
+				} else {
+					yearsToShift = years;
+				}
+
+				var shiftedYear = this.year + yearsToShift;
+				var shiftedMonth = this.month;
+				var shiftedDay = this.day;
+
+				while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
+					shiftedDay = shiftedDay - 1;
+				}
+
+				return new Day(shiftedYear, shiftedMonth, shiftedDay);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the past (or future).
+    *
+    * @public
+    * @param {Number} years - The number of years to subtract (negative numbers can be used for addition).
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'subtractYears',
+			value: function subtractYears(years) {
+				return this.addYears(years, true);
+			}
+
+			/**
+    * Indicates if another {@link Day} occurs before the current instance.
+    *
+    * @public
+    * @param {Day} other
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsBefore',
+			value: function getIsBefore(other) {
+				return Day.compareDays(this, other) < 0;
+			}
+
+			/**
+    * Indicates if another {@link Day} occurs after the current instance.
+    *
+    * @public
+    * @param {Day} other
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsAfter',
+			value: function getIsAfter(other) {
+				return Day.compareDays(this, other) > 0;
+			}
+
+			/**
+    * Indicates if another {@link Day} occurs after the current instance.
+    *
+    * @public
+    * @param {Day} other
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsEqual',
+			value: function getIsEqual(other) {
+				return Day.compareDays(this, other) === 0;
+			}
+
+			/**
+    * The year.
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'format',
+
+
+			/**
+    * Outputs the date as the formatted string: {year}-{month}-{day}.
+    *
+    * @public
+    * @returns {String}
+    */
+			value: function format() {
+				return this._year + '-' + leftPad(this._month) + '-' + leftPad(this._day);
+			}
+
+			/**
+    * Returns the JSON representation.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'toJSON',
+			value: function toJSON() {
+				return this.format();
+			}
+
+			/**
+    * Converts a string (which matches the output of {@link Day#format} into
+    * a {@link Day} instance.
+    *
+    * @public
+    * @static
+    * @param {String} value
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Day]';
+			}
+		}, {
+			key: 'year',
+			get: function get() {
+				return this._year;
+			}
+
+			/**
+    * The month of the year (January is one, December is twelve).
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'month',
+			get: function get() {
+				return this._month;
+			}
+
+			/**
+    * The day of the month.
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'day',
+			get: function get() {
+				return this._day;
+			}
+		}], [{
+			key: 'parse',
+			value: function parse(value) {
+				assert.argumentIsRequired(value, 'value', String);
+
+				var match = value.match(dayRegex);
+
+				if (match === null) {
+					throw new Error('Unable to parse value as Day [ ' + value + ' ]');
+				}
+
+				return new Day(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+			}
+
+			/**
+    * Creates a {@link Day} from the year, month, and day properties (in local time)
+    * of the {@link Date} argument.
+    *
+    * @public
+    * @static
+    * @param {Date} date
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'fromDate',
+			value: function fromDate(date) {
+				assert.argumentIsRequired(date, 'date', Date);
+
+				return new Day(date.getFullYear(), date.getMonth() + 1, date.getDate());
+			}
+
+			/**
+    * Creates a {@link Day} from the year, month, and day properties (in UTC)
+    * of the {@link Date} argument.
+    *
+    * @public
+    * @static
+    * @param {Date} date
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'fromDateUtc',
+			value: function fromDateUtc(date) {
+				assert.argumentIsRequired(date, 'date', Date);
+
+				return new Day(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+			}
+
+			/**
+    * Returns a {@link Day} instance using today's local date.
+    *
+    * @static
+    * @public
+    * @return {Day}
+    */
+
+		}, {
+			key: 'getToday',
+			value: function getToday() {
+				return Day.fromDate(new Date());
+			}
+
+			/**
+    * Returns true if the year, month, and day combination is valid; otherwise false.
+    *
+    * @public
+    * @static
+    * @param {Number} year
+    * @param {Number} month
+    * @param {Number} day
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'validate',
+			value: function validate(year, month, day) {
+				return is.integer(year) && is.integer(month) && is.integer(day) && !(month < 1) && !(month > 12) && !(day < 1) && !(day > Day.getDaysInMonth(year, month));
+			}
+
+			/**
+    * Returns the number of days in a given month.
+    *
+    * @public
+    * @static
+    * @param {number} year - The year number (e.g. 2017)
+    * @param {number} month - The month number (e.g. 2 is February)
+    */
+
+		}, {
+			key: 'getDaysInMonth',
+			value: function getDaysInMonth(year, month) {
+				switch (month) {
+					case 1:
+					case 3:
+					case 5:
+					case 7:
+					case 8:
+					case 10:
+					case 12:
+						{
+							return 31;
+						}
+					case 4:
+					case 6:
+					case 9:
+					case 11:
+						{
+							return 30;
+						}
+					case 2:
+						{
+							if (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) {
+								return 29;
+							} else {
+								return 28;
+							}
+						}
+				}
+			}
+
+			/**
+    * A comparator function for {@link Day} instances.
+    *
+    * @public
+    * @static
+    * @param {Day} a
+    * @param {Day} b
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'compareDays',
+			value: function compareDays(a, b) {
+				assert.argumentIsRequired(a, 'a', Day, 'Day');
+				assert.argumentIsRequired(b, 'b', Day, 'Day');
+
+				return comparator(a, b);
+			}
+		}]);
+
+		return Day;
+	}();
+
+	var dayRegex = /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/;
+
+	function leftPad(value) {
+		return value < 10 ? '0' + value : '' + value;
+	}
+
+	var comparator = ComparatorBuilder.startWith(function (a, b) {
+		return comparators.compareNumbers(a.year, b.year);
+	}).thenBy(function (a, b) {
+		return comparators.compareNumbers(a.month, b.month);
+	}).thenBy(function (a, b) {
+		return comparators.compareNumbers(a.day, b.day);
+	}).toComparator();
+
+	return Day;
+}();
+
+},{"./../collections/sorting/ComparatorBuilder":2,"./../collections/sorting/comparators":3,"./assert":8,"./is":9}],5:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./assert'),
+    Enum = require('./Enum'),
+    is = require('./is');
+
+var Big = require('big.js');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * An immutable object that allows for arbitrary-precision calculations.
+  *
+  * @public
+  * @param {Decimal|Number|String} value - The value.
+  */
+
+	var Decimal = function () {
+		function Decimal(value) {
+			_classCallCheck(this, Decimal);
+
+			this._big = getBig(value);
+		}
+
+		/**
+   * Returns a new {@link Decimal} instance that is the sum of the
+   * current instance's value and the value supplied.
+   *
+   * @public
+   * @param {Decimal|Number|String} other - The value to add.
+   * @returns {Decimal}
+   */
+
+
+		_createClass(Decimal, [{
+			key: 'add',
+			value: function add(other) {
+				return new Decimal(this._big.plus(getBig(other)));
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance with a value that results
+    * from the subtraction of the value supplied from the current instance's
+    * value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to subtract.
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'subtract',
+			value: function subtract(other) {
+				return new Decimal(this._big.minus(getBig(other)));
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance that is the product of the
+    * current instance's value and the value supplied.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to add.
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'multiply',
+			value: function multiply(other) {
+				return new Decimal(this._big.times(getBig(other)));
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance with a value that results
+    * from the division of the current instance's value by the value
+    * supplied.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to subtract.
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'divide',
+			value: function divide(other) {
+				return new Decimal(this._big.div(getBig(other)));
+			}
+
+			/**
+    * Returns a new {@link Decimal} with a value resulting from a rounding
+    * operation on the current value.
+    *
+    * @public
+    * @param {Number} places - The number of decimal places to retain.
+    * @param {RoundingMode=} mode - The strategy to use for rounding.
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'round',
+			value: function round(places, mode) {
+				assert.argumentIsRequired(places, 'places', Number);
+				assert.argumentIsOptional(mode, 'mode', RoundingMode, 'RoundingMode');
+
+				var modeToUse = mode || RoundingMode.NORMAL;
+
+				return new Decimal(this._big.round(places, modeToUse.value));
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance having the absolute value of
+    * the current instance's value.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'absolute',
+			value: function absolute() {
+				return new Decimal(this._big.abs());
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance the opposite sign as the
+    * current instance's value.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'opposite',
+			value: function opposite() {
+				return this.multiply(-1);
+			}
+
+			/**
+    * Returns a Boolean value, indicating if the current instance's value is
+    * equal to zero (or approximately equal to zero).
+    *
+    * @public
+    * @param {Boolean=} approximate
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsZero',
+			value: function getIsZero(approximate) {
+				assert.argumentIsOptional(approximate, 'approximate', Boolean);
+
+				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(20, RoundingMode.NORMAL).getIsZero();
+			}
+
+			/**
+    * Returns true if the current instance is positive; otherwise false.
+    *
+    * @public
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsPositive',
+			value: function getIsPositive() {
+				return this._big.gt(zero);
+			}
+
+			/**
+    * Returns true if the current instance is negative; otherwise false.
+    *
+    * @public
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsNegative',
+			value: function getIsNegative() {
+				return this._big.lt(zero);
+			}
+
+			/**
+    * Returns true if the current instance is greater than the value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsGreaterThan',
+			value: function getIsGreaterThan(other) {
+				return this._big.gt(getBig(other));
+			}
+
+			/**
+    * Returns true if the current instance is less than the value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsLessThan',
+			value: function getIsLessThan(other) {
+				return this._big.lt(getBig(other));
+			}
+
+			/**
+    * Returns true if the current instance is equal to the value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsEqual',
+			value: function getIsEqual(other) {
+				return this._big.eq(getBig(other));
+			}
+
+			/**
+    * Emits a floating point value that approximates the value of the current
+    * instance.
+    *
+    * @public
+    * @param {Number=} places
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'toFloat',
+			value: function toFloat(places) {
+				assert.argumentIsOptional(places, 'places', Number);
+
+				// Accepting places might be a mistake here; perhaps
+				// the consumer should be forced to use the round
+				// function.
+
+				return parseFloat(this._big.toFixed(places || 16));
+			}
+
+			/**
+    * Returns a string-based representation of the instance's value.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'toFixed',
+			value: function toFixed() {
+				return this._big.toFixed();
+			}
+
+			/**
+    * Returns the JSON representation.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'toJSON',
+			value: function toJSON() {
+				return this.toFixed();
+			}
+
+			/**
+    * Parses the value emitted by {@link Decimal#toJSON}.
+    *
+    * @public
+    * @param {String} value
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Decimal]';
+			}
+		}], [{
+			key: 'parse',
+			value: function parse(value) {
+				return new Decimal(value);
+			}
+
+			/**
+    * Returns an instance with the value of zero.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'getIsZero',
+
+
+			/**
+    * Runs {@link Decimal#getIsZero} and returns the result.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+			value: function getIsZero(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsZero();
+			}
+
+			/**
+    * Runs {@link Decimal#getIsZero} and returns the inverse.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsNotZero',
+			value: function getIsNotZero(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return !instance.getIsZero();
+			}
+
+			/**
+    * Runs {@link Decimal#getIsPositive} and returns the result.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsPositive',
+			value: function getIsPositive(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsPositive();
+			}
+
+			/**
+    * Checks an instance to see if its negative or zero.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsNotPositive',
+			value: function getIsNotPositive(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsNegative() || instance.getIsZero();
+			}
+
+			/**
+    * Runs {@link Decimal#getIsNegative} and returns the result.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsNegative',
+			value: function getIsNegative(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsNegative();
+			}
+
+			/**
+    * Checks an instance to see if its positive or zero.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsNotNegative',
+			value: function getIsNotNegative(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsPositive() || instance.getIsZero();
+			}
+
+			/**
+    * A comparator function for {@link Decimal} instances.
+    *
+    * @public
+    * @param {Decimal} a
+    * @param {Decimal} b
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'compareDecimals',
+			value: function compareDecimals(a, b) {
+				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
+				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
+
+				if (a._big.gt(b)) {
+					return 1;
+				} else if (a._big.lt(b)) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+		}, {
+			key: 'ZERO',
+			get: function get() {
+				return decimalZero;
+			}
+
+			/**
+    * Returns an instance with the value of one.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'ONE',
+			get: function get() {
+				return decimalOne;
+			}
+
+			/**
+    * Returns an instance with the value of one.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'NEGATIVE_ONE',
+			get: function get() {
+				return decimalNegativeOne;
+			}
+
+			/**
+    * Return the {@link RoundingMode} enumeration.
+    *
+    * @public
+    * @returns {RoundingMode}
+    */
+
+		}, {
+			key: 'ROUNDING_MODE',
+			get: function get() {
+				return RoundingMode;
+			}
+		}]);
+
+		return Decimal;
+	}();
+
+	var zero = new Big(0);
+	var positiveOne = new Big(1);
+	var negativeOne = new Big(-1);
+
+	var decimalZero = new Decimal(zero);
+	var decimalOne = new Decimal(positiveOne);
+	var decimalNegativeOne = new Decimal(negativeOne);
+
+	function getBig(value) {
+		if (value instanceof Big) {
+			return value;
+		} else if (value instanceof Decimal) {
+			return value._big;
+		} else {
+			return new Big(value);
+		}
+	}
+
+	/**
+  * An enumeration of strategies for rouding a {@link Decimal} instance.
+  *
+  * @public
+  * @inner
+  * @extends {Enum}
+  */
+
+	var RoundingMode = function (_Enum) {
+		_inherits(RoundingMode, _Enum);
+
+		function RoundingMode(value, description) {
+			_classCallCheck(this, RoundingMode);
+
+			var _this = _possibleConstructorReturn(this, (RoundingMode.__proto__ || Object.getPrototypeOf(RoundingMode)).call(this, value.toString(), description));
+
+			_this._value = value;
+			return _this;
+		}
+
+		/**
+   * The code used by the Big.js library.
+   *
+   * @ignore
+   * @returns {Number}
+   */
+
+
+		_createClass(RoundingMode, [{
+			key: 'toString',
+			value: function toString() {
+				return '[RoundingMode]';
+			}
+		}, {
+			key: 'value',
+			get: function get() {
+				return this._value;
+			}
+
+			/**
+    * Rounds away from zero.
+    *
+    * @public
+    * @returns {RoundingMode}
+    */
+
+		}], [{
+			key: 'UP',
+			get: function get() {
+				return up;
+			}
+
+			/**
+    * Rounds towards zero.
+    *
+    * @public
+    * @returns {RoundingMode}
+    */
+
+		}, {
+			key: 'DOWN',
+			get: function get() {
+				return down;
+			}
+
+			/**
+    * Rounds towards nearest neighbor. If equidistant, rounds away from zero.
+    *
+    * @public
+    * @returns {RoundingMode}
+    */
+
+		}, {
+			key: 'NORMAL',
+			get: function get() {
+				return normal;
+			}
+		}]);
+
+		return RoundingMode;
+	}(Enum);
+
+	var up = new RoundingMode(3, 'up');
+	var down = new RoundingMode(0, 'down');
+	var normal = new RoundingMode(1, 'normal');
+
+	return Decimal;
+}();
+
+},{"./Enum":6,"./assert":8,"./is":9,"big.js":10}],6:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./assert');
+
+module.exports = function () {
+	'use strict';
+
+	var types = new Map();
+
+	/**
+  * An enumeration. Must be inherited. Do not instantiate directly.
+  * Also, this class uses the ES6 Map, therefore a polyfill must
+  * be supplied.
+  *
+  * @public
+  * @interface
+  * @param {String} code - The unique code of the enumeration item.
+  * @param {String} description - A description of the enumeration item.
+  */
+
+	var Enum = function () {
+		function Enum(code, description) {
+			_classCallCheck(this, Enum);
+
+			assert.argumentIsRequired(code, 'code', String);
+			assert.argumentIsRequired(description, 'description', String);
+
+			this._code = code;
+			this._description = description;
+
+			var c = this.constructor;
+
+			if (!types.has(c)) {
+				types.set(c, []);
+			}
+
+			var existing = Enum.fromCode(c, code);
+
+			if (existing === null) {
+				types.get(c).push(this);
+			}
+		}
+
+		/**
+   * The unique code.
+   *
+   * @returns {String}
+   */
+
+
+		_createClass(Enum, [{
+			key: 'equals',
+
+
+			/**
+    * Returns true if the provided {@link Enum} argument is equal
+    * to the instance.
+    *
+    * @param {Enum} other
+    * @returns {boolean}
+    */
+			value: function equals(other) {
+				return other === this || other instanceof Enum && other.constructor === this.constructor && other.code === this.code;
+			}
+
+			/**
+    * Returns the JSON representation.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'toJSON',
+			value: function toJSON() {
+				return this.code;
+			}
+
+			/**
+    * Looks up a enumeration item; given the enumeration type and the enumeration
+    * item's value. If no matching item can be found, a null value is returned.
+    *
+    * @param {Function} type - The enumeration type.
+    * @param {String} code - The enumeration item's code.
+    * @returns {*|null}
+    */
+
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Enum]';
+			}
+		}, {
+			key: 'code',
+			get: function get() {
+				return this._code;
+			}
+
+			/**
+    * The description.
+    *
+    * @returns {String}
+    */
+
+		}, {
+			key: 'description',
+			get: function get() {
+				return this._description;
+			}
+		}], [{
+			key: 'fromCode',
+			value: function fromCode(type, code) {
+				return Enum.getItems(type).find(function (x) {
+					return x.code === code;
+				}) || null;
+			}
+
+			/**
+    * Returns all of the enumeration's items (given an enumeration type).
+    *
+    * @param {Function} type - The enumeration to list.
+    * @returns {Array}
+    */
+
+		}, {
+			key: 'getItems',
+			value: function getItems(type) {
+				return types.get(type) || [];
+			}
+		}]);
+
+		return Enum;
+	}();
+
+	return Enum;
+}();
+
+},{"./assert":8}],7:[function(require,module,exports){
+'use strict';
+
+var assert = require('./assert'),
+    is = require('./is');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * Utilities for working with arrays.
+  *
+  * @public
+  * @module lang/array
+  */
+
+	return {
+		/**
+   * Returns the unique items from an array, where the unique
+   * key is determined via a strict equality check.
+   *
+   * @static
+   * @param {Array} a
+   * @returns {Array}
+   */
+		unique: function unique(a) {
+			assert.argumentIsArray(a, 'a');
+
+			return a.filter(function (item, index, array) {
+				return array.indexOf(item) === index;
+			});
+		},
+
+
+		/**
+   * Returns the unique items from an array, where the unique
+   * key is determined by a delegate.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Function} keySelector - The function, when applied to an item yields a unique key.
+   * @returns {Array}
+   */
+		uniqueBy: function uniqueBy(a, keySelector) {
+			assert.argumentIsArray(a, 'a');
+
+			return a.filter(function (item, index, array) {
+				var key = keySelector(item);
+
+				return array.findIndex(function (candidate) {
+					return key === keySelector(candidate);
+				}) === index;
+			});
+		},
+
+
+		/**
+   * Splits array into groups and returns an object (where the properties have
+   * arrays). Unlike the indexBy function, there can be many items
+   * which share the same key.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Function} keySelector - The function, when applied to an item yields a key.
+   * @returns {Object}
+   */
+		groupBy: function groupBy(a, keySelector) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsRequired(keySelector, 'keySelector', Function);
+
+			return a.reduce(function (groups, item) {
+				var key = keySelector(item);
+
+				if (!groups.hasOwnProperty(key)) {
+					groups[key] = [];
+				}
+
+				groups[key].push(item);
+
+				return groups;
+			}, {});
+		},
+
+
+		/**
+   * Splits array into groups and returns an array of arrays where the items of each
+   * nested array share a common key.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Function} keySelector - The function, when applied to an item yields a key.
+   * @returns {Array}
+   */
+		batchBy: function batchBy(a, keySelector) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsRequired(keySelector, 'keySelector', Function);
+
+			var currentKey = null;
+			var currentBatch = null;
+
+			return a.reduce(function (batches, item) {
+				var key = keySelector(item);
+
+				if (currentBatch === null || currentKey !== key) {
+					currentKey = key;
+
+					currentBatch = [];
+					batches.push(currentBatch);
+				}
+
+				currentBatch.push(item);
+
+				return batches;
+			}, []);
+		},
+
+
+		/**
+   * Splits array into groups and returns an object (where the properties are items from the
+   * original array). Unlike the groupBy, Only one item can have a given key
+   * value.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Function} keySelector - The function, when applied to an item yields a unique key.
+   * @returns {Object}
+   */
+		indexBy: function indexBy(a, keySelector) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsRequired(keySelector, 'keySelector', Function);
+
+			return a.reduce(function (map, item) {
+				var key = keySelector(item);
+
+				if (map.hasOwnProperty(key)) {
+					throw new Error('Unable to index array. A duplicate key exists.');
+				}
+
+				map[key] = item;
+
+				return map;
+			}, {});
+		},
+
+
+		/**
+   * Returns a new array containing all but the last item.
+   *
+   * @static
+   * @param {Array} a
+   * @returns {Array}
+   */
+		dropRight: function dropRight(a) {
+			assert.argumentIsArray(a, 'a');
+
+			var returnRef = Array.from(a);
+
+			if (returnRef.length !== 0) {
+				returnRef.pop();
+			}
+
+			return returnRef;
+		},
+
+
+		/**
+   * Returns the first item from an array, or an undefined value, if the
+   * array is empty.
+   *
+   * @static
+   * @param {Array} a
+   * @returns {*|undefined}
+   */
+		first: function first(a) {
+			assert.argumentIsArray(a, 'a');
+
+			var returnRef = void 0;
+
+			if (a.length !== 0) {
+				returnRef = a[0];
+			} else {
+				returnRef = undefined;
+			}
+
+			return returnRef;
+		},
+
+
+		/**
+   * Returns the last item from an array, or an undefined value, if the
+   * array is empty.
+   *
+   * @static
+   * @param {Array} a
+   * @returns {*|undefined}
+   */
+		last: function last(a) {
+			assert.argumentIsArray(a, 'a');
+
+			var returnRef = void 0;
+
+			if (a.length !== 0) {
+				returnRef = a[a.length - 1];
+			} else {
+				returnRef = undefined;
+			}
+
+			return returnRef;
+		},
+
+
+		/**
+   * Returns a copy of an array, replacing any item that is itself an array
+   * with the item's items.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Boolean=} recursive - If true, all nested arrays will be flattened.
+   * @returns {Array}
+   */
+		flatten: function flatten(a, recursive) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsOptional(recursive, 'recursive', Boolean);
+
+			var empty = [];
+
+			var flat = empty.concat.apply(empty, a);
+
+			if (recursive && flat.some(function (x) {
+				return is.array(x);
+			})) {
+				flat = this.flatten(flat, true);
+			}
+
+			return flat;
+		},
+
+
+		/**
+   * Breaks an array into smaller arrays, returning an array of arrays.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Number} size - The maximum number of items per partition.
+   * @param {Array<Array>}
+   */
+		partition: function partition(a, size) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsOptional(size, 'size', Number);
+
+			var copy = a.slice(0);
+			var partitions = [];
+
+			while (copy.length !== 0) {
+				partitions.push(copy.splice(0, size));
+			}
+
+			return partitions;
+		},
+
+
+		/**
+   * Set difference operation (using strict equality).
+   *
+   * @static
+   * @param {Array} a
+   * @param {Array} b
+   * @returns {Array}
+   */
+		difference: function difference(a, b) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsArray(b, 'b');
+
+			var returnRef = [];
+
+			a.forEach(function (candidate) {
+				var exclude = b.some(function (comparison) {
+					return candidate === comparison;
+				});
+
+				if (!exclude) {
+					returnRef.push(candidate);
+				}
+			});
+
+			return returnRef;
+		},
+
+
+		/**
+   * Set symmetric difference operation (using strict equality). In
+   * other words, this is the union of the differences between the
+   * sets.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Array} b
+   * @returns {Array}
+   */
+		differenceSymmetric: function differenceSymmetric(a, b) {
+			return this.union(this.difference(a, b), this.difference(b, a));
+		},
+
+
+		/**
+   * Set union operation (using strict equality).
+   *
+   * @static
+   * @param {Array} a
+   * @param {Array} b
+   * @returns {Array}
+   */
+		union: function union(a, b) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsArray(b, 'b');
+
+			var returnRef = a.slice();
+
+			b.forEach(function (candidate) {
+				var exclude = returnRef.some(function (comparison) {
+					return candidate === comparison;
+				});
+
+				if (!exclude) {
+					returnRef.push(candidate);
+				}
+			});
+
+			return returnRef;
+		},
+
+
+		/**
+   * Set intersection operation (using strict equality).
+   *
+   * @static
+   * @param {Array} a
+   * @param {Array} b
+   * @returns {Array}
+   */
+		intersection: function intersection(a, b) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsArray(b, 'b');
+
+			var returnRef = [];
+
+			a.forEach(function (candidate) {
+				var include = b.some(function (comparison) {
+					return candidate === comparison;
+				});
+
+				if (include) {
+					returnRef.push(candidate);
+				}
+			});
+
+			return returnRef;
+		}
+	};
+}();
+
+},{"./assert":8,"./is":9}],8:[function(require,module,exports){
+'use strict';
+
+var is = require('./is');
+
+module.exports = function () {
+	'use strict';
+
+	function checkArgumentType(variable, variableName, type, typeDescription, index) {
+		if (type === String) {
+			if (!is.string(variable)) {
+				throwInvalidTypeError(variableName, 'string', index);
+			}
+		} else if (type === Number) {
+			if (!is.number(variable)) {
+				throwInvalidTypeError(variableName, 'number', index);
+			}
+		} else if (type === Function) {
+			if (!is.fn(variable)) {
+				throwInvalidTypeError(variableName, 'function', index);
+			}
+		} else if (type === Boolean) {
+			if (!is.boolean(variable)) {
+				throwInvalidTypeError(variableName, 'boolean', index);
+			}
+		} else if (type === Date) {
+			if (!is.date(variable)) {
+				throwInvalidTypeError(variableName, 'date', index);
+			}
+		} else if (type === Array) {
+			if (!is.array(variable)) {
+				throwInvalidTypeError(variableName, 'array', index);
+			}
+		} else if (!(variable instanceof (type || Object))) {
+			throwInvalidTypeError(variableName, typeDescription, index);
+		}
+	}
+
+	function throwInvalidTypeError(variableName, typeDescription, index) {
+		var message = void 0;
+
+		if (typeof index === 'number') {
+			message = 'The argument [ ' + (variableName || 'unspecified') + ' ], at index [ ' + index.toString() + ' ] must be a [ ' + (typeDescription || 'unknown') + ' ]';
+		} else {
+			message = 'The argument [ ' + (variableName || 'unspecified') + ' ] must be a [ ' + (typeDescription || 'Object') + ' ]';
+		}
+
+		throw new Error(message);
+	}
+
+	function throwCustomValidationError(variableName, predicateDescription) {
+		throw new Error('The argument [ ' + (variableName || 'unspecified') + ' ] failed a validation check [ ' + (predicateDescription || 'No description available') + ' ]');
+	}
+
+	/**
+  * Utilities checking arguments.
+  *
+  * @public
+  * @module lang/assert
+  */
+	return {
+		/**
+   * Throws an error if an argument doesn't conform to the desired specification (as
+   * determined by a type check).
+   *
+   * @static
+   * @param {*} variable - The value to check.
+   * @param {String} variableName - The name of the value (used for formatting an error message).
+   * @param {*} type - The expected type of the argument.
+   * @param {String=} typeDescription - The description of the expected type (used for formatting an error message).
+   */
+		argumentIsRequired: function argumentIsRequired(variable, variableName, type, typeDescription) {
+			checkArgumentType(variable, variableName, type, typeDescription);
+		},
+
+
+		/**
+   * A relaxed version of the "argumentIsRequired" function that will not throw if
+   * the value is undefined or null.
+   *
+   * @static
+   * @param {*} variable - The value to check.
+   * @param {String} variableName - The name of the value (used for formatting an error message).
+   * @param {*} type - The expected type of the argument.
+   * @param {String=} typeDescription - The description of the expected type (used for formatting an error message).
+   */
+		argumentIsOptional: function argumentIsOptional(variable, variableName, type, typeDescription, predicate, predicateDescription) {
+			if (variable === null || variable === undefined) {
+				return;
+			}
+
+			checkArgumentType(variable, variableName, type, typeDescription);
+
+			if (is.fn(predicate) && !predicate(variable)) {
+				throwCustomValidationError(variableName, predicateDescription);
+			}
+		},
+		argumentIsArray: function argumentIsArray(variable, variableName, itemConstraint, itemConstraintDescription) {
+			this.argumentIsRequired(variable, variableName, Array);
+
+			if (itemConstraint) {
+				var itemValidator = void 0;
+
+				if (typeof itemConstraint === 'function' && itemConstraint !== Function) {
+					itemValidator = function itemValidator(value, index) {
+						return value instanceof itemConstraint || itemConstraint(value, variableName + '[' + index + ']');
+					};
+				} else {
+					itemValidator = function itemValidator(value, index) {
+						return checkArgumentType(value, variableName, itemConstraint, itemConstraintDescription, index);
+					};
+				}
+
+				variable.forEach(function (v, i) {
+					itemValidator(v, i);
+				});
+			}
+		},
+
+
+		/**
+   * Throws an error if an argument doesn't conform to the desired specification
+   * (as determined by a predicate).
+   *
+   * @static
+   * @param {*} variable - The value to check.
+   * @param {String} variableName - The name of the value (used for formatting an error message).
+   * @param {Function=} predicate - A function used to validate the item (beyond type checking).
+   * @param {String=} predicateDescription - A description of the assertion made by the predicate (e.g. "is an integer") that is used for formatting an error message.
+   */
+		argumentIsValid: function argumentIsValid(variable, variableName, predicate, predicateDescription) {
+			if (!predicate(variable)) {
+				throwCustomValidationError(variableName, predicateDescription);
+			}
+		},
+		areEqual: function areEqual(a, b, descriptionA, descriptionB) {
+			if (a !== b) {
+				throw new Error('The objects must be equal [' + (descriptionA || a.toString()) + '] and [' + (descriptionB || b.toString()) + ']');
+			}
+		},
+		areNotEqual: function areNotEqual(a, b, descriptionA, descriptionB) {
+			if (a === b) {
+				throw new Error('The objects cannot be equal [' + (descriptionA || a.toString()) + '] and [' + (descriptionB || b.toString()) + ']');
+			}
+		}
+	};
+}();
+
+},{"./is":9}],9:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * Utilities for interrogating variables (e.g. checking data types).
+  *
+  * @public
+  * @module lang/is
+  */
+
+	return {
+		/**
+   * Returns true, if the argument is a number. NaN will return false.
+   *
+   * @static
+   * @public
+   * @param candidate {*}
+   * @returns {boolean}
+   */
+		number: function number(candidate) {
+			return typeof candidate === 'number' && !isNaN(candidate);
+		},
+
+
+		/**
+   * Returns true, if the argument is NaN.
+   *
+   * @static
+   * @public
+   * @param {*} candidate
+   * @returns {boolean}
+   */
+		nan: function nan(candidate) {
+			return typeof candidate === 'number' && isNaN(candidate);
+		},
+
+
+		/**
+   * Returns true, if the argument is a valid 32-bit integer.
+   *
+   * @static
+   * @public
+   * @param {*} candidate
+   * @returns {boolean}
+   */
+		integer: function integer(candidate) {
+			return typeof candidate === 'number' && !isNaN(candidate) && (candidate | 0) === candidate;
+		},
+
+
+		/**
+   * Returns true, if the argument is a valid integer (which can exceed 32 bits); however,
+   * the check can fail above the value of Number.MAX_SAFE_INTEGER.
+   *
+   * @static
+   * @public
+   * @param {*) candidate
+   * @returns {boolean}
+   */
+		large: function large(candidate) {
+			return typeof candidate === 'number' && !isNaN(candidate) && isFinite(candidate) && Math.floor(candidate) === candidate;
+		},
+
+
+		/**
+   * Returns true, if the argument is a number that is positive.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		positive: function positive(candidate) {
+			return this.number(candidate) && candidate > 0;
+		},
+
+
+		/**
+   * Returns true, if the argument is a number that is negative.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {*|boolean}
+   */
+		negative: function negative(candidate) {
+			return this.number(candidate) && candidate < 0;
+		},
+
+
+		/**
+   * Returns true, if the argument is a string.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		string: function string(candidate) {
+			return typeof candidate === 'string';
+		},
+
+
+		/**
+   * Returns true, if the argument is a JavaScript Date instance.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		date: function date(candidate) {
+			return candidate instanceof Date;
+		},
+
+
+		/**
+   * Returns true, if the argument is a function.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		fn: function fn(candidate) {
+			return typeof candidate === 'function';
+		},
+
+
+		/**
+   * Returns true, if the argument is an array.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		array: function array(candidate) {
+			return Array.isArray(candidate);
+		},
+
+
+		/**
+   * Returns true, if the argument is a Boolean value.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		boolean: function boolean(candidate) {
+			return typeof candidate === 'boolean';
+		},
+
+
+		/**
+   * Returns true, if the argument is an object.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		object: function object(candidate) {
+			return (typeof candidate === 'undefined' ? 'undefined' : _typeof(candidate)) === 'object' && candidate !== null;
+		},
+
+
+		/**
+   * Returns true, if the argument is a null value.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		null: function _null(candidate) {
+			return candidate === null;
+		},
+
+
+		/**
+   * Returns true, if the argument is an undefined value.
+   *
+   * @static
+   * @public
+   * @param candidate
+   * @returns {boolean}
+   */
+		undefined: function (_undefined) {
+			function undefined(_x) {
+				return _undefined.apply(this, arguments);
+			}
+
+			undefined.toString = function () {
+				return _undefined.toString();
+			};
+
+			return undefined;
+		}(function (candidate) {
+			return candidate === undefined;
+		}),
+
+
+		/**
+   * Given two classes, determines if the "child" class extends
+   * the "parent" class (without instantiation).
+   *
+   * @param {Function} parent
+   * @param {Function} child
+   * @returns {Boolean}
+   */
+		extension: function extension(parent, child) {
+			return this.fn(parent) && this.fn(child) && child.prototype instanceof parent;
+		}
+	};
+}();
+
+},{}],10:[function(require,module,exports){
+/*
+ *  big.js v5.0.3
+ *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
+ *  Copyright (c) 2017 Michael Mclaughlin <M8ch88l@gmail.com>
+ *  https://github.com/MikeMcl/big.js/LICENCE
+ */
+;(function (GLOBAL) {
+  'use strict';
+  var Big,
+
+
+/************************************** EDITABLE DEFAULTS *****************************************/
+
+
+    // The default values below must be integers within the stated ranges.
+
+    /*
+     * The maximum number of decimal places (DP) of the results of operations involving division:
+     * div and sqrt, and pow with negative exponents.
+     */
+    DP = 20,          // 0 to MAX_DP
+
+    /*
+     * The rounding mode (RM) used when rounding to the above decimal places.
+     *
+     *  0  Towards zero (i.e. truncate, no rounding).       (ROUND_DOWN)
+     *  1  To nearest neighbour. If equidistant, round up.  (ROUND_HALF_UP)
+     *  2  To nearest neighbour. If equidistant, to even.   (ROUND_HALF_EVEN)
+     *  3  Away from zero.                                  (ROUND_UP)
+     */
+    RM = 1,             // 0, 1, 2 or 3
+
+    // The maximum value of DP and Big.DP.
+    MAX_DP = 1E6,       // 0 to 1000000
+
+    // The maximum magnitude of the exponent argument to the pow method.
+    MAX_POWER = 1E6,    // 1 to 1000000
+
+    /*
+     * The negative exponent (NE) at and beneath which toString returns exponential notation.
+     * (JavaScript numbers: -7)
+     * -1000000 is the minimum recommended exponent value of a Big.
+     */
+    NE = -7,            // 0 to -1000000
+
+    /*
+     * The positive exponent (PE) at and above which toString returns exponential notation.
+     * (JavaScript numbers: 21)
+     * 1000000 is the maximum recommended exponent value of a Big.
+     * (This limit is not enforced or checked.)
+     */
+    PE = 21,            // 0 to 1000000
+
+
+/**************************************************************************************************/
+
+
+    // Error messages.
+    NAME = '[big.js] ',
+    INVALID = NAME + 'Invalid ',
+    INVALID_DP = INVALID + 'decimal places',
+    INVALID_RM = INVALID + 'rounding mode',
+    DIV_BY_ZERO = NAME + 'Division by zero',
+
+    // The shared prototype object.
+    P = {},
+    UNDEFINED = void 0,
+    NUMERIC = /^-?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i;
+
+
+  /*
+   * Create and return a Big constructor.
+   *
+   */
+  function _Big_() {
+
+    /*
+     * The Big constructor and exported function.
+     * Create and return a new instance of a Big number object.
+     *
+     * n {number|string|Big} A numeric value.
+     */
+    function Big(n) {
+      var x = this;
+
+      // Enable constructor usage without new.
+      if (!(x instanceof Big)) return n === UNDEFINED ? _Big_() : new Big(n);
+
+      // Duplicate.
+      if (n instanceof Big) {
+        x.s = n.s;
+        x.e = n.e;
+        x.c = n.c.slice();
+      } else {
+        parse(x, n);
+      }
+
+      /*
+       * Retain a reference to this Big constructor, and shadow Big.prototype.constructor which
+       * points to Object.
+       */
+      x.constructor = Big;
+    }
+
+    Big.prototype = P;
+    Big.DP = DP;
+    Big.RM = RM;
+    Big.NE = NE;
+    Big.PE = PE;
+    Big.version = '5.0.2';
+
+    return Big;
+  }
+
+
+  /*
+   * Parse the number or string value passed to a Big constructor.
+   *
+   * x {Big} A Big number instance.
+   * n {number|string} A numeric value.
+   */
+  function parse(x, n) {
+    var e, i, nl;
+
+    // Minus zero?
+    if (n === 0 && 1 / n < 0) n = '-0';
+    else if (!NUMERIC.test(n += '')) throw Error(INVALID + 'number');
+
+    // Determine sign.
+    x.s = n.charAt(0) == '-' ? (n = n.slice(1), -1) : 1;
+
+    // Decimal point?
+    if ((e = n.indexOf('.')) > -1) n = n.replace('.', '');
+
+    // Exponential form?
+    if ((i = n.search(/e/i)) > 0) {
+
+      // Determine exponent.
+      if (e < 0) e = i;
+      e += +n.slice(i + 1);
+      n = n.substring(0, i);
+    } else if (e < 0) {
+
+      // Integer.
+      e = n.length;
+    }
+
+    nl = n.length;
+
+    // Determine leading zeros.
+    for (i = 0; i < nl && n.charAt(i) == '0';) ++i;
+
+    if (i == nl) {
+
+      // Zero.
+      x.c = [x.e = 0];
+    } else {
+
+      // Determine trailing zeros.
+      for (; nl > 0 && n.charAt(--nl) == '0';);
+      x.e = e - i - 1;
+      x.c = [];
+
+      // Convert string to array of digits without leading/trailing zeros.
+      for (e = 0; i <= nl;) x.c[e++] = +n.charAt(i++);
+    }
+
+    return x;
+  }
+
+
+  /*
+   * Round Big x to a maximum of dp decimal places using rounding mode rm.
+   * Called by stringify, P.div, P.round and P.sqrt.
+   *
+   * x {Big} The Big to round.
+   * dp {number} Integer, 0 to MAX_DP inclusive.
+   * rm {number} 0, 1, 2 or 3 (DOWN, HALF_UP, HALF_EVEN, UP)
+   * [more] {boolean} Whether the result of division was truncated.
+   */
+  function round(x, dp, rm, more) {
+    var xc = x.c,
+      i = x.e + dp + 1;
+
+    if (i < xc.length) {
+      if (rm === 1) {
+
+        // xc[i] is the digit after the digit that may be rounded up.
+        more = xc[i] >= 5;
+      } else if (rm === 2) {
+        more = xc[i] > 5 || xc[i] == 5 &&
+          (more || i < 0 || xc[i + 1] !== UNDEFINED || xc[i - 1] & 1);
+      } else if (rm === 3) {
+        more = more || xc[i] !== UNDEFINED || i < 0;
+      } else {
+        more = false;
+        if (rm !== 0) throw Error(INVALID_RM);
+      }
+
+      if (i < 1) {
+        xc.length = 1;
+
+        if (more) {
+
+          // 1, 0.1, 0.01, 0.001, 0.0001 etc.
+          x.e = -dp;
+          xc[0] = 1;
+        } else {
+
+          // Zero.
+          xc[0] = x.e = 0;
+        }
+      } else {
+
+        // Remove any digits after the required decimal places.
+        xc.length = i--;
+
+        // Round up?
+        if (more) {
+
+          // Rounding up may mean the previous digit has to be rounded up.
+          for (; ++xc[i] > 9;) {
+            xc[i] = 0;
+            if (!i--) {
+              ++x.e;
+              xc.unshift(1);
+            }
+          }
+        }
+
+        // Remove trailing zeros.
+        for (i = xc.length; !xc[--i];) xc.pop();
+      }
+    } else if (rm < 0 || rm > 3 || rm !== ~~rm) {
+      throw Error(INVALID_RM);
+    }
+
+    return x;
+  }
+
+
+  /*
+   * Return a string representing the value of Big x in normal or exponential notation.
+   * Handles P.toExponential, P.toFixed, P.toJSON, P.toPrecision, P.toString and P.valueOf.
+   *
+   * x {Big}
+   * id? {number} Caller id.
+   *         1 toExponential
+   *         2 toFixed
+   *         3 toPrecision
+   *         4 valueOf
+   * n? {number|undefined} Caller's argument.
+   * k? {number|undefined}
+   */
+  function stringify(x, id, n, k) {
+    var e, s,
+      Big = x.constructor,
+      z = !x.c[0];
+
+    if (n !== UNDEFINED) {
+      if (n !== ~~n || n < (id == 3) || n > MAX_DP) {
+        throw Error(id == 3 ? INVALID + 'precision' : INVALID_DP);
+      }
+
+      x = new Big(x);
+
+      // The index of the digit that may be rounded up.
+      n = k - x.e;
+
+      // Round?
+      if (x.c.length > ++k) round(x, n, Big.RM);
+
+      // toFixed: recalculate k as x.e may have changed if value rounded up.
+      if (id == 2) k = x.e + n + 1;
+
+      // Append zeros?
+      for (; x.c.length < k;) x.c.push(0);
+    }
+
+    e = x.e;
+    s = x.c.join('');
+    n = s.length;
+
+    // Exponential notation?
+    if (id != 2 && (id == 1 || id == 3 && k <= e || e <= Big.NE || e >= Big.PE)) {
+      s = s.charAt(0) + (n > 1 ? '.' + s.slice(1) : '') + (e < 0 ? 'e' : 'e+') + e;
+
+    // Normal notation.
+    } else if (e < 0) {
+      for (; ++e;) s = '0' + s;
+      s = '0.' + s;
+    } else if (e > 0) {
+      if (++e > n) for (e -= n; e--;) s += '0';
+      else if (e < n) s = s.slice(0, e) + '.' + s.slice(e);
+    } else if (n > 1) {
+      s = s.charAt(0) + '.' + s.slice(1);
+    }
+
+    return x.s < 0 && (!z || id == 4) ? '-' + s : s;
+  }
+
+
+  // Prototype/instance methods
+
+
+  /*
+   * Return a new Big whose value is the absolute value of this Big.
+   */
+  P.abs = function () {
+    var x = new this.constructor(this);
+    x.s = 1;
+    return x;
+  };
+
+
+  /*
+   * Return 1 if the value of this Big is greater than the value of Big y,
+   *       -1 if the value of this Big is less than the value of Big y, or
+   *        0 if they have the same value.
+  */
+  P.cmp = function (y) {
+    var isneg,
+      x = this,
+      xc = x.c,
+      yc = (y = new x.constructor(y)).c,
+      i = x.s,
+      j = y.s,
+      k = x.e,
+      l = y.e;
+
+    // Either zero?
+    if (!xc[0] || !yc[0]) return !xc[0] ? !yc[0] ? 0 : -j : i;
+
+    // Signs differ?
+    if (i != j) return i;
+
+    isneg = i < 0;
+
+    // Compare exponents.
+    if (k != l) return k > l ^ isneg ? 1 : -1;
+
+    j = (k = xc.length) < (l = yc.length) ? k : l;
+
+    // Compare digit by digit.
+    for (i = -1; ++i < j;) {
+      if (xc[i] != yc[i]) return xc[i] > yc[i] ^ isneg ? 1 : -1;
+    }
+
+    // Compare lengths.
+    return k == l ? 0 : k > l ^ isneg ? 1 : -1;
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big divided by the value of Big y, rounded,
+   * if necessary, to a maximum of Big.DP decimal places using rounding mode Big.RM.
+   */
+  P.div = function (y) {
+    var x = this,
+      Big = x.constructor,
+      a = x.c,                  // dividend
+      b = (y = new Big(y)).c,   // divisor
+      k = x.s == y.s ? 1 : -1,
+      dp = Big.DP;
+
+    if (dp !== ~~dp || dp < 0 || dp > MAX_DP) throw Error(INVALID_DP);
+
+    // Divisor is zero?
+    if (!b[0]) throw Error(DIV_BY_ZERO);
+
+    // Dividend is 0? Return +-0.
+    if (!a[0]) return new Big(k * 0);
+
+    var bl, bt, n, cmp, ri,
+      bz = b.slice(),
+      ai = bl = b.length,
+      al = a.length,
+      r = a.slice(0, bl),   // remainder
+      rl = r.length,
+      q = y,                // quotient
+      qc = q.c = [],
+      qi = 0,
+      d = dp + (q.e = x.e - y.e) + 1;    // number of digits of the result
+
+    q.s = k;
+    k = d < 0 ? 0 : d;
+
+    // Create version of divisor with leading zero.
+    bz.unshift(0);
+
+    // Add zeros to make remainder as long as divisor.
+    for (; rl++ < bl;) r.push(0);
+
+    do {
+
+      // n is how many times the divisor goes into current remainder.
+      for (n = 0; n < 10; n++) {
+
+        // Compare divisor and remainder.
+        if (bl != (rl = r.length)) {
+          cmp = bl > rl ? 1 : -1;
+        } else {
+          for (ri = -1, cmp = 0; ++ri < bl;) {
+            if (b[ri] != r[ri]) {
+              cmp = b[ri] > r[ri] ? 1 : -1;
+              break;
+            }
+          }
+        }
+
+        // If divisor < remainder, subtract divisor from remainder.
+        if (cmp < 0) {
+
+          // Remainder can't be more than 1 digit longer than divisor.
+          // Equalise lengths using divisor with extra leading zero?
+          for (bt = rl == bl ? b : bz; rl;) {
+            if (r[--rl] < bt[rl]) {
+              ri = rl;
+              for (; ri && !r[--ri];) r[ri] = 9;
+              --r[ri];
+              r[rl] += 10;
+            }
+            r[rl] -= bt[rl];
+          }
+
+          for (; !r[0];) r.shift();
+        } else {
+          break;
+        }
+      }
+
+      // Add the digit n to the result array.
+      qc[qi++] = cmp ? n : ++n;
+
+      // Update the remainder.
+      if (r[0] && cmp) r[rl] = a[ai] || 0;
+      else r = [a[ai]];
+
+    } while ((ai++ < al || r[0] !== UNDEFINED) && k--);
+
+    // Leading zero? Do not remove if result is simply zero (qi == 1).
+    if (!qc[0] && qi != 1) {
+
+      // There can't be more than one zero.
+      qc.shift();
+      q.e--;
+    }
+
+    // Round?
+    if (qi > d) round(q, dp, Big.RM, r[0] !== UNDEFINED);
+
+    return q;
+  };
+
+
+  /*
+   * Return true if the value of this Big is equal to the value of Big y, otherwise return false.
+   */
+  P.eq = function (y) {
+    return !this.cmp(y);
+  };
+
+
+  /*
+   * Return true if the value of this Big is greater than the value of Big y, otherwise return
+   * false.
+   */
+  P.gt = function (y) {
+    return this.cmp(y) > 0;
+  };
+
+
+  /*
+   * Return true if the value of this Big is greater than or equal to the value of Big y, otherwise
+   * return false.
+   */
+  P.gte = function (y) {
+    return this.cmp(y) > -1;
+  };
+
+
+  /*
+   * Return true if the value of this Big is less than the value of Big y, otherwise return false.
+   */
+  P.lt = function (y) {
+    return this.cmp(y) < 0;
+  };
+
+
+  /*
+   * Return true if the value of this Big is less than or equal to the value of Big y, otherwise
+   * return false.
+   */
+  P.lte = function (y) {
+    return this.cmp(y) < 1;
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big minus the value of Big y.
+   */
+  P.minus = P.sub = function (y) {
+    var i, j, t, xlty,
+      x = this,
+      Big = x.constructor,
+      a = x.s,
+      b = (y = new Big(y)).s;
+
+    // Signs differ?
+    if (a != b) {
+      y.s = -b;
+      return x.plus(y);
+    }
+
+    var xc = x.c.slice(),
+      xe = x.e,
+      yc = y.c,
+      ye = y.e;
+
+    // Either zero?
+    if (!xc[0] || !yc[0]) {
+
+      // y is non-zero? x is non-zero? Or both are zero.
+      return yc[0] ? (y.s = -b, y) : new Big(xc[0] ? x : 0);
+    }
+
+    // Determine which is the bigger number. Prepend zeros to equalise exponents.
+    if (a = xe - ye) {
+
+      if (xlty = a < 0) {
+        a = -a;
+        t = xc;
+      } else {
+        ye = xe;
+        t = yc;
+      }
+
+      t.reverse();
+      for (b = a; b--;) t.push(0);
+      t.reverse();
+    } else {
+
+      // Exponents equal. Check digit by digit.
+      j = ((xlty = xc.length < yc.length) ? xc : yc).length;
+
+      for (a = b = 0; b < j; b++) {
+        if (xc[b] != yc[b]) {
+          xlty = xc[b] < yc[b];
+          break;
+        }
+      }
+    }
+
+    // x < y? Point xc to the array of the bigger number.
+    if (xlty) {
+      t = xc;
+      xc = yc;
+      yc = t;
+      y.s = -y.s;
+    }
+
+    /*
+     * Append zeros to xc if shorter. No need to add zeros to yc if shorter as subtraction only
+     * needs to start at yc.length.
+     */
+    if ((b = (j = yc.length) - (i = xc.length)) > 0) for (; b--;) xc[i++] = 0;
+
+    // Subtract yc from xc.
+    for (b = i; j > a;) {
+      if (xc[--j] < yc[j]) {
+        for (i = j; i && !xc[--i];) xc[i] = 9;
+        --xc[i];
+        xc[j] += 10;
+      }
+
+      xc[j] -= yc[j];
+    }
+
+    // Remove trailing zeros.
+    for (; xc[--b] === 0;) xc.pop();
+
+    // Remove leading zeros and adjust exponent accordingly.
+    for (; xc[0] === 0;) {
+      xc.shift();
+      --ye;
+    }
+
+    if (!xc[0]) {
+
+      // n - n = +0
+      y.s = 1;
+
+      // Result must be zero.
+      xc = [ye = 0];
+    }
+
+    y.c = xc;
+    y.e = ye;
+
+    return y;
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big modulo the value of Big y.
+   */
+  P.mod = function (y) {
+    var ygtx,
+      x = this,
+      Big = x.constructor,
+      a = x.s,
+      b = (y = new Big(y)).s;
+
+    if (!y.c[0]) throw Error(DIV_BY_ZERO);
+
+    x.s = y.s = 1;
+    ygtx = y.cmp(x) == 1;
+    x.s = a;
+    y.s = b;
+
+    if (ygtx) return new Big(x);
+
+    a = Big.DP;
+    b = Big.RM;
+    Big.DP = Big.RM = 0;
+    x = x.div(y);
+    Big.DP = a;
+    Big.RM = b;
+
+    return this.minus(x.times(y));
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big plus the value of Big y.
+   */
+  P.plus = P.add = function (y) {
+    var t,
+      x = this,
+      Big = x.constructor,
+      a = x.s,
+      b = (y = new Big(y)).s;
+
+    // Signs differ?
+    if (a != b) {
+      y.s = -b;
+      return x.minus(y);
+    }
+
+    var xe = x.e,
+      xc = x.c,
+      ye = y.e,
+      yc = y.c;
+
+    // Either zero? y is non-zero? x is non-zero? Or both are zero.
+    if (!xc[0] || !yc[0]) return yc[0] ? y : new Big(xc[0] ? x : a * 0);
+
+    xc = xc.slice();
+
+    // Prepend zeros to equalise exponents.
+    // Note: Faster to use reverse then do unshifts.
+    if (a = xe - ye) {
+      if (a > 0) {
+        ye = xe;
+        t = yc;
+      } else {
+        a = -a;
+        t = xc;
+      }
+
+      t.reverse();
+      for (; a--;) t.push(0);
+      t.reverse();
+    }
+
+    // Point xc to the longer array.
+    if (xc.length - yc.length < 0) {
+      t = yc;
+      yc = xc;
+      xc = t;
+    }
+
+    a = yc.length;
+
+    // Only start adding at yc.length - 1 as the further digits of xc can be left as they are.
+    for (b = 0; a; xc[a] %= 10) b = (xc[--a] = xc[a] + yc[a] + b) / 10 | 0;
+
+    // No need to check for zero, as +x + +y != 0 && -x + -y != 0
+
+    if (b) {
+      xc.unshift(b);
+      ++ye;
+    }
+
+    // Remove trailing zeros.
+    for (a = xc.length; xc[--a] === 0;) xc.pop();
+
+    y.c = xc;
+    y.e = ye;
+
+    return y;
+  };
+
+
+  /*
+   * Return a Big whose value is the value of this Big raised to the power n.
+   * If n is negative, round to a maximum of Big.DP decimal places using rounding
+   * mode Big.RM.
+   *
+   * n {number} Integer, -MAX_POWER to MAX_POWER inclusive.
+   */
+  P.pow = function (n) {
+    var x = this,
+      one = new x.constructor(1),
+      y = one,
+      isneg = n < 0;
+
+    if (n !== ~~n || n < -MAX_POWER || n > MAX_POWER) throw Error(INVALID + 'exponent');
+    if (isneg) n = -n;
+
+    for (;;) {
+      if (n & 1) y = y.times(x);
+      n >>= 1;
+      if (!n) break;
+      x = x.times(x);
+    }
+
+    return isneg ? one.div(y) : y;
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big rounded to a maximum of dp decimal
+   * places using rounding mode rm.
+   * If dp is not specified, round to 0 decimal places.
+   * If rm is not specified, use Big.RM.
+   *
+   * dp? {number} Integer, 0 to MAX_DP inclusive.
+   * rm? 0, 1, 2 or 3 (ROUND_DOWN, ROUND_HALF_UP, ROUND_HALF_EVEN, ROUND_UP)
+   */
+  P.round = function (dp, rm) {
+    var Big = this.constructor;
+    if (dp === UNDEFINED) dp = 0;
+    else if (dp !== ~~dp || dp < 0 || dp > MAX_DP) throw Error(INVALID_DP);
+    return round(new Big(this), dp, rm === UNDEFINED ? Big.RM : rm);
+  };
+
+
+  /*
+   * Return a new Big whose value is the square root of the value of this Big, rounded, if
+   * necessary, to a maximum of Big.DP decimal places using rounding mode Big.RM.
+   */
+  P.sqrt = function () {
+    var r, c, t,
+      x = this,
+      Big = x.constructor,
+      s = x.s,
+      e = x.e,
+      half = new Big(0.5);
+
+    // Zero?
+    if (!x.c[0]) return new Big(x);
+
+    // Negative?
+    if (s < 0) throw Error(NAME + 'No square root');
+
+    // Estimate.
+    s = Math.sqrt(x.toString());
+
+    // Math.sqrt underflow/overflow?
+    // Re-estimate: pass x to Math.sqrt as integer, then adjust the result exponent.
+    if (s === 0 || s === 1 / 0) {
+      c = x.c.join('');
+      if (!(c.length + e & 1)) c += '0';
+      r = new Big(Math.sqrt(c).toString());
+      r.e = ((e + 1) / 2 | 0) - (e < 0 || e & 1);
+    } else {
+      r = new Big(s.toString());
+    }
+
+    e = r.e + (Big.DP += 4);
+
+    // Newton-Raphson iteration.
+    do {
+      t = r;
+      r = half.times(t.plus(x.div(t)));
+    } while (t.c.slice(0, e).join('') !== r.c.slice(0, e).join(''));
+
+    return round(r, Big.DP -= 4, Big.RM);
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big times the value of Big y.
+   */
+  P.times = P.mul = function (y) {
+    var c,
+      x = this,
+      Big = x.constructor,
+      xc = x.c,
+      yc = (y = new Big(y)).c,
+      a = xc.length,
+      b = yc.length,
+      i = x.e,
+      j = y.e;
+
+    // Determine sign of result.
+    y.s = x.s == y.s ? 1 : -1;
+
+    // Return signed 0 if either 0.
+    if (!xc[0] || !yc[0]) return new Big(y.s * 0);
+
+    // Initialise exponent of result as x.e + y.e.
+    y.e = i + j;
+
+    // If array xc has fewer digits than yc, swap xc and yc, and lengths.
+    if (a < b) {
+      c = xc;
+      xc = yc;
+      yc = c;
+      j = a;
+      a = b;
+      b = j;
+    }
+
+    // Initialise coefficient array of result with zeros.
+    for (c = new Array(j = a + b); j--;) c[j] = 0;
+
+    // Multiply.
+
+    // i is initially xc.length.
+    for (i = b; i--;) {
+      b = 0;
+
+      // a is yc.length.
+      for (j = a + i; j > i;) {
+
+        // Current sum of products at this digit position, plus carry.
+        b = c[j] + yc[i] * xc[j - i - 1] + b;
+        c[j--] = b % 10;
+
+        // carry
+        b = b / 10 | 0;
+      }
+
+      c[j] = (c[j] + b) % 10;
+    }
+
+    // Increment result exponent if there is a final carry, otherwise remove leading zero.
+    if (b) ++y.e;
+    else c.shift();
+
+    // Remove trailing zeros.
+    for (i = c.length; !c[--i];) c.pop();
+    y.c = c;
+
+    return y;
+  };
+
+
+  /*
+   * Return a string representing the value of this Big in exponential notation to dp fixed decimal
+   * places and rounded using Big.RM.
+   *
+   * dp? {number} Integer, 0 to MAX_DP inclusive.
+   */
+  P.toExponential = function (dp) {
+    return stringify(this, 1, dp, dp);
+  };
+
+
+  /*
+   * Return a string representing the value of this Big in normal notation to dp fixed decimal
+   * places and rounded using Big.RM.
+   *
+   * dp? {number} Integer, 0 to MAX_DP inclusive.
+   *
+   * (-0).toFixed(0) is '0', but (-0.1).toFixed(0) is '-0'.
+   * (-0).toFixed(1) is '0.0', but (-0.01).toFixed(1) is '-0.0'.
+   */
+  P.toFixed = function (dp) {
+    return stringify(this, 2, dp, this.e + dp);
+  };
+
+
+  /*
+   * Return a string representing the value of this Big rounded to sd significant digits using
+   * Big.RM. Use exponential notation if sd is less than the number of digits necessary to represent
+   * the integer part of the value in normal notation.
+   *
+   * sd {number} Integer, 1 to MAX_DP inclusive.
+   */
+  P.toPrecision = function (sd) {
+    return stringify(this, 3, sd, sd - 1);
+  };
+
+
+  /*
+   * Return a string representing the value of this Big.
+   * Return exponential notation if this Big has a positive exponent equal to or greater than
+   * Big.PE, or a negative exponent equal to or less than Big.NE.
+   * Omit the sign for negative zero.
+   */
+  P.toString = function () {
+    return stringify(this);
+  };
+
+
+  /*
+   * Return a string representing the value of this Big.
+   * Return exponential notation if this Big has a positive exponent equal to or greater than
+   * Big.PE, or a negative exponent equal to or less than Big.NE.
+   * Include the sign for negative zero.
+   */
+  P.valueOf = P.toJSON = function () {
+    return stringify(this, 4);
+  };
+
+
+  // Export
+
+
+  Big = _Big_();
+
+  Big['default'] = Big.Big = Big;
+
+  //AMD.
+  if (typeof define === 'function' && define.amd) {
+    define(function () { return Big; });
+
+  // Node and other CommonJS-like environments that support module.exports.
+  } else if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Big;
+
+  //Browser.
+  } else {
+    GLOBAL.Big = Big;
+  }
+})(this);
+
+},{}],11:[function(require,module,exports){
+const Day = require('@barchart/common-js/lang/Day'),
+	Decimal = require('@barchart/common-js/lang/Decimal');
+
+const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
+
+describe('After the PositionSummaryFrame enumeration is initialized', () => {
+	'use strict';
+
+	describe('and yearly position summary ranges are processed for a transaction set that does not close', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2015, 10, 20)
+				},
+				{
+					date: new Day(2016, 11, 21),
+					snapshot: {
+						open: new Decimal(1)
+					}
+				}
+			];
+
+			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
+		});
+
+		it('should have three ranges (assuming the current year is 2018)', () => {
+			expect(ranges.length).toEqual(3);
+		});
+
+		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2014-12-31');
+			expect(ranges[0].end.format()).toEqual('2015-12-31');
+		});
+
+		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
+			expect(ranges[1].start.format()).toEqual('2015-12-31');
+			expect(ranges[1].end.format()).toEqual('2016-12-31');
+		});
+
+		it('the third range should be from 12-31-2016 to 12-31-2017', () => {
+			expect(ranges[2].start.format()).toEqual('2016-12-31');
+			expect(ranges[2].end.format()).toEqual('2017-12-31');
+		});
+	});
+
+	describe('and yearly position summary ranges are processed for a transaction set closes the same year', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2015, 10, 20)
+				},
+				{
+					date: new Day(2015, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					}
+				}
+			];
+
+			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
+		});
+
+		it('should have one range', () => {
+			expect(ranges.length).toEqual(1);
+		});
+
+		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2014-12-31');
+			expect(ranges[0].end.format()).toEqual('2015-12-31');
+		});
+	});
+
+	describe('and yearly position summary ranges are processed for a transaction set closes the next year', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2015, 10, 20)
+				},
+				{
+					date: new Day(2016, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					}
+				}
+			];
+
+			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
+		});
+
+		it('should have two ranges', () => {
+			expect(ranges.length).toEqual(2);
+		});
+
+		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2014-12-31');
+			expect(ranges[0].end.format()).toEqual('2015-12-31');
+		});
+
+		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
+			expect(ranges[1].start.format()).toEqual('2015-12-31');
+			expect(ranges[1].end.format()).toEqual('2016-12-31');
+		});
+	});
+
+	describe('and yearly position summary ranges are processed for a transaction set closes in the current next year -- assuming its 2018', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2015, 10, 20)
+				},
+				{
+					date: new Day(2017, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					}
+				}
+			];
+
+			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
+		});
+
+		it('should have two ranges', () => {
+			expect(ranges.length).toEqual(3);
+		});
+
+		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2014-12-31');
+			expect(ranges[0].end.format()).toEqual('2015-12-31');
+		});
+
+		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
+			expect(ranges[1].start.format()).toEqual('2015-12-31');
+			expect(ranges[1].end.format()).toEqual('2016-12-31');
+		});
+
+		it('the third range should be from 12-31-2015 to 12-31-2016', () => {
+			expect(ranges[2].start.format()).toEqual('2016-12-31');
+			expect(ranges[2].end.format()).toEqual('2017-12-31');
+		});
+	});
+
+	describe('and a year-to-date position summary ranges are processed for a transaction set that closed last year', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2017, 1, 1)
+				},
+				{
+					date: new Day(2017, 1, 2),
+					snapshot: {
+						open: new Decimal(0)
+					}
+				}
+			];
+
+			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
+		});
+
+		it('should have no ranges', () => {
+			expect(ranges.length).toEqual(0);
+		});
+	});
+
+	describe('and a year-to-date position summary ranges are processed for a transaction set that opened this year and has not yet closed', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2018, 1, 1),
+					snapshot: {
+						open: new Decimal(0)
+					}
+				}
+			];
+
+			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
+		});
+
+		it('should have one range', () => {
+			expect(ranges.length).toEqual(1);
+		});
+
+		it('the first range should be from 12-31-2017 to 12-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2017-12-31');
+			expect(ranges[0].end.format()).toEqual('2018-12-31');
+		});
+	});
+
+	describe('and a year-to-date position summary ranges are processed for a transaction set that opened and closed this year', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2018, 1, 1)
+				},
+				{
+					date: new Day(2018, 1, 2),
+					snapshot: {
+						open: new Decimal(0)
+					}
+				}
+			];
+
+			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
+		});
+
+		it('should have one range', () => {
+			expect(ranges.length).toEqual(1);
+		});
+
+		it('the first range should be from 12-31-2017 to 12-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2017-12-31');
+			expect(ranges[0].end.format()).toEqual('2018-12-31');
+		});
+	});
+});
+
+},{"./../../../lib/data/PositionSummaryFrame":1,"@barchart/common-js/lang/Day":4,"@barchart/common-js/lang/Decimal":5}]},{},[11]);
