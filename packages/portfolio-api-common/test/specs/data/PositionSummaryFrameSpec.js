@@ -6,7 +6,7 @@ const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame')
 describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	'use strict';
 
-	describe('and position summary ranges are processed for a transaction set that does not close', () => {
+	describe('and yearly position summary ranges are processed for a transaction set that does not close', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -45,7 +45,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and position summary ranges are processed for a transaction set closes the same year', () => {
+	describe('and yearly position summary ranges are processed for a transaction set closes the same year', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -74,7 +74,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and position summary ranges are processed for a transaction set closes the next year', () => {
+	describe('and yearly position summary ranges are processed for a transaction set closes the next year', () => {
 		let ranges;
 
 		beforeEach(() => {
