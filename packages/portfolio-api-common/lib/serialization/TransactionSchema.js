@@ -2,6 +2,7 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
+	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const TransactionType = require('./../data/TransactionType');
@@ -22,6 +23,10 @@ module.exports = (() => {
 			this._schema = schema;
 		}
 
+		/**
+		 * @public
+		 * @returns {Schema}
+		 */
 		get schema() {
 			return this._schema;
 		}
@@ -101,7 +106,6 @@ module.exports = (() => {
 		static get INCOME() {
 			return income;
 		}
-
 
 		toString() {
 			return '[TransactionSchema]';

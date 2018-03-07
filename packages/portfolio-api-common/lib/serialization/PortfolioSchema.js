@@ -3,6 +3,7 @@ const assert = require('@barchart/common-js/lang/assert'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	is = require('@barchart/common-js/lang/is'),
+	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder'),
 	Timezones = require('@barchart/common-js/lang/Timezones');
 
@@ -24,18 +25,37 @@ module.exports = (() => {
 			this._schema = schema;
 		}
 
+		/**
+		 * @public
+		 * @returns {Schema}
+		 */
 		get schema() {
 			return this._schema;
 		}
 
+		/**
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
 		static get CREATE() {
 			return create;
 		}
 
+		/**
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
 		static get COMPLETE() {
 			return complete;
 		}
 
+		/**
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
 		static get UPDATE() {
 			return update;
 		}
