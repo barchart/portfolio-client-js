@@ -154,146 +154,202 @@ module.exports = (() => {
 
 	const buy = new TransactionSchema(SchemaBuilder.withName('B')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const sell = new TransactionSchema(SchemaBuilder.withName('S')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const buyShort = new TransactionSchema(SchemaBuilder.withName('BS')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const sellShort = new TransactionSchema(SchemaBuilder.withName('SS')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const dividend = new TransactionSchema(SchemaBuilder.withName('DV')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const dividendReinvest = new TransactionSchema(SchemaBuilder.withName('DX')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
+		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const dividendStock = new TransactionSchema(SchemaBuilder.withName('DS')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
+		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const distributionCash = new TransactionSchema(SchemaBuilder.withName('DC')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const distributionFund = new TransactionSchema(SchemaBuilder.withName('DF')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const split = new TransactionSchema(SchemaBuilder.withName('SP')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('numerator', DataType.DECIMAL)
+		.withField('denominator', DataType.DECIMAL)
+		.withField('effective', DataType.DAY, true)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const fee = new TransactionSchema(SchemaBuilder.withName('F')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
+		.withField('fee', DataType.DECIMAL)
 		.schema
 	);
 
 	const feeUnits = new TransactionSchema(SchemaBuilder.withName('FU')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
+		.withField('fee', DataType.DECIMAL)
+		.withField('price', DataType.DECIMAL)
 		.schema
 	);
 
 	const deposit = new TransactionSchema(SchemaBuilder.withName('D')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const withdrawal = new TransactionSchema(SchemaBuilder.withName('W')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const debit = new TransactionSchema(SchemaBuilder.withName('DR')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const credit = new TransactionSchema(SchemaBuilder.withName('CR')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const valuation = new TransactionSchema(SchemaBuilder.withName('V')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('value', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
 	const income = new TransactionSchema(SchemaBuilder.withName('I')
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
 		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
+		.withField('income', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
