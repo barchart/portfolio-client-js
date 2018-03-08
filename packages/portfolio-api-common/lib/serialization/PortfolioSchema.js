@@ -80,8 +80,8 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
-		.withField('system.version', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.withField('system.version', DataType.NUMBER, true)
 		.schema
 	);
 
