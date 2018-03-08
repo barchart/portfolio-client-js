@@ -15,7 +15,7 @@ module.exports = function () {
 	window.Barchart.Day = Day;
 }();
 
-},{"@barchart/common-js/lang/Day":28,"@barchart/tgam-jwt-js/lib/JwtGateway":54}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":29,"@barchart/tgam-jwt-js/lib/JwtGateway":55}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -51,6 +51,20 @@ module.exports = function () {
 				return '[Configuration]';
 			}
 		}], [{
+			key: 'localHost',
+			get: function get() {
+				return '127.0.0.1';
+			}
+
+			/**
+    * The host of the development system.
+    *
+    * @public
+    * @static
+    * @returns {String}
+    */
+
+		}, {
 			key: 'developmentHost',
 			get: function get() {
 				return 'g4zerhpif5.execute-api.us-east-1.amazonaws.com/dev';
@@ -148,11 +162,11 @@ module.exports = function () {
 
 			_this._createPortfolioEndpoint = EndpointBuilder.for('create-portfolio', 'create portfolio').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios');
-			}).withBody('portfolio data').withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._updatePortfolioEndpoint = EndpointBuilder.for('update-portfolio', 'update portfolio').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
-			}).withBody('portfolio data').withRequestInterceptor(RequestInterceptor.fromDelegate(updatePortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(updatePortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readPositionsEndpoint = EndpointBuilder.for('read-positions', 'read positions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
@@ -250,22 +264,20 @@ module.exports = function () {
     *
     * @public
     * @param {String=} portfolio - ID of the portfolio to update
-    * @param {Object=} portfolioDatas
     * @return {Promise.<Portfolio>}
     */
 
 		}, {
 			key: 'updatePortfolio',
-			value: function updatePortfolio(portfolio, portfolioData) {
+			value: function updatePortfolio(portfolio) {
 				var _this5 = this;
 
 				return Promise.resolve().then(function () {
 					checkStart.call(_this5);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
-					assert.argumentIsRequired(portfolioData, 'portfolioData', Object);
 
-					return Gateway.invoke(_this5._updatePortfolioEndpoint, { portfolio: portfolio, portfolioData: portfolioData });
+					return Gateway.invoke(_this5._updatePortfolioEndpoint, portfolio);
 				});
 			}
 
@@ -351,6 +363,25 @@ module.exports = function () {
 				return '[PortfolioGateway]';
 			}
 		}], [{
+			key: 'forLocal',
+			value: function forLocal(requestInterceptor) {
+				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
+					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
+
+					return start(new PortfolioGateway('http', Configuration.localHost, 3000, requestInterceptor));
+				});
+			}
+
+			/**
+    * Creates and starts a new {@link PortfolioGateway} for use in the development environment.
+    *
+    * @public
+    * @static
+    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise.<PortfolioGateway>}
+    */
+
+		}, {
 			key: 'forDevelopment',
 			value: function forDevelopment(requestInterceptor) {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
@@ -438,7 +469,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":30,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":36,"@barchart/common-js/lang/is":39,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":52,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":53}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":53,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":54}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -739,7 +770,7 @@ module.exports = function () {
 	return JwtGateway;
 }();
 
-},{"./../../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":30,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":36,"@barchart/common-js/lang/is":39,"@barchart/common-js/timing/Scheduler":49}],5:[function(require,module,exports){
+},{"./../../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/timing/Scheduler":50}],5:[function(require,module,exports){
 'use strict';
 
 var JwtGateway = require('./gateway/jwt/JwtGateway'),
@@ -751,7 +782,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.7'
+		version: '1.1.8'
 	};
 }();
 
@@ -922,6 +953,10 @@ module.exports = function () {
 					var failure = void 0;
 
 					schema.schema.fields.map(function (field) {
+						if (field.optional) {
+							return;
+						}
+
 						if (!attributes.has(candidate, field.name) || !field.dataType.validator.call(_this2, attributes.read(candidate, field.name))) {
 							if (!failure) {
 								failure = FailureReason.forRequest({ endpoint: { description: 'serialize data into ' + schema } }).addItem(FailureType.REQUEST_INPUT_MALFORMED, {}, true);
@@ -946,7 +981,7 @@ module.exports = function () {
 	return FailureReason;
 }();
 
-},{"./../../collections/Tree":24,"./../../lang/assert":36,"./../../lang/attributes":37,"./../../lang/is":39,"./../../serialization/json/Schema":46,"./FailureReasonItem":7,"./FailureType":8}],7:[function(require,module,exports){
+},{"./../../collections/Tree":24,"./../../lang/assert":37,"./../../lang/attributes":38,"./../../lang/is":40,"./../../serialization/json/Schema":47,"./FailureReasonItem":7,"./FailureType":8}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1053,7 +1088,7 @@ module.exports = function () {
 	return FailureReasonItem;
 }();
 
-},{"./../../lang/assert":36,"./../../lang/attributes":37,"./FailureType":8}],8:[function(require,module,exports){
+},{"./../../lang/assert":37,"./../../lang/attributes":38,"./FailureType":8}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1224,6 +1259,19 @@ module.exports = function () {
     */
 
 		}, {
+			key: 'SCHEMA_VALIDATION_FAILURE',
+			get: function get() {
+				return schemaValidationFailure;
+			}
+
+			/**
+    * The request failed for unspecified reasons.
+    *
+    * @static
+    * @returns {FailureType}
+    */
+
+		}, {
 			key: 'REQUEST_GENERAL_FAILURE',
 			get: function get() {
 				return requestGeneralFailure;
@@ -1239,12 +1287,13 @@ module.exports = function () {
 	var requestIdentifyFailure = new FailureType('REQUEST_IDENTITY_FAILURE', 'An attempt to {L|root.endpoint.description} failed because your identity could not be determined.');
 	var requestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed. You are not authorized to perform this action.');
 	var requestInputMalformed = new FailureType('REQUEST_INPUT_MALFORMED', 'An attempt to {L|root.endpoint.description} failed, the data structure is invalid.');
+	var schemaValidationFailure = new FailureType('SCHEMA_VALIDATION_FAILURE', 'An attempt serialize JSON string failed found "{L|key}" when expecting "{L|name}"');
 	var requestGeneralFailure = new FailureType('REQUEST_GENERAL_FAILURE', 'An attempt to {L|root.endpoint.description} failed for unspecified reason(s).');
 
 	return FailureType;
 }();
 
-},{"./../../lang/Enum":31,"./../../lang/assert":36}],9:[function(require,module,exports){
+},{"./../../lang/Enum":32,"./../../lang/assert":37}],9:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1470,7 +1519,7 @@ module.exports = function () {
 	return Gateway;
 }();
 
-},{"./../../lang/array":35,"./../../lang/assert":36,"./../../lang/attributes":37,"./../../lang/promise":41,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":55}],10:[function(require,module,exports){
+},{"./../../lang/array":36,"./../../lang/assert":37,"./../../lang/attributes":38,"./../../lang/promise":42,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":56}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1831,7 +1880,7 @@ module.exports = function () {
 	return EndpointBuilder;
 }();
 
-},{"./../../../lang/assert":36,"./../definitions/Endpoint":12,"./../definitions/Parameters":14,"./../definitions/ProtocolType":15,"./../definitions/VerbType":16,"./../interceptors/CompositeErrorInterceptor":17,"./../interceptors/CompositeRequestInterceptor":18,"./../interceptors/CompositeResponseInterceptor":19,"./../interceptors/ErrorInterceptor":20,"./../interceptors/RequestInterceptor":21,"./../interceptors/ResponseInterceptor":22,"./ParametersBuilder":11}],11:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../definitions/Endpoint":12,"./../definitions/Parameters":14,"./../definitions/ProtocolType":15,"./../definitions/VerbType":16,"./../interceptors/CompositeErrorInterceptor":17,"./../interceptors/CompositeRequestInterceptor":18,"./../interceptors/CompositeResponseInterceptor":19,"./../interceptors/ErrorInterceptor":20,"./../interceptors/RequestInterceptor":21,"./../interceptors/ResponseInterceptor":22,"./ParametersBuilder":11}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1999,7 +2048,7 @@ module.exports = function () {
 	return ParametersBuilder;
 }();
 
-},{"./../../../lang/assert":36,"./../../../lang/attributes":37,"./../../../lang/is":39,"./../definitions/Parameter":13,"./../definitions/Parameters":14}],12:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../../../lang/attributes":38,"./../../../lang/is":40,"./../definitions/Parameter":13,"./../definitions/Parameters":14}],12:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2298,7 +2347,7 @@ module.exports = function () {
 	return Endpoint;
 }();
 
-},{"./../../../lang/is":39,"./../interceptors/ErrorInterceptor":20,"./../interceptors/RequestInterceptor":21,"./../interceptors/ResponseInterceptor":22,"./Parameter":13,"./Parameters":14,"./ProtocolType":15,"./VerbType":16}],13:[function(require,module,exports){
+},{"./../../../lang/is":40,"./../interceptors/ErrorInterceptor":20,"./../interceptors/RequestInterceptor":21,"./../interceptors/ResponseInterceptor":22,"./Parameter":13,"./Parameters":14,"./ProtocolType":15,"./VerbType":16}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2423,7 +2472,7 @@ module.exports = function () {
 	return Parameter;
 }();
 
-},{"./../../../lang/is":39}],14:[function(require,module,exports){
+},{"./../../../lang/is":40}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2502,7 +2551,7 @@ module.exports = function () {
 	return Parameters;
 }();
 
-},{"./../../../lang/assert":36,"./../../../lang/is":39,"./Parameter":13}],15:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../../../lang/is":40,"./Parameter":13}],15:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2616,7 +2665,7 @@ module.exports = function () {
 	return ProtocolType;
 }();
 
-},{"./../../../lang/Enum":31,"./../../../lang/assert":36,"./../../../lang/is":39}],16:[function(require,module,exports){
+},{"./../../../lang/Enum":32,"./../../../lang/assert":37,"./../../../lang/is":40}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2719,7 +2768,7 @@ module.exports = function () {
 	return VerbType;
 }();
 
-},{"./../../../lang/Enum":31}],17:[function(require,module,exports){
+},{"./../../../lang/Enum":32}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2784,7 +2833,7 @@ module.exports = function () {
 	return CompositeErrorInterceptor;
 }();
 
-},{"./../../../lang/assert":36,"./ErrorInterceptor":20}],18:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./ErrorInterceptor":20}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2849,7 +2898,7 @@ module.exports = function () {
 	return CompositeRequestInterceptor;
 }();
 
-},{"./../../../lang/assert":36,"./RequestInterceptor":21}],19:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./RequestInterceptor":21}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2914,7 +2963,7 @@ module.exports = function () {
 	return CompositeResponseInterceptor;
 }();
 
-},{"./../../../lang/assert":36,"./ResponseInterceptor":22}],20:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./ResponseInterceptor":22}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3076,7 +3125,7 @@ module.exports = function () {
 	return ErrorInterceptor;
 }();
 
-},{"./../../../lang/assert":36,"./../../../lang/is":39,"./../../failures/FailureReason":6,"./../../failures/FailureType":8}],21:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../../../lang/is":40,"./../../failures/FailureReason":6,"./../../failures/FailureType":8}],21:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3225,7 +3274,7 @@ module.exports = function () {
 	return RequestInterceptor;
 }();
 
-},{"./../../../lang/assert":36,"./../../../lang/is":39}],22:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../../../lang/is":40}],22:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3372,7 +3421,7 @@ module.exports = function () {
 	return ResponseInterceptor;
 }();
 
-},{"./../../../lang/assert":36,"./../../../lang/is":39}],23:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../../../lang/is":40}],23:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3783,7 +3832,7 @@ module.exports = function () {
 	return Tree;
 }();
 
-},{"./../lang/is":39}],25:[function(require,module,exports){
+},{"./../lang/is":40}],25:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3927,7 +3976,7 @@ module.exports = function () {
 	return ComparatorBuilder;
 }();
 
-},{"./../../lang/assert":36,"./comparators":26}],26:[function(require,module,exports){
+},{"./../../lang/assert":37,"./comparators":26}],26:[function(require,module,exports){
 'use strict';
 
 var assert = require('./../../lang/assert');
@@ -4002,7 +4051,93 @@ module.exports = function () {
 	};
 }();
 
-},{"./../../lang/assert":36}],27:[function(require,module,exports){
+},{"./../../lang/assert":37}],27:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./assert'),
+    is = require('./is');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A serialization container for ad hoc data where internal data is serialized
+  * as an escaped JSON string.
+  *
+  * @public
+  * @param {Object} data
+  */
+
+	var AdHoc = function () {
+		function AdHoc(data) {
+			_classCallCheck(this, AdHoc);
+
+			this._data = data || {};
+		}
+
+		/**
+   * The data.
+   * 
+   * @public
+   * @returns {Object}
+   */
+
+
+		_createClass(AdHoc, [{
+			key: 'toJSON',
+			value: function toJSON() {
+				return JSON.stringify(this._data);
+			}
+
+			/**
+    * Given a code, returns the enumeration item.
+    *
+    * @public
+    * @param {String} code
+    * @returns {AdHoc}
+    */
+
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[AdHoc]';
+			}
+		}, {
+			key: 'data',
+			get: function get() {
+				return this._data;
+			}
+
+			/**
+    * The data.
+    *
+    * @public
+    * @param {Object} data
+    */
+			,
+			set: function set(data) {
+				assert.argumentIsRequired(data, 'data', Object);
+
+				this._data = data;
+			}
+		}], [{
+			key: 'parse',
+			value: function parse(serialized) {
+				return new AdHoc(JSON.parse(serialized));
+			}
+		}]);
+
+		return AdHoc;
+	}();
+
+	return AdHoc;
+}();
+
+},{"./assert":37,"./is":40}],28:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4128,7 +4263,7 @@ module.exports = function () {
 	return Currency;
 }();
 
-},{"./Enum":31,"./assert":36,"./is":39}],28:[function(require,module,exports){
+},{"./Enum":32,"./assert":37,"./is":40}],29:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4183,10 +4318,12 @@ module.exports = function () {
 				assert.argumentIsOptional(inverse, inverse, Boolean);
 				assert.argumentIsValid(days, 'days', is.large, 'is an integer');
 
-				var totalDaysToShift = days;
+				var totalDaysToShift = void 0;
 
-				if (inverse) {
-					totalDaysToShift = totalDaysToShift * -1;
+				if (is.boolean(inverse) && inverse) {
+					totalDaysToShift = days * -1;
+				} else {
+					totalDaysToShift = days;
 				}
 
 				var positive = is.positive(totalDaysToShift);
@@ -4247,6 +4384,121 @@ module.exports = function () {
 			key: 'subtractDays',
 			value: function subtractDays(days) {
 				return this.addDays(days, true);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
+    * the month and the new month has fewer days than the current month, days will be subtracted
+    * as necessary (e.g. adding one month to March 31 will return April 30).
+    *
+    * @public
+    * @param {Number} months - The number of months to add (negative numbers can be used for subtraction).
+    * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'addMonths',
+			value: function addMonths(months, inverse) {
+				assert.argumentIsRequired(months, 'months', Number);
+				assert.argumentIsOptional(inverse, inverse, Boolean);
+				assert.argumentIsValid(months, 'months', is.large, 'is an integer');
+
+				var totalMonthsToShift = void 0;
+
+				if (is.boolean(inverse) && inverse) {
+					totalMonthsToShift = months * -1;
+				} else {
+					totalMonthsToShift = months;
+				}
+
+				var monthsToShift = totalMonthsToShift % 12;
+				var yearsToShift = (totalMonthsToShift - monthsToShift) / 12;
+
+				var shiftedYear = this.year + yearsToShift;
+				var shiftedMonth = this.month + monthsToShift;
+				var shiftedDay = this.day;
+
+				if (shiftedMonth > 12) {
+					shiftedYear = shiftedYear + 1;
+					shiftedMonth = shiftedMonth - 12;
+				}
+
+				if (shiftedMonth < 1) {
+					shiftedYear = shiftedYear - 1;
+					shiftedMonth = shiftedMonth + 12;
+				}
+
+				while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
+					shiftedDay = shiftedDay - 1;
+				}
+
+				return new Day(shiftedYear, shiftedMonth, shiftedDay);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the past (or future).
+    *
+    * @public
+    * @param {Number} months - The number of months to subtract (negative numbers can be used for addition).
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'subtractMonths',
+			value: function subtractMonths(months) {
+				return this.addMonths(months, true);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
+    * the month and the new month has fewer days than the current month, days will be subtracted
+    * as necessary (e.g. adding one year to February 29 will return February 28).
+    *
+    * @public
+    * @param {Number} years - The number of years to add (negative numbers can be used for subtraction).
+    * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'addYears',
+			value: function addYears(years, inverse) {
+				assert.argumentIsRequired(years, 'years', Number);
+				assert.argumentIsOptional(inverse, inverse, Boolean);
+				assert.argumentIsValid(years, 'years', is.large, 'is an integer');
+
+				var yearsToShift = void 0;
+
+				if (is.boolean(inverse) && inverse) {
+					yearsToShift = years * -1;
+				} else {
+					yearsToShift = years;
+				}
+
+				var shiftedYear = this.year + yearsToShift;
+				var shiftedMonth = this.month;
+				var shiftedDay = this.day;
+
+				while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
+					shiftedDay = shiftedDay - 1;
+				}
+
+				return new Day(shiftedYear, shiftedMonth, shiftedDay);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the past (or future).
+    *
+    * @public
+    * @param {Number} years - The number of years to subtract (negative numbers can be used for addition).
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'subtractYears',
+			value: function subtractYears(years) {
+				return this.addYears(years, true);
 			}
 
 			/**
@@ -4533,7 +4785,7 @@ module.exports = function () {
 	return Day;
 }();
 
-},{"./../collections/sorting/ComparatorBuilder":25,"./../collections/sorting/comparators":26,"./assert":36,"./is":39}],29:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":25,"./../collections/sorting/comparators":26,"./assert":37,"./is":40}],30:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5113,7 +5365,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":31,"./assert":36,"./is":39,"big.js":80}],30:[function(require,module,exports){
+},{"./Enum":32,"./assert":37,"./is":40,"big.js":81}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5262,7 +5514,7 @@ module.exports = function () {
 	return Disposable;
 }();
 
-},{"./assert":36}],31:[function(require,module,exports){
+},{"./assert":37}],32:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5404,7 +5656,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":36}],32:[function(require,module,exports){
+},{"./assert":37}],33:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5527,7 +5779,7 @@ module.exports = function () {
 	return Money;
 }();
 
-},{"./Currency":27,"./Decimal":29,"./assert":36,"./is":39}],33:[function(require,module,exports){
+},{"./Currency":28,"./Decimal":30,"./assert":37,"./is":40}],34:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5650,7 +5902,7 @@ module.exports = function () {
 	return Timestamp;
 }();
 
-},{"./assert":36,"./is":39,"moment-timezone":85}],34:[function(require,module,exports){
+},{"./assert":37,"./is":40,"moment-timezone":86}],35:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5748,7 +6000,7 @@ module.exports = function () {
 	return Timezones;
 }();
 
-},{"./Enum":31,"./assert":36,"./timezone":42}],35:[function(require,module,exports){
+},{"./Enum":32,"./assert":37,"./timezone":43}],36:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -5907,6 +6159,29 @@ module.exports = function () {
 
 			if (returnRef.length !== 0) {
 				returnRef.pop();
+			}
+
+			return returnRef;
+		},
+
+
+		/**
+   * Returns the first item from an array, or an undefined value, if the
+   * array is empty.
+   *
+   * @static
+   * @param {Array} a
+   * @returns {*|undefined}
+   */
+		first: function first(a) {
+			assert.argumentIsArray(a, 'a');
+
+			var returnRef = void 0;
+
+			if (a.length !== 0) {
+				returnRef = a[0];
+			} else {
+				returnRef = undefined;
 			}
 
 			return returnRef;
@@ -6086,7 +6361,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":36,"./is":39}],36:[function(require,module,exports){
+},{"./assert":37,"./is":40}],37:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -6234,7 +6509,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":39}],37:[function(require,module,exports){
+},{"./is":40}],38:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -6406,7 +6681,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":36,"./is":39}],38:[function(require,module,exports){
+},{"./assert":37,"./is":40}],39:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -6450,7 +6725,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -6673,7 +6948,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 var array = require('./array'),
@@ -6822,7 +7097,7 @@ module.exports = function () {
 	return object;
 }();
 
-},{"./array":35,"./is":39}],41:[function(require,module,exports){
+},{"./array":36,"./is":40}],42:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert');
@@ -7014,7 +7289,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":36}],42:[function(require,module,exports){
+},{"./assert":37}],43:[function(require,module,exports){
 'use strict';
 
 var moment = require('moment-timezone/builds/moment-timezone-with-data-2010-2020'),
@@ -7070,7 +7345,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":36,"moment-timezone/builds/moment-timezone-with-data-2010-2020":83}],43:[function(require,module,exports){
+},{"./assert":37,"moment-timezone/builds/moment-timezone-with-data-2010-2020":84}],44:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7169,14 +7444,15 @@ module.exports = function () {
 	return Component;
 }();
 
-},{"./../../lang/Currency":27,"./../../lang/Money":32,"./DataType":44,"./Field":45}],44:[function(require,module,exports){
+},{"./../../lang/Currency":28,"./../../lang/Money":33,"./DataType":45,"./Field":46}],45:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var assert = require('./../../lang/assert'),
+var AdHoc = require('./../../lang/AdHoc'),
+    assert = require('./../../lang/assert'),
     Day = require('./../../lang/Day'),
     Decimal = require('./../../lang/Decimal'),
     Enum = require('./../../lang/Enum'),
@@ -7266,7 +7542,7 @@ module.exports = function () {
     * A function which "revives" a value after serialization to JSON.
     *
     * @public
-    * @returns {Function} reviver
+    * @returns {Function}
     */
 
 		}, {
@@ -7279,7 +7555,7 @@ module.exports = function () {
     * A function validates data, returning true or false.
     *
     * @public
-    * @returns {Function} reviver
+    * @returns {Function}
     */
 
 		}, {
@@ -7307,6 +7583,7 @@ module.exports = function () {
     * References a string.
     *
     * @public
+    * @static
     * @returns {DataType}
     */
 
@@ -7320,6 +7597,7 @@ module.exports = function () {
     * References a number.
     *
     * @public
+    * @static
     * @returns {DataType}
     */
 
@@ -7333,6 +7611,7 @@ module.exports = function () {
     * References a Boolean value.
     *
     * @public
+    * @static
     * @returns {DataType}
     */
 
@@ -7346,6 +7625,7 @@ module.exports = function () {
     * References an object (serialized as JSON).
     *
     * @public
+    * @static
     * @returns {DataType}
     */
 
@@ -7359,6 +7639,7 @@ module.exports = function () {
     * References a {@link Decimal} instance.
     *
     * @public
+    * @static
     * @returns {DataType}
     */
 
@@ -7372,6 +7653,7 @@ module.exports = function () {
     * References a {@link Day} instance.
     *
     * @public
+    * @static
     * @returns {DataType}
     */
 
@@ -7385,6 +7667,7 @@ module.exports = function () {
     * References a {@link Timestamp} instance.
     *
     * @public
+    * @static
     * @returns {DataType}
     */
 
@@ -7392,6 +7675,20 @@ module.exports = function () {
 			key: 'TIMESTAMP',
 			get: function get() {
 				return dataTypeTimestamp;
+			}
+
+			/**
+    * References a {@link Timestamp} instance.
+    *
+    * @public
+    * @static
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'AD_HOC',
+			get: function get() {
+				return dataTypeAdHoc;
 			}
 		}]);
 
@@ -7422,13 +7719,18 @@ module.exports = function () {
 	}, function (x) {
 		return x instanceof Timestamp;
 	});
+	var dataTypeAdHoc = new DataType('AdHoc', null, function (x) {
+		return AdHoc.parse(x);
+	}, function (x) {
+		return x instanceof AdHoc;
+	});
 
-	var dataTypes = [dataTypeString, dataTypeNumber, dataTypeBoolean, dataTypeObject, dataTypeDecimal, dataTypeDay, dataTypeTimestamp];
+	var dataTypes = [dataTypeString, dataTypeNumber, dataTypeBoolean, dataTypeObject, dataTypeDecimal, dataTypeDay, dataTypeTimestamp, dataTypeAdHoc];
 
 	return DataType;
 }();
 
-},{"./../../lang/Day":28,"./../../lang/Decimal":29,"./../../lang/Enum":31,"./../../lang/Timestamp":33,"./../../lang/assert":36,"./../../lang/is":39}],45:[function(require,module,exports){
+},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":37,"./../../lang/is":40}],46:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7508,10 +7810,14 @@ module.exports = function () {
 	return Field;
 }();
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -7605,7 +7911,7 @@ module.exports = function () {
 						} else if (item.optional) {
 							item = advance(key);
 						} else {
-							throw new Error('Schema parsing is using strict mode, unexpected key found [ found: ' + key + ', expected: ' + item.name + ' ]');
+							throw new SchemaError(key, item.name, 'Schema parsing is using strict mode, unexpected key found [ found: ' + key + ', expected: ' + item.name + ' ]');
 						}
 					}
 
@@ -7688,6 +7994,29 @@ module.exports = function () {
 
 		return Schema;
 	}();
+
+	var SchemaError = function (_Error) {
+		_inherits(SchemaError, _Error);
+
+		function SchemaError(key, name, message) {
+			_classCallCheck(this, SchemaError);
+
+			var _this2 = _possibleConstructorReturn(this, (SchemaError.__proto__ || Object.getPrototypeOf(SchemaError)).call(this, message));
+
+			_this2.key = key;
+			_this2.name = name;
+			return _this2;
+		}
+
+		_createClass(SchemaError, [{
+			key: 'toString',
+			value: function toString() {
+				return '[SchemaError]';
+			}
+		}]);
+
+		return SchemaError;
+	}(Error);
 
 	var ReviverItem = function () {
 		function ReviverItem(name, reviver, optional, reset) {
@@ -7811,7 +8140,7 @@ module.exports = function () {
 	return Schema;
 }();
 
-},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/functions":38,"./../../lang/is":39,"./Component":43,"./Field":45}],47:[function(require,module,exports){
+},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7908,7 +8237,7 @@ module.exports = function () {
 	return ComponentBuilder;
 }();
 
-},{"./../../../lang/assert":36,"./../Component":43,"./../DataType":44,"./../Field":45}],48:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../Component":44,"./../DataType":45,"./../Field":46}],49:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8051,7 +8380,7 @@ module.exports = function () {
 	return SchemaBuilder;
 }();
 
-},{"./../../../lang/assert":36,"./../../../lang/is":39,"./../Component":43,"./../DataType":44,"./../Field":45,"./../Schema":46,"./ComponentBuilder":47}],49:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../../../lang/is":40,"./../Component":44,"./../DataType":45,"./../Field":46,"./../Schema":47,"./ComponentBuilder":48}],50:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8299,7 +8628,7 @@ module.exports = function () {
 	return Scheduler;
 }();
 
-},{"./../lang/Disposable":30,"./../lang/assert":36,"./../lang/is":39,"./../lang/object":40,"./../lang/promise":41}],50:[function(require,module,exports){
+},{"./../lang/Disposable":31,"./../lang/assert":37,"./../lang/is":40,"./../lang/object":41,"./../lang/promise":42}],51:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -8626,7 +8955,7 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":36}],51:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],52:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -8688,12 +9017,13 @@ module.exports = (() => {
 	return ValuationType;
 })();
 
-},{"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":36}],52:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],53:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	is = require('@barchart/common-js/lang/is'),
+	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder'),
 	Timezones = require('@barchart/common-js/lang/Timezones');
 
@@ -8715,18 +9045,37 @@ module.exports = (() => {
 			this._schema = schema;
 		}
 
+		/**
+		 * @public
+		 * @returns {Schema}
+		 */
 		get schema() {
 			return this._schema;
 		}
 
+		/**
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
 		static get CREATE() {
 			return create;
 		}
 
+		/**
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
 		static get COMPLETE() {
 			return complete;
 		}
 
+		/**
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
 		static get UPDATE() {
 			return update;
 		}
@@ -8751,8 +9100,8 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
+		.withField('miscellany', DataType.AD_HOC, true)
 		.withField('system.version', DataType.NUMBER, true)
-		.withField('data', DataType.OBJECT, true)
 		.schema
 	);
 
@@ -8764,7 +9113,7 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('data', DataType.OBJECT)
+		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
 
@@ -8775,18 +9124,19 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('data', DataType.OBJECT)
+		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
 
 	return PortfolioSchema;
 })();
 
-},{"./../data/ValuationType":51,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/Timezones":34,"@barchart/common-js/lang/assert":36,"@barchart/common-js/lang/is":39,"@barchart/common-js/serialization/json/DataType":44,"@barchart/common-js/serialization/json/builders/SchemaBuilder":48}],53:[function(require,module,exports){
+},{"./../data/ValuationType":52,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/Timezones":35,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],54:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
+	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const TransactionType = require('./../data/TransactionType');
@@ -8807,12 +9157,88 @@ module.exports = (() => {
 			this._schema = schema;
 		}
 
+		/**
+		 * @public
+		 * @returns {Schema}
+		 */
 		get schema() {
 			return this._schema;
 		}
 
 		static get COMPLETE() {
 			return complete;
+		}
+
+		static get BUY() {
+			return buy;
+		}
+
+		static get SELL() {
+			return sell;
+		}
+
+		static get BUY_SHORT() {
+			return buyShort;
+		}
+
+		static get SELL_SHORT() {
+			return sellShort;
+		}
+
+		static get DIVIDEND() {
+			return dividend;
+		}
+
+		static get DIVIDEND_REINVEST() {
+			return dividendReinvest;
+		}
+
+		static get DIVIDEND_STOCK() {
+			return dividendStock;
+		}
+
+		static get DISTRIBUTION_CASH() {
+			return distributionCash;
+		}
+
+		static get DISTRIBUTION_FUND() {
+			return distributionFund;
+		}
+
+		static get SPLIT() {
+			return split;
+		}
+
+		static get FEE() {
+			return fee;
+		}
+
+		static get FEE_UNITS() {
+			return feeUnits;
+		}
+
+		static get DEPOSIT() {
+			return deposit;
+		}
+
+		static get WITHDRAWAL() {
+			return withdrawal;
+		}
+
+		static get DEBIT() {
+			return debit;
+		}
+
+		static get CREDIT() {
+			return credit;
+		}
+
+		static get VALUATION() {
+			return valuation;
+		}
+
+		static get INCOME() {
+			return income;
 		}
 
 		toString() {
@@ -8860,10 +9286,213 @@ module.exports = (() => {
 		.schema
 	);
 
+	const buy = new TransactionSchema(SchemaBuilder.withName('B')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const sell = new TransactionSchema(SchemaBuilder.withName('S')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const buyShort = new TransactionSchema(SchemaBuilder.withName('BS')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const sellShort = new TransactionSchema(SchemaBuilder.withName('SS')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const dividend = new TransactionSchema(SchemaBuilder.withName('DV')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const dividendReinvest = new TransactionSchema(SchemaBuilder.withName('DX')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
+		.withField('price', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const dividendStock = new TransactionSchema(SchemaBuilder.withName('DS')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
+		.withField('price', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const distributionCash = new TransactionSchema(SchemaBuilder.withName('DC')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const distributionFund = new TransactionSchema(SchemaBuilder.withName('DF')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const split = new TransactionSchema(SchemaBuilder.withName('SP')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('numerator', DataType.DECIMAL)
+		.withField('denominator', DataType.DECIMAL)
+		.withField('effective', DataType.DAY, true)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const fee = new TransactionSchema(SchemaBuilder.withName('F')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('fee', DataType.DECIMAL)
+		.schema
+	);
+
+	const feeUnits = new TransactionSchema(SchemaBuilder.withName('FU')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('fee', DataType.DECIMAL)
+		.withField('price', DataType.DECIMAL)
+		.schema
+	);
+
+	const deposit = new TransactionSchema(SchemaBuilder.withName('D')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('amount', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const withdrawal = new TransactionSchema(SchemaBuilder.withName('W')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('amount', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const debit = new TransactionSchema(SchemaBuilder.withName('DR')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('amount', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const credit = new TransactionSchema(SchemaBuilder.withName('CR')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('amount', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const valuation = new TransactionSchema(SchemaBuilder.withName('V')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('value', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const income = new TransactionSchema(SchemaBuilder.withName('I')
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('position', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('income', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+
 	return TransactionSchema;
 })();
 
-},{"./../data/TransactionType":50,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":36,"@barchart/common-js/serialization/json/DataType":44,"@barchart/common-js/serialization/json/builders/SchemaBuilder":48}],54:[function(require,module,exports){
+},{"./../data/TransactionType":51,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],55:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9090,6 +9719,36 @@ module.exports = function () {
 			}
 
 			/**
+    * Creates and starts a new {@link JwtGateway} for use in the staging environment.
+    *
+    * @public
+    * @static
+    * @returns {Promise.<JwtGateway>}
+    */
+
+		}, {
+			key: 'forStaging',
+			value: function forStaging() {
+				return start(new JwtGateway(_forStaging(), 300000));
+			}
+
+			/**
+    * Creates and starts a new {@link RequestInterceptor} for use in the staging environment.
+    *
+    * @public
+    * @static
+    * @returns {Promise.<RequestInterceptor>}
+    */
+
+		}, {
+			key: 'forStagingClient',
+			value: function forStagingClient() {
+				return JwtGateway.forStaging().then(function (jwtGateway) {
+					return jwtGateway.toRequestInterceptor();
+				});
+			}
+
+			/**
     * Creates and starts a new {@link JwtGateway} for use in the production environment.
     *
     * @public
@@ -9100,7 +9759,7 @@ module.exports = function () {
 		}, {
 			key: 'forProduction',
 			value: function forProduction() {
-				return start(new JwtGateway(_forProduction('gamservices.stg2.theglobeandmail.com/usermanagement/public/v3/user/sso'), 300000));
+				return start(new JwtGateway(_forProduction(), 300000));
 			}
 
 			/**
@@ -9139,9 +9798,17 @@ module.exports = function () {
 		}
 	}
 
-	function _forProduction(host) {
-		return EndpointBuilder.for('read-jwt-token-for-production', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
-			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', 'X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', 'X-GAM-CLIENT-APP-SECRET', '1bcc5c85-e833-4936-9313-abe5dfdcef76');
+	function _forStaging() {
+		return forTgam('gamservices.stg2.theglobeandmail.com/usermanagement/public/v3/user/sso', '1bcc5c85-e833-4936-9313-abe5dfdcef76', 'staging');
+	}
+
+	function _forProduction() {
+		return forTgam('gamservices.theglobeandmail.com/usermanagement/public/v3/user/sso', '7359a9ae-171b-41a6-af0b-6f2812133516', 'production');
+	}
+
+	function forTgam(host, secret, environment) {
+		return EndpointBuilder.for('read-jwt-token-for-' + environment, 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
+			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', 'X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', 'X-GAM-CLIENT-APP-SECRET', secret);
 		}).withHost(host).withRequestInterceptor(RequestInterceptor.fromDelegate(function (request) {
 			request.withCredentials = true;
 
@@ -9154,9 +9821,9 @@ module.exports = function () {
 	return JwtGateway;
 }();
 
-},{"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":30,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":36,"@barchart/common-js/lang/is":39,"@barchart/common-js/timing/Scheduler":49}],55:[function(require,module,exports){
+},{"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/timing/Scheduler":50}],56:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":57}],56:[function(require,module,exports){
+},{"./lib/axios":58}],57:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -9340,7 +10007,7 @@ module.exports = function xhrAdapter(config) {
 };
 
 }).call(this,require('_process'))
-},{"../core/createError":63,"./../core/settle":66,"./../helpers/btoa":70,"./../helpers/buildURL":71,"./../helpers/cookies":73,"./../helpers/isURLSameOrigin":75,"./../helpers/parseHeaders":77,"./../utils":79,"_process":81}],57:[function(require,module,exports){
+},{"../core/createError":64,"./../core/settle":67,"./../helpers/btoa":71,"./../helpers/buildURL":72,"./../helpers/cookies":74,"./../helpers/isURLSameOrigin":76,"./../helpers/parseHeaders":78,"./../utils":80,"_process":82}],58:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -9394,7 +10061,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":58,"./cancel/CancelToken":59,"./cancel/isCancel":60,"./core/Axios":61,"./defaults":68,"./helpers/bind":69,"./helpers/spread":78,"./utils":79}],58:[function(require,module,exports){
+},{"./cancel/Cancel":59,"./cancel/CancelToken":60,"./cancel/isCancel":61,"./core/Axios":62,"./defaults":69,"./helpers/bind":70,"./helpers/spread":79,"./utils":80}],59:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9415,7 +10082,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -9474,14 +10141,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":58}],60:[function(require,module,exports){
+},{"./Cancel":59}],61:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./../defaults');
@@ -9562,7 +10229,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"./../defaults":68,"./../utils":79,"./InterceptorManager":62,"./dispatchRequest":64}],62:[function(require,module,exports){
+},{"./../defaults":69,"./../utils":80,"./InterceptorManager":63,"./dispatchRequest":65}],63:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9616,7 +10283,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":79}],63:[function(require,module,exports){
+},{"./../utils":80}],64:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -9636,7 +10303,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":65}],64:[function(require,module,exports){
+},{"./enhanceError":66}],65:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9724,7 +10391,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":60,"../defaults":68,"./../helpers/combineURLs":72,"./../helpers/isAbsoluteURL":74,"./../utils":79,"./transformData":67}],65:[function(require,module,exports){
+},{"../cancel/isCancel":61,"../defaults":69,"./../helpers/combineURLs":73,"./../helpers/isAbsoluteURL":75,"./../utils":80,"./transformData":68}],66:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9747,7 +10414,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -9775,7 +10442,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":63}],67:[function(require,module,exports){
+},{"./createError":64}],68:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9797,7 +10464,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":79}],68:[function(require,module,exports){
+},{"./../utils":80}],69:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -9893,7 +10560,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":56,"./adapters/xhr":56,"./helpers/normalizeHeaderName":76,"./utils":79,"_process":81}],69:[function(require,module,exports){
+},{"./adapters/http":57,"./adapters/xhr":57,"./helpers/normalizeHeaderName":77,"./utils":80,"_process":82}],70:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -9906,7 +10573,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 'use strict';
 
 // btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
@@ -9944,7 +10611,7 @@ function btoa(input) {
 
 module.exports = btoa;
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -10014,7 +10681,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":79}],72:[function(require,module,exports){
+},{"./../utils":80}],73:[function(require,module,exports){
 'use strict';
 
 /**
@@ -10030,7 +10697,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -10085,7 +10752,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":79}],74:[function(require,module,exports){
+},{"./../utils":80}],75:[function(require,module,exports){
 'use strict';
 
 /**
@@ -10101,7 +10768,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -10171,7 +10838,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":79}],76:[function(require,module,exports){
+},{"./../utils":80}],77:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -10185,7 +10852,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":79}],77:[function(require,module,exports){
+},{"../utils":80}],78:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -10240,7 +10907,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":79}],78:[function(require,module,exports){
+},{"./../utils":80}],79:[function(require,module,exports){
 'use strict';
 
 /**
@@ -10269,7 +10936,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -10574,7 +11241,7 @@ module.exports = {
   trim: trim
 };
 
-},{"./helpers/bind":69,"is-buffer":82}],80:[function(require,module,exports){
+},{"./helpers/bind":70,"is-buffer":83}],81:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -11515,7 +12182,7 @@ module.exports = {
   }
 })(this);
 
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -11701,7 +12368,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -11724,7 +12391,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -12926,7 +13593,7 @@ function isSlowBuffer (obj) {
 	return moment;
 }));
 
-},{"moment":87}],84:[function(require,module,exports){
+},{"moment":88}],85:[function(require,module,exports){
 module.exports={
 	"version": "2016j",
 	"zones": [
@@ -13526,11 +14193,11 @@ module.exports={
 		"Pacific/Pohnpei|Pacific/Ponape"
 	]
 }
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":84,"./moment-timezone":86}],86:[function(require,module,exports){
+},{"./data/packed/latest.json":85,"./moment-timezone":87}],87:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -14133,12 +14800,8 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":87}],87:[function(require,module,exports){
+},{"moment":88}],88:[function(require,module,exports){
 //! moment.js
-//! version : 2.20.1
-//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
-//! license : MIT
-//! momentjs.com
 
 ;(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -14796,7 +15459,6 @@ var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
 // any word (or two) characters or numbers including two/three word month in arabic.
 // includes scottish gaelic two word and hyphenated months
 var matchWord = /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFF07\uFF10-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i;
-
 
 var regexes = {};
 
@@ -15910,10 +16572,6 @@ function localeMeridiem (hours, minutes, isLower) {
 // this rule.
 var getSetHour = makeGetSet('Hours', true);
 
-// months
-// week
-// weekdays
-// meridiem
 var baseConfig = {
     calendar: defaultCalendar,
     longDateFormat: defaultLongDateFormat,
@@ -15967,7 +16625,7 @@ function chooseLocale(names) {
         }
         i++;
     }
-    return null;
+    return globalLocale;
 }
 
 function loadLocale(name) {
@@ -16002,6 +16660,12 @@ function getSetGlobalLocale (key, values) {
             // moment.duration._locale = moment._locale = data;
             globalLocale = data;
         }
+        else {
+            if ((typeof console !==  'undefined') && console.warn) {
+                //warn user if arguments are passed but the locale could not be set
+                console.warn('Locale ' + key +  ' not found. Did you forget to load it?');
+            }
+        }
     }
 
     return globalLocale._abbr;
@@ -16009,7 +16673,7 @@ function getSetGlobalLocale (key, values) {
 
 function defineLocale (name, config) {
     if (config !== null) {
-        var parentConfig = baseConfig;
+        var locale, parentConfig = baseConfig;
         config.abbr = name;
         if (locales[name] != null) {
             deprecateSimple('defineLocaleOverride',
@@ -16022,14 +16686,19 @@ function defineLocale (name, config) {
             if (locales[config.parentLocale] != null) {
                 parentConfig = locales[config.parentLocale]._config;
             } else {
-                if (!localeFamilies[config.parentLocale]) {
-                    localeFamilies[config.parentLocale] = [];
+                locale = loadLocale(config.parentLocale);
+                if (locale != null) {
+                    parentConfig = locale._config;
+                } else {
+                    if (!localeFamilies[config.parentLocale]) {
+                        localeFamilies[config.parentLocale] = [];
+                    }
+                    localeFamilies[config.parentLocale].push({
+                        name: name,
+                        config: config
+                    });
+                    return null;
                 }
-                localeFamilies[config.parentLocale].push({
-                    name: name,
-                    config: config
-                });
-                return null;
             }
         }
         locales[name] = new Locale(mergeConfigs(parentConfig, config));
@@ -17377,7 +18046,7 @@ function isSameOrBefore (input, units) {
 function diff (input, units, asFloat) {
     var that,
         zoneDelta,
-        delta, output;
+        output;
 
     if (!this.isValid()) {
         return NaN;
@@ -17450,7 +18119,7 @@ function toISOString(keepOffset) {
         if (utc) {
             return this.toDate().toISOString();
         } else {
-            return new Date(this._d.valueOf()).toISOString().replace('Z', formatMoment(m, 'Z'));
+            return new Date(this.valueOf() + this.utcOffset() * 60 * 1000).toISOString().replace('Z', formatMoment(m, 'Z'));
         }
     }
     return formatMoment(m, utc ? 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]' : 'YYYY-MM-DD[T]HH:mm:ss.SSSZ');
@@ -18004,48 +18673,26 @@ proto.toString          = toString;
 proto.unix              = unix;
 proto.valueOf           = valueOf;
 proto.creationData      = creationData;
-
-// Year
 proto.year       = getSetYear;
 proto.isLeapYear = getIsLeapYear;
-
-// Week Year
 proto.weekYear    = getSetWeekYear;
 proto.isoWeekYear = getSetISOWeekYear;
-
-// Quarter
 proto.quarter = proto.quarters = getSetQuarter;
-
-// Month
 proto.month       = getSetMonth;
 proto.daysInMonth = getDaysInMonth;
-
-// Week
 proto.week           = proto.weeks        = getSetWeek;
 proto.isoWeek        = proto.isoWeeks     = getSetISOWeek;
 proto.weeksInYear    = getWeeksInYear;
 proto.isoWeeksInYear = getISOWeeksInYear;
-
-// Day
 proto.date       = getSetDayOfMonth;
 proto.day        = proto.days             = getSetDayOfWeek;
 proto.weekday    = getSetLocaleDayOfWeek;
 proto.isoWeekday = getSetISODayOfWeek;
 proto.dayOfYear  = getSetDayOfYear;
-
-// Hour
 proto.hour = proto.hours = getSetHour;
-
-// Minute
 proto.minute = proto.minutes = getSetMinute;
-
-// Second
 proto.second = proto.seconds = getSetSecond;
-
-// Millisecond
 proto.millisecond = proto.milliseconds = getSetMillisecond;
-
-// Offset
 proto.utcOffset            = getSetOffset;
 proto.utc                  = setOffsetToUTC;
 proto.local                = setOffsetToLocal;
@@ -18056,12 +18703,8 @@ proto.isLocal              = isLocal;
 proto.isUtcOffset          = isUtcOffset;
 proto.isUtc                = isUtc;
 proto.isUTC                = isUtc;
-
-// Timezone
 proto.zoneAbbr = getZoneAbbr;
 proto.zoneName = getZoneName;
-
-// Deprecations
 proto.dates  = deprecate('dates accessor is deprecated. Use date instead.', getSetDayOfMonth);
 proto.months = deprecate('months accessor is deprecated. Use month instead', getSetMonth);
 proto.years  = deprecate('years accessor is deprecated. Use year instead', getSetYear);
@@ -18092,19 +18735,15 @@ proto$1.relativeTime    = relativeTime;
 proto$1.pastFuture      = pastFuture;
 proto$1.set             = set;
 
-// Month
 proto$1.months            =        localeMonths;
 proto$1.monthsShort       =        localeMonthsShort;
 proto$1.monthsParse       =        localeMonthsParse;
 proto$1.monthsRegex       = monthsRegex;
 proto$1.monthsShortRegex  = monthsShortRegex;
-
-// Week
 proto$1.week = localeWeek;
 proto$1.firstDayOfYear = localeFirstDayOfYear;
 proto$1.firstDayOfWeek = localeFirstDayOfWeek;
 
-// Day of Week
 proto$1.weekdays       =        localeWeekdays;
 proto$1.weekdaysMin    =        localeWeekdaysMin;
 proto$1.weekdaysShort  =        localeWeekdaysShort;
@@ -18114,7 +18753,6 @@ proto$1.weekdaysRegex       =        weekdaysRegex;
 proto$1.weekdaysShortRegex  =        weekdaysShortRegex;
 proto$1.weekdaysMinRegex    =        weekdaysMinRegex;
 
-// Hours
 proto$1.isPM = localeIsPM;
 proto$1.meridiem = localeMeridiem;
 
@@ -18221,6 +18859,7 @@ getSetGlobalLocale('en', {
 });
 
 // Side effect imports
+
 hooks.lang = deprecate('moment.lang is deprecated. Use moment.locale instead.', getSetGlobalLocale);
 hooks.langData = deprecate('moment.langData is deprecated. Use moment.localeData instead.', getLocale);
 
@@ -18596,7 +19235,6 @@ proto$2.toJSON         = toISOString$1;
 proto$2.locale         = locale;
 proto$2.localeData     = localeData;
 
-// Deprecations
 proto$2.toIsoString = deprecate('toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)', toISOString$1);
 proto$2.lang = lang;
 
@@ -18621,7 +19259,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.20.1';
+hooks.version = '2.21.0';
 
 setHookCallback(createLocal);
 
