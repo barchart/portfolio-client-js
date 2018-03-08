@@ -81,7 +81,7 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('system.version', DataType.NUMBER, true)
-		.withField('data', DataType.OBJECT, true)
+		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
 
@@ -93,7 +93,7 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('data', DataType.OBJECT, true)
+		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
 
@@ -104,7 +104,7 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('data', DataType.OBJECT, true)
+		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
 
