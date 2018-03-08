@@ -47,6 +47,15 @@ module.exports = (() => {
 		 * @public
 		 * @returns {PortfolioSchema}
 		 */
+		static get CLIENT() {
+			return client;
+		}
+
+		/**
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
 		static get COMPLETE() {
 			return complete;
 		}
@@ -65,7 +74,7 @@ module.exports = (() => {
 		}
 	}
 
-	const complete = new PortfolioSchema(SchemaBuilder.withName('Complete')
+	const complete = new PortfolioSchema(SchemaBuilder.withName('complete')
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
@@ -81,11 +90,32 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
-		.withField('system.version', DataType.NUMBER, true)
+		.withField('system.sequence', DataType.NUMBER)
+		.withField('system.version', DataType.STRING)
+		.withField('system.timestamp', DataType.TIMESTAMP)
 		.schema
 	);
 
-	const create = new PortfolioSchema(SchemaBuilder.withName('Create')
+	const client = new PortfolioSchema(SchemaBuilder.withName('client')
+		.withField('user', DataType.STRING)
+		.withField('portfolio', DataType.STRING)
+		.withField('name', DataType.STRING)
+		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
+		.withField('dates.create', DataType.DAY)
+		.withField('dates.cash', DataType.DAY, true)
+		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('defaults.reinvest', DataType.BOOLEAN, true)
+		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('legacy.system', DataType.STRING, true)
+		.withField('legacy.user', DataType.STRING, true)
+		.withField('legacy.portfolio', DataType.STRING, true)
+		.withField('legacy.warnings', DataType.NUMBER, true)
+		.withField('legacy.drops', DataType.NUMBER, true)
+		.withField('miscellany', DataType.AD_HOC, true)
+		.schema
+	);
+
+	const create = new PortfolioSchema(SchemaBuilder.withName('create')
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.create', DataType.DAY)
@@ -97,7 +127,7 @@ module.exports = (() => {
 		.schema
 	);
 
-	const update = new PortfolioSchema(SchemaBuilder.withName('Update')
+	const update = new PortfolioSchema(SchemaBuilder.withName('update')
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.cash', DataType.DAY, true)
