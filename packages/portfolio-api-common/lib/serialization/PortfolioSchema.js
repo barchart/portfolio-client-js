@@ -118,7 +118,6 @@ module.exports = (() => {
 	const create = new PortfolioSchema(SchemaBuilder.withName('create')
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
-		.withField('dates.create', DataType.DAY)
 		.withField('dates.cash', DataType.DAY, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
