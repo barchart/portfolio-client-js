@@ -73,7 +73,11 @@
 						reinvest: true,
 						valuation: 'AVG'
 					},
-					data: {}
+					miscellany: {
+						testing: {
+							nested: 'yes'
+						}
+					}
 				};
 
 				that.gateway.createPortfolio(portfolio)
@@ -120,10 +124,53 @@
                         that.setConsoleMode();
                     });
 			};
+			var deletePortfolio = function() {
+				var action = 'portfolioGateway.deletePortfolio()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+				that.gateway.deletePortfolio(that.portfolio())
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
 			var getPositions = function() {
 				var action = 'portfolioGateway.readPositions()';
 
 				that.gateway.readPositions(that.portfolio() || null, that.position() || null)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var deletePosition = function() {
+				var action = 'portfolioGateway.deletePosition()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+				that.gateway.deletePosition(that.portfolio(), that.position())
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
@@ -178,14 +225,86 @@
                         that.setConsoleMode();
                     });
 			};
+			var createBuyTransaction = function() {
+				var action = 'portfolioGateway.readTransactions()';
+
+				var portfolio = that.portfolio();
+				var position = that.position();
+
+				if (!portfolio) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	type: Barchart.TransactionType.BUY,
+                	instrument: {
+                		name: 'International Business Machines',
+                		currency: Barchart.Currency.USD,
+                		symbol: {
+                			barchart: 'IBM',
+                			display: 'IBM'
+                		}
+                	},
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(that.portfolio(), that.position() || null, transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var deleteTransaction = function() {
+				var action = 'portfolioGateway.deleteTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                if (!that.transaction()) {
+					toastr.info('A "transaction" is required.');
+				    return;
+                }
+
+				that.gateway.deleteTransaction(that.portfolio(), that.position(), that.transaction())
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
 
 			that.modes = ko.observableArray([
 				{ text: 'Get Portfolios', action: getPortfolios },
                 { text: 'Create Portfolio', action: createPortfolio },
                 { text: 'Update Portfolio', action: updatePortfolio },
+                { text: 'Delete Portfolio', action: deletePortfolio },
                 { text: 'Get Positions', action: getPositions },
+                { text: 'Delete Position', action: deletePosition },
                 { text: 'Get Transactions', action: getTransactions },
-                { text: 'Get Transactions (Formatted)', action: getTransactionsFormatted }
+                { text: 'Get Transactions (Formatted)', action: getTransactionsFormatted },
+                { text: 'Create Buy Transaction', action: createBuyTransaction },
+                { text: 'Delete Transaction', action: deleteTransaction }
             ]);
 
 			that.mode = ko.observable(that.modes()[0]);
@@ -223,7 +342,7 @@
 
 				that.connecting(true);
 
-				Barchart.Portfolio.PortfolioGateway.forDevelopment(Barchart.Portfolio.JwtGateway.forDevelopmentClient(that.user(), that.userLegacy()))
+				Barchart.Portfolio.PortfolioGateway.forLocal(Barchart.Portfolio.JwtGateway.forDevelopmentClient(that.user(), that.userLegacy()))
                     .then((gateway) => {
 					    that.gateway = gateway;
 
