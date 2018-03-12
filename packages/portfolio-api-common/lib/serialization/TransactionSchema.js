@@ -11,7 +11,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * The schemas which can be used to represent a transaction objects.
+	 * The schemas which can be used to represent transaction objects.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -24,6 +24,8 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The actual {@link Schema}.
+		 *
 		 * @public
 		 * @returns {Schema}
 		 */
@@ -31,8 +33,26 @@ module.exports = (() => {
 			return this._schema;
 		}
 
+		/**
+		 * The complete transaction schema.
+		 *
+		 * @static
+		 * @public
+		 * @returns {TransactionSchema}
+		 */
 		static get COMPLETE() {
 			return complete;
+		}
+
+		/**
+		 * Transaction data transmitted to the client, omitting some system data.
+		 *
+		 * @static
+		 * @public
+		 * @returns {TransactionSchema}
+		 */
+		static get CLIENT() {
+			return client;
 		}
 
 		static get BUY() {
@@ -112,7 +132,7 @@ module.exports = (() => {
 		}
 	}
 
-	const complete = new TransactionSchema(SchemaBuilder.withName('Complete')
+	const complete = new TransactionSchema(SchemaBuilder.withName('complete')
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('sequence', DataType.NUMBER)
@@ -136,6 +156,44 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('legacy.transaction', DataType.STRING, true)
+		.withField('trade.price', DataType.DECIMAL, true)
+		.withField('dividend.rate', DataType.DECIMAL, true)
+		.withField('dividend.effective', DataType.DAY, true)
+		.withField('dividend.price', DataType.DECIMAL, true)
+		.withField('dividend.amount', DataType.DECIMAL, true)
+		.withField('dividend.reference', DataType.STRING, true)
+		.withField('split.numerator', DataType.DECIMAL, true)
+		.withField('split.denominator', DataType.DECIMAL, true)
+		.withField('split.effective', DataType.DAY, true)
+		.withField('split.reference', DataType.STRING, true)
+		.withField('charge.amount', DataType.DECIMAL, true)
+		.withField('income.amount', DataType.DECIMAL, true)
+		.withField('valuation.value', DataType.DECIMAL, true)
+		.withField('system.sequence', DataType.NUMBER)
+		.withField('system.version', DataType.STRING)
+		.withField('system.timestamp', DataType.TIMESTAMP)
+		.schema
+	);
+
+	const client = new TransactionSchema(SchemaBuilder.withName('client')
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER)
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('date', DataType.DAY)
+		.withField('description', DataType.STRING, true)
+		.withField('amount', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.withField('reference.position', DataType.STRING, true)
+		.withField('reference.sequence', DataType.NUMBER, true)
+		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.buys', DataType.DECIMAL)
+		.withField('snapshot.sells', DataType.DECIMAL)
+		.withField('snapshot.gain', DataType.DECIMAL)
+		.withField('snapshot.basis', DataType.DECIMAL)
+		.withField('snapshot.income', DataType.DECIMAL)
+		.withField('snapshot.value', DataType.DECIMAL)
 		.withField('trade.price', DataType.DECIMAL, true)
 		.withField('dividend.rate', DataType.DECIMAL, true)
 		.withField('dividend.effective', DataType.DAY, true)
@@ -353,7 +411,6 @@ module.exports = (() => {
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
-
 
 	return TransactionSchema;
 })();

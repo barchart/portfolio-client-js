@@ -12,7 +12,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * The schemas which can be used to represent a position objects.
+	 * The schemas which can be used to represent position objects.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -25,6 +25,8 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The actual {@link Schema}.
+		 *
 		 * @public
 		 * @returns {Schema}
 		 */
@@ -33,6 +35,8 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The complete position schema.
+		 *
 		 * @static
 		 * @public
 		 * @returns {PositionSchema}
@@ -41,12 +45,23 @@ module.exports = (() => {
 			return complete;
 		}
 
+		/**
+		 * Position data transmitted to the client, omitting some system data.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PositionSchema}
+		 */
+		static get CLIENT() {
+			return client;
+		}
+
 		toString() {
 			return '[PositionSchema]';
 		}
 	}
 
-	const complete = new PositionSchema(SchemaBuilder.withName('Complete')
+	const complete = new PositionSchema(SchemaBuilder.withName('complete')
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('sequence', DataType.NUMBER)
@@ -75,6 +90,33 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
+		.schema
+	);
+
+	const client = new PositionSchema(SchemaBuilder.withName('client')
+		.withField('user', DataType.STRING)
+		.withField('portfolio', DataType.STRING)
+		.withField('sequence', DataType.NUMBER)
+		.withField('instrument.id', DataType.STRING)
+		.withField('instrument.name', DataType.STRING)
+		.withField('instrument.type', DataType.STRING)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('instrument.delist', DataType.DAY, true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
+		.withField('position', DataType.STRING)
+		.withField('open', DataType.BOOLEAN, true)
+		.withField('transaction', DataType.NUMBER)
+		.withField('valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('reinvest', DataType.BOOLEAN)
+		.withField('snapshot.date', DataType.DAY)
+		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.buys', DataType.DECIMAL)
+		.withField('snapshot.sells', DataType.DECIMAL)
+		.withField('snapshot.gain', DataType.DECIMAL)
+		.withField('snapshot.basis', DataType.DECIMAL)
+		.withField('snapshot.income', DataType.DECIMAL)
+		.withField('snapshot.value', DataType.DECIMAL)
 		.schema
 	);
 

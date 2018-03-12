@@ -13,7 +13,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * The schemas which can be used to represent a portfolio objects.
+	 * The schemas which can be used to represent portfolio objects.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -26,6 +26,8 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The actual {@link Schema}.
+		 *
 		 * @public
 		 * @returns {Schema}
 		 */
@@ -34,24 +36,8 @@ module.exports = (() => {
 		}
 
 		/**
-		 * @static
-		 * @public
-		 * @returns {PortfolioSchema}
-		 */
-		static get CREATE() {
-			return create;
-		}
-
-		/**
-		 * @static
-		 * @public
-		 * @returns {PortfolioSchema}
-		 */
-		static get CLIENT() {
-			return client;
-		}
-
-		/**
+		 * The complete portfolio schema.
+		 *
 		 * @static
 		 * @public
 		 * @returns {PortfolioSchema}
@@ -61,6 +47,30 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Portfolio data transmitted to the client, omitting some system data.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
+		static get CLIENT() {
+			return client;
+		}
+
+		/**
+		 * Data required to create a portfolio.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
+		static get CREATE() {
+			return create;
+		}
+
+		/**
+		 * Data required to update a portfolio.
+		 *
 		 * @static
 		 * @public
 		 * @returns {PortfolioSchema}
