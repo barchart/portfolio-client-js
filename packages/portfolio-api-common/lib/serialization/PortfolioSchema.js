@@ -129,20 +129,18 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.cash', DataType.DAY, true)
-		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
-		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'), true)
 		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('update')
 		.withField('name', DataType.STRING)
-		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
-		.withField('dates.cash', DataType.DAY, true)
-		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'), true)
+		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
-		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
 		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
