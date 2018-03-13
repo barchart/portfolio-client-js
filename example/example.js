@@ -625,7 +625,7 @@ module.exports = function () {
 
 	var responseInterceptorForPortfolioDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			return JSON.parse(response.data, PortfolioSchema.COMPLETE.schema.getReviver());
+			return JSON.parse(response.data, PortfolioSchema.CLIENT.schema.getReviver());
 		} catch (e) {
 			console.log(e);
 		}
@@ -636,7 +636,7 @@ module.exports = function () {
 	});
 
 	var responseInterceptorForTransactionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
-		return JSON.parse(response.data, TransactionSchema.COMPLETE.schema.getReviver());
+		return JSON.parse(response.data, TransactionSchema.CLIENT.schema.getReviver());
 	});
 
 	function start(gateway) {
@@ -971,7 +971,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.12'
+		version: '1.1.13'
 	};
 }();
 
