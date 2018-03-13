@@ -1,4 +1,5 @@
 const assert = require('@barchart/common-js/lang/assert'),
+	is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
@@ -31,6 +32,35 @@ module.exports = (() => {
 		 */
 		get schema() {
 			return this._schema;
+		}
+
+		/**
+		 * Returns the appropriate schema for creating a transaction of the
+		 * supplied type.
+		 *
+		 * @public
+		 * @static
+		 * @param {String|TransactionType} transactionType
+		 * @returns {TransactionSchema|null}
+		 */
+		static forType(transactionType) {
+			let code;
+
+			if (transactionType instanceof TransactionType) {
+				code = transactionType.code;
+			} else {
+				code = transactionType;
+			}
+
+			let schema;
+
+			if (is.string(code)) {
+				schema = Enum.fromCode(code);
+			} else {
+				schema = null;
+			}
+
+			return schema;
 		}
 
 		/**
@@ -411,6 +441,27 @@ module.exports = (() => {
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
+
+	const map = { };
+
+	function addSchemaToMap(type, schema) {
+		map[type.code] = schema;
+	}
+
+	addSchemaToMap(TransactionType.BUY, buy);
+	addSchemaToMap(TransactionType.SELL, sell);
+	addSchemaToMap(TransactionType.BUY_SHORT, buyShort);
+	addSchemaToMap(TransactionType.SELL_SHORT, sellShort);
+	addSchemaToMap(TransactionType.DIVIDEND, dividend);
+	addSchemaToMap(TransactionType.DIVIDEND_STOCK, dividendStock);
+	addSchemaToMap(TransactionType.DIVIDEND_REINVEST, dividendReinvest);
+	addSchemaToMap(TransactionType.SPLIT, split);
+	addSchemaToMap(TransactionType.FEE, fee);
+	addSchemaToMap(TransactionType.FEE_UNITS, feeUnits);
+	addSchemaToMap(TransactionType.DEPOSIT, deposit);
+	addSchemaToMap(TransactionType.WITHDRAWAL, withdrawal);
+	addSchemaToMap(TransactionType.VALUATION, valuation);
+	addSchemaToMap(TransactionType.INCOME, income);
 
 	return TransactionSchema;
 })();
