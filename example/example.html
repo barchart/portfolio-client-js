@@ -27,8 +27,8 @@
 
 			that.gateway = null;
 
-			that.user = ko.observable('a887b0b1-f7ea-412c-9ffa-3b7f6f6608cc');
-			that.userLegacy = ko.observable('12153194');
+			that.user = ko.observable('4a896279-ad66-4fba-9239-8124dc1d3967');
+			that.userLegacy = ko.observable('10000120');
 
 			that.connected = ko.observable(false);
 			that.connecting = ko.observable(false);
@@ -355,7 +355,7 @@
 
 				that.connecting(true);
 
-				Barchart.Portfolio.PortfolioGateway.forLocal(Barchart.Portfolio.JwtGateway.forDevelopmentClient(that.user(), that.userLegacy()))
+				Barchart.Portfolio.PortfolioGateway.forDevelopment(Barchart.Portfolio.JwtGateway.forDevelopmentClient(that.user(), that.userLegacy()))
                     .then((gateway) => {
 					    that.gateway = gateway;
 
