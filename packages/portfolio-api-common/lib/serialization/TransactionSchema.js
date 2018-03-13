@@ -43,7 +43,7 @@ module.exports = (() => {
 		 * @param {String|TransactionType} transactionType
 		 * @returns {TransactionSchema|null}
 		 */
-		static forType(transactionType) {
+		static forCreate(transactionType) {
 			let code;
 
 			if (transactionType instanceof TransactionType) {
