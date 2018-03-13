@@ -61,15 +61,15 @@
 
 				var portfolio = {
 					name: `Random ${Math.random()}`,
-					timezone: 'America/New_York',
+					timezone: Barchart.Timezones.AMERICA_NEW_YORK,
 					dates: {
 						create: Barchart.Day.getToday(),
 						cash: Barchart.Day.getToday()
 					},
 					defaults: {
-						currency: 'CAD',
+						currency: Barchart.Currency.CAD,
 						reinvest: true,
-						valuation: 'AVG'
+						valuation: Barchart.ValuationType.AVERAGE_COST
 					},
 					miscellany: {
 						testing: {
