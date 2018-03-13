@@ -49,8 +49,6 @@
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
-
-						debugger;
 					}).catch((e) => {
                         writeConsoleText(action, true);
                         writeConsoleObject(e);
@@ -147,6 +145,20 @@
 				var action = 'portfolioGateway.readPositions()';
 
 				that.gateway.readPositions(that.portfolio() || null, that.position() || null)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var readPositionSummaries = function() {
+				var action = 'portfolioGateway.readPositionSummaries()';
+
+				that.gateway.readPositionSummaries(that.portfolio() || null, that.position() || null)
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
@@ -300,6 +312,7 @@
                 { text: 'Update Portfolio', action: updatePortfolio },
                 { text: 'Delete Portfolio', action: deletePortfolio },
                 { text: 'Get Positions', action: getPositions },
+                { text: 'Get Positions Summaries', action: readPositionSummaries },
                 { text: 'Delete Position', action: deletePosition },
                 { text: 'Get Transactions', action: getTransactions },
                 { text: 'Get Transactions (Formatted)', action: getTransactionsFormatted },

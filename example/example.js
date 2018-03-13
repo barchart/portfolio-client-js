@@ -5,9 +5,11 @@ var JwtGateway = require('@barchart/tgam-jwt-js/lib/JwtGateway');
 
 var Currency = require('@barchart/common-js/lang/Currency'),
     Day = require('@barchart/common-js/lang/Day'),
-    Decimal = require('@barchart/common-js/lang/Decimal');
+    Decimal = require('@barchart/common-js/lang/Decimal'),
+    Timezones = require('@barchart/common-js/lang/Timezones');
 
-var TransactionType = require('@barchart/portfolio-api-common/lib/data/TransactionType');
+var TransactionType = require('@barchart/portfolio-api-common/lib/data/TransactionType'),
+    ValuationType = require('@barchart/portfolio-api-common/lib/data/ValuationType');
 
 module.exports = function () {
 	'use strict';
@@ -19,10 +21,12 @@ module.exports = function () {
 	window.Barchart.Currency = Currency;
 	window.Barchart.Day = Day;
 	window.Barchart.Decimal = Decimal;
+	window.Barchart.Timezones = Timezones;
 	window.Barchart.TransactionType = TransactionType;
+	window.Barchart.ValuationType = ValuationType;
 }();
 
-},{"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/portfolio-api-common/lib/data/TransactionType":51,"@barchart/tgam-jwt-js/lib/JwtGateway":55}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Timezones":35,"@barchart/portfolio-api-common/lib/data/TransactionType":51,"@barchart/portfolio-api-common/lib/data/ValuationType":52,"@barchart/tgam-jwt-js/lib/JwtGateway":55}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -114,6 +118,8 @@ var assert = require('@barchart/common-js/lang/assert'),
     Enum = require('@barchart/common-js/lang/Enum'),
     is = require('@barchart/common-js/lang/is');
 
+var TransactionType = require('@barchart/portfolio-api-common/lib/data/TransactionType');
+
 var PortfolioSchema = require('@barchart/portfolio-api-common/lib/serialization/PortfolioSchema'),
     TransactionSchema = require('@barchart/portfolio-api-common/lib/serialization/TransactionSchema');
 
@@ -175,13 +181,21 @@ module.exports = function () {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
 			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(updatePortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
-			_this._deletePortfoliosEndpoint = EndpointBuilder.for('delete-portfolio', 'delete portfolios').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+			_this._deletePortfolioEndpoint = EndpointBuilder.for('delete-portfolio', 'delete portfolios').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
 			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readPositionsEndpoint = EndpointBuilder.for('read-positions', 'read positions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
+			_this._readPositionSummariesEndpoint = EndpointBuilder.for('read-position-summaries', 'read position summaries').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withVariableParameter('position', 'position', 'position', false);
+			}).withQueryBuilder(function (qb) {
+				qb.withVariableParameter('frame', 'frame', 'frame', true).withVariableParameter('start', 'start', 'start', true).withVariableParameter('end', 'end', 'end', true);
+			}).withRequestInterceptor(requestInterceptorToUse)
+			// .withResponseInterceptor(responseInterceptorForPositionDeserialization)
+			.withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deletePortfoliosEndpoint = EndpointBuilder.for('delete-portfolio', 'delete portfolios').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
@@ -264,7 +278,7 @@ module.exports = function () {
     * Creates a portfolio
     *
     * @public
-    * @param {Object=} portfolio
+    * @param {Object} portfolio
     * @return {Promise.<Portfolio>}
     */
 
@@ -286,7 +300,7 @@ module.exports = function () {
     * Updates a portfolio
     *
     * @public
-    * @param {String=} portfolio - ID of the portfolio to update
+    * @param {Object} portfolio
     * @return {Promise.<Portfolio>}
     */
 
@@ -298,7 +312,7 @@ module.exports = function () {
 				return Promise.resolve().then(function () {
 					checkStart.call(_this5);
 
-					assert.argumentIsRequired(portfolio, 'portfolio', String);
+					assert.argumentIsRequired(portfolio, 'portfolio', Object);
 
 					return Gateway.invoke(_this5._updatePortfolioEndpoint, PortfolioSchema.UPDATE.schema.format(portfolio));
 				});
@@ -308,8 +322,7 @@ module.exports = function () {
     * Updates a portfolio
     *
     * @public
-    * @param {String=} portfolio - ID of the portfolio to update
-    * @param {Object=} portfolioDatas
+    * @param {String} portfolio - ID of the portfolio to update
     * @return {Promise.<Portfolio>}
     */
 
@@ -323,7 +336,7 @@ module.exports = function () {
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 
-					return Gateway.invoke(_this6._deletePortfoliosEndpoint, { portfolio: portfolio });
+					return Gateway.invoke(_this6._deletePortfolioEndpoint, { portfolio: portfolio });
 				});
 			}
 
@@ -352,7 +365,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Deletes a position.
+    * Retrieves positions for a user, a user's portfolio, or a single position.
     *
     * @public
     * @param {String=} portfolio
@@ -361,17 +374,43 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'deletePosition',
-			value: function deletePosition(portfolio, position) {
+			key: 'readPositionSummaries',
+			value: function readPositionSummaries(portfolio, position) {
 				var _this8 = this;
 
 				return Promise.resolve().then(function () {
 					checkStart.call(_this8);
 
+					// console
+
+					assert.argumentIsOptional(portfolio, 'portfolio', String);
+					assert.argumentIsOptional(position, 'position', String);
+
+					return Gateway.invoke(_this8._readPositionSummariesEndpoint, { portfolio: portfolio || '*', position: position || '*' });
+				});
+			}
+
+			/**
+    * Deletes a position.
+    *
+    * @public
+    * @param {String} portfolio
+    * @param {String} position
+    * @returns {Promise.<Position[]>}
+    */
+
+		}, {
+			key: 'deletePosition',
+			value: function deletePosition(portfolio, position) {
+				var _this9 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this9);
+
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
 
-					return Gateway.invoke(_this8._deletePortfoliosEndpoint, { portfolio: portfolio, position: position });
+					return Gateway.invoke(_this9._deletePositionEndpoint, { portfolio: portfolio, position: position });
 				});
 			}
 
@@ -379,25 +418,33 @@ module.exports = function () {
     * Retrieves transactions for a portfolio, or a single position.
     *
     * @public
-    * @param {String} portfolio
-    * @param {String=} position
+    * @param {Object} transaction
     * @returns {Promise.<Transaction[]>}
     */
 
 		}, {
 			key: 'createTransaction',
-			value: function createTransaction(portfolio, position, transaction) {
-				var _this9 = this;
+			value: function createTransaction(transaction) {
+				var _this10 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this9);
-
-					assert.argumentIsRequired(portfolio, 'portfolio', String);
-					assert.argumentIsOptional(position, 'position', String);
+					checkStart.call(_this10);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
+					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
+					assert.argumentIsOptional(transaction.position, 'transaction.position', String);
 
-					return Gateway.invoke(_this9._createTransactionEndpoint, { portfolio: portfolio, position: position || 'new', transaction: transaction });
+					if (transaction.type instanceof TransactionType) {
+						assert.argumentIsRequired(transaction.type, 'transaction.type', TransactionType, 'TransactionType');
+					} else {
+						assert.argumentIsRequired(transaction.type, 'transaction.type', String);
+					}
+
+					if (!transaction.position) {
+						transaction.position = 'new';
+					}
+
+					return Gateway.invoke(_this10._createTransactionEndpoint, TransactionSchema.forCreate(transaction.type));
 				});
 			}
 
@@ -414,16 +461,16 @@ module.exports = function () {
 		}, {
 			key: 'deleteTransaction',
 			value: function deleteTransaction(portfolio, position, transaction) {
-				var _this10 = this;
+				var _this11 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this10);
+					checkStart.call(_this11);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
 					assert.argumentIsRequired(transaction, 'transaction', String);
 
-					return Gateway.invoke(_this10._deleteTransactionsEndpoint, { portfolio: portfolio, position: position, transaction: transaction });
+					return Gateway.invoke(_this11._deleteTransactionsEndpoint, { portfolio: portfolio, position: position, transaction: transaction });
 				});
 			}
 
@@ -439,20 +486,6 @@ module.exports = function () {
 		}, {
 			key: 'readTransactions',
 			value: function readTransactions(portfolio, position) {
-				var _this11 = this;
-
-				return Promise.resolve().then(function () {
-					checkStart.call(_this11);
-
-					assert.argumentIsRequired(portfolio, 'portfolio', String);
-					assert.argumentIsOptional(position, 'position', String);
-
-					return Gateway.invoke(_this11._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
-				});
-			}
-		}, {
-			key: 'readTransactionsFormatted',
-			value: function readTransactionsFormatted(portfolio, position) {
 				var _this12 = this;
 
 				return Promise.resolve().then(function () {
@@ -461,7 +494,21 @@ module.exports = function () {
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					return Gateway.invoke(_this12._readTransactionsReportEndpoint, { portfolio: portfolio, position: position || '*' });
+					return Gateway.invoke(_this12._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
+				});
+			}
+		}, {
+			key: 'readTransactionsFormatted',
+			value: function readTransactionsFormatted(portfolio, position) {
+				var _this13 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this13);
+
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+					assert.argumentIsOptional(position, 'position', String);
+
+					return Gateway.invoke(_this13._readTransactionsReportEndpoint, { portfolio: portfolio, position: position || '*' });
 				});
 			}
 
@@ -578,7 +625,7 @@ module.exports = function () {
 
 	var responseInterceptorForPortfolioDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			return JSON.parse(response.data, PortfolioSchema.COMPLETE.schema.getReviver());
+			return JSON.parse(response.data, PortfolioSchema.COMPLETE.schema.getSimpleReviver());
 		} catch (e) {
 			console.log(e);
 		}
@@ -611,7 +658,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":53,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":54}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/TransactionType":51,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":53,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":54}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4672,37 +4719,6 @@ module.exports = function () {
 			}
 
 			/**
-    * Indicates the current day falls between two other days, inclusive
-    * of the range boundaries.
-    *
-    * @public
-    * @param {Day=} first
-    * @param {Day=} last
-    * @param {boolean=} exclusive
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsContained',
-			value: function getIsContained(first, last) {
-				assert.argumentIsOptional(first, 'first', Day, 'Day');
-				assert.argumentIsOptional(last, 'last', Day, 'Day');
-
-				var notAfter = void 0;
-				var notBefore = void 0;
-
-				if (first && last && first.getIsAfter(last)) {
-					notBefore = false;
-					notAfter = false;
-				} else {
-					notAfter = !(last instanceof Day) || !this.getIsAfter(last);
-					notBefore = !(first instanceof Day) || !this.getIsBefore(first);
-				}
-
-				return notAfter && notBefore;
-			}
-
-			/**
     * Indicates if another {@link Day} occurs after the current instance.
     *
     * @public
@@ -8087,9 +8103,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var functions = require('./../../lang/functions'),
-    is = require('./../../lang/is'),
-    array = require('./../../lang/array');
+var attributes = require('./../../lang/attributes'),
+    functions = require('./../../lang/functions'),
+    array = require('./../../lang/array'),
+    is = require('./../../lang/is');
 
 var LinkedList = require('./../../collections/LinkedList'),
     Tree = require('./../../collections/Tree');
@@ -8125,14 +8142,41 @@ module.exports = function () {
 		}
 
 		/**
-   * Name of the table.
+   * Accepts data and returns a new object which (should) conform to
+   * the schema.
    *
    * @public
-   * @returns {String}
+   * @param {data} data
+   * @returns {Object}
    */
 
 
 		_createClass(Schema, [{
+			key: 'format',
+			value: function format(data) {
+				var returnRef = {};
+
+				this._fields.forEach(function (field) {
+					formatField(returnRef, field, data);
+				});
+
+				this._components.forEach(function (component) {
+					component.fields.forEach(function (field) {
+						formatField(returnRef, field, data);
+					});
+				});
+
+				return returnRef;
+			}
+
+			/**
+    * Name of the table.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
 			key: 'validate',
 
 
@@ -8441,10 +8485,16 @@ module.exports = function () {
 		return head;
 	}
 
+	function formatField(target, field, data) {
+		if (attributes.has(data, field.name)) {
+			attributes.write(target, field.name, field.dataType.convert(attributes.read(data, field.name)));
+		}
+	}
+
 	return Schema;
 }();
 
-},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/array":36,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
+},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/array":36,"./../../lang/attributes":38,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9337,7 +9387,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * The schemas which can be used to represent portfolio objects.
+	 * The schemas which can be used to represent a portfolio objects.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -9350,8 +9400,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The actual {@link Schema}.
-		 *
 		 * @public
 		 * @returns {Schema}
 		 */
@@ -9360,30 +9408,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The complete portfolio schema.
-		 *
-		 * @static
-		 * @public
-		 * @returns {PortfolioSchema}
-		 */
-		static get COMPLETE() {
-			return complete;
-		}
-
-		/**
-		 * Portfolio data transmitted to the client, omitting some system data.
-		 *
-		 * @static
-		 * @public
-		 * @returns {PortfolioSchema}
-		 */
-		static get CLIENT() {
-			return client;
-		}
-
-		/**
-		 * Data required to create a portfolio.
-		 *
 		 * @static
 		 * @public
 		 * @returns {PortfolioSchema}
@@ -9393,8 +9417,24 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Data required to update a portfolio.
-		 *
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
+		static get CLIENT() {
+			return client;
+		}
+
+		/**
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
+		static get COMPLETE() {
+			return complete;
+		}
+
+		/**
 		 * @static
 		 * @public
 		 * @returns {PortfolioSchema}
@@ -9453,18 +9493,20 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.cash', DataType.DAY, true)
-		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
-		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'), true)
+		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
 		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('update')
 		.withField('name', DataType.STRING)
-		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'), true)
-		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
+		.withField('dates.cash', DataType.DAY, true)
+		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
+		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
 		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
@@ -9486,7 +9528,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * The schemas which can be used to represent transaction objects.
+	 * The schemas which can be used to represent a transaction objects.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -9499,8 +9541,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The actual {@link Schema}.
-		 *
 		 * @public
 		 * @returns {Schema}
 		 */
@@ -9508,26 +9548,8 @@ module.exports = (() => {
 			return this._schema;
 		}
 
-		/**
-		 * The complete transaction schema.
-		 *
-		 * @static
-		 * @public
-		 * @returns {TransactionSchema}
-		 */
 		static get COMPLETE() {
 			return complete;
-		}
-
-		/**
-		 * Transaction data transmitted to the client, omitting some system data.
-		 *
-		 * @static
-		 * @public
-		 * @returns {TransactionSchema}
-		 */
-		static get CLIENT() {
-			return client;
 		}
 
 		static get BUY() {
@@ -9607,7 +9629,7 @@ module.exports = (() => {
 		}
 	}
 
-	const complete = new TransactionSchema(SchemaBuilder.withName('complete')
+	const complete = new TransactionSchema(SchemaBuilder.withName('Complete')
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('sequence', DataType.NUMBER)
@@ -9631,44 +9653,6 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('legacy.transaction', DataType.STRING, true)
-		.withField('trade.price', DataType.DECIMAL, true)
-		.withField('dividend.rate', DataType.DECIMAL, true)
-		.withField('dividend.effective', DataType.DAY, true)
-		.withField('dividend.price', DataType.DECIMAL, true)
-		.withField('dividend.amount', DataType.DECIMAL, true)
-		.withField('dividend.reference', DataType.STRING, true)
-		.withField('split.numerator', DataType.DECIMAL, true)
-		.withField('split.denominator', DataType.DECIMAL, true)
-		.withField('split.effective', DataType.DAY, true)
-		.withField('split.reference', DataType.STRING, true)
-		.withField('charge.amount', DataType.DECIMAL, true)
-		.withField('income.amount', DataType.DECIMAL, true)
-		.withField('valuation.value', DataType.DECIMAL, true)
-		.withField('system.sequence', DataType.NUMBER)
-		.withField('system.version', DataType.STRING)
-		.withField('system.timestamp', DataType.TIMESTAMP)
-		.schema
-	);
-
-	const client = new TransactionSchema(SchemaBuilder.withName('client')
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('sequence', DataType.NUMBER)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('description', DataType.STRING, true)
-		.withField('amount', DataType.DECIMAL)
-		.withField('quantity', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('reference.position', DataType.STRING, true)
-		.withField('reference.sequence', DataType.NUMBER, true)
-		.withField('snapshot.open', DataType.DECIMAL)
-		.withField('snapshot.buys', DataType.DECIMAL)
-		.withField('snapshot.sells', DataType.DECIMAL)
-		.withField('snapshot.gain', DataType.DECIMAL)
-		.withField('snapshot.basis', DataType.DECIMAL)
-		.withField('snapshot.income', DataType.DECIMAL)
-		.withField('snapshot.value', DataType.DECIMAL)
 		.withField('trade.price', DataType.DECIMAL, true)
 		.withField('dividend.rate', DataType.DECIMAL, true)
 		.withField('dividend.effective', DataType.DAY, true)
@@ -9887,6 +9871,7 @@ module.exports = (() => {
 		.schema
 	);
 
+
 	return TransactionSchema;
 })();
 
@@ -9920,8 +9905,6 @@ var EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBui
 module.exports = function () {
 	'use strict';
 
-	var DEFAULT_TOKEN_REFRESH_INTERVAL = 600000;
-
 	/**
   * Web service gateway for obtaining JWT tokens from TGAM (The Globe and Mail).
   *
@@ -9946,9 +9929,7 @@ module.exports = function () {
 			_this._startPromise = null;
 
 			_this._endpoint = endpoint;
-
-			_this._refreshInterval = refreshInterval || 0;
-			_this._refreshJitter = Math.floor(_this._refreshInterval / 10);
+			_this._refreshInterval = refreshInterval || null;
 			return _this;
 		}
 
@@ -10022,26 +10003,19 @@ module.exports = function () {
 
 				var cachePromise = null;
 				var cacheDisposable = null;
-				var cacheTime = null;
 
 				var refreshToken = function refreshToken() {
 					var refreshPromise = scheduler.backoff(function () {
 						return _this4.readToken();
 					}, 100, 'Read JWT token', 3).then(function (token) {
-						if (_this4._refreshInterval > 0) {
+						if (_this4._refreshInterval) {
 							cachePromise = refreshPromise;
-
-							if (cacheDisposable === null) {
-								cacheDisposable = scheduler.repeat(function () {
-									return refreshToken();
-								}, _this4._refreshInterval, 'Refresh JWT token');
-							}
 						}
 
-						return token;
-					}).then(function (token) {
-						if (_this4._refreshInterval > 0) {
-							cacheTime = getTime();
+						if (cacheDisposable === null) {
+							cacheDisposable = scheduler.repeat(function () {
+								return refreshToken();
+							}, _this4._refreshInterval, 'Refresh JWT token');
 						}
 
 						return token;
@@ -10051,7 +10025,6 @@ module.exports = function () {
 
 							cacheDisposable = null;
 							cachePromise = null;
-							acheTime = null;
 						}
 
 						return Promise.reject(e);
@@ -10063,14 +10036,10 @@ module.exports = function () {
 				var delegate = function delegate(options, endpoint) {
 					var tokenPromise = void 0;
 
-					if (cachePromise === null) {
-						tokenPromise = refreshToken();
+					if (cachePromise !== null) {
+						tokenPromise = cachePromise;
 					} else {
-						if (cacheTime !== null && getTime() > cacheTime + _this4._refreshInterval + _this4._refreshJitter) {
-							tokenPromise = refreshToken();
-						} else {
-							tokenPromise = cachePromise;
-						}
+						tokenPromise = refreshToken();
 					}
 
 					return tokenPromise.then(function (token) {
@@ -10143,7 +10112,7 @@ module.exports = function () {
 		}, {
 			key: 'forStaging',
 			value: function forStaging() {
-				return start(new JwtGateway(_forStaging(), DEFAULT_TOKEN_REFRESH_INTERVAL));
+				return start(new JwtGateway(_forStaging(), 600000));
 			}
 
 			/**
@@ -10173,7 +10142,7 @@ module.exports = function () {
 		}, {
 			key: 'forProduction',
 			value: function forProduction() {
-				return start(new JwtGateway(_forProduction(), DEFAULT_TOKEN_REFRESH_INTERVAL));
+				return start(new JwtGateway(_forProduction(), 600000));
 			}
 
 			/**
@@ -10230,10 +10199,6 @@ module.exports = function () {
 		})).withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
 			return response.token;
 		})).endpoint;
-	}
-
-	function getTime() {
-		return new Date().getTime();
 	}
 
 	return JwtGateway;
