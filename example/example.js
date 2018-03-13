@@ -625,7 +625,7 @@ module.exports = function () {
 
 	var responseInterceptorForPortfolioDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			return JSON.parse(response.data, PortfolioSchema.COMPLETE.schema.getSimpleReviver());
+			return JSON.parse(response.data, PortfolioSchema.COMPLETE.schema.getReviver());
 		} catch (e) {
 			console.log(e);
 		}
@@ -971,7 +971,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.11'
+		version: '1.1.12'
 	};
 }();
 
@@ -4719,6 +4719,37 @@ module.exports = function () {
 			}
 
 			/**
+    * Indicates the current day falls between two other days, inclusive
+    * of the range boundaries.
+    *
+    * @public
+    * @param {Day=} first
+    * @param {Day=} last
+    * @param {boolean=} exclusive
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsContained',
+			value: function getIsContained(first, last) {
+				assert.argumentIsOptional(first, 'first', Day, 'Day');
+				assert.argumentIsOptional(last, 'last', Day, 'Day');
+
+				var notAfter = void 0;
+				var notBefore = void 0;
+
+				if (first && last && first.getIsAfter(last)) {
+					notBefore = false;
+					notAfter = false;
+				} else {
+					notAfter = !(last instanceof Day) || !this.getIsAfter(last);
+					notBefore = !(first instanceof Day) || !this.getIsBefore(first);
+				}
+
+				return notAfter && notBefore;
+			}
+
+			/**
     * Indicates if another {@link Day} occurs after the current instance.
     *
     * @public
@@ -8105,7 +8136,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var attributes = require('./../../lang/attributes'),
     functions = require('./../../lang/functions'),
-    array = require('./../../lang/array'),
     is = require('./../../lang/is');
 
 var LinkedList = require('./../../collections/LinkedList'),
@@ -8200,45 +8230,6 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'getSimpleReviver',
-			value: function getSimpleReviver() {
-				var _this = this;
-
-				return function (key, value) {
-					var field = _this.fields.find(function (f) {
-						var fieldName = array.last(f.name.split('.'));
-
-						return fieldName === key;
-					});
-
-					if (is.object(value)) {
-						return value;
-					}
-
-					var returnVal = void 0;
-
-					try {
-						returnVal = field.dataType.reviver(value);
-					} catch (e) {
-						if (_this._strict) {
-							throw Error(e);
-						} else {
-							returnVal = value;
-						}
-					}
-
-					return returnVal;
-				};
-			}
-
-			/**
-    * Generates a function suitable for use by JSON.parse.
-    *
-    * @public
-    * @returns {Function}
-    */
-
-		}, {
 			key: 'getReviver',
 			value: function getReviver() {
 				var head = this._revivers;
@@ -8282,10 +8273,10 @@ module.exports = function () {
 		}, {
 			key: 'getReviverFactory',
 			value: function getReviverFactory() {
-				var _this2 = this;
+				var _this = this;
 
 				return function () {
-					return _this2.getReviver();
+					return _this.getReviver();
 				};
 			}
 		}, {
@@ -8349,11 +8340,11 @@ module.exports = function () {
 		function SchemaError(key, name, message) {
 			_classCallCheck(this, SchemaError);
 
-			var _this3 = _possibleConstructorReturn(this, (SchemaError.__proto__ || Object.getPrototypeOf(SchemaError)).call(this, message));
+			var _this2 = _possibleConstructorReturn(this, (SchemaError.__proto__ || Object.getPrototypeOf(SchemaError)).call(this, message));
 
-			_this3.key = key;
-			_this3.name = name;
-			return _this3;
+			_this2.key = key;
+			_this2.name = name;
+			return _this2;
 		}
 
 		_createClass(SchemaError, [{
@@ -8494,7 +8485,7 @@ module.exports = function () {
 	return Schema;
 }();
 
-},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/array":36,"./../../lang/attributes":38,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
+},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/attributes":38,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9387,7 +9378,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * The schemas which can be used to represent a portfolio objects.
+	 * The schemas which can be used to represent portfolio objects.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -9400,6 +9391,8 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The actual {@link Schema}.
+		 *
 		 * @public
 		 * @returns {Schema}
 		 */
@@ -9408,24 +9401,8 @@ module.exports = (() => {
 		}
 
 		/**
-		 * @static
-		 * @public
-		 * @returns {PortfolioSchema}
-		 */
-		static get CREATE() {
-			return create;
-		}
-
-		/**
-		 * @static
-		 * @public
-		 * @returns {PortfolioSchema}
-		 */
-		static get CLIENT() {
-			return client;
-		}
-
-		/**
+		 * The complete portfolio schema.
+		 *
 		 * @static
 		 * @public
 		 * @returns {PortfolioSchema}
@@ -9435,6 +9412,30 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Portfolio data transmitted to the client, omitting some system data.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
+		static get CLIENT() {
+			return client;
+		}
+
+		/**
+		 * Data required to create a portfolio.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
+		static get CREATE() {
+			return create;
+		}
+
+		/**
+		 * Data required to update a portfolio.
+		 *
 		 * @static
 		 * @public
 		 * @returns {PortfolioSchema}
@@ -9493,20 +9494,18 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.cash', DataType.DAY, true)
-		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
-		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'), true)
 		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('update')
 		.withField('name', DataType.STRING)
-		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
-		.withField('dates.cash', DataType.DAY, true)
-		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'), true)
+		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
-		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
 		.withField('miscellany', DataType.AD_HOC, true)
 		.schema
 	);
@@ -9516,6 +9515,7 @@ module.exports = (() => {
 
 },{"./../data/ValuationType":52,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/Timezones":35,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],54:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
+	is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
@@ -9528,7 +9528,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * The schemas which can be used to represent a transaction objects.
+	 * The schemas which can be used to represent transaction objects.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -9541,6 +9541,8 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The actual {@link Schema}.
+		 *
 		 * @public
 		 * @returns {Schema}
 		 */
@@ -9548,8 +9550,55 @@ module.exports = (() => {
 			return this._schema;
 		}
 
+		/**
+		 * Returns the appropriate schema for creating a transaction of the
+		 * supplied type.
+		 *
+		 * @public
+		 * @static
+		 * @param {String|TransactionType} transactionType
+		 * @returns {TransactionSchema|null}
+		 */
+		static forCreate(transactionType) {
+			let code;
+
+			if (transactionType instanceof TransactionType) {
+				code = transactionType.code;
+			} else {
+				code = transactionType;
+			}
+
+			let schema;
+
+			if (is.string(code)) {
+				schema = Enum.fromCode(code);
+			} else {
+				schema = null;
+			}
+
+			return schema;
+		}
+
+		/**
+		 * The complete transaction schema.
+		 *
+		 * @static
+		 * @public
+		 * @returns {TransactionSchema}
+		 */
 		static get COMPLETE() {
 			return complete;
+		}
+
+		/**
+		 * Transaction data transmitted to the client, omitting some system data.
+		 *
+		 * @static
+		 * @public
+		 * @returns {TransactionSchema}
+		 */
+		static get CLIENT() {
+			return client;
 		}
 
 		static get BUY() {
@@ -9629,7 +9678,7 @@ module.exports = (() => {
 		}
 	}
 
-	const complete = new TransactionSchema(SchemaBuilder.withName('Complete')
+	const complete = new TransactionSchema(SchemaBuilder.withName('complete')
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('sequence', DataType.NUMBER)
@@ -9666,12 +9715,51 @@ module.exports = (() => {
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
 		.withField('valuation.value', DataType.DECIMAL, true)
+		.withField('system.sequence', DataType.NUMBER)
+		.withField('system.version', DataType.STRING)
+		.withField('system.timestamp', DataType.TIMESTAMP)
 		.schema
 	);
 
-	const buy = new TransactionSchema(SchemaBuilder.withName('B')
+	const client = new TransactionSchema(SchemaBuilder.withName('client')
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
+		.withField('date', DataType.DAY)
+		.withField('description', DataType.STRING, true)
+		.withField('amount', DataType.DECIMAL)
+		.withField('quantity', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.withField('reference.position', DataType.STRING, true)
+		.withField('reference.sequence', DataType.NUMBER, true)
+		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.buys', DataType.DECIMAL)
+		.withField('snapshot.sells', DataType.DECIMAL)
+		.withField('snapshot.gain', DataType.DECIMAL)
+		.withField('snapshot.basis', DataType.DECIMAL)
+		.withField('snapshot.income', DataType.DECIMAL)
+		.withField('snapshot.value', DataType.DECIMAL)
+		.withField('trade.price', DataType.DECIMAL, true)
+		.withField('dividend.rate', DataType.DECIMAL, true)
+		.withField('dividend.effective', DataType.DAY, true)
+		.withField('dividend.price', DataType.DECIMAL, true)
+		.withField('dividend.amount', DataType.DECIMAL, true)
+		.withField('dividend.reference', DataType.STRING, true)
+		.withField('split.numerator', DataType.DECIMAL, true)
+		.withField('split.denominator', DataType.DECIMAL, true)
+		.withField('split.effective', DataType.DAY, true)
+		.withField('split.reference', DataType.STRING, true)
+		.withField('charge.amount', DataType.DECIMAL, true)
+		.withField('income.amount', DataType.DECIMAL, true)
+		.withField('valuation.value', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const buy = new TransactionSchema(SchemaBuilder.withName(TransactionType.BUY.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('instrument.name', DataType.STRING, true)
 		.withField('instrument.type', DataType.STRING, true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
@@ -9685,10 +9773,10 @@ module.exports = (() => {
 		.schema
 	);
 
-	const sell = new TransactionSchema(SchemaBuilder.withName('S')
+	const sell = new TransactionSchema(SchemaBuilder.withName(TransactionType.SELL.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -9696,10 +9784,10 @@ module.exports = (() => {
 		.schema
 	);
 
-	const buyShort = new TransactionSchema(SchemaBuilder.withName('BS')
+	const buyShort = new TransactionSchema(SchemaBuilder.withName(TransactionType.BUY_SHORT.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -9707,10 +9795,15 @@ module.exports = (() => {
 		.schema
 	);
 
-	const sellShort = new TransactionSchema(SchemaBuilder.withName('SS')
+	const sellShort = new TransactionSchema(SchemaBuilder.withName(TransactionType.SELL_SHORT.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -9718,10 +9811,10 @@ module.exports = (() => {
 		.schema
 	);
 
-	const dividend = new TransactionSchema(SchemaBuilder.withName('DV')
+	const dividend = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
 		.withField('open', DataType.DECIMAL, true)
@@ -9730,23 +9823,10 @@ module.exports = (() => {
 		.schema
 	);
 
-	const dividendReinvest = new TransactionSchema(SchemaBuilder.withName('DX')
+	const dividendReinvest = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND_REINVEST.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
-		.withField('price', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.schema
-	);
-
-	const dividendStock = new TransactionSchema(SchemaBuilder.withName('DS')
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
 		.withField('open', DataType.DECIMAL, true)
@@ -9756,10 +9836,23 @@ module.exports = (() => {
 		.schema
 	);
 
-	const distributionCash = new TransactionSchema(SchemaBuilder.withName('DC')
+	const dividendStock = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND_STOCK.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('date', DataType.DAY)
+		.withField('rate', DataType.DECIMAL)
+		.withField('open', DataType.DECIMAL, true)
+		.withField('effective', DataType.DAY, true)
+		.withField('price', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
+		.schema
+	);
+
+	const distributionCash = new TransactionSchema(SchemaBuilder.withName(TransactionType.DISTRIBUTION_CASH.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
 		.withField('open', DataType.DECIMAL, true)
@@ -9768,10 +9861,10 @@ module.exports = (() => {
 		.schema
 	);
 
-	const distributionFund = new TransactionSchema(SchemaBuilder.withName('DF')
+	const distributionFund = new TransactionSchema(SchemaBuilder.withName(TransactionType.DISTRIBUTION_FUND.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
 		.withField('open', DataType.DECIMAL, true)
@@ -9780,10 +9873,10 @@ module.exports = (() => {
 		.schema
 	);
 
-	const split = new TransactionSchema(SchemaBuilder.withName('SP')
+	const split = new TransactionSchema(SchemaBuilder.withName(TransactionType.SPLIT.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('numerator', DataType.DECIMAL)
 		.withField('denominator', DataType.DECIMAL)
@@ -9792,90 +9885,115 @@ module.exports = (() => {
 		.schema
 	);
 
-	const fee = new TransactionSchema(SchemaBuilder.withName('F')
+	const fee = new TransactionSchema(SchemaBuilder.withName(TransactionType.FEE.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('fee', DataType.DECIMAL)
 		.schema
 	);
 
-	const feeUnits = new TransactionSchema(SchemaBuilder.withName('FU')
+	const feeUnits = new TransactionSchema(SchemaBuilder.withName(TransactionType.FEE_UNITS.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('fee', DataType.DECIMAL)
 		.withField('price', DataType.DECIMAL)
 		.schema
 	);
 
-	const deposit = new TransactionSchema(SchemaBuilder.withName('D')
+	const deposit = new TransactionSchema(SchemaBuilder.withName(TransactionType.DEPOSIT.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
-	const withdrawal = new TransactionSchema(SchemaBuilder.withName('W')
+	const withdrawal = new TransactionSchema(SchemaBuilder.withName(TransactionType.WITHDRAWAL.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
-	const debit = new TransactionSchema(SchemaBuilder.withName('DR')
+	const debit = new TransactionSchema(SchemaBuilder.withName(TransactionType.DEBIT.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
-	const credit = new TransactionSchema(SchemaBuilder.withName('CR')
+	const credit = new TransactionSchema(SchemaBuilder.withName(TransactionType.CREDIT.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
-	const valuation = new TransactionSchema(SchemaBuilder.withName('V')
+	const valuation = new TransactionSchema(SchemaBuilder.withName(TransactionType.VALUATION.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('value', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
-	const income = new TransactionSchema(SchemaBuilder.withName('I')
+	const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('position', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('income', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
 
+	const map = { };
+
+	function addSchemaToMap(type, schema) {
+		map[type.code] = schema;
+	}
+
+	addSchemaToMap(TransactionType.BUY, buy);
+	addSchemaToMap(TransactionType.SELL, sell);
+	addSchemaToMap(TransactionType.BUY_SHORT, buyShort);
+	addSchemaToMap(TransactionType.SELL_SHORT, sellShort);
+	addSchemaToMap(TransactionType.DIVIDEND, dividend);
+	addSchemaToMap(TransactionType.DIVIDEND_STOCK, dividendStock);
+	addSchemaToMap(TransactionType.DIVIDEND_REINVEST, dividendReinvest);
+	addSchemaToMap(TransactionType.SPLIT, split);
+	addSchemaToMap(TransactionType.FEE, fee);
+	addSchemaToMap(TransactionType.FEE_UNITS, feeUnits);
+	addSchemaToMap(TransactionType.DEPOSIT, deposit);
+	addSchemaToMap(TransactionType.WITHDRAWAL, withdrawal);
+	addSchemaToMap(TransactionType.VALUATION, valuation);
+	addSchemaToMap(TransactionType.INCOME, income);
 
 	return TransactionSchema;
 })();
 
-},{"./../data/TransactionType":51,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],55:[function(require,module,exports){
+},{"./../data/TransactionType":51,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],55:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9905,6 +10023,8 @@ var EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBui
 module.exports = function () {
 	'use strict';
 
+	var DEFAULT_TOKEN_REFRESH_INTERVAL = 600000;
+
 	/**
   * Web service gateway for obtaining JWT tokens from TGAM (The Globe and Mail).
   *
@@ -9929,7 +10049,9 @@ module.exports = function () {
 			_this._startPromise = null;
 
 			_this._endpoint = endpoint;
-			_this._refreshInterval = refreshInterval || null;
+
+			_this._refreshInterval = refreshInterval || 0;
+			_this._refreshJitter = Math.floor(_this._refreshInterval / 10);
 			return _this;
 		}
 
@@ -10003,19 +10125,26 @@ module.exports = function () {
 
 				var cachePromise = null;
 				var cacheDisposable = null;
+				var cacheTime = null;
 
 				var refreshToken = function refreshToken() {
 					var refreshPromise = scheduler.backoff(function () {
 						return _this4.readToken();
 					}, 100, 'Read JWT token', 3).then(function (token) {
-						if (_this4._refreshInterval) {
+						if (_this4._refreshInterval > 0) {
 							cachePromise = refreshPromise;
+
+							if (cacheDisposable === null) {
+								cacheDisposable = scheduler.repeat(function () {
+									return refreshToken();
+								}, _this4._refreshInterval, 'Refresh JWT token');
+							}
 						}
 
-						if (cacheDisposable === null) {
-							cacheDisposable = scheduler.repeat(function () {
-								return refreshToken();
-							}, _this4._refreshInterval, 'Refresh JWT token');
+						return token;
+					}).then(function (token) {
+						if (_this4._refreshInterval > 0) {
+							cacheTime = getTime();
 						}
 
 						return token;
@@ -10025,6 +10154,7 @@ module.exports = function () {
 
 							cacheDisposable = null;
 							cachePromise = null;
+							acheTime = null;
 						}
 
 						return Promise.reject(e);
@@ -10036,10 +10166,14 @@ module.exports = function () {
 				var delegate = function delegate(options, endpoint) {
 					var tokenPromise = void 0;
 
-					if (cachePromise !== null) {
-						tokenPromise = cachePromise;
-					} else {
+					if (cachePromise === null) {
 						tokenPromise = refreshToken();
+					} else {
+						if (cacheTime !== null && getTime() > cacheTime + _this4._refreshInterval + _this4._refreshJitter) {
+							tokenPromise = refreshToken();
+						} else {
+							tokenPromise = cachePromise;
+						}
 					}
 
 					return tokenPromise.then(function (token) {
@@ -10112,7 +10246,7 @@ module.exports = function () {
 		}, {
 			key: 'forStaging',
 			value: function forStaging() {
-				return start(new JwtGateway(_forStaging(), 600000));
+				return start(new JwtGateway(_forStaging(), DEFAULT_TOKEN_REFRESH_INTERVAL));
 			}
 
 			/**
@@ -10142,7 +10276,7 @@ module.exports = function () {
 		}, {
 			key: 'forProduction',
 			value: function forProduction() {
-				return start(new JwtGateway(_forProduction(), 600000));
+				return start(new JwtGateway(_forProduction(), DEFAULT_TOKEN_REFRESH_INTERVAL));
 			}
 
 			/**
@@ -10199,6 +10333,10 @@ module.exports = function () {
 		})).withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
 			return response.token;
 		})).endpoint;
+	}
+
+	function getTime() {
+		return new Date().getTime();
 	}
 
 	return JwtGateway;
