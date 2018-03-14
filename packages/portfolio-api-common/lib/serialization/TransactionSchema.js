@@ -55,7 +55,7 @@ module.exports = (() => {
 			let schema;
 
 			if (is.string(code)) {
-				schema = Enum.fromCode(code);
+				schema = Enum.fromCode(TransactionSchema, code);
 			} else {
 				schema = null;
 			}
