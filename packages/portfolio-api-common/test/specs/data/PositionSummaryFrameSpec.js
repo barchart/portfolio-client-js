@@ -1,7 +1,8 @@
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
-const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
+const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame'),
+	TransactionType = require('./../../../lib/data/TransactionType');
 
 describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	'use strict';
@@ -12,13 +13,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2015, 10, 20)
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2016, 11, 21),
 					snapshot: {
 						open: new Decimal(1)
-					}
+					},
+					type: TransactionType.BUY
 				}
 			];
 
@@ -51,13 +57,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2015, 10, 20)
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2015, 11, 21),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -80,13 +91,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2015, 10, 20)
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2016, 11, 21),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -114,13 +130,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2015, 10, 20)
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2017, 11, 21),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -153,13 +174,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2017, 1, 1)
+					date: new Day(2017, 1, 1),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2017, 1, 2),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -179,8 +205,9 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				{
 					date: new Day(2018, 1, 1),
 					snapshot: {
-						open: new Decimal(0)
-					}
+						open: new Decimal(100)
+					},
+					type: TransactionType.BUY
 				}
 			];
 
@@ -203,13 +230,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2018, 1, 1)
+					date: new Day(2018, 1, 1),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2018, 1, 2),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 

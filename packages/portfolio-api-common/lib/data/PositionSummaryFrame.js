@@ -144,7 +144,7 @@ module.exports = (() => {
 
 	function getFilteredTransactions(transactions) {
 		return transactions.reduce((filtered, transaction) => {
-			if (!transaction.snapshot.getIsZero() || transaction.type.closing) {
+			if (!transaction.snapshot.open.getIsZero() || transaction.type.closing) {
 				filtered.push(transaction);
 
 				return filtered;
