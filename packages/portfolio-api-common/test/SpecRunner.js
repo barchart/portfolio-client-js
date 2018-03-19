@@ -29,7 +29,7 @@ module.exports = (() => {
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
-			return this._rangeCalculator(transactions);
+			return this._rangeCalculator(getFilteredTransactions(transactions));
 		}
 
 		/**
@@ -143,10 +143,347 @@ module.exports = (() => {
 		return ranges;
 	}
 
+	function getFilteredTransactions(transactions) {
+		return transactions.reduce((filtered, transaction) => {
+			if (!transaction.snapshot.open.getIsZero() || transaction.type.closing) {
+				filtered.push(transaction);
+			}
+
+			return filtered;
+		}, [ ]);
+	}
+
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":4,"@barchart/common-js/lang/Enum":6,"@barchart/common-js/lang/array":7,"@barchart/common-js/lang/assert":8,"@barchart/common-js/lang/is":9}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":5,"@barchart/common-js/lang/Enum":7,"@barchart/common-js/lang/array":8,"@barchart/common-js/lang/assert":9,"@barchart/common-js/lang/is":10}],2:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+	Enum = require('@barchart/common-js/lang/Enum');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * An enumeration item that describes a type of transaction.
+	 *
+	 * @public
+	 * @extends {Enum}
+	 * @param {String} code
+	 * @param {String} description
+	 * @param {Boolean} purchase
+	 * @param {Boolean} sale
+	 * @param {Boolean} income
+	 * @param {Boolean} opening
+	 * @param {Boolean} closing
+	 */
+	class TransactionType extends Enum {
+		constructor(code, description, purchase, sale, income, opening, closing) {
+			super(code, description);
+
+			assert.argumentIsRequired(purchase, 'purchase', Boolean);
+			assert.argumentIsRequired(sale, 'sale', Boolean);
+			assert.argumentIsRequired(income, 'income', Boolean);
+			assert.argumentIsRequired(opening, 'opening', Boolean);
+			assert.argumentIsRequired(closing, 'closing', Boolean);
+
+			this._purchase = purchase;
+			this._sale = sale;
+			this._income = income;
+			this._opening = opening;
+			this._closing = closing;
+		}
+
+		/**
+		 * Indicates if the transaction was a trade.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get trade() {
+			return this._purchase || this._sale;
+		}
+
+		/**
+		 * Indicates if the trade was a purchase.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get purchase() {
+			return this._purchase;
+		}
+
+		/**
+		 * Indicates if the trade was a sale.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get sale() {
+			return this._sale;
+		}
+
+		/**
+		 * Indicates if the transaction was an income payment.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get income() {
+			return this._income;
+		}
+
+		/**
+		 * Indicates if the transactions opens the position (i.e. increases its
+		 * magnitude).
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get opening() {
+			return this._opening;
+		}
+
+		/**
+		 * Indicates if the transactions closes the position (i.e. decreases its
+		 * magnitude).
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get closing() {
+			return this._closing;
+		}
+
+		/**
+		 * A purchase.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get BUY() {
+			return buy;
+		}
+
+		/**
+		 * A sale.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get SELL() {
+			return sell;
+		}
+
+		/**
+		 * A purchase (in a short position).
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get BUY_SHORT() {
+			return buyShort;
+		}
+
+		/**
+		 * A short sale.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get SELL_SHORT() {
+			return sellShort;
+		}
+
+		/**
+		 * A cash dividend.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DIVIDEND() {
+			return dividend;
+		}
+
+		/**
+		 * A cash dividend, reinvested.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DIVIDEND_REINVEST() {
+			return dividendReinvest;
+		}
+
+		/**
+		 * A stock dividend.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DIVIDEND_STOCK() {
+			return dividendStock;
+		}
+
+		/**
+		 * A mutual fund distribution in cash.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DISTRIBUTION_CASH() {
+			return distributionCash;
+		}
+
+		/**
+		 * A mutual fund distribution in units.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DISTRIBUTION_FUND() {
+			return distributionFund;
+		}
+
+		/**
+		 * A split.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get SPLIT() {
+			return split;
+		}
+
+		/**
+		 * A fee.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get FEE() {
+			return fee;
+		}
+
+		/**
+		 * A mutual fund fee, which is paid in units.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get FEE_UNITS() {
+			return feeUnits;
+		}
+
+		/**
+		 * A deposit.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DEPOSIT() {
+			return deposit;
+		}
+
+		/**
+		 * A withdrawal.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get WITHDRAWAL() {
+			return withdrawal;
+		}
+
+		/**
+		 * A system-generated withdrawal, arising from another transaction.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DEBIT() {
+			return debit;
+		}
+
+		/**
+		 * A system-generated deposit, arising from another transaction.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get CREDIT() {
+			return credit;
+		}
+
+		/**
+		 * A valuation event.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get VALUATION() {
+			return valuation;
+		}
+
+		/**
+		 * Other Income.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get INCOME() {
+			return income;
+		}
+
+		toString() {
+			return '[TransactionType]';
+		}
+	}
+
+	const buy = new TransactionType('B', 'Buy', true, false, false, true,  false);
+	const sell = new TransactionType('S', 'Sell', false, true, false, false, true);
+	const buyShort = new TransactionType('BS', 'Buy To Cover', true, false, false, false, true);
+	const sellShort = new TransactionType('SS', 'Sell Short',  false, true, false, true, false);
+	const dividend = new TransactionType('DV', 'Dividend', false, false, true, false, false);
+	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', false, false, false, true, false);
+	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', false, false, false, true, false);
+	const split = new TransactionType('SP', 'Split', false, false, false, true, false);
+	const fee = new TransactionType('F', 'Fee', false, false, false, true, false);
+	const feeUnits = new TransactionType('FU', 'Fee', false, false, false, false, false);
+
+	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', false, false, true, false, false);
+	const distributionFund = new TransactionType('DF', 'Distribution (Units)', false, false, false, true, false);
+
+	const deposit = new TransactionType('D', 'Deposit', false, false, false, true, false);
+	const withdrawal = new TransactionType('W', 'Withdrawal', false, false, false, false, true);
+	const debit = new TransactionType('DR', 'Debit', false, false, false, false, true);
+	const credit = new TransactionType('CR', 'Credit', false, false, false, true, false);
+
+	const valuation = new TransactionType('V', 'Valuation', false, false, false, false, false);
+	const income = new TransactionType('I', 'Income', false, false, true, false, false);
+
+	return TransactionType;
+})();
+
+},{"@barchart/common-js/lang/Enum":7,"@barchart/common-js/lang/assert":9}],3:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -290,7 +627,7 @@ module.exports = function () {
 	return ComparatorBuilder;
 }();
 
-},{"./../../lang/assert":8,"./comparators":3}],3:[function(require,module,exports){
+},{"./../../lang/assert":9,"./comparators":4}],4:[function(require,module,exports){
 'use strict';
 
 var assert = require('./../../lang/assert');
@@ -365,7 +702,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./../../lang/assert":8}],4:[function(require,module,exports){
+},{"./../../lang/assert":9}],5:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -918,7 +1255,7 @@ module.exports = function () {
 	return Day;
 }();
 
-},{"./../collections/sorting/ComparatorBuilder":2,"./../collections/sorting/comparators":3,"./assert":8,"./is":9}],5:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":3,"./../collections/sorting/comparators":4,"./assert":9,"./is":10}],6:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1498,7 +1835,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":6,"./assert":8,"./is":9,"big.js":10}],6:[function(require,module,exports){
+},{"./Enum":7,"./assert":9,"./is":10,"big.js":11}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1640,7 +1977,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":8}],7:[function(require,module,exports){
+},{"./assert":9}],8:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -2001,7 +2338,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":8,"./is":9}],8:[function(require,module,exports){
+},{"./assert":9,"./is":10}],9:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -2149,7 +2486,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":9}],9:[function(require,module,exports){
+},{"./is":10}],10:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -2372,7 +2709,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -3313,11 +3650,12 @@ module.exports = function () {
   }
 })(this);
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
-const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
+const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame'),
+	TransactionType = require('./../../../lib/data/TransactionType');
 
 describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	'use strict';
@@ -3328,13 +3666,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2015, 10, 20)
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2016, 11, 21),
 					snapshot: {
 						open: new Decimal(1)
-					}
+					},
+					type: TransactionType.BUY
 				}
 			];
 
@@ -3367,13 +3710,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2015, 10, 20)
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2015, 11, 21),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -3396,13 +3744,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2015, 10, 20)
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2016, 11, 21),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -3430,13 +3783,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2015, 10, 20)
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2017, 11, 21),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -3463,19 +3821,77 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
+	describe('and yearly position summary ranges are processed for a transaction set closed in 2016, but has after-the-face superfluous valuations in 2017 and 2018', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				},
+				{
+					date: new Day(2016, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					},
+					type: TransactionType.SELL
+				},
+				{
+					date: new Day(2017, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					},
+					type: TransactionType.VALUATION
+				},
+				{
+					date: new Day(2017, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					},
+					type: TransactionType.VALUATION
+				}
+			];
+
+			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
+		});
+
+		it('should have two ranges', () => {
+			expect(ranges.length).toEqual(2);
+		});
+
+		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2014-12-31');
+			expect(ranges[0].end.format()).toEqual('2015-12-31');
+		});
+
+		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
+			expect(ranges[1].start.format()).toEqual('2015-12-31');
+			expect(ranges[1].end.format()).toEqual('2016-12-31');
+		});
+	});
+
 	describe('and a year-to-date position summary ranges are processed for a transaction set that closed last year', () => {
 		let ranges;
 
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2017, 1, 1)
+					date: new Day(2017, 1, 1),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2017, 1, 2),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -3495,8 +3911,9 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				{
 					date: new Day(2018, 1, 1),
 					snapshot: {
-						open: new Decimal(0)
-					}
+						open: new Decimal(100)
+					},
+					type: TransactionType.BUY
 				}
 			];
 
@@ -3519,13 +3936,18 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2018, 1, 1)
+					date: new Day(2018, 1, 1),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
 				},
 				{
 					date: new Day(2018, 1, 2),
 					snapshot: {
 						open: new Decimal(0)
-					}
+					},
+					type: TransactionType.SELL
 				}
 			];
 
@@ -3543,4 +3965,4 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":1,"@barchart/common-js/lang/Day":4,"@barchart/common-js/lang/Decimal":5}]},{},[11]);
+},{"./../../../lib/data/PositionSummaryFrame":1,"./../../../lib/data/TransactionType":2,"@barchart/common-js/lang/Day":5,"@barchart/common-js/lang/Decimal":6}]},{},[12]);
