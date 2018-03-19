@@ -176,7 +176,9 @@ module.exports = function () {
 
 			_this._createPortfolioEndpoint = EndpointBuilder.for('create-portfolio', 'create portfolio').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios');
-			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE)
+			// .withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor))
+			.withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._updatePortfolioEndpoint = EndpointBuilder.for('update-portfolio', 'update portfolio').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
@@ -635,8 +637,6 @@ module.exports = function () {
 
 	var responseInterceptorForTransactionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			return TransactionSchema.CLIENT.schema.revive(response.data);
-
 			return JSON.parse(response.data, TransactionSchema.CLIENT.schema.getReviver());
 		} catch (e) {
 			console.error('Error serializing transaction data', e);
@@ -10069,6 +10069,11 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -10080,11 +10085,6 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
