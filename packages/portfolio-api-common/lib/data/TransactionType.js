@@ -313,10 +313,10 @@ module.exports = (() => {
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', false, false, true, false, false);
 	const distributionFund = new TransactionType('DF', 'Distribution (Units)', false, false, false, true, false);
 
-	const deposit = new TransactionType('D', 'Deposit', false, false, false, false, false);
-	const withdrawal = new TransactionType('W', 'Withdrawal', false, false, false, false, false);
-	const debit = new TransactionType('DR', 'Debit', false, false, false, false, false);
-	const credit = new TransactionType('CR', 'Credit', false, false, false, false, false);
+	const deposit = new TransactionType('D', 'Deposit', false, false, false, true, false);
+	const withdrawal = new TransactionType('W', 'Withdrawal', false, false, false, false, true);
+	const debit = new TransactionType('DR', 'Debit', false, false, false, false, true);
+	const credit = new TransactionType('CR', 'Credit', false, false, false, true, false);
 
 	const valuation = new TransactionType('V', 'Valuation', false, false, false, false, false);
 	const income = new TransactionType('I', 'Income', false, false, true, false, false);
