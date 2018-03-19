@@ -6,14 +6,17 @@ const array = require('@barchart/common-js/lang/array'),
 module.exports = (() => {
 
 	/**
-	 * Formats Position Summary records into groups based on instrument type
+	 * Static utilities for formatting position summary records (into groups based on
+	 * instrument type)
 	 *
+	 * @public
 	 */
 	class PositionSummaryFormatter{
-
 		/**
 		 * The formatter
 		 *
+		 * @public
+		 * @static
 		 * @param {Array} summaries
 		 * @returns {Object}
 		 */
@@ -67,5 +70,4 @@ module.exports = (() => {
 	};
 
 	return PositionSummaryFormatter;
-
 })();
