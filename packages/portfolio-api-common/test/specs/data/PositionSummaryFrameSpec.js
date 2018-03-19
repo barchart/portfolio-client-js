@@ -168,6 +168,59 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
+	describe('and yearly position summary ranges are processed for a transaction set closed in 2016, but has after-the-face superfluous valuations in 2017 and 2018', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				},
+				{
+					date: new Day(2016, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					},
+					type: TransactionType.SELL
+				},
+				{
+					date: new Day(2017, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					},
+					type: TransactionType.VALUATION
+				},
+				{
+					date: new Day(2017, 11, 21),
+					snapshot: {
+						open: new Decimal(0)
+					},
+					type: TransactionType.VALUATION
+				}
+			];
+
+			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
+		});
+
+		it('should have two ranges', () => {
+			expect(ranges.length).toEqual(2);
+		});
+
+		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2014-12-31');
+			expect(ranges[0].end.format()).toEqual('2015-12-31');
+		});
+
+		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
+			expect(ranges[1].start.format()).toEqual('2015-12-31');
+			expect(ranges[1].end.format()).toEqual('2016-12-31');
+		});
+	});
+
 	describe('and a year-to-date position summary ranges are processed for a transaction set that closed last year', () => {
 		let ranges;
 
