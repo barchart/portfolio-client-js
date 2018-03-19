@@ -274,6 +274,8 @@
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
+
+						that.position(data.position);
 					}).catch((e) => {
                         writeConsoleText(action, true);
                         writeConsoleObject(e);
@@ -302,6 +304,507 @@
                 	date: Barchart.Day.getToday(),
                 	price: Barchart.Decimal.parse(5),
                 	quantity: Barchart.Decimal.parse(100),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createBuyShortTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position() || null,
+                	type: Barchart.TransactionType.BUY_SHORT,
+                	instrument: {
+                		name: 'International Business Machines',
+                		currency: Barchart.Currency.USD,
+                		symbol: {
+                			barchart: 'IBM',
+                			display: 'IBM'
+                		}
+                	},
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createSellShortTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.SELL_SHORT,
+                	instrument: {
+                		name: 'International Business Machines',
+                		currency: Barchart.Currency.USD,
+                		symbol: {
+                			barchart: 'IBM',
+                			display: 'IBM'
+                		}
+                	},
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createDividendTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.DIVIDEND,
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	rate: Barchart.Decimal.parse(.125),
+                	effective: Barchart.Day.getToday(),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createDividendReinvestTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.DIVIDEND_REINVEST,
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	rate: Barchart.Decimal.parse(.125),
+                	effective: Barchart.Day.getToday(),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createDividendStockTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.DIVIDEND_STOCK,
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	rate: Barchart.Decimal.parse(.125),
+                	effective: Barchart.Day.getToday(),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createDistributionCashTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.DISTRIBUTION_CASH,
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	rate: Barchart.Decimal.parse(.125),
+                	effective: Barchart.Day.getToday(),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createDistributionFundTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.DISTRIBUTION_FUND,
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	rate: Barchart.Decimal.parse(.125),
+                	effective: Barchart.Day.getToday(),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createSplitTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.SPLIT,
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	numerator: Barchart.Decimal.parse(3),
+                	denominator: Barchart.Decimal.parse(1),
+                	effective: Barchart.Day.getToday(),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createFeeTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.FEE,
+                	date: Barchart.Day.getToday(),
+                	effective: Barchart.Day.getToday(),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createFeeUnitsTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.FEE_UNITS,
+                	date: Barchart.Day.getToday(),
+                	effective: Barchart.Day.getToday(),
+                	fee: Barchart.Decimal.ZERO,
+                	price: Barchart.Decimal.parse(5)
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createDepositTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.DEPOSIT,
+                	date: Barchart.Day.getToday(),
+                	amount: Barchart.Decimal.parse(5),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createWithdrawalTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.WITHDRAWAL,
+                	date: Barchart.Day.getToday(),
+                	amount: Barchart.Decimal.parse(5),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createValuationTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.VALUATION,
+                	date: Barchart.Day.getToday(),
+                	value: Barchart.Decimal.parse(5),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createIncomeTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.INCOME,
+                	date: Barchart.Day.getToday(),
+                	income: Barchart.Decimal.parse(5),
                 	fee: Barchart.Decimal.ZERO
                 };
 
@@ -351,13 +854,31 @@
                 { text: 'Create Portfolio', action: createPortfolio },
                 { text: 'Update Portfolio', action: updatePortfolio },
                 { text: 'Delete Portfolio', action: deletePortfolio },
+
                 { text: 'Get Positions', action: getPositions },
                 { text: 'Get Positions Summaries', action: readPositionSummaries },
                 { text: 'Delete Position', action: deletePosition },
+
                 { text: 'Get Transactions', action: getTransactions },
                 { text: 'Get Transactions (Formatted)', action: getTransactionsFormatted },
+
                 { text: 'Create Buy Transaction', action: createBuyTransaction },
                 { text: 'Create Sell Transaction', action: createSellTransaction },
+                { text: 'Create BuyShort Transaction', action: createBuyShortTransaction },
+                { text: 'Create SellShort Transaction', action: createSellShortTransaction },
+                { text: 'Create Dividend Transaction', action: createDividendTransaction },
+                { text: 'Create Dividend Reinvest Transaction', action: createDividendReinvestTransaction },
+                { text: 'Create Dividend Stock Transaction', action: createDividendStockTransaction },
+                { text: 'Create Distribution Cash Transaction', action: createDistributionCashTransaction },
+                { text: 'Create Distribution Fund Transaction', action: createDistributionFundTransaction },
+                { text: 'Create Split Transaction', action: createSplitTransaction },
+                { text: 'Create Fee Transaction', action: createFeeTransaction },
+                { text: 'Create Fee Units Transaction', action: createFeeUnitsTransaction },
+                { text: 'Create Deposit Transaction', action: createDepositTransaction },
+                { text: 'Create Withdrawal Transaction', action: createWithdrawalTransaction },
+                { text: 'Create Valuation Transaction', action: createValuationTransaction },
+                { text: 'Create Income Transaction', action: createIncomeTransaction },
+
                 { text: 'Delete Transaction', action: deleteTransaction }
             ]);
 

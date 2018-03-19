@@ -176,7 +176,9 @@ module.exports = function () {
 
 			_this._createPortfolioEndpoint = EndpointBuilder.for('create-portfolio', 'create portfolio').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios');
-			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE)
+			// .withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor))
+			.withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._updatePortfolioEndpoint = EndpointBuilder.for('update-portfolio', 'update portfolio').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
@@ -208,6 +210,10 @@ module.exports = function () {
 
 			_this._createTransactionEndpoint = EndpointBuilder.for('create-transaction', 'create transaction').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
+			}).withQueryBuilder(function (qb) {
+				qb.withVariableParameter('type', 'type', 'type', false, function (i) {
+					return i.code;
+				});
 			}).withBody('portfolio data').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForTransactionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deleteTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
@@ -8138,6 +8144,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var attributes = require('./../../lang/attributes'),
     functions = require('./../../lang/functions'),
+    array = require('./../../lang/array'),
     is = require('./../../lang/is');
 
 var LinkedList = require('./../../collections/LinkedList'),
@@ -8232,6 +8239,45 @@ module.exports = function () {
     */
 
 		}, {
+			key: 'getSimpleReviver',
+			value: function getSimpleReviver() {
+				var _this = this;
+
+				return function (key, value) {
+					var field = _this.fields.find(function (f) {
+						var fieldName = array.last(f.name.split('.'));
+
+						return fieldName === key;
+					});
+
+					if (is.object(value)) {
+						return value;
+					}
+
+					var returnVal = void 0;
+
+					try {
+						returnVal = field.dataType.reviver(value);
+					} catch (e) {
+						if (_this._strict) {
+							throw Error(e);
+						} else {
+							returnVal = value;
+						}
+					}
+
+					return returnVal;
+				};
+			}
+
+			/**
+    * Generates a function suitable for use by JSON.parse.
+    *
+    * @public
+    * @returns {Function}
+    */
+
+		}, {
 			key: 'getReviver',
 			value: function getReviver() {
 				var head = this._revivers;
@@ -8275,10 +8321,10 @@ module.exports = function () {
 		}, {
 			key: 'getReviverFactory',
 			value: function getReviverFactory() {
-				var _this = this;
+				var _this2 = this;
 
 				return function () {
-					return _this.getReviver();
+					return _this2.getReviver();
 				};
 			}
 		}, {
@@ -8342,11 +8388,11 @@ module.exports = function () {
 		function SchemaError(key, name, message) {
 			_classCallCheck(this, SchemaError);
 
-			var _this2 = _possibleConstructorReturn(this, (SchemaError.__proto__ || Object.getPrototypeOf(SchemaError)).call(this, message));
+			var _this3 = _possibleConstructorReturn(this, (SchemaError.__proto__ || Object.getPrototypeOf(SchemaError)).call(this, message));
 
-			_this2.key = key;
-			_this2.name = name;
-			return _this2;
+			_this3.key = key;
+			_this3.name = name;
+			return _this3;
 		}
 
 		_createClass(SchemaError, [{
@@ -8487,7 +8533,7 @@ module.exports = function () {
 	return Schema;
 }();
 
-},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/attributes":38,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
+},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/array":36,"./../../lang/attributes":38,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -10067,11 +10113,6 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -10083,6 +10124,11 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
