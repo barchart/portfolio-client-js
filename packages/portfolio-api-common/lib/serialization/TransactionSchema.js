@@ -301,8 +301,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
@@ -313,8 +312,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
@@ -326,8 +324,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
@@ -339,8 +336,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
@@ -351,8 +347,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
@@ -364,7 +359,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('numerator', DataType.DECIMAL)
 		.withField('denominator', DataType.DECIMAL)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
