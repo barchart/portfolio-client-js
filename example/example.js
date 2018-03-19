@@ -176,9 +176,7 @@ module.exports = function () {
 
 			_this._createPortfolioEndpoint = EndpointBuilder.for('create-portfolio', 'create portfolio').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios');
-			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE)
-			// .withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor))
-			.withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._updatePortfolioEndpoint = EndpointBuilder.for('update-portfolio', 'update portfolio').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
@@ -615,24 +613,6 @@ module.exports = function () {
 		});
 	};
 
-	var createTransactionRequestInterceptor = function createTransactionRequestInterceptor(request) {
-		var transaction = request.data;
-
-		return Promise.resolve().then(function () {
-			var schema = TransactionSchema.fromCode(TransactionSchema, transaction.type.code);
-
-			return FailureReason.validateSchema(schema, transaction);
-		}).then(function () {
-			request.data = transaction;
-
-			return Promise.resolve(request);
-		}).catch(function (e) {
-			console.error('Error serializing data to create a transaction', e);
-
-			return Promise.reject();
-		});
-	};
-
 	var responseInterceptorForPortfolioDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
 			return JSON.parse(response.data, PortfolioSchema.CLIENT.schema.getReviver());
@@ -655,6 +635,8 @@ module.exports = function () {
 
 	var responseInterceptorForTransactionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
+			return TransactionSchema.CLIENT.schema.revive(response.data);
+
 			return JSON.parse(response.data, TransactionSchema.CLIENT.schema.getReviver());
 		} catch (e) {
 			console.error('Error serializing transaction data', e);
@@ -993,7 +975,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.14'
+		version: '1.1.15'
 	};
 }();
 
