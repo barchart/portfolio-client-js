@@ -348,6 +348,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
 		.withField('effective', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
