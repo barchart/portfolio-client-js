@@ -158,7 +158,13 @@
 			var readPositionSummaries = function() {
 				var action = 'portfolioGateway.readPositionSummaries()';
 
-				that.gateway.readPositionSummaries(that.portfolio() || null, that.position() || null)
+				var query = {
+					portfolio: that.portfolio() || null,
+					position: that.position() || null,
+					frame: 'YEARLY'
+				};
+
+				that.gateway.readPositionSummaries(query)
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
@@ -238,17 +244,16 @@
                     });
 			};
 			var createBuyTransaction = function() {
-				var action = 'portfolioGateway.readTransactions()';
+				var action = 'portfolioGateway.createTransaction()';
 
-				var portfolio = that.portfolio();
-				var position = that.position();
-
-				if (!portfolio) {
+				if (!that.portfolio()) {
 					toastr.info('A "portfolio" is required.');
 				    return;
                 }
 
                 var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position() || null,
                 	type: Barchart.TransactionType.BUY,
                 	instrument: {
                 		name: 'International Business Machines',
@@ -265,7 +270,42 @@
                 	fee: Barchart.Decimal.ZERO
                 };
 
-				that.gateway.createTransaction(that.portfolio(), that.position() || null, transaction)
+				that.gateway.createTransaction(transaction)
+					.then((data) => {
+						writeConsoleText(action, true);
+						writeConsoleObject(data);
+					}).catch((e) => {
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
+
+                        that.setConsoleMode();
+                    });
+			};
+			var createSellTransaction = function() {
+				var action = 'portfolioGateway.createTransaction()';
+
+				if (!that.portfolio()) {
+					toastr.info('A "portfolio" is required.');
+				    return;
+                }
+
+                if (!that.position()) {
+					toastr.info('A "position" is required.');
+				    return;
+                }
+
+                var transaction = {
+                	portfolio: that.portfolio(),
+                	position: that.position(),
+                	type: Barchart.TransactionType.SELL,
+                	currency: Barchart.Currency.CAD,
+                	date: Barchart.Day.getToday(),
+                	price: Barchart.Decimal.parse(5),
+                	quantity: Barchart.Decimal.parse(100),
+                	fee: Barchart.Decimal.ZERO
+                };
+
+				that.gateway.createTransaction(transaction)
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
@@ -317,6 +357,7 @@
                 { text: 'Get Transactions', action: getTransactions },
                 { text: 'Get Transactions (Formatted)', action: getTransactionsFormatted },
                 { text: 'Create Buy Transaction', action: createBuyTransaction },
+                { text: 'Create Sell Transaction', action: createSellTransaction },
                 { text: 'Delete Transaction', action: deleteTransaction }
             ]);
 
