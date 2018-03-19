@@ -28,7 +28,7 @@ module.exports = (() => {
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
-			return this._rangeCalculator(transactions);
+			return this._rangeCalculator(getFilteredTransactions(transactions));
 		}
 
 		/**
@@ -140,6 +140,16 @@ module.exports = (() => {
 		}
 
 		return ranges;
+	}
+
+	function getFilteredTransactions(transactions) {
+		return transactions.reduce((filtered, transaction) => {
+			if (!(transaction.snapshot.getIsZero() && !transaction.type.closing)) {
+				filtered.push(transaction);
+
+				return filtered;
+			}
+		}, [ ]);
 	}
 
 	return PositionSummaryFrame;
