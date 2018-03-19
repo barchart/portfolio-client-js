@@ -1,4 +1,4 @@
-const array = require('@barchart/common-js/lang/array')
+const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	formatter = require('@barchart/common-js/lang/formatter');

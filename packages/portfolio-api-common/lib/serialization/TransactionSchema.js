@@ -360,7 +360,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('numerator', DataType.DECIMAL)
 		.withField('denominator', DataType.DECIMAL)
-		.withField('effective', DataType.DAY
+		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
