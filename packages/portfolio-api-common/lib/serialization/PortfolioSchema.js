@@ -58,6 +58,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Only returns identifiers and portfolio name.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
+		static get NAME() {
+			return name;
+		}
+
+		/**
 		 * Data required to create a portfolio.
 		 *
 		 * @static
@@ -122,6 +133,13 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.schema
+	);
+
+	const name = new PortfolioSchema(SchemaBuilder.withName('name')
+		.withField('user', DataType.STRING)
+		.withField('portfolio', DataType.STRING)
+		.withField('name', DataType.STRING)
 		.schema
 	);
 
