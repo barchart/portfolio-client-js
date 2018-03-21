@@ -1,7 +1,7 @@
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
-	Tree = require('@barchart/common-js/lang/Tree');
+	Tree = require('@barchart/common-js/collections/Tree');
 
 const PositionGroup = require('./PositionGroup'),
 	PositionGroupDefinition = require('./PositionGroupDefinition'),
@@ -73,8 +73,8 @@ module.exports = (() => {
 
 				const definition = definitions[0];
 
-				const populated = array.groupBy(definition.keySelector).map((items) => {
-					const first = group[0];
+				const populated = array.batchBy(items, definition.keySelector).map((items) => {
+					const first = items[0];
 
 					return new PositionGroup(definition.descriptionSelector(first), items);
 				});
@@ -86,11 +86,14 @@ module.exports = (() => {
 				});
 
 				const composite = populated.concat(empty);
+				const d = array.dropLeft(definitions);
 
 				composite.forEach((group) => {
-					const child = this._tree.addChild(group);
+					const child = tree.addChild(group);
 
-					createGroups(child, group.items, definitions.splice(1, definitions.length - 1));
+					// console.log('description:', group.description, '| items:', group.items.map(i => i.position.instrument.symbol.barchart).join());
+
+					createGroups(child, group.items, d);
 				});
 			};
 
@@ -101,6 +104,26 @@ module.exports = (() => {
 			if (this._symbols.hasOwnProperty(symbol)) {
 				this._symbols.forEach(item.setPrice(price));
 			}
+		}
+
+		getGroup(keys) {
+			const node = keys.reduce((tree, key) => {
+				tree = tree.findChild((group) => group.description === key);
+
+				return tree;
+			}, this._tree);
+
+			return node.getValue();
+		}
+
+		getGroups(keys) {
+			const node = keys.reduce((tree, key) => {
+				tree = tree.findChild((group) => group.description === key);
+
+				return tree;
+			}, this._tree);
+
+			return node.getChildren().map((node) => node.getValue());
 		}
 
 		toString() {
