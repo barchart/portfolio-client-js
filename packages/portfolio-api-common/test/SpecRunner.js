@@ -16,20 +16,28 @@ module.exports = (() => {
 	 * @param {String} code
 	 * @param {String} description
 	 * @param {Function} rangeCalculator
+	 * @param {Function} startDateCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator) {
+		constructor(code, description, rangeCalculator, startDateCalculator) {
 			super(code, description);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
 
 			this._rangeCalculator = rangeCalculator;
+			this._startDateCalculator = startDateCalculator;
 		}
 
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
 			return this._rangeCalculator(getFilteredTransactions(transactions));
+		}
+
+		getStartDate(periods) {
+			assert.argumentIsRequired(periods, 'periods', Number);
+
+			return this._startDateCalculator(periods);
 		}
 
 		/**
@@ -77,10 +85,10 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges);
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate);
 
 	function getRange(start, end) {
 		return {
@@ -141,6 +149,27 @@ module.exports = (() => {
 		}
 
 		return ranges;
+	}
+
+	function getYearlyStartDate(periods) {
+		const today = Day.getToday();
+
+		return Day.getToday()
+			.subtractMonths(today.month - 1)
+			.subtractDays(today.day)
+			.subtractYears(periods);
+	}
+
+	function getQuarterlyStartDate(periods) {
+		return null;
+	}
+
+	function getMonthlyStartDate(periods) {
+		return null;
+	}
+
+	function getYearToDateStartDate(periods) {
+		return null;
 	}
 
 	function getFilteredTransactions(transactions) {
@@ -3961,6 +3990,48 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		it('the first range should be from 12-31-2017 to 12-31-2015', () => {
 			expect(ranges[0].start.format()).toEqual('2017-12-31');
 			expect(ranges[0].end.format()).toEqual('2018-12-31');
+		});
+	});
+
+	describe('and getting the start date for yearly frames', () => {
+		describe('for one year ago', function() {
+			let start;
+
+			beforeEach(() => {
+				start = PositionSummaryFrame.YEARLY.getStartDate(1);
+			});
+
+			it('should be in December', () => {
+				expect(start.month).toEqual(12);
+			});
+
+			it('should be on the 31st', () => {
+				expect(start.day).toEqual(31);
+			});
+
+			it('should be two years ago', () => {
+				expect(start.year).toEqual(Day.getToday().year - 2);
+			});
+		});
+
+		describe('for two years ago', function() {
+			let start;
+
+			beforeEach(() => {
+				start = PositionSummaryFrame.YEARLY.getStartDate(2);
+			});
+
+			it('should be in December', () => {
+				expect(start.month).toEqual(12);
+			});
+
+			it('should be on the 31st', () => {
+				expect(start.day).toEqual(31);
+			});
+
+			it('should be two years ago', () => {
+				expect(start.year).toEqual(Day.getToday().year - 3);
+			});
 		});
 	});
 });
