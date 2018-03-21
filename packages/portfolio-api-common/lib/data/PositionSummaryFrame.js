@@ -15,20 +15,28 @@ module.exports = (() => {
 	 * @param {String} code
 	 * @param {String} description
 	 * @param {Function} rangeCalculator
+	 * @param {Function} startDateCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator) {
+		constructor(code, description, rangeCalculator, startDateCalculator) {
 			super(code, description);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
 
 			this._rangeCalculator = rangeCalculator;
+			this._startDateCalculator = startDateCalculator;
 		}
 
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
 			return this._rangeCalculator(getFilteredTransactions(transactions));
+		}
+
+		getStartDate(periods) {
+			assert.argumentIsRequired(periods, 'periods', Number);
+
+			return this._startDateCalculator(periods);
 		}
 
 		/**
@@ -76,10 +84,10 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges);
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate);
 
 	function getRange(start, end) {
 		return {
@@ -140,6 +148,27 @@ module.exports = (() => {
 		}
 
 		return ranges;
+	}
+
+	function getYearlyStartDate(periods) {
+		const today = Day.getToday();
+
+		return Day.getToday()
+			.subtractMonths(today.month - 1)
+			.subtractDays(today.day)
+			.subtractYears(periods);
+	}
+
+	function getQuarterlyStartDate(periods) {
+		return null;
+	}
+
+	function getMonthlyStartDate(periods) {
+		return null;
+	}
+
+	function getYearToDateStartDate(periods) {
+		return null;
 	}
 
 	function getFilteredTransactions(transactions) {

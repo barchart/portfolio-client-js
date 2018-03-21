@@ -56,15 +56,6 @@ module.exports = (() => {
 			return client;
 		}
 
-		/**
-		 * @static
-		 * @public
-		 * @returns {PositionSummarySchema}
-		 */
-		static get DISPLAY() {
-			return display;
-		}
-
 		toString() {
 			return '[PositionSummarySchema]';
 		}
@@ -129,38 +120,6 @@ module.exports = (() => {
 		.withField('period.income', DataType.DECIMAL)
 		.withField('period.realized', DataType.DECIMAL)
 		.withField('period.unrealized', DataType.DECIMAL)
-		.schema
-	);
-
-	const display = new PositionSummarySchema(SchemaBuilder.withName('display')
-		.withField('user', DataType.STRING)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('instrument.id', DataType.STRING)
-		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.STRING)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
-		.withField('instrument.delist', DataType.DAY, true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
-		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
-		.withField('start.date', DataType.DAY)
-		.withField('start.sequence', DataType.NUMBER)
-		.withField('start.open', DataType.DECIMAL)
-		.withField('start.basis', DataType.DECIMAL)
-		.withField('start.value', DataType.DECIMAL)
-		.withField('end.date', DataType.DAY)
-		.withField('end.sequence', DataType.NUMBER)
-		.withField('end.open', DataType.DECIMAL)
-		.withField('end.basis', DataType.DECIMAL)
-		.withField('end.value', DataType.DECIMAL)
-		.withField('period.buys', DataType.DECIMAL)
-		.withField('period.sells', DataType.DECIMAL)
-		.withField('period.income', DataType.DECIMAL)
-		.withField('period.realized', DataType.DECIMAL)
-		.withField('period.unrealized', DataType.DECIMAL)
-		.withField('additional.name', DataType.STRING)
-		.withField('additional.close', DataType.NUMBER)
 		.schema
 	);
 

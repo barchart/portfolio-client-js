@@ -310,4 +310,46 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges[0].end.format()).toEqual('2018-12-31');
 		});
 	});
+
+	describe('and getting the start date for yearly frames', () => {
+		describe('for one year ago', function() {
+			let start;
+
+			beforeEach(() => {
+				start = PositionSummaryFrame.YEARLY.getStartDate(1);
+			});
+
+			it('should be in December', () => {
+				expect(start.month).toEqual(12);
+			});
+
+			it('should be on the 31st', () => {
+				expect(start.day).toEqual(31);
+			});
+
+			it('should be two years ago', () => {
+				expect(start.year).toEqual(Day.getToday().year - 2);
+			});
+		});
+
+		describe('for two years ago', function() {
+			let start;
+
+			beforeEach(() => {
+				start = PositionSummaryFrame.YEARLY.getStartDate(2);
+			});
+
+			it('should be in December', () => {
+				expect(start.month).toEqual(12);
+			});
+
+			it('should be on the 31st', () => {
+				expect(start.day).toEqual(31);
+			});
+
+			it('should be two years ago', () => {
+				expect(start.year).toEqual(Day.getToday().year - 3);
+			});
+		});
+	});
 });
