@@ -124,6 +124,8 @@ var PortfolioSchema = require('@barchart/portfolio-api-common/lib/serialization/
     PositionSummarySchema = require('@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema'),
     TransactionSchema = require('@barchart/portfolio-api-common/lib/serialization/TransactionSchema');
 
+var PositionSummaryFrame = require('@barchart/portfolio-api-common/lib/data/PositionSummaryFrame');
+
 var EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBuilder'),
     Gateway = require('@barchart/common-js/api/http/Gateway'),
     FailureReason = require('@barchart/common-js/api/failures/FailureReason'),
@@ -193,8 +195,8 @@ module.exports = function () {
 			_this._readPositionSummariesEndpoint = EndpointBuilder.for('read-position-summaries', 'read position summaries').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withVariableParameter('position', 'position', 'position', false);
 			}).withQueryBuilder(function (qb) {
-				qb.withVariableParameter('frame', 'frame', 'frame', true).withVariableParameter('start', 'start', 'start', true).withVariableParameter('end', 'end', 'end', true);
-			}).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+				qb.withVariableParameter('frame', 'frame', 'frame', true).withVariableParameter('periods', 'periods', 'periods', true);
+			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deletePortfoliosEndpoint = EndpointBuilder.for('delete-portfolio', 'delete portfolios').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
@@ -373,28 +375,46 @@ module.exports = function () {
     * @public
     * @param {String=} portfolio
     * @param {String=} position
+    * @param {PositionSummaryFrame=|String=} frame
+    * @param {Number=} periods
     * @returns {Promise.<Position[]>}
     */
 
 		}, {
 			key: 'readPositionSummaries',
-			value: function readPositionSummaries(data) {
+			value: function readPositionSummaries(portfolio, position, frame, periods) {
 				var _this8 = this;
 
 				return Promise.resolve().then(function () {
 					checkStart.call(_this8);
 
-					assert.argumentIsRequired(data, 'data', Object);
-					assert.argumentIsOptional(data.portfolio, 'portfolio', String);
-					assert.argumentIsOptional(data.position, 'position', String);
+					assert.argumentIsOptional(portfolio, 'portfolio', String);
+					assert.argumentIsOptional(position, 'position', String);
+
+					if (!is.string(frame)) {
+						assert.argumentIsOptional(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
+					}
+
+					assert.argumentIsOptional(periods, 'periods', Number);
 
 					var query = {
-						portfolio: data.portfolio || '*',
-						position: data.position || '*',
-						frame: data.frame,
-						start: data.start,
-						end: data.end
+						portfolio: portfolio || '*',
+						position: position || '*'
 					};
+
+					if (frame) {
+						if (is.string(frame)) {
+							query.frame = frame;
+						} else {
+							query.frame = frame.code;
+						}
+					}
+
+					if (periods) {
+						query.periods = periods;
+					}
+
+					console.log(query);
 
 					return Gateway.invoke(_this8._readPositionSummariesEndpoint, query);
 				});
@@ -621,7 +641,7 @@ module.exports = function () {
 		try {
 			return JSON.parse(response.data, PortfolioSchema.CLIENT.schema.getReviver());
 		} catch (e) {
-			console.log(e);
+			console.log('Error deserializing positions', e);
 		}
 	});
 
@@ -633,7 +653,7 @@ module.exports = function () {
 		try {
 			return JSON.parse(response.data, PositionSummarySchema.CLIENT.schema.getReviver());
 		} catch (e) {
-			console.log(e);
+			console.log('Error deserializing position summaries', e);
 		}
 	});
 
@@ -664,7 +684,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/TransactionType":52,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":54,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":55,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":56}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":51,"@barchart/portfolio-api-common/lib/data/TransactionType":52,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":54,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":55,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":56}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6972,7 +6992,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate {*}
+   * @param {*} candidate {*}
    * @returns {boolean}
    */
 		number: function number(candidate) {
@@ -7025,7 +7045,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		positive: function positive(candidate) {
@@ -7038,7 +7058,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {*|boolean}
    */
 		negative: function negative(candidate) {
@@ -7051,7 +7071,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		string: function string(candidate) {
@@ -7064,7 +7084,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		date: function date(candidate) {
@@ -7077,7 +7097,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		fn: function fn(candidate) {
@@ -7090,7 +7110,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		array: function array(candidate) {
@@ -7103,7 +7123,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		boolean: function boolean(candidate) {
@@ -7116,7 +7136,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		object: function object(candidate) {
@@ -7129,7 +7149,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		null: function _null(candidate) {
@@ -7142,7 +7162,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		undefined: function (_undefined) {
@@ -8142,7 +8162,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var attributes = require('./../../lang/attributes'),
     functions = require('./../../lang/functions'),
-    array = require('./../../lang/array'),
     is = require('./../../lang/is');
 
 var LinkedList = require('./../../collections/LinkedList'),
@@ -8237,45 +8256,6 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'getSimpleReviver',
-			value: function getSimpleReviver() {
-				var _this = this;
-
-				return function (key, value) {
-					var field = _this.fields.find(function (f) {
-						var fieldName = array.last(f.name.split('.'));
-
-						return fieldName === key;
-					});
-
-					if (is.object(value)) {
-						return value;
-					}
-
-					var returnVal = void 0;
-
-					try {
-						returnVal = field.dataType.reviver(value);
-					} catch (e) {
-						if (_this._strict) {
-							throw Error(e);
-						} else {
-							returnVal = value;
-						}
-					}
-
-					return returnVal;
-				};
-			}
-
-			/**
-    * Generates a function suitable for use by JSON.parse.
-    *
-    * @public
-    * @returns {Function}
-    */
-
-		}, {
 			key: 'getReviver',
 			value: function getReviver() {
 				var head = this._revivers;
@@ -8319,10 +8299,10 @@ module.exports = function () {
 		}, {
 			key: 'getReviverFactory',
 			value: function getReviverFactory() {
-				var _this2 = this;
+				var _this = this;
 
 				return function () {
-					return _this2.getReviver();
+					return _this.getReviver();
 				};
 			}
 		}, {
@@ -8386,11 +8366,11 @@ module.exports = function () {
 		function SchemaError(key, name, message) {
 			_classCallCheck(this, SchemaError);
 
-			var _this3 = _possibleConstructorReturn(this, (SchemaError.__proto__ || Object.getPrototypeOf(SchemaError)).call(this, message));
+			var _this2 = _possibleConstructorReturn(this, (SchemaError.__proto__ || Object.getPrototypeOf(SchemaError)).call(this, message));
 
-			_this3.key = key;
-			_this3.name = name;
-			return _this3;
+			_this2.key = key;
+			_this2.name = name;
+			return _this2;
 		}
 
 		_createClass(SchemaError, [{
@@ -8531,7 +8511,7 @@ module.exports = function () {
 	return Schema;
 }();
 
-},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/array":36,"./../../lang/attributes":38,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
+},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/attributes":38,"./../../lang/functions":39,"./../../lang/is":40,"./Component":44,"./Field":46}],48:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9037,20 +9017,28 @@ module.exports = (() => {
 	 * @param {String} code
 	 * @param {String} description
 	 * @param {Function} rangeCalculator
+	 * @param {Function} startDateCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator) {
+		constructor(code, description, rangeCalculator, startDateCalculator) {
 			super(code, description);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
 
 			this._rangeCalculator = rangeCalculator;
+			this._startDateCalculator = startDateCalculator;
 		}
 
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
-			return this._rangeCalculator(transactions);
+			return this._rangeCalculator(getFilteredTransactions(transactions));
+		}
+
+		getStartDate(periods) {
+			assert.argumentIsRequired(periods, 'periods', Number);
+
+			return this._startDateCalculator(periods);
 		}
 
 		/**
@@ -9098,10 +9086,10 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges);
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate);
 
 	function getRange(start, end) {
 		return {
@@ -9162,6 +9150,37 @@ module.exports = (() => {
 		}
 
 		return ranges;
+	}
+
+	function getYearlyStartDate(periods) {
+		const today = Day.getToday();
+
+		return Day.getToday()
+			.subtractMonths(today.month - 1)
+			.subtractDays(today.day)
+			.subtractYears(periods);
+	}
+
+	function getQuarterlyStartDate(periods) {
+		return null;
+	}
+
+	function getMonthlyStartDate(periods) {
+		return null;
+	}
+
+	function getYearToDateStartDate(periods) {
+		return null;
+	}
+
+	function getFilteredTransactions(transactions) {
+		return transactions.reduce((filtered, transaction) => {
+			if (!transaction.snapshot.open.getIsZero() || transaction.type.closing) {
+				filtered.push(transaction);
+			}
+
+			return filtered;
+		}, [ ]);
 	}
 
 	return PositionSummaryFrame;
@@ -9483,10 +9502,10 @@ module.exports = (() => {
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', false, false, true, false, false);
 	const distributionFund = new TransactionType('DF', 'Distribution (Units)', false, false, false, true, false);
 
-	const deposit = new TransactionType('D', 'Deposit', false, false, false, false, false);
-	const withdrawal = new TransactionType('W', 'Withdrawal', false, false, false, false, false);
-	const debit = new TransactionType('DR', 'Debit', false, false, false, false, false);
-	const credit = new TransactionType('CR', 'Credit', false, false, false, false, false);
+	const deposit = new TransactionType('D', 'Deposit', false, false, false, true, false);
+	const withdrawal = new TransactionType('W', 'Withdrawal', false, false, false, false, true);
+	const debit = new TransactionType('DR', 'Debit', false, false, false, false, true);
+	const credit = new TransactionType('CR', 'Credit', false, false, false, true, false);
 
 	const valuation = new TransactionType('V', 'Valuation', false, false, false, false, false);
 	const income = new TransactionType('I', 'Income', false, false, true, false, false);
@@ -9617,6 +9636,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Only returns identifiers and portfolio name.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PortfolioSchema}
+		 */
+		static get NAME() {
+			return name;
+		}
+
+		/**
 		 * Data required to create a portfolio.
 		 *
 		 * @static
@@ -9681,6 +9711,13 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.schema
+	);
+
+	const name = new PortfolioSchema(SchemaBuilder.withName('name')
+		.withField('user', DataType.STRING)
+		.withField('portfolio', DataType.STRING)
+		.withField('name', DataType.STRING)
 		.schema
 	);
 
@@ -10111,6 +10148,11 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -10122,11 +10164,6 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -10140,8 +10177,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
@@ -10152,8 +10188,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
@@ -10165,8 +10200,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
@@ -10178,8 +10212,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
@@ -10190,8 +10223,8 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('rate', DataType.DECIMAL)
-		.withField('open', DataType.DECIMAL, true)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
+		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
@@ -10203,7 +10236,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('numerator', DataType.DECIMAL)
 		.withField('denominator', DataType.DECIMAL)
-		.withField('effective', DataType.DAY, true)
+		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
 		.schema
 	);
