@@ -12,13 +12,18 @@ module.exports = (() => {
 			this._description = description;
 			this._items = items;
 
+			this._excluded = false;
+
+			this._data = {
+				description: this._description,
+				excluded: false
+			};
+
 			this._items.forEach((item) => {
 				item.registerPriceChangeHandler((price, sender) => {
 
 				});
 			});
-
-			this._excluded = false;
 		}
 
 		get description() {
@@ -36,6 +41,7 @@ module.exports = (() => {
 		setExcluded(value) {
 			if (this._excluded !== value) {
 				this._excluded = value;
+				this._data.excluded = value;
 			}
 		}
 
