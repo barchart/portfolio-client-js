@@ -613,6 +613,10 @@ module.exports = (() => {
 			createGroups(this._tree, this._items, this._definitions);
 		}
 
+		getSymbols() {
+			return Object.keys(this._symbols);
+		}
+
 		setPrice(symbol, price) {
 			if (this._symbols.hasOwnProperty(symbol)) {
 				this._symbols.forEach(item.setPrice(price));
