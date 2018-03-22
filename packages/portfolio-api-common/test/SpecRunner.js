@@ -601,7 +601,7 @@ module.exports = (() => {
 				const missingGroups = array.difference(currentDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup([ ], currentDefinition.find(group => group.description === description).currency, description);
+					return new PositionGroup([ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
