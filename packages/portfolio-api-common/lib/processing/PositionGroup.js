@@ -46,7 +46,7 @@ module.exports = (() => {
 						this._dataFormat.current = null;
 					}
 
-					calculateVariablePriceData(this, item);
+					calculatePriceData(this, item);
 				});
 			});
 
@@ -85,21 +85,17 @@ module.exports = (() => {
 	function calculateStaticData(group) {
 		const items = group._items;
 
-		const raw = group._dataRaw;
-		const formatted = group._dataFormat;
-
 		let updates;
 
 		if (group.single) {
 			const item = items[0];
 
+			updates = { };
+
 			updates.basis = item.basis;
 		} else {
 			updates = items.reduce(function(updates, item) {
-				const position = item.position;
-				const snapshot = item.position.snapshot;
-
-				updates.basis = updates.basis.add(snapshot.basis);
+				updates.basis = updates.basis.add(item.data.basis);
 
 				return updates;
 			}, {
@@ -107,12 +103,39 @@ module.exports = (() => {
 			});
 		}
 
+		const raw = group._dataRaw;
+		const formatted = group._dataFormat;
+
 		raw.basis = updates.basis;
-		formatted.basis = format(updates.basis.opposite(), Currency.USD);
+		formatted.basis = format(updates.basis, Currency.USD);
 	}
 
-	function calculateVariablePriceData(group, item) {
+	function calculatePriceData(group) {
+		const items = group._items;
 
+		let updates;
+
+		if (group.single) {
+			updates = { };
+
+			let item = items[0];
+
+			updates.market = item.market;
+		} else {
+			updates = items.reduce(function(updates, item) {
+				updates.market = updates.market.add(item.data.market);
+
+				return updates;
+			}, {
+				market: Decimal.ZERO
+			});
+		}
+
+		const raw = group._dataRaw;
+		const formatted = group._dataFormat;
+
+		raw.market = updates.market;
+		formatted.market = format(updates.market, Currency.USD);
 	}
 
 	return PositionGroup;

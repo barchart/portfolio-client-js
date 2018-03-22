@@ -7,7 +7,6 @@ const array = require('@barchart/common-js/lang/array'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
 const PositionGroup = require('./PositionGroup'),
-	PositionGroupDefinition = require('./PositionGroupDefinition'),
 	PositionItem = require('./PositionItem');
 
 module.exports = (() => {
