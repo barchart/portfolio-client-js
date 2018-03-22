@@ -653,6 +653,7 @@ module.exports = (() => {
 
 },{"./PositionGroup":4,"./PositionGroupDefinition":5,"./PositionItem":6,"@barchart/common-js/collections/Tree":7,"@barchart/common-js/lang/array":14,"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],4:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is');
 
 module.exports = (() => {
@@ -672,16 +673,21 @@ module.exports = (() => {
 
 			this._data.description = this._description;
 
-			this._data.previous = null;
 			this._data.current = null;
+			this._data.previous = null;
+
+			this._data.basis = null;
+			this._data.market = null;
 
 			this._items.forEach((item) => {
-				item.registerPriceChangeHandler((price, sender) => {
+				item.registerPriceChangeHandler((data, sender) => {
 					if (this._single) {
-						data.current = price;
+						data.current = data.current;
 					} else {
 						data.current = null;
 					}
+
+					calculateVariablePriceData(this, item, price);
 				});
 			});
 
@@ -700,6 +706,10 @@ module.exports = (() => {
 			return this._items;
 		}
 
+		get single() {
+			return this._single;
+		}
+
 		toString() {
 			return '[PositionGroup]';
 		}
@@ -709,17 +719,36 @@ module.exports = (() => {
 		const items = group._items;
 		const data = group._data;
 
-		const updates = items.reduce(function(updates, item) {
+		let updates;
 
-		}, { });
+		if (group.single) {
+			const item = items[0];
 
+			updates.basis = item.basis;
+		} else {
+			updates = items.reduce(function(updates, item) {
+				const position = item.position;
+				const snapshot = item.position.snapshot;
+
+				updates.value = updates.basis.add(snapshot.basis);
+
+				return updates;
+			}, {
+				basis: Decimal.ZERO
+			});
+		}
+
+		data.basis = updates.basis;
+	}
+
+	function calculateVariablePriceData(group, item, price) {
 
 	}
 
 	return PositionGroup;
 })();
 
-},{"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],5:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":11,"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -781,7 +810,11 @@ module.exports = (() => {
 			this._position = position;
 			this._summaries = summaries || [ ];
 
-			this._price = null;
+			this._data = { };
+
+			this._data.current = null;
+			this._data.previous = position.previous || null;
+
 			this._priceChangeEvent = new Event(this);
 		}
 
@@ -798,8 +831,10 @@ module.exports = (() => {
 		}
 
 		setPrice(price) {
-			if (this._price !== price) {
-				this._priceChangeEvent.fire(this._price = price);
+			if (this._data.price !== price) {
+				this._data.price = price;
+
+				this._priceChangeEvent.fire(this._data);
 			}
 		}
 
@@ -4992,11 +5027,30 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 });
 
 },{"./../../../lib/data/PositionSummaryFrame":1,"./../../../lib/data/TransactionType":2,"@barchart/common-js/lang/Day":10,"@barchart/common-js/lang/Decimal":11}],20:[function(require,module,exports){
+const Decimal = require('@barchart/common-js/lang/Decimal');
+
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionGroupDefinition = require('./../../../lib/processing/PositionGroupDefinition');
 
 describe('When a position container data is gathered', () => {
 	'use strict';
+
+	let positionCounter = 0;
+
+	function getPosition(portfolio, symbol) {
+		return {
+			portfolio: portfolio,
+			position: (positionCounter++).toString(),
+			instrument: {
+				symbol: {
+					barchart: symbol
+				}
+			},
+			snapshot: {
+				basis: new Decimal(123)
+			}
+		}
+	}
 
 	describe('for two portfolios, each with the same position, and the second portfolio with an additonal position', () => {
 		let portfolios;
@@ -5015,31 +5069,9 @@ describe('When a position container data is gathered', () => {
 			];
 
 			positions = [
-				{
-					portfolio: 'a',
-					position: '1',
-					instrument: {
-						symbol: {
-							barchart: 'AAPL'
-						}
-					},
-				}, {
-					portfolio: 'b',
-					position: '2',
-					instrument: {
-						symbol: {
-							barchart: 'AAPL'
-						}
-					}
-				}, {
-					portfolio: 'b',
-					position: '3',
-					instrument: {
-						symbol: {
-							barchart: 'TSLA'
-						}
-					}
-				}
+				getPosition('a', 'AAPL'),
+				getPosition('b', 'AAPL'),
+				getPosition('b', 'TSLA')
 			];
 
 			summaries = [ ];
@@ -5090,4 +5122,4 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/processing/PositionContainer":3,"./../../../lib/processing/PositionGroupDefinition":5}]},{},[19,20]);
+},{"./../../../lib/processing/PositionContainer":3,"./../../../lib/processing/PositionGroupDefinition":5,"@barchart/common-js/lang/Decimal":11}]},{},[19,20]);
