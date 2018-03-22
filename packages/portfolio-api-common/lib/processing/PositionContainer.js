@@ -95,7 +95,7 @@ module.exports = (() => {
 
 				if (currentDefinition.requiredGroups.length !== 0) {
 					const ordering = currentDefinition.requiredGroups.reduce((map, group, index) => {
-						map[group] = index;
+						map[group.description] = index;
 
 						return map;
 					}, { });
