@@ -16,7 +16,10 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionContainer {
-		constructor(portfolios, positions, summaries, definitions) {
+		constructor(portfolios, positions, summaries, definitions, defaultCurrency) {
+			this._definitions = definitions;
+			this._defaultCurrency = defaultCurrency || Currency.CAD;
+
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
 
@@ -48,11 +51,10 @@ module.exports = (() => {
 			}, [ ]);
 
 			this._symbols = this._items.reduce((map, item) => {
-				let position = item.position;
-				let symbol = null;
+				const position = item.position;
 
 				if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
-					symbol = position.instrument.symbol.barchart;
+					const symbol = position.instrument.symbol.barchart;
 
 					if (!map.hasOwnProperty(symbol)) {
 						map[symbol] = [ ];
@@ -64,7 +66,25 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._definitions = definitions;
+			this._currencies = this._items.reduce((map, item) => {
+				const position = item.position;
+
+				if (position.instrument && position.instrument.currency) {
+					const currency = position.instrument.currency;
+
+					if (currency !== InstrumentType.CAD) {
+
+					}
+
+					if (!map.hasOwnProperty(currency)) {
+						map[currency] = [ ];
+					}
+
+					map[currency].push(item);
+				}
+
+				return map;
+			}, { });
 
 			this._tree = new Tree();
 
@@ -139,6 +159,16 @@ module.exports = (() => {
 			if (this._symbols.hasOwnProperty(symbol)) {
 				this._symbols[symbol].forEach(item => item.setPrice(price));
 			}
+		}
+
+		getCurrencies() {
+			const codes = Object.keys(this._currencies);
+
+			return codes.reduce((symbols, code) => {
+				symbols.push(`^${Currency.USD.code}${code}`);
+
+				return symbols;
+			}, [ ]);
 		}
 
 		getGroup(keys) {
