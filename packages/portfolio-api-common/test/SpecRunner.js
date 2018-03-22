@@ -829,6 +829,7 @@ module.exports = (() => {
 			});
 
 			calculateStaticData(this);
+			calculatePriceData(this);
 		}
 
 		get items() {
