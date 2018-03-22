@@ -77,7 +77,8 @@ module.exports = (() => {
 				const currentDefinition = definitions[0];
 				const additionalDefinitions = array.dropLeft(definitions);
 
-				const populatedGroups = array.batchBy(items, currentDefinition.keySelector).map((items) => {
+				const populatedObjects = array.groupBy(items, currentDefinition.keySelector);
+				const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
 					const first = items[0];
 
 					return new PositionGroup(items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
