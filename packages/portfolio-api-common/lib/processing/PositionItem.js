@@ -1,4 +1,5 @@
 const assert = require('@barchart/common-js/lang/assert'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -20,6 +21,18 @@ module.exports = (() => {
 			this._data.previous = position.previous || null;
 
 			const snapshot = this._position.snapshot;
+
+			this._data.basis = snapshot.basis || Decimal.ZERO;
+
+			/*
+			let market;
+
+			if (position.previous) {
+				market = snapshot.open.multiply(position.previous);
+			} else {
+				market = snapshot.value;
+			}
+			*/
 
 			this._priceChangeEvent = new Event(this);
 		}

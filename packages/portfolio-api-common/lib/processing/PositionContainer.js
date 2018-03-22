@@ -1,6 +1,7 @@
 const array = require('@barchart/common-js/lang/array'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
+	Currency = require('@barchart/common-js/lang/Currency'),
 	assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
@@ -51,8 +52,8 @@ module.exports = (() => {
 				let position = item.position;
 				let symbol = null;
 
-				if (position.instrument && position.instrument.symbol && position.instrument.barchart) {
-					symbol = position.instrument.barchart;
+				if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
+					symbol = position.instrument.symbol.barchart;
 
 					if (!map.hasOwnProperty(symbol)) {
 						map[symbol] = [ ];
@@ -64,7 +65,7 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._definitions = definitions || [ new PositionGroupDefinition('Totals', i => true, i => 'Totals', [ 'Totals' ]) ];
+			this._definitions = definitions;
 
 			this._tree = new Tree();
 
@@ -79,13 +80,13 @@ module.exports = (() => {
 				const populatedGroups = array.batchBy(items, currentDefinition.keySelector).map((items) => {
 					const first = items[0];
 
-					return new PositionGroup(items, currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
+					return new PositionGroup(items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
 				});
 
 				const missingGroups = array.difference(currentDefinition.requiredGroups, populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup([ ], description);
+					return new PositionGroup([ ], Currency.USD, description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);

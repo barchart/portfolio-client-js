@@ -11,9 +11,11 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(items, description, single) {
-			this._description = description;
+		constructor(items, currency, description, single) {
 			this._items = items;
+			this._currency = currency;
+
+			this._description = description;
 
 			this._single = is.boolean(single) && single;
 
@@ -44,11 +46,19 @@ module.exports = (() => {
 						this._dataFormat.current = null;
 					}
 
-					calculateVariablePriceData(this, item, price);
+					calculateVariablePriceData(this, item);
 				});
 			});
 
 			calculateStaticData(this);
+		}
+
+		get items() {
+			return this._items;
+		}
+
+		get currency() {
+			return this._currency;
 		}
 
 		get description() {
@@ -57,10 +67,6 @@ module.exports = (() => {
 
 		get data() {
 			return this._dataFormat;
-		}
-
-		get items() {
-			return this._items;
 		}
 
 		get single() {
@@ -105,7 +111,7 @@ module.exports = (() => {
 		formatted.basis = format(updates.basis, Currency.USD);
 	}
 
-	function calculateVariablePriceData(group, item, price) {
+	function calculateVariablePriceData(group, item) {
 
 	}
 
