@@ -83,7 +83,7 @@ module.exports = (() => {
 				const missingGroups = array.difference(currentDefinition.requiredGroups, populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup(description, [ ]);
+					return new PositionGroup([ ], description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
