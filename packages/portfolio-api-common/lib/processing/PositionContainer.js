@@ -137,7 +137,7 @@ module.exports = (() => {
 
 		setPrice(symbol, price) {
 			if (this._symbols.hasOwnProperty(symbol)) {
-				this._symbols.forEach(item => item.setPrice(price));
+				this._symbols[symbol].forEach(item => item.setPrice(price));
 			}
 		}
 
