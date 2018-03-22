@@ -185,7 +185,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":10,"@barchart/common-js/lang/Enum":13,"@barchart/common-js/lang/array":14,"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":11,"@barchart/common-js/lang/Enum":14,"@barchart/common-js/lang/array":15,"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18}],2:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -512,7 +512,7 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":13,"@barchart/common-js/lang/assert":15}],3:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":14,"@barchart/common-js/lang/assert":16}],3:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
@@ -598,7 +598,7 @@ module.exports = (() => {
 				const missingGroups = array.difference(currentDefinition.requiredGroups, populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup(description, [ ]);
+					return new PositionGroup([ ], description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
@@ -651,9 +651,11 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./PositionGroup":4,"./PositionGroupDefinition":5,"./PositionItem":6,"@barchart/common-js/collections/Tree":7,"@barchart/common-js/lang/array":14,"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],4:[function(require,module,exports){
+},{"./PositionGroup":4,"./PositionGroupDefinition":5,"./PositionItem":6,"@barchart/common-js/collections/Tree":7,"@barchart/common-js/lang/array":15,"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18}],4:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
+	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	formatter = require('@barchart/common-js/lang/formatter'),
 	is = require('@barchart/common-js/lang/is');
 
 module.exports = (() => {
@@ -669,22 +671,31 @@ module.exports = (() => {
 
 			this._single = is.boolean(single) && single;
 
-			this._data = { };
+			this._dataFormat = { };
+			this._dataRaw = { };
+			
+			this._dataFormat.description = this._description;
 
-			this._data.description = this._description;
+			this._dataRaw.current = null;
+			this._dataRaw.previous = null;
 
-			this._data.current = null;
-			this._data.previous = null;
+			this._dataFormat.current = null;
+			this._dataFormat.previous = null;
 
-			this._data.basis = null;
-			this._data.market = null;
+			this._dataRaw.basis = null;
+			this._dataRaw.market = null;
+
+			this._dataFormat.basis = null;
+			this._dataFormat.market = null;
 
 			this._items.forEach((item) => {
 				item.registerPriceChangeHandler((data, sender) => {
 					if (this._single) {
-						data.current = data.current;
+						this._dataRaw.current = data.current;
+						this._dataFormat.current = format(data.current, sender.position.instrument.currency);
 					} else {
-						data.current = null;
+						this._dataRaw.current = null;
+						this._dataFormat.current = null;
 					}
 
 					calculateVariablePriceData(this, item, price);
@@ -699,7 +710,7 @@ module.exports = (() => {
 		}
 
 		get data() {
-			return this._data;
+			return this._dataFormat;
 		}
 
 		get items() {
@@ -715,9 +726,15 @@ module.exports = (() => {
 		}
 	}
 
+	function format(decimal, currency) {
+		return formatter.numberToString(decimal.toFloat(), currency.precision, ',', false);
+	}
+
 	function calculateStaticData(group) {
 		const items = group._items;
-		const data = group._data;
+
+		const raw = group._dataRaw;
+		const formatted = group._dataFormat;
 
 		let updates;
 
@@ -738,7 +755,8 @@ module.exports = (() => {
 			});
 		}
 
-		data.basis = updates.basis;
+		raw.basis = updates.basis;
+		formatted.basis = format(updates.basis, Currency.USD);
 	}
 
 	function calculateVariablePriceData(group, item, price) {
@@ -748,7 +766,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"@barchart/common-js/lang/Decimal":11,"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],5:[function(require,module,exports){
+},{"@barchart/common-js/lang/Currency":10,"@barchart/common-js/lang/Decimal":12,"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/formatter":17,"@barchart/common-js/lang/is":18}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -793,7 +811,7 @@ module.exports = (() => {
 	return PositionGroupDefinition;
 })();
 
-},{"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],6:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18}],6:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
@@ -854,7 +872,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16,"@barchart/common-js/messaging/Event":17}],7:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18,"@barchart/common-js/messaging/Event":19}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1163,7 +1181,7 @@ module.exports = function () {
 	return Tree;
 }();
 
-},{"./../lang/is":16}],8:[function(require,module,exports){
+},{"./../lang/is":18}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1307,7 +1325,7 @@ module.exports = function () {
 	return ComparatorBuilder;
 }();
 
-},{"./../../lang/assert":15,"./comparators":9}],9:[function(require,module,exports){
+},{"./../../lang/assert":16,"./comparators":9}],9:[function(require,module,exports){
 'use strict';
 
 var assert = require('./../../lang/assert');
@@ -1382,7 +1400,150 @@ module.exports = function () {
 	};
 }();
 
-},{"./../../lang/assert":15}],10:[function(require,module,exports){
+},{"./../../lang/assert":16}],10:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var assert = require('./assert'),
+    Enum = require('./Enum'),
+    is = require('./is');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * An enumeration for currency types.
+  *
+  * @public
+  * @param {String} code - Currency code (e.g. "USD")
+  * @param {String} description - The description (e.g. "US Dollar")
+  * @param {Number} precision - The number of decimal places possible for by a real world transaction.
+  * @extends {Enum}
+  */
+
+	var Currency = function (_Enum) {
+		_inherits(Currency, _Enum);
+
+		function Currency(code, description, precision, alternateDescription) {
+			_classCallCheck(this, Currency);
+
+			var _this = _possibleConstructorReturn(this, (Currency.__proto__ || Object.getPrototypeOf(Currency)).call(this, code, description));
+
+			assert.argumentIsRequired(precision, 'precision', Number);
+			assert.argumentIsValid(precision, 'precision', is.integer, 'is an integer');
+
+			assert.argumentIsOptional(alternateDescription, 'alternateDescription', String);
+
+			_this._precision = precision;
+
+			_this._alternateDescription = alternateDescription || description;
+			return _this;
+		}
+
+		/**
+   * The maximum number of decimal places supported by a real world transaction.
+   *
+   * @public
+   * @returns {Number}
+   */
+
+
+		_createClass(Currency, [{
+			key: 'toString',
+			value: function toString() {
+				return '[Currency (code=' + this.code + ')]';
+			}
+		}, {
+			key: 'precision',
+			get: function get() {
+				return this._precision;
+			}
+
+			/**
+    * An alternate human-readable description.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'alternateDescription',
+			get: function get() {
+				return this._alternateDescription;
+			}
+
+			/**
+    * Given a code, returns the enumeration item.
+    *
+    * @public
+    * @param {String} code
+    * @returns {Currency|null}
+    */
+
+		}], [{
+			key: 'parse',
+			value: function parse(code) {
+				return Enum.fromCode(Currency, code);
+			}
+
+			/**
+    * The Canadian Dollar.
+    *
+    * @public
+    * @returns {Currency}
+    */
+
+		}, {
+			key: 'CAD',
+			get: function get() {
+				return cad;
+			}
+
+			/**
+    * The Euro.
+    *
+    * @public
+    * @returns {Currency}
+    */
+
+		}, {
+			key: 'EUR',
+			get: function get() {
+				return eur;
+			}
+
+			/**
+    * The US Dollar.
+    *
+    * @public
+    * @returns {Currency}
+    */
+
+		}, {
+			key: 'USD',
+			get: function get() {
+				return usd;
+			}
+		}]);
+
+		return Currency;
+	}(Enum);
+
+	var cad = new Currency('CAD', 'Canadian Dollar', 2, 'CAD$');
+	var eur = new Currency('EUR', 'Euro', 2, 'EUR');
+	var usd = new Currency('USD', 'US Dollar', 2, 'US$');
+
+	return Currency;
+}();
+
+},{"./Enum":14,"./assert":16,"./is":18}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1935,7 +2096,7 @@ module.exports = function () {
 	return Day;
 }();
 
-},{"./../collections/sorting/ComparatorBuilder":8,"./../collections/sorting/comparators":9,"./assert":15,"./is":16}],11:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":8,"./../collections/sorting/comparators":9,"./assert":16,"./is":18}],12:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2515,7 +2676,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":13,"./assert":15,"./is":16,"big.js":18}],12:[function(require,module,exports){
+},{"./Enum":14,"./assert":16,"./is":18,"big.js":20}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2664,7 +2825,7 @@ module.exports = function () {
 	return Disposable;
 }();
 
-},{"./assert":15}],13:[function(require,module,exports){
+},{"./assert":16}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2806,7 +2967,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":15}],14:[function(require,module,exports){
+},{"./assert":16}],15:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -3187,7 +3348,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":15,"./is":16}],15:[function(require,module,exports){
+},{"./assert":16,"./is":18}],16:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -3335,7 +3496,72 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":16}],16:[function(require,module,exports){
+},{"./is":18}],17:[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	'use strict';
+
+	return {
+		/**
+   * Formats a number into a string for display purposes.
+   */
+		numberToString: function numberToString(value, digits, thousandsSeparator, useParenthesis) {
+			if (value === '' || value === undefined || value === null || isNaN(value)) {
+				return '';
+			}
+
+			var applyParenthesis = value < 0 && useParenthesis === true;
+
+			if (applyParenthesis) {
+				value = 0 - value;
+			}
+
+			var returnRef = value.toFixed(digits);
+
+			if (thousandsSeparator && !(value > -1000 && value < 1000)) {
+				var length = returnRef.length;
+				var negative = value < 0;
+
+				var found = digits === 0;
+				var counter = 0;
+
+				var buffer = [];
+
+				for (var i = length - 1; !(i < 0); i--) {
+					if (counter === 3 && !(negative && i === 0)) {
+						buffer.unshift(thousandsSeparator);
+
+						counter = 0;
+					}
+
+					var character = returnRef.charAt(i);
+
+					buffer.unshift(character);
+
+					if (found) {
+						counter = counter + 1;
+					} else if (character === '.') {
+						found = true;
+					}
+				}
+
+				if (applyParenthesis) {
+					buffer.unshift('(');
+					buffer.push(')');
+				}
+
+				returnRef = buffer.join('');
+			} else if (applyParenthesis) {
+				returnRef = '(' + returnRef + ')';
+			}
+
+			return returnRef;
+		}
+	};
+}();
+
+},{}],18:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -3558,7 +3784,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3730,7 +3956,7 @@ module.exports = function () {
 	return Event;
 }();
 
-},{"./../lang/Disposable":12,"./../lang/assert":15}],18:[function(require,module,exports){
+},{"./../lang/Disposable":13,"./../lang/assert":16}],20:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -4671,7 +4897,7 @@ module.exports = function () {
   }
 })(this);
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -5028,8 +5254,9 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":1,"./../../../lib/data/TransactionType":2,"@barchart/common-js/lang/Day":10,"@barchart/common-js/lang/Decimal":11}],20:[function(require,module,exports){
-const Decimal = require('@barchart/common-js/lang/Decimal');
+},{"./../../../lib/data/PositionSummaryFrame":1,"./../../../lib/data/TransactionType":2,"@barchart/common-js/lang/Day":11,"@barchart/common-js/lang/Decimal":12}],22:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency'),
+	Decimal = require('@barchart/common-js/lang/Decimal');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionGroupDefinition = require('./../../../lib/processing/PositionGroupDefinition');
@@ -5039,13 +5266,14 @@ describe('When a position container data is gathered', () => {
 
 	let positionCounter = 0;
 
-	function getPosition(portfolio, symbol) {
+	function getPosition(portfolio, symbol, currency) {
 		return {
 			portfolio: portfolio,
 			position: (positionCounter++).toString(),
 			instrument: {
 				symbol: {
-					barchart: symbol
+					barchart: symbol,
+					currency: currency || Currency.USD
 				}
 			},
 			snapshot: {
@@ -5124,4 +5352,4 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/processing/PositionContainer":3,"./../../../lib/processing/PositionGroupDefinition":5,"@barchart/common-js/lang/Decimal":11}]},{},[19,20]);
+},{"./../../../lib/processing/PositionContainer":3,"./../../../lib/processing/PositionGroupDefinition":5,"@barchart/common-js/lang/Currency":10,"@barchart/common-js/lang/Decimal":12}]},{},[21,22]);
