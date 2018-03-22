@@ -99,7 +99,7 @@ module.exports = (() => {
 				const position = item.position;
 				const snapshot = item.position.snapshot;
 
-				updates.value = updates.basis.add(snapshot.basis);
+				updates.basis = updates.basis.add(snapshot.basis);
 
 				return updates;
 			}, {
