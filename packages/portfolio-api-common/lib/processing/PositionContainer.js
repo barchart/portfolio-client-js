@@ -71,29 +71,27 @@ module.exports = (() => {
 					return;
 				}
 
-				const definition = definitions[0];
+				const currentDefinition = definitions[0];
+				const additionalDefinitions = array.dropLeft(definitions);
 
-				const populated = array.batchBy(items, definition.keySelector).map((items) => {
+				const populatedGroups = array.batchBy(items, currentDefinition.keySelector).map((items) => {
 					const first = items[0];
 
-					return new PositionGroup(definition.descriptionSelector(first), items);
+					return new PositionGroup(items, currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
 				});
 
-				const missing = array.difference(definition.requiredGroups, populated.map(group => group.description));
+				const missingGroups = array.difference(currentDefinition.requiredGroups, populatedGroups.map(group => group.description));
 
-				const empty = missing.map((description) => {
+				const empty = missingGroups.map((description) => {
 					return new PositionGroup(description, [ ]);
 				});
 
-				const composite = populated.concat(empty);
-				const d = array.dropLeft(definitions);
+				const compositeGroups = populatedGroups.concat(empty);
 
-				composite.forEach((group) => {
+				compositeGroups.forEach((group) => {
 					const child = tree.addChild(group);
 
-					// console.log('description:', group.description, '| items:', group.items.map(i => i.position.instrument.symbol.barchart).join());
-
-					createGroups(child, group.items, d);
+					createGroups(child, group.items, additionalDefinitions);
 				});
 			};
 

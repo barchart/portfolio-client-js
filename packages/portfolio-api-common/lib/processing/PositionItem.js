@@ -16,10 +16,6 @@ module.exports = (() => {
 
 			this._price = null;
 			this._priceChangeEvent = new Event(this);
-
-			this._data = {
-
-			};
 		}
 
 		get portfolio() {

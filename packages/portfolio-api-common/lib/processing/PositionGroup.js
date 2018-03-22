@@ -8,46 +8,58 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(description, items) {
+		constructor(items, description, single) {
 			this._description = description;
 			this._items = items;
 
-			this._excluded = false;
+			this._single = is.boolean(single) && single;
 
-			this._data = {
-				description: this._description,
-				excluded: false
-			};
+			this._data = { };
+
+			this._data.description = this._description;
+
+			this._data.previous = null;
+			this._data.current = null;
 
 			this._items.forEach((item) => {
 				item.registerPriceChangeHandler((price, sender) => {
-
+					if (this._single) {
+						data.current = price;
+					} else {
+						data.current = null;
+					}
 				});
 			});
+
+			calculateStaticData(this);
 		}
 
 		get description() {
 			return this._description;
 		}
 
+		get data() {
+			return this._data;
+		}
+
 		get items() {
 			return this._items;
-		}
-
-		get excluded() {
-			return this._excluded;
-		}
-
-		setExcluded(value) {
-			if (this._excluded !== value) {
-				this._excluded = value;
-				this._data.excluded = value;
-			}
 		}
 
 		toString() {
 			return '[PositionGroup]';
 		}
+	}
+
+	function calculateStaticData(group) {
+		const items = group._items;
+		const data = group._data;
+
+		const updates = items.reduce(function(updates, item) {
+
+		}, { });
+
+
 	}
 
 	return PositionGroup;
