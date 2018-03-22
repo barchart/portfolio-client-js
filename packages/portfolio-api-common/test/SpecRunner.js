@@ -185,7 +185,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":5,"@barchart/common-js/lang/Enum":7,"@barchart/common-js/lang/array":8,"@barchart/common-js/lang/assert":9,"@barchart/common-js/lang/is":10}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":10,"@barchart/common-js/lang/Enum":13,"@barchart/common-js/lang/array":14,"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],2:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -512,7 +512,610 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":7,"@barchart/common-js/lang/assert":9}],3:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":13,"@barchart/common-js/lang/assert":15}],3:[function(require,module,exports){
+const array = require('@barchart/common-js/lang/array'),
+	assert = require('@barchart/common-js/lang/assert'),
+	is = require('@barchart/common-js/lang/is'),
+	Tree = require('@barchart/common-js/collections/Tree');
+
+const PositionGroup = require('./PositionGroup'),
+	PositionGroupDefinition = require('./PositionGroupDefinition'),
+	PositionItem = require('./PositionItem');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * @public
+	 */
+	class PositionContainer {
+		constructor(portfolios, positions, summaries, definitions) {
+			this._portfolios = portfolios.reduce((map, portfolio) => {
+				map[portfolio.portfolio] = portfolio;
+
+				return map;
+			}, { });
+
+			this._summaries = summaries.reduce((map, summary) => {
+				const key = summary.position;
+
+				if (!map.hasOwnProperty(key)) {
+					map[key] = [ ];
+				}
+
+				map[key].push(summary);
+
+				return map;
+			}, { });
+
+			this._items = positions.reduce((items, position) => {
+				const portfolio = this._portfolios[position.portfolio];
+
+				if (position) {
+					const summaries = this._summaries[position.position] || [ ];
+
+					items.push(new PositionItem(portfolio, position, summaries));
+				}
+
+				return items;
+			}, [ ]);
+
+			this._symbols = this._items.reduce((map, item) => {
+				let position = item.position;
+				let symbol = null;
+
+				if (position.instrument && position.instrument.symbol && position.instrument.barchart) {
+					symbol = position.instrument.barchart;
+
+					if (!map.hasOwnProperty(symbol)) {
+						map[symbol] = [ ];
+					}
+
+					map[symbol].push(item);
+				}
+
+				return map;
+			}, { });
+
+			this._definitions = definitions || [ new PositionGroupDefinition('Totals', i => true, i => 'Totals', [ 'Totals' ]) ];
+
+			this._tree = new Tree();
+
+			const createGroups = (tree, items, definitions) => {
+				if (definitions.length === 0) {
+					return;
+				}
+
+				const definition = definitions[0];
+
+				const populated = array.batchBy(items, definition.keySelector).map((items) => {
+					const first = items[0];
+
+					return new PositionGroup(definition.descriptionSelector(first), items);
+				});
+
+				const missing = array.difference(definition.requiredGroups, populated.map(group => group.description));
+
+				const empty = missing.map((description) => {
+					return new PositionGroup(description, [ ]);
+				});
+
+				const composite = populated.concat(empty);
+				const d = array.dropLeft(definitions);
+
+				composite.forEach((group) => {
+					const child = tree.addChild(group);
+
+					// console.log('description:', group.description, '| items:', group.items.map(i => i.position.instrument.symbol.barchart).join());
+
+					createGroups(child, group.items, d);
+				});
+			};
+
+			createGroups(this._tree, this._items, this._definitions);
+		}
+
+		setPrice(symbol, price) {
+			if (this._symbols.hasOwnProperty(symbol)) {
+				this._symbols.forEach(item.setPrice(price));
+			}
+		}
+
+		getGroup(keys) {
+			const node = keys.reduce((tree, key) => {
+				tree = tree.findChild((group) => group.description === key);
+
+				return tree;
+			}, this._tree);
+
+			return node.getValue();
+		}
+
+		getGroups(keys) {
+			const node = keys.reduce((tree, key) => {
+				tree = tree.findChild((group) => group.description === key);
+
+				return tree;
+			}, this._tree);
+
+			return node.getChildren().map((node) => node.getValue());
+		}
+
+		toString() {
+			return '[PositionContainer]';
+		}
+	}
+
+	return PositionContainer;
+})();
+
+},{"./PositionGroup":4,"./PositionGroupDefinition":5,"./PositionItem":6,"@barchart/common-js/collections/Tree":7,"@barchart/common-js/lang/array":14,"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],4:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+	is = require('@barchart/common-js/lang/is');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * @public
+	 */
+	class PositionGroup {
+		constructor(description, items) {
+			this._description = description;
+			this._items = items;
+
+			this._excluded = false;
+
+			this._data = {
+				description: this._description,
+				excluded: false
+			};
+
+			this._items.forEach((item) => {
+				item.registerPriceChangeHandler((price, sender) => {
+
+				});
+			});
+		}
+
+		get description() {
+			return this._description;
+		}
+
+		get items() {
+			return this._items;
+		}
+
+		get excluded() {
+			return this._excluded;
+		}
+
+		setExcluded(value) {
+			if (this._excluded !== value) {
+				this._excluded = value;
+				this._data.excluded = value;
+			}
+		}
+
+		toString() {
+			return '[PositionGroup]';
+		}
+	}
+
+	return PositionGroup;
+})();
+
+},{"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],5:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+	is = require('@barchart/common-js/lang/is');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * @public
+	 */
+	class PositionGroupDefinition {
+		constructor(name, keySelector, descriptionSelector, requiredGroups) {
+			this._name = name;
+
+			this._keySelector = keySelector;
+			this._descriptionSelector = descriptionSelector;
+
+			this._requiredGroups = requiredGroups || [ ];
+		}
+
+		get name() {
+			return this._name;
+		}
+
+		get keySelector() {
+			return this._keySelector;
+		}
+
+		get descriptionSelector() {
+			return this._descriptionSelector;
+		}
+
+		get requiredGroups() {
+			return this._requiredGroups;
+		}
+
+		toString() {
+			return '[PositionGroupDefinition]';
+		}
+	}
+
+	return PositionGroupDefinition;
+})();
+
+},{"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16}],6:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+	Event = require('@barchart/common-js/messaging/Event'),
+	is = require('@barchart/common-js/lang/is');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * @public
+	 */
+	class PositionItem {
+		constructor(portfolio, position, summaries) {
+			this._portfolio = portfolio;
+			this._position = position;
+			this._summaries = summaries || [ ];
+
+			this._price = null;
+			this._priceChangeEvent = new Event(this);
+
+			this._data = {
+
+			};
+		}
+
+		get portfolio() {
+			return this._portfolio;
+		}
+
+		get position() {
+			return this._position;
+		}
+
+		get summaries() {
+			return this._summaries;
+		}
+
+		setPrice(price) {
+			if (this._price !== price) {
+				this._priceChangeEvent.fire(this._price = price);
+			}
+		}
+
+		registerPriceChangeHandler(handler) {
+			assert.argumentIsRequired(handler, 'handler', Function);
+
+			this._priceChangeEvent.register(handler);
+		}
+
+		toString() {
+			return '[PositionItem]';
+		}
+	}
+
+	return PositionItem;
+})();
+
+},{"@barchart/common-js/lang/assert":15,"@barchart/common-js/lang/is":16,"@barchart/common-js/messaging/Event":17}],7:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var is = require('./../lang/is');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A tree data structure. Each instance represents a node, holding
+  * an item, a reference to the parent node, and a reference to
+  * children nodes. Children are stored in insertion order.
+  *
+  * @public
+  * @param {*} value - The value of the node.
+  * @param {Tree} parent - The parent node. If not supplied, this will be the root node.
+  */
+
+	var Tree = function () {
+		function Tree(value, parent) {
+			_classCallCheck(this, Tree);
+
+			this._value = value;
+
+			this._parent = parent || null;
+			this._children = [];
+		}
+
+		/**
+   * Returns the parent node. If this is the root node, a null value is returned.
+   *
+   * @public
+   * @returns {Tree|null}
+   */
+
+
+		_createClass(Tree, [{
+			key: 'getParent',
+			value: function getParent() {
+				return this._parent;
+			}
+
+			/**
+    * Returns the collection of children nodes.
+    *
+    * @public
+    * @returns {Array<Tree>}
+    */
+
+		}, {
+			key: 'getChildren',
+			value: function getChildren() {
+				return this._children;
+			}
+
+			/**
+    * Returns the value associated with the current node.
+    *
+    * @public
+    * @returns {*}
+    */
+
+		}, {
+			key: 'getValue',
+			value: function getValue() {
+				return this._value;
+			}
+
+			/**
+    * Returns true if this node has no children; otherwise false.
+    *
+    * @public
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsLeaf',
+			value: function getIsLeaf() {
+				return this._children.length === 0;
+			}
+
+			/**
+    * Returns true if this node has no parent; otherwise false.
+    *
+    * @public
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsRoot',
+			value: function getIsRoot() {
+				return this._parent === null;
+			}
+
+			/**
+    * Adds a child node to the current node and returns a reference
+    * to the child node.
+    *
+    * @public
+    * @param {*} value - The value of the child.
+    * @returns {Tree}
+    */
+
+		}, {
+			key: 'addChild',
+			value: function addChild(value) {
+				var returnRef = new Tree(value, this);
+
+				this._children.push(returnRef);
+
+				return returnRef;
+			}
+
+			/**
+    * Removes a child node.
+    *
+    * @public
+    * @param {Tree} node - The child to remove.
+    */
+
+		}, {
+			key: 'removeChild',
+			value: function removeChild(node) {
+				for (var i = this._children.length - 1; !(i < 0); i--) {
+					var child = this._children[i];
+
+					if (child === node) {
+						this._children.splice(i, 1);
+
+						child._parent = null;
+						child._children = [];
+
+						break;
+					}
+				}
+			}
+
+			/**
+    * Searches the children nodes for the first child node that matches the
+    * predicate.
+    *
+    * @public
+    * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
+    * @returns {Tree|null}
+    */
+
+		}, {
+			key: 'findChild',
+			value: function findChild(predicate) {
+				var returnRef = null;
+
+				for (var i = 0; i < this._children.length; i++) {
+					var child = this._children[i];
+
+					if (predicate(child.getValue(), child)) {
+						returnRef = child;
+
+						break;
+					}
+				}
+
+				return returnRef;
+			}
+
+			/**
+    * Searches the tree recursively, starting with the current node.
+    *
+    * @public
+    * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
+    * @param {boolean=} childrenFirst - True, if the tree should be searched depth first.
+    * @param {boolean=} includeCurrentNode - True, if the current node should be checked against the predicate.
+    * @returns {Tree|null}
+    */
+
+		}, {
+			key: 'search',
+			value: function search(predicate, childrenFirst, includeCurrentNode) {
+				var returnRef = null;
+
+				if (returnRef === null && childrenFirst && includeCurrentNode && predicate(this.getValue(), this)) {
+					returnRef = this;
+				}
+
+				for (var i = 0; i < this._children.length; i++) {
+					var child = this._children[i];
+
+					returnRef = child.search(predicate, childrenFirst, true);
+
+					if (returnRef !== null) {
+						break;
+					}
+				}
+
+				if (returnRef === null && !childrenFirst && includeCurrentNode && predicate(this.getValue(), this)) {
+					returnRef = this;
+				}
+
+				return returnRef;
+			}
+
+			/**
+    * Walks the children of the current node, running an action on each node.
+    *
+    * @public
+    * @param {Tree~nodeAction} walkAction - A action to apply to each node. The action takes two arguments -- the node's value, and the node itself.
+    * @param {boolean=} childrenFirst - True if the tree should be walked depth first.
+    * @param {boolean=} includeCurrentNode - True if the current node should be applied to the action.
+    */
+
+		}, {
+			key: 'walk',
+			value: function walk(walkAction, childrenFirst, includeCurrentNode) {
+				var predicate = function predicate(value, node) {
+					walkAction(value, node);
+
+					return false;
+				};
+
+				this.search(predicate, childrenFirst, includeCurrentNode);
+			}
+
+			/**
+    * Climbs the parents of the current node -- current node up to the root node, running an action on each node.
+    *
+    * @public
+    * @param {Tree~nodeAction} climbAction - A action to apply to each node. The action takes two arguments -- the node's value, and the node itself.
+    * @param {boolean=} includeCurrentNode - True if the current node should be applied to the action.
+    */
+
+		}, {
+			key: 'climb',
+			value: function climb(climbAction, includeCurrentNode) {
+				if (includeCurrentNode) {
+					climbAction(this.getValue(), this);
+				}
+
+				if (this._parent !== null) {
+					this._parent.climb(climbAction, true);
+				}
+			}
+
+			/**
+    * Creates a representation of the tree using JavaScript objects and arrays.
+    *
+    * @public
+    * @param {Function=} valueConverter - An optional function for converting the value of each node.
+    * @param {Boolean=} valueConverter - If true, empty children arrays will be excluded from output.
+    * @returns {Object}
+    */
+
+		}, {
+			key: 'toJSObj',
+			value: function toJSObj(valueConverter, omitEmptyChildren) {
+				var valueConverterToUse = void 0;
+
+				if (is.fn(valueConverter)) {
+					valueConverterToUse = valueConverter;
+				} else {
+					valueConverterToUse = function valueConverterToUse(x) {
+						return x;
+					};
+				}
+
+				var converted = {
+					value: valueConverterToUse(this._value)
+				};
+
+				if (!(is.boolean(omitEmptyChildren) && omitEmptyChildren && this._children.length === 0)) {
+					converted.children = this._children.map(function (child) {
+						return child.toJSObj(valueConverter, omitEmptyChildren);
+					});
+				}
+
+				return converted;
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Tree]';
+			}
+		}]);
+
+		return Tree;
+	}();
+
+	/**
+  * A predicate that is used to check a node (i.e. {@link Tree}).
+  *
+  * @callback Tree~nodePredicate
+  * @param {*} item - The candidate node's item
+  * @param {Tree} node - The candidate node.
+  * @returns {Boolean}
+  */
+
+	/**
+  * An action that is run on a node (i.e. {@link Tree}).
+  *
+  * @callback Tree~nodeAction
+  * @param {*} item - The candidate node's item
+  * @param {Tree} node - The candidate node.
+  */
+
+	return Tree;
+}();
+
+},{"./../lang/is":16}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -656,7 +1259,7 @@ module.exports = function () {
 	return ComparatorBuilder;
 }();
 
-},{"./../../lang/assert":9,"./comparators":4}],4:[function(require,module,exports){
+},{"./../../lang/assert":15,"./comparators":9}],9:[function(require,module,exports){
 'use strict';
 
 var assert = require('./../../lang/assert');
@@ -731,7 +1334,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./../../lang/assert":9}],5:[function(require,module,exports){
+},{"./../../lang/assert":15}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1284,7 +1887,7 @@ module.exports = function () {
 	return Day;
 }();
 
-},{"./../collections/sorting/ComparatorBuilder":3,"./../collections/sorting/comparators":4,"./assert":9,"./is":10}],6:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":8,"./../collections/sorting/comparators":9,"./assert":15,"./is":16}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1864,7 +2467,156 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":7,"./assert":9,"./is":10,"big.js":11}],7:[function(require,module,exports){
+},{"./Enum":13,"./assert":15,"./is":16,"big.js":18}],12:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./assert');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * An object that has an end-of-life process.
+  *
+  * @public
+  * @interface
+  */
+
+	var Disposable = function () {
+		function Disposable() {
+			_classCallCheck(this, Disposable);
+
+			this._disposed = false;
+		}
+
+		/**
+   * Invokes end-of-life logic. Once this function has been
+   * invoked, further interaction with the object is not
+   * recommended.
+   *
+   * @public
+   */
+
+
+		_createClass(Disposable, [{
+			key: 'dispose',
+			value: function dispose() {
+				if (this._disposed) {
+					return;
+				}
+
+				this._disposed = true;
+
+				this._onDispose();
+			}
+
+			/**
+    * @protected
+    * @abstract
+    * @ignore
+    */
+
+		}, {
+			key: '_onDispose',
+			value: function _onDispose() {
+				return;
+			}
+
+			/**
+    * Returns true if the {@link Disposable#dispose} function has been invoked.
+    *
+    * @public
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsDisposed',
+			value: function getIsDisposed() {
+				return this._disposed || false;
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Disposable]';
+			}
+
+			/**
+    * Creates and returns a {@link Disposable} object with end-of-life logic
+    * delegated to a function.
+    *
+    * @public
+    * @param disposeAction {Function}
+    * @returns {Disposable}
+    */
+
+		}], [{
+			key: 'fromAction',
+			value: function fromAction(disposeAction) {
+				assert.argumentIsRequired(disposeAction, 'disposeAction', Function);
+
+				return new DisposableAction(disposeAction);
+			}
+
+			/**
+    * Creates and returns a {@link Disposable} object whose end-of-life
+    * logic does nothing.
+    *
+    * @public
+    * @returns {Disposable}
+    */
+
+		}, {
+			key: 'getEmpty',
+			value: function getEmpty() {
+				return Disposable.fromAction(function () {
+					return;
+				});
+			}
+		}]);
+
+		return Disposable;
+	}();
+
+	var DisposableAction = function (_Disposable) {
+		_inherits(DisposableAction, _Disposable);
+
+		function DisposableAction(disposeAction) {
+			_classCallCheck(this, DisposableAction);
+
+			var _this = _possibleConstructorReturn(this, (DisposableAction.__proto__ || Object.getPrototypeOf(DisposableAction)).call(this, disposeAction));
+
+			_this._disposeAction = disposeAction;
+			return _this;
+		}
+
+		_createClass(DisposableAction, [{
+			key: '_onDispose',
+			value: function _onDispose() {
+				this._disposeAction();
+				this._disposeAction = null;
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[DisposableAction]';
+			}
+		}]);
+
+		return DisposableAction;
+	}(Disposable);
+
+	return Disposable;
+}();
+
+},{"./assert":15}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2006,7 +2758,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":9}],8:[function(require,module,exports){
+},{"./assert":15}],14:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -2148,6 +2900,26 @@ module.exports = function () {
 
 				return map;
 			}, {});
+		},
+
+
+		/**
+   * Returns a new array containing all but the first item.
+   *
+   * @static
+   * @param {Array} a
+   * @returns {Array}
+   */
+		dropLeft: function dropLeft(a) {
+			assert.argumentIsArray(a, 'a');
+
+			var returnRef = Array.from(a);
+
+			if (returnRef.length !== 0) {
+				returnRef.shift();
+			}
+
+			return returnRef;
 		},
 
 
@@ -2367,7 +3139,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":9,"./is":10}],9:[function(require,module,exports){
+},{"./assert":15,"./is":16}],15:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -2515,7 +3287,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":10}],10:[function(require,module,exports){
+},{"./is":16}],16:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -2536,7 +3308,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate {*}
+   * @param {*} candidate {*}
    * @returns {boolean}
    */
 		number: function number(candidate) {
@@ -2589,7 +3361,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		positive: function positive(candidate) {
@@ -2602,7 +3374,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {*|boolean}
    */
 		negative: function negative(candidate) {
@@ -2615,7 +3387,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		string: function string(candidate) {
@@ -2628,7 +3400,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		date: function date(candidate) {
@@ -2641,7 +3413,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		fn: function fn(candidate) {
@@ -2654,7 +3426,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		array: function array(candidate) {
@@ -2667,7 +3439,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		boolean: function boolean(candidate) {
@@ -2680,7 +3452,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		object: function object(candidate) {
@@ -2693,7 +3465,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		null: function _null(candidate) {
@@ -2706,7 +3478,7 @@ module.exports = function () {
    *
    * @static
    * @public
-   * @param candidate
+   * @param {*} candidate
    * @returns {boolean}
    */
 		undefined: function (_undefined) {
@@ -2738,7 +3510,179 @@ module.exports = function () {
 	};
 }();
 
-},{}],11:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var assert = require('./../lang/assert'),
+    Disposable = require('./../lang/Disposable');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * An implementation of the observer pattern.
+  *
+  * @param {*} sender - The object which owns the event.
+  * @extends {Disposable}
+  */
+
+	var Event = function (_Disposable) {
+		_inherits(Event, _Disposable);
+
+		function Event(sender) {
+			_classCallCheck(this, Event);
+
+			var _this = _possibleConstructorReturn(this, (Event.__proto__ || Object.getPrototypeOf(Event)).call(this));
+
+			_this._sender = sender || null;
+
+			_this._observers = [];
+			return _this;
+		}
+
+		/**
+   * Registers an event handler which will receive a notification when
+   * {@link Event#fire} is called.
+   *
+   * @public
+   * @param {Function} handler - The function which will be called each time the event fires. The first argument will be the event data. The second argument will be the event owner (i.e. sender).
+   * @returns {Disposable}
+   */
+
+
+		_createClass(Event, [{
+			key: 'register',
+			value: function register(handler) {
+				var _this2 = this;
+
+				assert.argumentIsRequired(handler, 'handler', Function);
+
+				addRegistration.call(this, handler);
+
+				return Disposable.fromAction(function () {
+					if (_this2.getIsDisposed()) {
+						return;
+					}
+
+					removeRegistration.call(_this2, handler);
+				});
+			}
+
+			/**
+    * Removes registration for an event handler. That is, the handler will
+    * no longer be called if the event fires.
+    *
+    * @public
+    * @param {Function} handler
+    */
+
+		}, {
+			key: 'unregister',
+			value: function unregister(handler) {
+				assert.argumentIsRequired(handler, 'handler', Function);
+
+				removeRegistration.call(this, handler);
+			}
+
+			/**
+    * Removes all handlers from the event.
+    *
+    * @public
+    */
+
+		}, {
+			key: 'clear',
+			value: function clear() {
+				this._observers = [];
+			}
+
+			/**
+    * Triggers the event, calling all previously registered handlers.
+    *
+    * @public
+    * @param {*) data - The data to pass each handler.
+    */
+
+		}, {
+			key: 'fire',
+			value: function fire(data) {
+				var observers = this._observers;
+
+				for (var i = 0; i < observers.length; i++) {
+					var observer = observers[i];
+
+					observer(data, this._sender);
+				}
+			}
+
+			/**
+    * Returns true, if no handlers are currently registered.
+    *
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsEmpty',
+			value: function getIsEmpty() {
+				return this._observers.length === 0;
+			}
+		}, {
+			key: '_onDispose',
+			value: function _onDispose() {
+				this._observers = null;
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Event]';
+			}
+		}]);
+
+		return Event;
+	}(Disposable);
+
+	function addRegistration(handler) {
+		var copiedObservers = this._observers.slice();
+
+		copiedObservers.push(handler);
+
+		this._observers = copiedObservers;
+	}
+
+	function removeRegistration(handler) {
+		var indicesToRemove = [];
+
+		for (var i = 0; i < this._observers.length; i++) {
+			var candidate = this._observers[i];
+
+			if (candidate === handler) {
+				indicesToRemove.push(i);
+			}
+		}
+
+		if (indicesToRemove.length > 0) {
+			var copiedObservers = this._observers.slice();
+
+			for (var j = indicesToRemove.length - 1; !(j < 0); j--) {
+				copiedObservers.splice(indicesToRemove[j], 1);
+			}
+
+			this._observers = copiedObservers;
+		}
+	}
+
+	return Event;
+}();
+
+},{"./../lang/Disposable":12,"./../lang/assert":15}],18:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -3679,7 +4623,7 @@ module.exports = function () {
   }
 })(this);
 
-},{}],12:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -4036,4 +4980,103 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":1,"./../../../lib/data/TransactionType":2,"@barchart/common-js/lang/Day":5,"@barchart/common-js/lang/Decimal":6}]},{},[12]);
+},{"./../../../lib/data/PositionSummaryFrame":1,"./../../../lib/data/TransactionType":2,"@barchart/common-js/lang/Day":10,"@barchart/common-js/lang/Decimal":11}],20:[function(require,module,exports){
+const PositionContainer = require('./../../../lib/processing/PositionContainer'),
+	PositionGroupDefinition = require('./../../../lib/processing/PositionGroupDefinition');
+
+describe('When a position container data is gathered', () => {
+	'use strict';
+
+	describe('for two portfolios, each with the same position, and the second portfolio with an additonal position', () => {
+		let portfolios;
+		let positions;
+		let summaries;
+
+		beforeEach(() => {
+			portfolios = [
+				{
+					portfolio: 'a',
+					name: 'a'
+				}, {
+					portfolio: 'b',
+					name: 'b'
+				}
+			];
+
+			positions = [
+				{
+					portfolio: 'a',
+					position: '1',
+					instrument: {
+						symbol: {
+							barchart: 'AAPL'
+						}
+					},
+				}, {
+					portfolio: 'b',
+					position: '2',
+					instrument: {
+						symbol: {
+							barchart: 'AAPL'
+						}
+					}
+				}, {
+					portfolio: 'b',
+					position: '3',
+					instrument: {
+						symbol: {
+							barchart: 'TSLA'
+						}
+					}
+				}
+			];
+
+			summaries = [ ];
+		});
+
+		describe('and a container is created grouping by total, portfolio, and instrument', () => {
+			let definitions;
+			let container;
+
+			beforeEach(() => {
+				definitions = [
+					new PositionGroupDefinition('Total', x => true, x => 'Total'),
+					new PositionGroupDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name),
+					new PositionGroupDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart)
+				];
+
+				try {
+					container = new PositionContainer(portfolios, positions, summaries, definitions);
+				} catch (e) {
+					console.log(e);
+				}
+			});
+
+			it('the "Total" group should have two children groups', () => {
+				expect(container.getGroups([ 'Total' ]).length).toEqual(2);
+			});
+
+			it('the "Total" group should have three items', () => {
+				expect(container.getGroup([ 'Total' ]).items.length).toEqual(3);
+			});
+
+			it('The "a" portfolio group should have one child group', () => {
+				expect(container.getGroups([ 'Total', 'a' ]).length).toEqual(1);
+			});
+
+			it('the "a" portfolio group should have one item', () => {
+				expect(container.getGroup([ 'Total', 'a' ]).items.length).toEqual(1);
+			});
+
+			it('The "b" portfolio group should have two child groups', () => {
+				expect(container.getGroups([ 'Total', 'b' ]).length).toEqual(2);
+			});
+
+			it('the "b" portfolio group should have two items', () => {
+				expect(container.getGroup([ 'Total', 'b' ]).items.length).toEqual(2);
+			});
+		});
+	});
+});
+
+},{"./../../../lib/processing/PositionContainer":3,"./../../../lib/processing/PositionGroupDefinition":5}]},{},[19,20]);
