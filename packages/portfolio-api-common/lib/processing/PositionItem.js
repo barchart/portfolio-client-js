@@ -19,6 +19,8 @@ module.exports = (() => {
 			this._data.current = null;
 			this._data.previous = position.previous || null;
 
+			const snapshot = this._position.snapshot;
+
 			this._priceChangeEvent = new Event(this);
 		}
 
