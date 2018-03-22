@@ -1,6 +1,6 @@
 const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
-	numberFormatter = require('@barchart/common-js/lang/formatter');
+	formatter = require('@barchart/common-js/lang/formatter');
 
 const TransactionType = require('./../data/TransactionType');
 
@@ -51,7 +51,7 @@ module.exports = (() => {
 						if (!is.undefined(formattedTransaction[key]) && is.fn(formattedTransaction[key].toFloat)) {
 							const precision = transaction.instrument.currency.precision;
 
-							formattedTransaction[key] = numberFormatter.numberToString(formattedTransaction[key].toFloat(), precision, ',');
+							formattedTransaction[key] = formatter.numberToString(formattedTransaction[key].toFloat(), precision, ',');
 						}
 					});
 

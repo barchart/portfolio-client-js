@@ -1,4 +1,5 @@
-const Decimal = require('@barchart/common-js/lang/Decimal');
+const Currency = require('@barchart/common-js/lang/Currency'),
+	Decimal = require('@barchart/common-js/lang/Decimal');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionGroupDefinition = require('./../../../lib/processing/PositionGroupDefinition');
@@ -8,13 +9,14 @@ describe('When a position container data is gathered', () => {
 
 	let positionCounter = 0;
 
-	function getPosition(portfolio, symbol) {
+	function getPosition(portfolio, symbol, currency) {
 		return {
 			portfolio: portfolio,
 			position: (positionCounter++).toString(),
 			instrument: {
 				symbol: {
-					barchart: symbol
+					barchart: symbol,
+					currency: currency || Currency.USD
 				}
 			},
 			snapshot: {
