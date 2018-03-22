@@ -516,6 +516,7 @@ module.exports = (() => {
 const array = require('@barchart/common-js/lang/array'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
+	Currency = require('@barchart/common-js/lang/Currency'),
 	assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
@@ -566,8 +567,8 @@ module.exports = (() => {
 				let position = item.position;
 				let symbol = null;
 
-				if (position.instrument && position.instrument.symbol && position.instrument.barchart) {
-					symbol = position.instrument.barchart;
+				if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
+					symbol = position.instrument.symbol.barchart;
 
 					if (!map.hasOwnProperty(symbol)) {
 						map[symbol] = [ ];
@@ -579,7 +580,7 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._definitions = definitions || [ new PositionGroupDefinition('Totals', i => true, i => 'Totals', [ 'Totals' ]) ];
+			this._definitions = definitions;
 
 			this._tree = new Tree();
 
@@ -594,13 +595,13 @@ module.exports = (() => {
 				const populatedGroups = array.batchBy(items, currentDefinition.keySelector).map((items) => {
 					const first = items[0];
 
-					return new PositionGroup(items, currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
+					return new PositionGroup(items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
 				});
 
 				const missingGroups = array.difference(currentDefinition.requiredGroups, populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup([ ], description);
+					return new PositionGroup([ ], Currency.USD, description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
@@ -683,7 +684,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./PositionGroup":4,"./PositionGroupDefinition":5,"./PositionItem":6,"@barchart/common-js/collections/Tree":7,"@barchart/common-js/collections/sorting/ComparatorBuilder":8,"@barchart/common-js/collections/sorting/comparators":9,"@barchart/common-js/lang/array":15,"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18}],4:[function(require,module,exports){
+},{"./PositionGroup":4,"./PositionGroupDefinition":5,"./PositionItem":6,"@barchart/common-js/collections/Tree":7,"@barchart/common-js/collections/sorting/ComparatorBuilder":8,"@barchart/common-js/collections/sorting/comparators":9,"@barchart/common-js/lang/Currency":10,"@barchart/common-js/lang/array":15,"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18}],4:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -697,9 +698,11 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(items, description, single) {
-			this._description = description;
+		constructor(items, currency, description, single) {
 			this._items = items;
+			this._currency = currency;
+
+			this._description = description;
 
 			this._single = is.boolean(single) && single;
 
@@ -730,11 +733,19 @@ module.exports = (() => {
 						this._dataFormat.current = null;
 					}
 
-					calculateVariablePriceData(this, item, price);
+					calculateVariablePriceData(this, item);
 				});
 			});
 
 			calculateStaticData(this);
+		}
+
+		get items() {
+			return this._items;
+		}
+
+		get currency() {
+			return this._currency;
 		}
 
 		get description() {
@@ -743,10 +754,6 @@ module.exports = (() => {
 
 		get data() {
 			return this._dataFormat;
-		}
-
-		get items() {
-			return this._items;
 		}
 
 		get single() {
@@ -791,7 +798,7 @@ module.exports = (() => {
 		formatted.basis = format(updates.basis, Currency.USD);
 	}
 
-	function calculateVariablePriceData(group, item, price) {
+	function calculateVariablePriceData(group, item) {
 
 	}
 
@@ -850,6 +857,7 @@ module.exports = (() => {
 
 },{"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18}],6:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -871,6 +879,18 @@ module.exports = (() => {
 			this._data.previous = position.previous || null;
 
 			const snapshot = this._position.snapshot;
+
+			this._data.basis = snapshot.basis || Decimal.ZERO;
+
+			/*
+			let market;
+
+			if (position.previous) {
+				market = snapshot.open.multiply(position.previous);
+			} else {
+				market = snapshot.value;
+			}
+			*/
 
 			this._priceChangeEvent = new Event(this);
 		}
@@ -909,7 +929,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18,"@barchart/common-js/messaging/Event":19}],7:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":12,"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18,"@barchart/common-js/messaging/Event":19}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
