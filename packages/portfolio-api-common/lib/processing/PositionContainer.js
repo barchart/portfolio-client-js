@@ -83,10 +83,10 @@ module.exports = (() => {
 					return new PositionGroup(items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
 				});
 
-				const missingGroups = array.difference(currentDefinition.requiredGroups, populatedGroups.map(group => group.description));
+				const missingGroups = array.difference(Object.keys(currentDefinition.requiredGroups), populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup([ ], Currency.USD, description);
+					return new PositionGroup([ ], currentDefinition.requiredGroups[description].currency, description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
