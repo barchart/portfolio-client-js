@@ -1,8 +1,27 @@
+const Decimal = require('@barchart/common-js/lang/Decimal');
+
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionGroupDefinition = require('./../../../lib/processing/PositionGroupDefinition');
 
 describe('When a position container data is gathered', () => {
 	'use strict';
+
+	let positionCounter = 0;
+
+	function getPosition(portfolio, symbol) {
+		return {
+			portfolio: portfolio,
+			position: (positionCounter++).toString(),
+			instrument: {
+				symbol: {
+					barchart: symbol
+				}
+			},
+			snapshot: {
+				basis: new Decimal(123)
+			}
+		}
+	}
 
 	describe('for two portfolios, each with the same position, and the second portfolio with an additonal position', () => {
 		let portfolios;
@@ -21,31 +40,9 @@ describe('When a position container data is gathered', () => {
 			];
 
 			positions = [
-				{
-					portfolio: 'a',
-					position: '1',
-					instrument: {
-						symbol: {
-							barchart: 'AAPL'
-						}
-					},
-				}, {
-					portfolio: 'b',
-					position: '2',
-					instrument: {
-						symbol: {
-							barchart: 'AAPL'
-						}
-					}
-				}, {
-					portfolio: 'b',
-					position: '3',
-					instrument: {
-						symbol: {
-							barchart: 'TSLA'
-						}
-					}
-				}
+				getPosition('a', 'AAPL'),
+				getPosition('b', 'AAPL'),
+				getPosition('b', 'TSLA')
 			];
 
 			summaries = [ ];

@@ -1,4 +1,5 @@
 const assert = require('@barchart/common-js/lang/assert'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is');
 
 module.exports = (() => {
@@ -18,16 +19,21 @@ module.exports = (() => {
 
 			this._data.description = this._description;
 
-			this._data.previous = null;
 			this._data.current = null;
+			this._data.previous = null;
+
+			this._data.basis = null;
+			this._data.market = null;
 
 			this._items.forEach((item) => {
-				item.registerPriceChangeHandler((price, sender) => {
+				item.registerPriceChangeHandler((data, sender) => {
 					if (this._single) {
-						data.current = price;
+						data.current = data.current;
 					} else {
 						data.current = null;
 					}
+
+					calculateVariablePriceData(this, item, price);
 				});
 			});
 
@@ -46,6 +52,10 @@ module.exports = (() => {
 			return this._items;
 		}
 
+		get single() {
+			return this._single;
+		}
+
 		toString() {
 			return '[PositionGroup]';
 		}
@@ -55,10 +65,29 @@ module.exports = (() => {
 		const items = group._items;
 		const data = group._data;
 
-		const updates = items.reduce(function(updates, item) {
+		let updates;
 
-		}, { });
+		if (group.single) {
+			const item = items[0];
 
+			updates.basis = item.basis;
+		} else {
+			updates = items.reduce(function(updates, item) {
+				const position = item.position;
+				const snapshot = item.position.snapshot;
+
+				updates.value = updates.basis.add(snapshot.basis);
+
+				return updates;
+			}, {
+				basis: Decimal.ZERO
+			});
+		}
+
+		data.basis = updates.basis;
+	}
+
+	function calculateVariablePriceData(group, item, price) {
 
 	}
 

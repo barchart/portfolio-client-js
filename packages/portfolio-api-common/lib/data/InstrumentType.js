@@ -10,14 +10,20 @@ module.exports = (() => {
 	 * @public
 	 * @extends {Enum}
 	 * @param {String} description
+	 * @param {String} groupDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, canReinvest) {
+		constructor(code, description, groupDescription, canReinvest) {
 			super(code, description);
 
+			this._groupDescription = groupDescription;
 			this._canReinvest = canReinvest;
+		}
+
+		get groupDescription() {
+			return this._groupDescription;
 		}
 
 		/**
@@ -74,10 +80,10 @@ module.exports = (() => {
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', false);
-	const equity = new InstrumentType('EQUITY', 'equity', true);
-	const fund = new InstrumentType('FUND', 'mutual fund', true);
-	const other = new InstrumentType('OTHER', 'other', false);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false);
 
 	return InstrumentType;
 })();

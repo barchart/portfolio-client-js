@@ -14,7 +14,11 @@ module.exports = (() => {
 			this._position = position;
 			this._summaries = summaries || [ ];
 
-			this._price = null;
+			this._data = { };
+
+			this._data.current = null;
+			this._data.previous = position.previous || null;
+
 			this._priceChangeEvent = new Event(this);
 		}
 
@@ -31,8 +35,10 @@ module.exports = (() => {
 		}
 
 		setPrice(price) {
-			if (this._price !== price) {
-				this._priceChangeEvent.fire(this._price = price);
+			if (this._data.price !== price) {
+				this._data.price = price;
+
+				this._priceChangeEvent.fire(this._data);
 			}
 		}
 
