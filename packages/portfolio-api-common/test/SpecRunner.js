@@ -615,7 +615,11 @@ module.exports = (() => {
 					}, { });
 
 					const getIndex = (description) => {
-						return ordering[description] || Math.MAX_VALUE;
+						if (ordering.hasOwnProperty(description)) {
+							return ordering[description];
+						} else {
+							return Number.MAX_VALUE;
+						}
 					};
 
 					builder = ComparatorBuilder.startWith((a, b) => {
