@@ -118,7 +118,7 @@ module.exports = (() => {
 		.withField('snapshot.basis', DataType.DECIMAL)
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
-		.withField('previous', DataType.DECIMAL, true)
+		.withField('previous', DataType.NUMBER, true)
 		.schema
 	);
 
