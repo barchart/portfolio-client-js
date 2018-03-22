@@ -1,4 +1,6 @@
 const array = require('@barchart/common-js/lang/array'),
+	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
+	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
@@ -87,6 +89,32 @@ module.exports = (() => {
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
+
+				let builder;
+
+				if (currentDefinition.requiredGroups.length !== 0) {
+					const ordering = currentDefinition.requiredGroups.reduce((map, group, index) => {
+						map[group] = index;
+
+						return map;
+					}, { });
+
+					const getIndex = (description) => {
+						return ordering[description] || Math.MAX_VALUE;
+					};
+
+					builder = ComparatorBuilder.startWith((a, b) => {
+						return comparators.compareNumbers(getIndex(a.description), getIndex(b.description));
+					}).thenBy((a, b) => {
+						return comparators.compareStrings(a.description, b.description);
+					});
+				} else {
+					builder = ComparatorBuilder.startWith((a, b) => {
+						return comparators.compareStrings(a.description, b.description);
+					});
+				}
+
+				compositeGroups.sort(builder.toComparator());
 
 				compositeGroups.forEach((group) => {
 					const child = tree.addChild(group);

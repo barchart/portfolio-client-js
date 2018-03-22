@@ -8,11 +8,12 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroupDefinition {
-		constructor(name, keySelector, descriptionSelector, requiredGroups, single) {
+		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single) {
 			this._name = name;
 
 			this._keySelector = keySelector;
 			this._descriptionSelector = descriptionSelector;
+			this._currencySelector = currencySelector;
 
 			this._requiredGroups = requiredGroups || [ ];
 			this._single = is.boolean(single) && single;
@@ -28,6 +29,10 @@ module.exports = (() => {
 
 		get descriptionSelector() {
 			return this._descriptionSelector;
+		}
+
+		get currencySelector() {
+			return this._currencySelector;
 		}
 
 		get requiredGroups() {

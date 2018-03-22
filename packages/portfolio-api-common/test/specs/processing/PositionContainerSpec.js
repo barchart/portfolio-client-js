@@ -56,9 +56,9 @@ describe('When a position container data is gathered', () => {
 
 			beforeEach(() => {
 				definitions = [
-					new PositionGroupDefinition('Total', x => true, x => 'Total'),
-					new PositionGroupDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name),
-					new PositionGroupDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart)
+					new PositionGroupDefinition('Total', x => true, x => 'Total', x => Currency.CAD),
+					new PositionGroupDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
+					new PositionGroupDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
 				];
 
 				try {
