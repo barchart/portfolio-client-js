@@ -10,20 +10,20 @@ module.exports = (() => {
 	 * @public
 	 * @extends {Enum}
 	 * @param {String} description
-	 * @param {String} groupDescription
+	 * @param {String} alternateDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, groupDescription, canReinvest) {
+		constructor(code, description, alternateDescription, canReinvest) {
 			super(code, description);
 
-			this._groupDescription = groupDescription;
+			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
 		}
 
-		get groupDescription() {
-			return this._groupDescription;
+		get alternateDescription() {
+			return this._alternateDescription;
 		}
 
 		/**
