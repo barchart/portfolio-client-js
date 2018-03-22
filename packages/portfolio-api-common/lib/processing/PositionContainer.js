@@ -137,13 +137,13 @@ module.exports = (() => {
 
 		setPrice(symbol, price) {
 			if (this._symbols.hasOwnProperty(symbol)) {
-				this._symbols.forEach(item.setPrice(price));
+				this._symbols.forEach(item => item.setPrice(price));
 			}
 		}
 
 		getGroup(keys) {
 			const node = keys.reduce((tree, key) => {
-				tree = tree.findChild((group) => group.description === key);
+				tree = tree.findChild(group => group.description === key);
 
 				return tree;
 			}, this._tree);
@@ -153,7 +153,7 @@ module.exports = (() => {
 
 		getGroups(keys) {
 			const node = keys.reduce((tree, key) => {
-				tree = tree.findChild((group) => group.description === key);
+				tree = tree.findChild(group => group.description === key);
 
 				return tree;
 			}, this._tree);
