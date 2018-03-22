@@ -514,6 +514,8 @@ module.exports = (() => {
 
 },{"@barchart/common-js/lang/Enum":14,"@barchart/common-js/lang/assert":16}],3:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
+	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
+	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
@@ -603,6 +605,32 @@ module.exports = (() => {
 
 				const compositeGroups = populatedGroups.concat(empty);
 
+				let builder;
+
+				if (currentDefinition.requiredGroups.length !== 0) {
+					const ordering = currentDefinition.requiredGroups.reduce((map, group, index) => {
+						map[group] = index;
+
+						return map;
+					}, { });
+
+					const getIndex = (description) => {
+						return ordering[description] || Math.MAX_VALUE;
+					};
+
+					builder = ComparatorBuilder.startWith((a, b) => {
+						return comparators.compareNumbers(getIndex(a.description), getIndex(b.description));
+					}).thenBy((a, b) => {
+						return comparators.compareStrings(a.description, b.description);
+					});
+				} else {
+					builder = ComparatorBuilder.startWith((a, b) => {
+						return comparators.compareStrings(a.description, b.description);
+					});
+				}
+
+				compositeGroups.sort(builder.toComparator());
+
 				compositeGroups.forEach((group) => {
 					const child = tree.addChild(group);
 
@@ -651,7 +679,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./PositionGroup":4,"./PositionGroupDefinition":5,"./PositionItem":6,"@barchart/common-js/collections/Tree":7,"@barchart/common-js/lang/array":15,"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18}],4:[function(require,module,exports){
+},{"./PositionGroup":4,"./PositionGroupDefinition":5,"./PositionItem":6,"@barchart/common-js/collections/Tree":7,"@barchart/common-js/collections/sorting/ComparatorBuilder":8,"@barchart/common-js/collections/sorting/comparators":9,"@barchart/common-js/lang/array":15,"@barchart/common-js/lang/assert":16,"@barchart/common-js/lang/is":18}],4:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -777,11 +805,12 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroupDefinition {
-		constructor(name, keySelector, descriptionSelector, requiredGroups, single) {
+		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single) {
 			this._name = name;
 
 			this._keySelector = keySelector;
 			this._descriptionSelector = descriptionSelector;
+			this._currencySelector = currencySelector;
 
 			this._requiredGroups = requiredGroups || [ ];
 			this._single = is.boolean(single) && single;
@@ -797,6 +826,10 @@ module.exports = (() => {
 
 		get descriptionSelector() {
 			return this._descriptionSelector;
+		}
+
+		get currencySelector() {
+			return this._currencySelector;
 		}
 
 		get requiredGroups() {
@@ -5313,9 +5346,9 @@ describe('When a position container data is gathered', () => {
 
 			beforeEach(() => {
 				definitions = [
-					new PositionGroupDefinition('Total', x => true, x => 'Total'),
-					new PositionGroupDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name),
-					new PositionGroupDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart)
+					new PositionGroupDefinition('Total', x => true, x => 'Total', x => Currency.CAD),
+					new PositionGroupDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
+					new PositionGroupDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
 				];
 
 				try {
