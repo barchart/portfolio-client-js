@@ -6,7 +6,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const ValuationType = require('./../data/ValuationType');
+const InstrumentType = require('./../data/InstrumentType'),
+	ValuationType = require('./../data/ValuationType');
 
 module.exports = (() => {
 	'use strict';
@@ -67,7 +68,7 @@ module.exports = (() => {
 		.withField('sequence', DataType.NUMBER)
 		.withField('instrument.id', DataType.STRING)
 		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.STRING)
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
@@ -99,7 +100,7 @@ module.exports = (() => {
 		.withField('sequence', DataType.NUMBER)
 		.withField('instrument.id', DataType.STRING)
 		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.STRING)
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
