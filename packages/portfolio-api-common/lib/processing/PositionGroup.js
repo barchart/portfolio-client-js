@@ -108,7 +108,7 @@ module.exports = (() => {
 		}
 
 		raw.basis = updates.basis;
-		formatted.basis = format(updates.basis, Currency.USD);
+		formatted.basis = format(updates.basis.opposite(), Currency.USD);
 	}
 
 	function calculateVariablePriceData(group, item) {
