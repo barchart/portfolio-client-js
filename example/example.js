@@ -365,7 +365,7 @@ module.exports = function () {
 					assert.argumentIsOptional(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					return Gateway.invoke(_this7._readPositionsEndpoint, { portfolio: portfolio, position: position || '*' });
+					return Gateway.invoke(_this7._readPositionsEndpoint, { portfolio: portfolio || '*', position: position || '*' });
 				});
 			}
 
@@ -413,8 +413,6 @@ module.exports = function () {
 					if (periods) {
 						query.periods = periods;
 					}
-
-					console.log(query);
 
 					return Gateway.invoke(_this8._readPositionSummariesEndpoint, query);
 				});
@@ -997,7 +995,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.18'
+		version: '1.1.19'
 	};
 }();
 
@@ -6388,6 +6386,26 @@ module.exports = function () {
 
 				return map;
 			}, {});
+		},
+
+
+		/**
+   * Returns a new array containing all but the first item.
+   *
+   * @static
+   * @param {Array} a
+   * @returns {Array}
+   */
+		dropLeft: function dropLeft(a) {
+			assert.argumentIsArray(a, 'a');
+
+			var returnRef = Array.from(a);
+
+			if (returnRef.length !== 0) {
+				returnRef.shift();
+			}
+
+			return returnRef;
 		},
 
 
