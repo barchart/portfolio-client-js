@@ -29,16 +29,22 @@ module.exports = (() => {
 			this._dataActual.currentPrice = null;
 			this._dataActual.previousPrice = null;
 			this._dataActual.basis = null;
+			this._dataActual.realized = null;
+			this._dataActual.income = null;
 			this._dataActual.market = null;
 			this._dataActual.marketPercent = null;
 			this._dataActual.unrealizedToday = null;
+			this._dataActual.inception = null;
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
 			this._dataFormat.basis = null;
+			this._dataFormat.realized = null;
+			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.marketPercent = null;
 			this._dataFormat.unrealizedToday = null;
+			this._dataFormat.inception = null;
 
 			this._dataFormat.unrealizedTodayNegative = false;
 
@@ -115,15 +121,23 @@ module.exports = (() => {
 
 		let updates = items.reduce((updates, item) => {
 			updates.basis = updates.basis.add(item.data.basis);
+			updates.realized = updates.realized.add(item.data.realized);
+			updates.income = updates.income.add(item.data.income);
 
 			return updates;
 		}, {
-			basis: Decimal.ZERO
+			basis: Decimal.ZERO,
+			realized: Decimal.ZERO,
+			income: Decimal.ZERO
 		});
 
 		actual.basis = updates.basis;
-	
-		format.basis = formatCurrency(updates.basis, currency);
+		actual.realized = updates.realized;
+		actual.income = updates.income;
+
+		format.basis = formatCurrency(actual.basis, currency);
+		format.realized = formatCurrency(actual.basis, currency);
+		format.income = formatCurrency(actual.income, currency);
 	}
 
 	function calculatePriceData(group, item) {
@@ -136,7 +150,12 @@ module.exports = (() => {
 
 		let updates;
 
-		if (actual.market === null || actual.unrealizedToday === null) {
+		if (actual.market !== null && actual.unrealizedToday !== null && actual.inception !== null) {
+			updates = {
+				market: actual.market.add(item.data.marketChange),
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
+			};
+		} else {
 			const items = group._items;
 
 			updates = items.reduce((updates, item) => {
@@ -148,11 +167,6 @@ module.exports = (() => {
 				market: Decimal.ZERO,
 				unrealizedToday: Decimal.ZERO
 			});
-		} else {
-			updates = {
-				market: actual.market.add(item.data.marketChange),
-				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
-			};
 		}
 		
 		if (parent !== null) {
@@ -166,15 +180,18 @@ module.exports = (() => {
 		} else {
 			updates.marketPercent = null;
 		}
-		
+
 		actual.market = updates.market;
 		actual.marketPercent = updates.marketPercent;
 		actual.unrealizedToday = updates.unrealizedToday;
+		actual.inception = updates.unrealizedToday.add(actual.realized).add(actual.income);
 		
-		format.market = formatCurrency(updates.market, currency);
-		format.marketPercent = formatPercent(updates.marketPercent, 2);
-		format.unrealizedToday = formatCurrency(updates.unrealizedToday, currency);
+		format.market = formatCurrency(actual.market, currency);
+		format.marketPercent = formatPercent(actual.marketPercent, 2);
+		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+		format.inception = formatCurrency(actual.inception, currency);
+
 	}
 
 	return PositionGroup;

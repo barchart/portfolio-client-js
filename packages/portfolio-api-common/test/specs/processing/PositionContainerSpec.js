@@ -25,7 +25,9 @@ describe('When a position container data is gathered', () => {
 			snapshot: {
 				basis: new Decimal(123),
 				value: new Decimal(456),
-				open: new Decimal(1)
+				open: new Decimal(1),
+				income: new Decimal(0),
+				gain: new Decimal(0)
 			}
 		}
 	}

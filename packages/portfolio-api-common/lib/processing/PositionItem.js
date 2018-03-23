@@ -30,6 +30,9 @@ module.exports = (() => {
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
 
+			this._data.realized = null;
+			this._data.income = null;
+
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
@@ -88,6 +91,9 @@ module.exports = (() => {
 		}
 
 		data.basis = basis;
+
+		data.realized = snapshot.gain;
+		data.income = snapshot.income;
 	}
 
 	function calculatePriceData(item, price) {
