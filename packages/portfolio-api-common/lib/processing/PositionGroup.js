@@ -141,7 +141,10 @@ module.exports = (() => {
 		}
 
 		raw.market = updates.market;
-		formatted.market = format(updates.market, Currency.USD);
+		formatted.market = format(updates.market, this._currency);
+
+		raw.unrealizedToday = updates.unrealizedToday;
+		formatted.unrealizedToday = format(updates.unrealizedToday, this._currency);
 	}
 
 	return PositionGroup;
