@@ -99,7 +99,7 @@ module.exports = (() => {
 		const getSummaryTotal = (index) => {
 			let summaryTotal;
 
-			if (summaries.length > (index + 1) && summaries[index] !== null) {
+			if (summaries.length > index && summaries[index] !== null) {
 				const period = summaries[index].period;
 
 				summaryTotal = period.realized.add(period.unrealized).add(period.income);
