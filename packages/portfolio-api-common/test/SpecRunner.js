@@ -612,6 +612,8 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
+const InstrumentType = require('./../data/InstrumentType');
+
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
 
@@ -622,7 +624,10 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionContainer {
-		constructor(portfolios, positions, summaries, definitions) {
+		constructor(portfolios, positions, summaries, definitions, defaultCurrency) {
+			this._definitions = definitions;
+			this._defaultCurrency = defaultCurrency || Currency.CAD;
+
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
 
@@ -654,11 +659,10 @@ module.exports = (() => {
 			}, [ ]);
 
 			this._symbols = this._items.reduce((map, item) => {
-				let position = item.position;
-				let symbol = null;
+				const position = item.position;
 
 				if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
-					symbol = position.instrument.symbol.barchart;
+					const symbol = position.instrument.symbol.barchart;
 
 					if (!map.hasOwnProperty(symbol)) {
 						map[symbol] = [ ];
@@ -670,7 +674,21 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._definitions = definitions;
+			this._currencies = this._items.reduce((map, item) => {
+				const position = item.position;
+
+				if (position.instrument && position.instrument.currency) {
+					const currency = position.instrument.currency;
+
+					if (!map.hasOwnProperty(currency)) {
+						map[currency] = [ ];
+					}
+
+					map[currency].push(item);
+				}
+
+				return map;
+			}, { });
 
 			this._tree = new Tree();
 
@@ -737,6 +755,10 @@ module.exports = (() => {
 			createGroups(this._tree, this._items, this._definitions);
 		}
 
+		get defaultCurrency() {
+			return this._defaultCurrency;
+		}
+
 		getSymbols() {
 			return Object.keys(this._symbols);
 		}
@@ -745,6 +767,22 @@ module.exports = (() => {
 			if (this._symbols.hasOwnProperty(symbol)) {
 				this._symbols[symbol].forEach(item => item.setPrice(price));
 			}
+		}
+
+		getCurrencySymbols() {
+			const codes = Object.keys(this._currencies);
+
+			return codes.reduce((symbols, code) => {
+				if (code !== this._defaultCurrency) {
+					symbols.push(`^${this._defaultCurrency}${code}`);
+				}
+
+				return symbols;
+			}, [ ]);
+		}
+
+		setExchangeRage(symbol, price) {
+
 		}
 
 		getGroup(keys) {
@@ -775,7 +813,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./PositionGroup":5,"./PositionItem":7,"@barchart/common-js/collections/Tree":8,"@barchart/common-js/collections/sorting/ComparatorBuilder":9,"@barchart/common-js/collections/sorting/comparators":10,"@barchart/common-js/lang/Currency":11,"@barchart/common-js/lang/array":16,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19}],5:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"./PositionGroup":5,"./PositionItem":7,"@barchart/common-js/collections/Tree":8,"@barchart/common-js/collections/sorting/ComparatorBuilder":9,"@barchart/common-js/collections/sorting/comparators":10,"@barchart/common-js/lang/Currency":11,"@barchart/common-js/lang/array":16,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
