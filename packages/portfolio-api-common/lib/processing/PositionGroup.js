@@ -11,7 +11,9 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(items, currency, description, single) {
+		constructor(parent, items, currency, description, single) {
+			this._parent = parent || null;
+
 			this._items = items;
 			this._currency = currency;
 
@@ -20,33 +22,31 @@ module.exports = (() => {
 			this._single = is.boolean(single) && single;
 
 			this._dataFormat = { };
-			this._dataRaw = { };
+			this._dataActual = { };
 			
 			this._dataFormat.description = this._description;
 
-			this._dataRaw.currentPrice = null;
-			this._dataRaw.previousPrice = null;
+			this._dataActual.currentPrice = null;
+			this._dataActual.previousPrice = null;
+			this._dataActual.basis = null;
+			this._dataActual.market = null;
+			this._dataActual.marketPercent = null;
+			this._dataActual.unrealizedToday = null;
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
-
-			this._dataRaw.basis = null;
-			this._dataRaw.market = null;
-
 			this._dataFormat.basis = null;
 			this._dataFormat.market = null;
-
-			this._dataRaw.unrealizedToday = null;
-
+			this._dataFormat.marketPercent = null;
 			this._dataFormat.unrealizedToday = null;
 
 			this._items.forEach((item) => {
 				item.registerPriceChangeHandler((data, sender) => {
 					if (this._single) {
-						this._dataRaw.currentPrice = data.currentPrice;
+						this._dataActual.currentPrice = data.currentPrice;
 						this._dataFormat.currentPrice = format(data.currentPrice, sender.position.instrument.currency);
 					} else {
-						this._dataRaw.currentPrice = null;
+						this._dataActual.currentPrice = null;
 						this._dataFormat.currentPrice = null;
 					}
 
@@ -83,48 +83,61 @@ module.exports = (() => {
 		}
 	}
 
-	function format(decimal, currency) {
-		return formatter.numberToString(decimal.toFloat(), currency.precision, ',', false);
+	function formatNumber(decimal, precision) {
+		if (decimal !== null) {
+			return formatter.numberToString(decimal.toFloat(), precision, ',', false);
+		} else {
+			return '--';
+		}
+	}
+
+	function formatPercent(decimal, precision) {
+		if (decimal !== null) {
+			return formatNumber(decimal.multiply(100));
+		} else {
+			return '--';
+		}
+	}
+
+	function formatCurrency(decimal, currency) {
+		return formatNumber(decimal, currency.precision);
 	}
 
 	function calculateStaticData(group) {
-		const raw = group._dataRaw;
-		const formatted = group._dataFormat;
+		const actual = group._dataActual;
+		const format = group._dataFormat;
 
+		const currency = group.currency;
+		
 		const items = group._items;
 
-		let updates;
+		let updates = items.reduce((updates, item) => {
+			updates.basis = updates.basis.add(item.data.basis);
 
-		if (group.single) {
-			const item = items[0];
+			return updates;
+		}, {
+			basis: Decimal.ZERO
+		});
 
-			updates = { };
-
-			updates.basis = item.basis;
-		} else {
-			updates = items.reduce(function(updates, item) {
-				updates.basis = updates.basis.add(item.data.basis);
-
-				return updates;
-			}, {
-				basis: Decimal.ZERO
-			});
-		}
-
-		raw.basis = updates.basis;
-		formatted.basis = format(updates.basis, Currency.USD);
+		actual.basis = updates.basis;
+	
+		format.basis = formatCurrency(updates.basis, currency);
 	}
 
 	function calculatePriceData(group, item) {
-		const raw = group._dataRaw;
-		const formatted = group._dataFormat;
+		const parent = group._parent;
+
+		const actual = group._dataActual;
+		const format = group._dataFormat;
+
+		const currency = group.currency;
 
 		let updates;
 
-		if (raw.market === null || raw.unrealizedToday === null) {
+		if (actual.market === null || actual.unrealizedToday === null) {
 			const items = group._items;
 
-			updates = items.reduce(function(updates, item) {
+			updates = items.reduce((updates, item) => {
 				updates.market = updates.market.add(item.data.market);
 				updates.unrealizedToday = updates.unrealizedToday.add(item.data.unrealizedToday);
 
@@ -135,16 +148,26 @@ module.exports = (() => {
 			});
 		} else {
 			updates = {
-				market: raw.market.add(item.data.marketChange),
-				unrealizedToday: raw.unrealizedToday.add(item.data.unrealizedTodayChange)
+				market: actual.market.add(item.data.marketChange),
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
 			};
 		}
+		
+		if (parent !== null) {
+			const parentData = parent._dataActual;
 
-		raw.market = updates.market;
-		formatted.market = format(updates.market, this._currency);
-
-		raw.unrealizedToday = updates.unrealizedToday;
-		formatted.unrealizedToday = format(updates.unrealizedToday, this._currency);
+			if (parentData.market !== null && !parentData.market.getIsZero()) {
+				updates.marketPercent = updates.market.divide(parentData.market);
+			}
+		}
+		
+		actual.market = updates.market;
+		actual.marketPercent = updates.marketPercent;
+		actual.unrealizedToday = updates.unrealizedToday;
+		
+		format.market = formatCurrency(updates.market, currency);
+		format.marketPercent = formatPercent(updates.unrealizedToday, 2);
+		format.unrealizedToday = formatCurrency(updates.unrealizedToday, currency);
 	}
 
 	return PositionGroup;

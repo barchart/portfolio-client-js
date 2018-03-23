@@ -697,6 +697,8 @@ module.exports = (() => {
 					return;
 				}
 
+				const parent = tree.getValue() || null;
+
 				const currentDefinition = definitions[0];
 				const additionalDefinitions = array.dropLeft(definitions);
 
@@ -704,13 +706,13 @@ module.exports = (() => {
 				const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
 					const first = items[0];
 
-					return new PositionGroup(items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
+					return new PositionGroup(parent, items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
 				});
 
 				const missingGroups = array.difference(currentDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup([ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
+					return new PositionGroup(parent, [ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
@@ -827,7 +829,9 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(items, currency, description, single) {
+		constructor(parent, items, currency, description, single) {
+			this._parent = parent || null;
+
 			this._items = items;
 			this._currency = currency;
 
@@ -836,33 +840,35 @@ module.exports = (() => {
 			this._single = is.boolean(single) && single;
 
 			this._dataFormat = { };
-			this._dataRaw = { };
+			this._dataActual = { };
 			
 			this._dataFormat.description = this._description;
 
-			this._dataRaw.current = null;
-			this._dataRaw.previous = null;
+			this._dataActual.currentPrice = null;
+			this._dataActual.previousPrice = null;
+			this._dataActual.basis = null;
+			this._dataActual.market = null;
+			this._dataActual.marketPercent = null;
+			this._dataActual.unrealizedToday = null;
 
-			this._dataFormat.current = null;
-			this._dataFormat.previous = null;
-
-			this._dataRaw.basis = null;
-			this._dataRaw.market = null;
-
+			this._dataFormat.currentPrice = null;
+			this._dataFormat.previousPrice = null;
 			this._dataFormat.basis = null;
 			this._dataFormat.market = null;
+			this._dataFormat.marketPercent = null;
+			this._dataFormat.unrealizedToday = null;
 
 			this._items.forEach((item) => {
 				item.registerPriceChangeHandler((data, sender) => {
 					if (this._single) {
-						this._dataRaw.current = data.current;
-						this._dataFormat.current = format(data.current, sender.position.instrument.currency);
+						this._dataActual.currentPrice = data.currentPrice;
+						this._dataFormat.currentPrice = format(data.currentPrice, sender.position.instrument.currency);
 					} else {
-						this._dataRaw.current = null;
-						this._dataFormat.current = null;
+						this._dataActual.currentPrice = null;
+						this._dataFormat.currentPrice = null;
 					}
 
-					calculatePriceData(this, item);
+					calculatePriceData(this, sender);
 				});
 			});
 
@@ -895,64 +901,91 @@ module.exports = (() => {
 		}
 	}
 
-	function format(decimal, currency) {
-		return formatter.numberToString(decimal.toFloat(), currency.precision, ',', false);
+	function formatNumber(decimal, precision) {
+		if (decimal !== null) {
+			return formatter.numberToString(decimal.toFloat(), precision, ',', false);
+		} else {
+			return '--';
+		}
+	}
+
+	function formatPercent(decimal, precision) {
+		if (decimal !== null) {
+			return formatNumber(decimal.multiply(100));
+		} else {
+			return '--';
+		}
+	}
+
+	function formatCurrency(decimal, currency) {
+		return formatNumber(decimal, currency.precision);
 	}
 
 	function calculateStaticData(group) {
+		const actual = group._dataActual;
+		const format = group._dataFormat;
+
+		const currency = group.currency;
+		
 		const items = group._items;
 
-		let updates;
+		let updates = items.reduce((updates, item) => {
+			updates.basis = updates.basis.add(item.data.basis);
 
-		if (group.single) {
-			const item = items[0];
+			return updates;
+		}, {
+			basis: Decimal.ZERO
+		});
 
-			updates = { };
-
-			updates.basis = item.basis;
-		} else {
-			updates = items.reduce(function(updates, item) {
-				updates.basis = updates.basis.add(item.data.basis);
-
-				return updates;
-			}, {
-				basis: Decimal.ZERO
-			});
-		}
-
-		const raw = group._dataRaw;
-		const formatted = group._dataFormat;
-
-		raw.basis = updates.basis;
-		formatted.basis = format(updates.basis, Currency.USD);
+		actual.basis = updates.basis;
+	
+		format.basis = formatCurrency(updates.basis, currency);
 	}
 
-	function calculatePriceData(group) {
-		const items = group._items;
+	function calculatePriceData(group, item) {
+		const parent = group._parent;
+
+		const actual = group._dataActual;
+		const format = group._dataFormat;
+
+		const currency = group.currency;
 
 		let updates;
 
-		if (group.single) {
-			updates = { };
+		if (actual.market === null || actual.unrealizedToday === null) {
+			const items = group._items;
 
-			let item = items[0];
-
-			updates.market = item.market;
-		} else {
-			updates = items.reduce(function(updates, item) {
+			updates = items.reduce((updates, item) => {
 				updates.market = updates.market.add(item.data.market);
+				updates.unrealizedToday = updates.unrealizedToday.add(item.data.unrealizedToday);
 
 				return updates;
 			}, {
-				market: Decimal.ZERO
+				market: Decimal.ZERO,
+				unrealizedToday: Decimal.ZERO
 			});
+		} else {
+			updates = {
+				market: actual.market.add(item.data.marketChange),
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
+			};
 		}
+		
+		if (parent !== null) {
+			const parentData = parent._dataActual;
 
-		const raw = group._dataRaw;
-		const formatted = group._dataFormat;
-
-		raw.market = updates.market;
-		formatted.market = format(updates.market, Currency.USD);
+			if (parentData.market !== null && !parentData.market.getIsZero()) {
+				updates.marketPercent = updates.market.divide(parentData.market);
+			}
+		}
+		
+		actual.market = updates.market;
+		actual.marketPercent = updates.marketPercent;
+		actual.unrealizedToday = updates.unrealizedToday;
+		
+		format.market = formatCurrency(updates.market, currency);
+		format.marketPercent = formatPercent(updates.unrealizedToday, 2);
+		format.unrealizedToday = formatCurrency(updates.unrealizedToday, currency);
 	}
 
 	return PositionGroup;
@@ -1030,9 +1063,16 @@ module.exports = (() => {
 
 			this._data = { };
 
-			this._data.current = null;
-			this._data.previous = null;
 			this._data.basis = null;
+
+			this._data.currentPrice = null;
+			this._data.previousPrice = null;
+
+			this._data.market = null;
+			this._data.marketChange = null;
+			
+			this._data.unrealizedToday = null;
+			this._data.unrealizedTodayChange = null;
 
 			calculateStaticData(this);
 			calculatePriceData(this, null);
@@ -1058,7 +1098,7 @@ module.exports = (() => {
 
 		setPrice(price) {
 			if (this._data.price !== price) {
-				calculatePriceData(this, this._data.price = price);
+				calculatePriceData(this, this._data.currentPrice = price);
 
 				this._priceChangeEvent.fire(this._data);
 			}
@@ -1081,7 +1121,7 @@ module.exports = (() => {
 
 		const data = item._data;
 
-		data.previous = position.previous || null;
+		data.previousPrice = position.previousPrice || null;
 
 		let basis;
 
@@ -1114,7 +1154,35 @@ module.exports = (() => {
 			}
 		}
 
+		let marketChange;
+
+		if (data.market === null) {
+			marketChange = market;
+		} else {
+			marketChange = market.subtract(data.market);
+		}
+
 		data.market = market;
+		data.marketChange = marketChange;
+		
+		let unrealizedToday;
+		let unrealizedTodayChange;
+
+		if (data.previousPrice && price) {
+			unrealizedToday = market.subtract(snapshot.open.multiply(data.previousPrice));
+
+			if (data.unrealizedToday !== null) {
+				unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
+			} else {
+				unrealizedTodayChange = unrealizedToday;
+			}
+		} else {
+			unrealizedToday = Decimal.ZERO;
+			unrealizedTodayChange = Decimal.ZERO;
+		}
+
+		data.unrealizedToday = unrealizedToday;
+		data.unrealizedTodayChange = unrealizedTodayChange;
 	}
 
 	return PositionItem;

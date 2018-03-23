@@ -91,6 +91,8 @@ module.exports = (() => {
 					return;
 				}
 
+				const parent = tree.getValue() || null;
+
 				const currentDefinition = definitions[0];
 				const additionalDefinitions = array.dropLeft(definitions);
 
@@ -98,13 +100,13 @@ module.exports = (() => {
 				const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
 					const first = items[0];
 
-					return new PositionGroup(items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
+					return new PositionGroup(parent, items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
 				});
 
 				const missingGroups = array.difference(currentDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup([ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
+					return new PositionGroup(parent, [ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
