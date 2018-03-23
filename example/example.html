@@ -27,8 +27,8 @@
 
 			that.gateway = null;
 
-			that.user = ko.observable('13cbd0cd-88d1-4efd-a7a1-b37f5af9963a');
-			that.userLegacy = ko.observable('10001981');
+			that.user = ko.observable('b2dfb0af-c2f9-4698-bbc1-8da4d4d5233e');
+			that.userLegacy = ko.observable('4418904');
 
 			that.connected = ko.observable(false);
 			that.connecting = ko.observable(false);
@@ -144,7 +144,7 @@
 			var getPositions = function() {
 				var action = 'portfolioGateway.readPositions()';
 
-				that.gateway.readPositions(that.portfolio() || null, that.position() || null)
+				that.gateway.readPositions(that.portfolio() || null, that.position() || null, true)
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
