@@ -24,11 +24,11 @@ module.exports = (() => {
 			
 			this._dataFormat.description = this._description;
 
-			this._dataRaw.current = null;
-			this._dataRaw.previous = null;
+			this._dataRaw.currentPrice = null;
+			this._dataRaw.previousPrice = null;
 
-			this._dataFormat.current = null;
-			this._dataFormat.previous = null;
+			this._dataFormat.currentPrice = null;
+			this._dataFormat.previousPrice = null;
 
 			this._dataRaw.basis = null;
 			this._dataRaw.market = null;
@@ -36,17 +36,21 @@ module.exports = (() => {
 			this._dataFormat.basis = null;
 			this._dataFormat.market = null;
 
+			this._dataRaw.unrealizedToday = null;
+
+			this._dataFormat.unrealizedToday = null;
+
 			this._items.forEach((item) => {
 				item.registerPriceChangeHandler((data, sender) => {
 					if (this._single) {
-						this._dataRaw.current = data.current;
-						this._dataFormat.current = format(data.current, sender.position.instrument.currency);
+						this._dataRaw.currentPrice = data.currentPrice;
+						this._dataFormat.currentPrice = format(data.currentPrice, sender.position.instrument.currency);
 					} else {
-						this._dataRaw.current = null;
-						this._dataFormat.current = null;
+						this._dataRaw.currentPrice = null;
+						this._dataFormat.currentPrice = null;
 					}
 
-					calculatePriceData(this, item);
+					calculatePriceData(this, sender);
 				});
 			});
 
@@ -84,6 +88,9 @@ module.exports = (() => {
 	}
 
 	function calculateStaticData(group) {
+		const raw = group._dataRaw;
+		const formatted = group._dataFormat;
+
 		const items = group._items;
 
 		let updates;
@@ -104,36 +111,34 @@ module.exports = (() => {
 			});
 		}
 
-		const raw = group._dataRaw;
-		const formatted = group._dataFormat;
-
 		raw.basis = updates.basis;
 		formatted.basis = format(updates.basis, Currency.USD);
 	}
 
-	function calculatePriceData(group) {
-		const items = group._items;
+	function calculatePriceData(group, item) {
+		const raw = group._dataRaw;
+		const formatted = group._dataFormat;
 
 		let updates;
 
-		if (group.single) {
-			updates = { };
+		if (raw.market === null || raw.unrealizedToday === null) {
+			const items = group._items;
 
-			let item = items[0];
-
-			updates.market = item.market;
-		} else {
 			updates = items.reduce(function(updates, item) {
 				updates.market = updates.market.add(item.data.market);
+				updates.unrealizedToday = updates.unrealizedToday.add(item.data.unrealizedToday);
 
 				return updates;
 			}, {
-				market: Decimal.ZERO
+				market: Decimal.ZERO,
+				unrealizedToday: Decimal.ZERO
 			});
+		} else {
+			updates = {
+				market: raw.market.add(item.data.marketChange),
+				unrealizedToday: raw.unrealizedToday.add(item.data.unrealizedTodayChange)
+			};
 		}
-
-		const raw = group._dataRaw;
-		const formatted = group._dataFormat;
 
 		raw.market = updates.market;
 		formatted.market = format(updates.market, Currency.USD);

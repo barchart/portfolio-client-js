@@ -19,9 +19,16 @@ module.exports = (() => {
 
 			this._data = { };
 
-			this._data.current = null;
-			this._data.previous = null;
 			this._data.basis = null;
+
+			this._data.currentPrice = null;
+			this._data.previousPrice = null;
+
+			this._data.market = null;
+			this._data.marketChange = null;
+			
+			this._data.unrealizedToday = null;
+			this._data.unrealizedTodayChange = null;
 
 			calculateStaticData(this);
 			calculatePriceData(this, null);
@@ -47,7 +54,7 @@ module.exports = (() => {
 
 		setPrice(price) {
 			if (this._data.price !== price) {
-				calculatePriceData(this, this._data.price = price);
+				calculatePriceData(this, this._data.currentPrice = price);
 
 				this._priceChangeEvent.fire(this._data);
 			}
@@ -70,7 +77,7 @@ module.exports = (() => {
 
 		const data = item._data;
 
-		data.previous = position.previous || null;
+		data.previousPrice = position.previousPrice || null;
 
 		let basis;
 
@@ -103,7 +110,35 @@ module.exports = (() => {
 			}
 		}
 
+		let marketChange;
+
+		if (data.market === null) {
+			marketChange = market;
+		} else {
+			marketChange = market.subtract(data.market);
+		}
+
 		data.market = market;
+		data.marketChange = marketChange;
+		
+		let unrealizedToday;
+		let unrealizedTodayChange;
+
+		if (data.previousPrice && price) {
+			unrealizedToday = market.subtract(snapshot.open.multiply(data.previousPrice));
+
+			if (data.unrealizedToday !== null) {
+				unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
+			} else {
+				unrealizedTodayChange = unrealizedToday;
+			}
+		} else {
+			unrealizedToday = Decimal.ZERO;
+			unrealizedTodayChange = Decimal.ZERO;
+		}
+
+		data.unrealizedToday = unrealizedToday;
+		data.unrealizedTodayChange = unrealizedTodayChange;
 	}
 
 	return PositionItem;
