@@ -467,12 +467,6 @@ module.exports = function () {
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
 					assert.argumentIsOptional(transaction.position, 'transaction.position', String);
 
-					if (transaction.type instanceof TransactionType) {
-						assert.argumentIsRequired(transaction.type, 'transaction.type', TransactionType, 'TransactionType');
-					} else {
-						assert.argumentIsRequired(transaction.type, 'transaction.type', String);
-					}
-
 					if (!transaction.position) {
 						transaction.position = 'new';
 					}
@@ -1004,7 +998,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.22'
+		version: '1.1.23'
 	};
 }();
 
