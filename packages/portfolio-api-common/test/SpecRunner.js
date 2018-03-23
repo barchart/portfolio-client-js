@@ -93,6 +93,7 @@ module.exports = (() => {
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -108,23 +109,68 @@ module.exports = (() => {
 	 * @param {String} description
 	 * @param {Function} rangeCalculator
 	 * @param {Function} startDateCalculator
+	 * @param {Function} descriptionCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator, startDateCalculator) {
+		constructor(code, description, rangeCalculator, startDateCalculator, descriptionCalculator) {
 			super(code, description);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
+			assert.argumentIsRequired(startDateCalculator, 'startDateCalculator', Function);
+			assert.argumentIsRequired(descriptionCalculator, 'descriptionCalculator', Function);
 
 			this._rangeCalculator = rangeCalculator;
 			this._startDateCalculator = startDateCalculator;
+			this._descriptionCalculator = descriptionCalculator;
 		}
 
+		/**
+		 * Returns a human-readable description of the frame, given
+		 * start and end dates.
+		 *
+		 * @public
+		 * @param {Day} startDate
+		 * @param {Day} endDate
+		 * @return {String}
+		 */
+		describeRange(startDate, endDate) {
+			return this._descriptionCalculator(startDate, endDate);
+		}
+
+		/**
+		 * Returns the most recent ranges for the frame.
+		 *
+		 * @public
+		 * @param {Number} periods
+		 * @returns {Array.<PositionSummaryRange>}
+		 */
+		getRecentRanges(periods) {
+			const startDate = this.getStartDate(periods);
+			const transaction = { date: startDate, snapshot: { open: Decimal.ONE } };
+
+			return this.getRanges([ transaction ]);
+		}
+
+		/**
+		 * Returns the ranges for the set of {@link Transaction} objects.
+		 *
+		 * @public
+		 * @param {Array.<Transaction>} transactions
+		 * @returns {Array.<PositionSummaryRange>}
+		 */
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
 			return this._rangeCalculator(getFilteredTransactions(transactions));
 		}
 
+		/**
+		 * Returns the start date for a frame, a given number of periods ago.
+		 *
+		 * @public
+		 * @param {Number} periods
+		 * @returns {Day}
+		 */
 		getStartDate(periods) {
 			assert.argumentIsRequired(periods, 'periods', Number);
 
@@ -176,10 +222,19 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate);
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
+
+	/**
+	 * The start and and date for a {@link PositionSummaryFrame}
+	 *
+	 * @typedef PositionSummaryRange
+	 * @type {Object}
+	 * @property {Day} start
+	 * @property {Day} end
+	 */
 
 	function getRange(start, end) {
 		return {
@@ -263,6 +318,22 @@ module.exports = (() => {
 		return null;
 	}
 
+	function getYearlyRangeDescription(startDate, endDate) {
+		return endDate.year.toString();
+	}
+
+	function getQuarterlyRangeDescription(startDate, endDate) {
+		return '';
+	}
+
+	function getMonthlyRangeDescription(startDate, endDate) {
+		return '';
+	}
+
+	function getYearToDateRangeDescription(startDate, endDate) {
+		return '';
+	}
+
 	function getFilteredTransactions(transactions) {
 		return transactions.reduce((filtered, transaction) => {
 			if (!transaction.snapshot.open.getIsZero() || transaction.type.closing) {
@@ -276,7 +347,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":12,"@barchart/common-js/lang/Enum":15,"@barchart/common-js/lang/array":16,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19}],3:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":12,"@barchart/common-js/lang/Decimal":13,"@barchart/common-js/lang/Enum":15,"@barchart/common-js/lang/array":16,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19}],3:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -612,7 +683,8 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
-const InstrumentType = require('./../data/InstrumentType');
+const InstrumentType = require('./../data/InstrumentType'),
+	PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
@@ -624,9 +696,12 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionContainer {
-		constructor(portfolios, positions, summaries, definitions, defaultCurrency) {
+		constructor(portfolios, positions, summaries, definitions, defaultCurrency, summaryFrameType) {
 			this._definitions = definitions;
 			this._defaultCurrency = defaultCurrency || Currency.CAD;
+
+			this._summaryFrame = summaryFrameType || PositionSummaryFrame.YEARLY;
+			this._summaryRanges = this._summaryFrame.getRecentRanges(2);
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -635,13 +710,19 @@ module.exports = (() => {
 			}, { });
 
 			this._summaries = summaries.reduce((map, summary) => {
-				const key = summary.position;
+				if (this._summaryFrame === summary.frame) {
+					const key = summary.position;
 
-				if (!map.hasOwnProperty(key)) {
-					map[key] = [ ];
+					if (!map.hasOwnProperty(key)) {
+						map[key] = getSummaryArray(this._summaryRanges);
+					}
+
+					const index = this._summaryRanges.findIndex(r => r.start === summary.start.date && r.end === summary.end.date);
+
+					if (!(index < 0)) {
+						map[key][index] = summary;
+					}
 				}
-
-				map[key].push(summary);
 
 				return map;
 			}, { });
@@ -650,7 +731,7 @@ module.exports = (() => {
 				const portfolio = this._portfolios[position.portfolio];
 
 				if (position) {
-					const summaries = this._summaries[position.position] || [ ];
+					const summaries = this._summaries[position.position] || getSummaryArray(this._summaryRanges);
 
 					items.push(new PositionItem(portfolio, position, summaries));
 				}
@@ -812,10 +893,14 @@ module.exports = (() => {
 		}
 	}
 
+	function getSummaryArray(ranges) {
+		return ranges.map(range => null);
+	}
+
 	return PositionContainer;
 })();
 
-},{"./../data/InstrumentType":1,"./PositionGroup":5,"./PositionItem":7,"@barchart/common-js/collections/Tree":8,"@barchart/common-js/collections/sorting/ComparatorBuilder":9,"@barchart/common-js/collections/sorting/comparators":10,"@barchart/common-js/lang/Currency":11,"@barchart/common-js/lang/array":16,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19}],5:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"./../data/PositionSummaryFrame":2,"./PositionGroup":5,"./PositionItem":7,"@barchart/common-js/collections/Tree":8,"@barchart/common-js/collections/sorting/ComparatorBuilder":9,"@barchart/common-js/collections/sorting/comparators":10,"@barchart/common-js/lang/Currency":11,"@barchart/common-js/lang/array":16,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -843,20 +928,30 @@ module.exports = (() => {
 			this._dataActual = { };
 			
 			this._dataFormat.description = this._description;
-
+			
 			this._dataActual.currentPrice = null;
 			this._dataActual.previousPrice = null;
 			this._dataActual.basis = null;
+			this._dataActual.realized = null;
+			this._dataActual.income = null;
 			this._dataActual.market = null;
 			this._dataActual.marketPercent = null;
 			this._dataActual.unrealizedToday = null;
+			this._dataActual.total = null;
+			this._dataActual.summaryOneTotal = null;
+			this._dataActual.summaryTwoTotal = null;
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
 			this._dataFormat.basis = null;
+			this._dataFormat.realized = null;
+			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.marketPercent = null;
 			this._dataFormat.unrealizedToday = null;
+			this._dataFormat.total = null;
+			this._dataFormat.summaryOneTotal = null;
+			this._dataFormat.summaryTwoTotal = null;
 
 			this._dataFormat.unrealizedTodayNegative = false;
 
@@ -933,15 +1028,31 @@ module.exports = (() => {
 
 		let updates = items.reduce((updates, item) => {
 			updates.basis = updates.basis.add(item.data.basis);
+			updates.realized = updates.realized.add(item.data.realized);
+			updates.income = updates.income.add(item.data.income);
+			updates.summaryOneTotal = updates.summaryOneTotal.add(item.data.summaryOneTotal);
+			updates.summaryTwoTotal = updates.summaryTwoTotal.add(item.data.summaryTwoTotal);
 
 			return updates;
 		}, {
-			basis: Decimal.ZERO
+			basis: Decimal.ZERO,
+			realized: Decimal.ZERO,
+			income: Decimal.ZERO,
+			summaryOneTotal: Decimal.ZERO,
+			summaryTwoTotal: Decimal.ZERO
 		});
 
 		actual.basis = updates.basis;
-	
-		format.basis = formatCurrency(updates.basis, currency);
+		actual.realized = updates.realized;
+		actual.income = updates.income;
+		actual.summaryOneTotal = updates.summaryOneTotal;
+		actual.summaryTwoTotal = updates.summaryTwoTotal;
+
+		format.basis = formatCurrency(actual.basis, currency);
+		format.realized = formatCurrency(actual.basis, currency);
+		format.income = formatCurrency(actual.income, currency);
+		format.summaryOneTotal = formatCurrency(updates.summaryOneTotal, currency);
+		format.summaryTwoTotal = formatCurrency(updates.summaryTwoTotal, currency);
 	}
 
 	function calculatePriceData(group, item) {
@@ -954,7 +1065,12 @@ module.exports = (() => {
 
 		let updates;
 
-		if (actual.market === null || actual.unrealizedToday === null) {
+		if (actual.market !== null && actual.unrealizedToday !== null && actual.total !== null) {
+			updates = {
+				market: actual.market.add(item.data.marketChange),
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
+			};
+		} else {
 			const items = group._items;
 
 			updates = items.reduce((updates, item) => {
@@ -966,11 +1082,6 @@ module.exports = (() => {
 				market: Decimal.ZERO,
 				unrealizedToday: Decimal.ZERO
 			});
-		} else {
-			updates = {
-				market: actual.market.add(item.data.marketChange),
-				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
-			};
 		}
 		
 		if (parent !== null) {
@@ -984,15 +1095,17 @@ module.exports = (() => {
 		} else {
 			updates.marketPercent = null;
 		}
-		
+
 		actual.market = updates.market;
 		actual.marketPercent = updates.marketPercent;
 		actual.unrealizedToday = updates.unrealizedToday;
+		actual.total = updates.unrealizedToday.add(actual.realized).add(actual.income);
 		
-		format.market = formatCurrency(updates.market, currency);
-		format.marketPercent = formatPercent(updates.marketPercent, 2);
-		format.unrealizedToday = formatCurrency(updates.unrealizedToday, currency);
+		format.market = formatCurrency(actual.market, currency);
+		format.marketPercent = formatPercent(actual.marketPercent, 2);
+		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+		format.total = formatCurrency(actual.total, currency);
 	}
 
 	return PositionGroup;
@@ -1081,6 +1194,9 @@ module.exports = (() => {
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
 
+			this._data.realized = null;
+			this._data.income = null;
+
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
@@ -1125,6 +1241,7 @@ module.exports = (() => {
 	function calculateStaticData(item) {
 		const position = item.position;
 		const snapshot = item.position.snapshot;
+		const summaries = item.summaries;
 
 		const data = item._data;
 
@@ -1139,6 +1256,26 @@ module.exports = (() => {
 		}
 
 		data.basis = basis;
+
+		data.realized = snapshot.gain;
+		data.income = snapshot.income;
+
+		const getSummaryTotal = (index) => {
+			let summaryTotal;
+
+			if (summaries.length > (index + 1) && summaries[index] !== null) {
+				const period = summaries[index].period;
+
+				summaryTotal = period.realized.add(period.unrealized).add(period.income);
+			} else {
+				summaryTotal = Decimal.ZERO;
+			}
+
+			return summaryTotal;
+		};
+
+		data.summaryOneTotal = getSummaryTotal(0);
+		data.summaryTwoTotal = getSummaryTotal(1);
 	}
 
 	function calculatePriceData(item, price) {
@@ -5605,7 +5742,9 @@ describe('When a position container data is gathered', () => {
 			snapshot: {
 				basis: new Decimal(123),
 				value: new Decimal(456),
-				open: new Decimal(1)
+				open: new Decimal(1),
+				income: new Decimal(0),
+				gain: new Decimal(0)
 			}
 		}
 	}
