@@ -6,8 +6,7 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
-const InstrumentType = require('./../data/InstrumentType'),
-	PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
@@ -24,7 +23,7 @@ module.exports = (() => {
 			this._defaultCurrency = defaultCurrency || Currency.CAD;
 
 			this._summaryFrame = summaryFrameType || PositionSummaryFrame.YEARLY;
-			this._summaryRanges = this._summaryFrame.getRecentRanges(2);
+			this._summaryRanges = this._summaryFrame.getRecentRanges(1);
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -40,7 +39,7 @@ module.exports = (() => {
 						map[key] = getSummaryArray(this._summaryRanges);
 					}
 
-					const index = this._summaryRanges.findIndex(r => r.start === summary.start.date && r.end === summary.end.date);
+					const index = this._summaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
 
 					if (!(index < 0)) {
 						map[key][index] = summary;
