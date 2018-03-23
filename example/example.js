@@ -179,7 +179,7 @@ module.exports = function () {
 
 			_this._createPortfolioEndpoint = EndpointBuilder.for('create-portfolio', 'create portfolio').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios');
-			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._updatePortfolioEndpoint = EndpointBuilder.for('update-portfolio', 'update portfolio').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
@@ -467,11 +467,24 @@ module.exports = function () {
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
 					assert.argumentIsOptional(transaction.position, 'transaction.position', String);
 
+					var code = void 0;
+
+					if (is.string(transaction.type)) {
+						assert.argumentIsRequired(transaction.type.code, 'transaction.type.code', String);
+
+						code = transaction.type;
+					} else {
+						assert.argumentIsRequired(transaction.type, 'transaction.type', Object);
+						assert.argumentIsRequired(transaction.type.code, 'transaction.type.code', String);
+
+						code = transaction.type.code;
+					}
+
 					if (!transaction.position) {
 						transaction.position = 'new';
 					}
 
-					var schema = TransactionSchema.forCreate(transaction.type);
+					var schema = TransactionSchema.forCreate(Enum.fromCode(TransactionType, code));
 
 					return Gateway.invoke(_this10._createTransactionEndpoint, schema.schema.format(transaction));
 				});
@@ -998,7 +1011,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.23'
+		version: '1.1.24'
 	};
 }();
 
