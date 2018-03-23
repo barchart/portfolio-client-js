@@ -26,7 +26,7 @@ module.exports = (() => {
 
 			this._data.market = null;
 			this._data.marketChange = null;
-			
+
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
 
@@ -77,7 +77,7 @@ module.exports = (() => {
 
 		const data = item._data;
 
-		data.previousPrice = position.previousPrice || null;
+		data.previousPrice = position.previous || null;
 
 		let basis;
 
