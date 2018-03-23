@@ -858,7 +858,7 @@ module.exports = (() => {
 			this._dataFormat.marketPercent = null;
 			this._dataFormat.unrealizedToday = null;
 
-			this._dataFormat.unrealizedTodayPositive = true;
+			this._dataFormat.unrealizedTodayNegative = false;
 
 			this._items.forEach((item) => {
 				item.registerPriceChangeHandler((data, sender) => {
@@ -988,7 +988,7 @@ module.exports = (() => {
 		format.market = formatCurrency(updates.market, currency);
 		format.marketPercent = formatPercent(updates.unrealizedToday, 2);
 		format.unrealizedToday = formatCurrency(updates.unrealizedToday, currency);
-		format.unrealizedTodayPositive = actual.unrealizedToday.getIsPositive();
+		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
 	}
 
 	return PositionGroup;
