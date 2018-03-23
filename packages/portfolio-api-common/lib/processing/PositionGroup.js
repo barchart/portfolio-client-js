@@ -89,7 +89,7 @@ module.exports = (() => {
 		if (decimal !== null) {
 			return formatter.numberToString(decimal.toFloat(), precision, ',', false);
 		} else {
-			return '--';
+			return '—';
 		}
 	}
 
@@ -97,7 +97,7 @@ module.exports = (() => {
 		if (decimal !== null) {
 			return formatNumber(decimal.multiply(100));
 		} else {
-			return '--';
+			return '—';
 		}
 	}
 
@@ -168,7 +168,7 @@ module.exports = (() => {
 		actual.unrealizedToday = updates.unrealizedToday;
 		
 		format.market = formatCurrency(updates.market, currency);
-		format.marketPercent = formatPercent(updates.unrealizedToday, 2);
+		format.marketPercent = formatPercent(updates.marketPercent, 2);
 		format.unrealizedToday = formatCurrency(updates.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
 	}
