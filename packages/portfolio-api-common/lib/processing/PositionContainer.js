@@ -6,6 +6,8 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
+const InstrumentType = require('./../data/InstrumentType');
+
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
 
@@ -71,10 +73,6 @@ module.exports = (() => {
 
 				if (position.instrument && position.instrument.currency) {
 					const currency = position.instrument.currency;
-
-					if (currency !== InstrumentType.CAD) {
-
-					}
 
 					if (!map.hasOwnProperty(currency)) {
 						map[currency] = [ ];
@@ -151,6 +149,10 @@ module.exports = (() => {
 			createGroups(this._tree, this._items, this._definitions);
 		}
 
+		get defaultCurrency() {
+			return this._defaultCurrency;
+		}
+
 		getSymbols() {
 			return Object.keys(this._symbols);
 		}
@@ -161,14 +163,20 @@ module.exports = (() => {
 			}
 		}
 
-		getCurrencies() {
+		getCurrencySymbols() {
 			const codes = Object.keys(this._currencies);
 
 			return codes.reduce((symbols, code) => {
-				symbols.push(`^${Currency.USD.code}${code}`);
+				if (code !== this._defaultCurrency) {
+					symbols.push(`^${this._defaultCurrency}${code}`);
+				}
 
 				return symbols;
 			}, [ ]);
+		}
+
+		setExchangeRage(symbol, price) {
+
 		}
 
 		getGroup(keys) {
