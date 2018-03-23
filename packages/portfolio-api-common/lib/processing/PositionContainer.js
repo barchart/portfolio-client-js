@@ -6,7 +6,8 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
-const InstrumentType = require('./../data/InstrumentType');
+const InstrumentType = require('./../data/InstrumentType'),
+	PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
@@ -18,9 +19,12 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionContainer {
-		constructor(portfolios, positions, summaries, definitions, defaultCurrency) {
+		constructor(portfolios, positions, summaries, definitions, defaultCurrency, summaryFrameType) {
 			this._definitions = definitions;
 			this._defaultCurrency = defaultCurrency || Currency.CAD;
+
+			this._summaryFrame = summaryFrameType || PositionSummaryFrame.YEARLY;
+			this._summaryRanges = this._summaryFrame.getRecentRanges(2);
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -29,13 +33,19 @@ module.exports = (() => {
 			}, { });
 
 			this._summaries = summaries.reduce((map, summary) => {
-				const key = summary.position;
+				if (this._summaryFrame === summary.frame) {
+					const key = summary.position;
 
-				if (!map.hasOwnProperty(key)) {
-					map[key] = [ ];
+					if (!map.hasOwnProperty(key)) {
+						map[key] = getSummaryArray(this._summaryRanges);
+					}
+
+					const index = this._summaryRanges.findIndex(r => r.start === summary.start.date && r.end === summary.end.date);
+
+					if (!(index < 0)) {
+						map[key][index] = summary;
+					}
 				}
-
-				map[key].push(summary);
 
 				return map;
 			}, { });
@@ -44,7 +54,7 @@ module.exports = (() => {
 				const portfolio = this._portfolios[position.portfolio];
 
 				if (position) {
-					const summaries = this._summaries[position.position] || [ ];
+					const summaries = this._summaries[position.position] || getSummaryArray(this._summaryRanges);
 
 					items.push(new PositionItem(portfolio, position, summaries));
 				}
@@ -204,6 +214,10 @@ module.exports = (() => {
 		toString() {
 			return '[PositionContainer]';
 		}
+	}
+
+	function getSummaryArray(ranges) {
+		return ranges.map(range => null);
 	}
 
 	return PositionContainer;

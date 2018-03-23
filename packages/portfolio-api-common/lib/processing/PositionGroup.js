@@ -25,7 +25,7 @@ module.exports = (() => {
 			this._dataActual = { };
 			
 			this._dataFormat.description = this._description;
-
+			
 			this._dataActual.currentPrice = null;
 			this._dataActual.previousPrice = null;
 			this._dataActual.basis = null;
@@ -34,7 +34,9 @@ module.exports = (() => {
 			this._dataActual.market = null;
 			this._dataActual.marketPercent = null;
 			this._dataActual.unrealizedToday = null;
-			this._dataActual.inception = null;
+			this._dataActual.total = null;
+			this._dataActual.summaryOneTotal = null;
+			this._dataActual.summaryTwoTotal = null;
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
@@ -44,7 +46,9 @@ module.exports = (() => {
 			this._dataFormat.market = null;
 			this._dataFormat.marketPercent = null;
 			this._dataFormat.unrealizedToday = null;
-			this._dataFormat.inception = null;
+			this._dataFormat.total = null;
+			this._dataFormat.summaryOneTotal = null;
+			this._dataFormat.summaryTwoTotal = null;
 
 			this._dataFormat.unrealizedTodayNegative = false;
 
@@ -123,21 +127,29 @@ module.exports = (() => {
 			updates.basis = updates.basis.add(item.data.basis);
 			updates.realized = updates.realized.add(item.data.realized);
 			updates.income = updates.income.add(item.data.income);
+			updates.summaryOneTotal = updates.summaryOneTotal.add(item.data.summaryOneTotal);
+			updates.summaryTwoTotal = updates.summaryTwoTotal.add(item.data.summaryTwoTotal);
 
 			return updates;
 		}, {
 			basis: Decimal.ZERO,
 			realized: Decimal.ZERO,
-			income: Decimal.ZERO
+			income: Decimal.ZERO,
+			summaryOneTotal: Decimal.ZERO,
+			summaryTwoTotal: Decimal.ZERO
 		});
 
 		actual.basis = updates.basis;
 		actual.realized = updates.realized;
 		actual.income = updates.income;
+		actual.summaryOneTotal = updates.summaryOneTotal;
+		actual.summaryTwoTotal = updates.summaryTwoTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
 		format.realized = formatCurrency(actual.basis, currency);
 		format.income = formatCurrency(actual.income, currency);
+		format.summaryOneTotal = formatCurrency(updates.summaryOneTotal, currency);
+		format.summaryTwoTotal = formatCurrency(updates.summaryTwoTotal, currency);
 	}
 
 	function calculatePriceData(group, item) {
@@ -150,7 +162,7 @@ module.exports = (() => {
 
 		let updates;
 
-		if (actual.market !== null && actual.unrealizedToday !== null && actual.inception !== null) {
+		if (actual.market !== null && actual.unrealizedToday !== null && actual.total !== null) {
 			updates = {
 				market: actual.market.add(item.data.marketChange),
 				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
@@ -184,14 +196,13 @@ module.exports = (() => {
 		actual.market = updates.market;
 		actual.marketPercent = updates.marketPercent;
 		actual.unrealizedToday = updates.unrealizedToday;
-		actual.inception = updates.unrealizedToday.add(actual.realized).add(actual.income);
+		actual.total = updates.unrealizedToday.add(actual.realized).add(actual.income);
 		
 		format.market = formatCurrency(actual.market, currency);
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
-		format.inception = formatCurrency(actual.inception, currency);
-
+		format.total = formatCurrency(actual.total, currency);
 	}
 
 	return PositionGroup;

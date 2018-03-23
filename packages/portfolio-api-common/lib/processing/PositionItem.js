@@ -77,6 +77,7 @@ module.exports = (() => {
 	function calculateStaticData(item) {
 		const position = item.position;
 		const snapshot = item.position.snapshot;
+		const summaries = item.summaries;
 
 		const data = item._data;
 
@@ -94,6 +95,23 @@ module.exports = (() => {
 
 		data.realized = snapshot.gain;
 		data.income = snapshot.income;
+
+		const getSummaryTotal = (index) => {
+			let summaryTotal;
+
+			if (summaries.length > (index + 1) && summaries[index] !== null) {
+				const period = summaries[index].period;
+
+				summaryTotal = period.realized.add(period.unrealized).add(period.income);
+			} else {
+				summaryTotal = Decimal.ZERO;
+			}
+
+			return summaryTotal;
+		};
+
+		data.summaryOneTotal = getSummaryTotal(0);
+		data.summaryTwoTotal = getSummaryTotal(1);
 	}
 
 	function calculatePriceData(item, price) {

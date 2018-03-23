@@ -1,6 +1,7 @@
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -44,12 +45,40 @@ module.exports = (() => {
 			return this._descriptionCalculator(startDate, endDate);
 		}
 
+		/**
+		 * Returns the most recent ranges for the frame.
+		 *
+		 * @public
+		 * @param {Number} periods
+		 * @returns {Array.<PositionSummaryRange>}
+		 */
+		getRecentRanges(periods) {
+			const startDate = this.getStartDate(periods);
+			const transaction = { date: startDate, snapshot: { open: Decimal.ONE } };
+
+			return this.getRanges([ transaction ]);
+		}
+
+		/**
+		 * Returns the ranges for the set of {@link Transaction} objects.
+		 *
+		 * @public
+		 * @param {Array.<Transaction>} transactions
+		 * @returns {Array.<PositionSummaryRange>}
+		 */
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
 			return this._rangeCalculator(getFilteredTransactions(transactions));
 		}
 
+		/**
+		 * Returns the start date for a frame, a given number of periods ago.
+		 *
+		 * @public
+		 * @param {Number} periods
+		 * @returns {Day}
+		 */
 		getStartDate(periods) {
 			assert.argumentIsRequired(periods, 'periods', Number);
 
@@ -105,6 +134,15 @@ module.exports = (() => {
 	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
 	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
 	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
+
+	/**
+	 * The start and and date for a {@link PositionSummaryFrame}
+	 *
+	 * @typedef PositionSummaryRange
+	 * @type {Object}
+	 * @property {Day} start
+	 * @property {Day} end
+	 */
 
 	function getRange(start, end) {
 		return {
