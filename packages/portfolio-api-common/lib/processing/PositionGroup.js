@@ -95,7 +95,7 @@ module.exports = (() => {
 
 	function formatPercent(decimal, precision) {
 		if (decimal !== null) {
-			return formatNumber(decimal.multiply(100));
+			return formatNumber(decimal.multiply(100), precision);
 		} else {
 			return '—';
 		}
@@ -160,7 +160,11 @@ module.exports = (() => {
 
 			if (parentData.market !== null && !parentData.market.getIsZero()) {
 				updates.marketPercent = updates.market.divide(parentData.market);
+			} else {
+				updates.marketPercent = null;
 			}
+		} else {
+			updates.marketPercent = null;
 		}
 		
 		actual.market = updates.market;
