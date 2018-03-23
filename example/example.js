@@ -191,6 +191,8 @@ module.exports = function () {
 
 			_this._readPositionsEndpoint = EndpointBuilder.for('read-positions', 'read positions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
+			}).withQueryBuilder(function (qb) {
+				qb.withVariableParameter('includePreviousPrice', 'includePreviousPrice', 'includePreviousPrice', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readPositionSummariesEndpoint = EndpointBuilder.for('read-position-summaries', 'read position summaries').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
@@ -352,12 +354,13 @@ module.exports = function () {
     * @public
     * @param {String=} portfolio
     * @param {String=} position
+    * @param {Boolean=} includePreviousPrice
     * @returns {Promise.<Position[]>}
     */
 
 		}, {
 			key: 'readPositions',
-			value: function readPositions(portfolio, position) {
+			value: function readPositions(portfolio, position, includePreviousPrice) {
 				var _this7 = this;
 
 				return Promise.resolve().then(function () {
@@ -365,8 +368,9 @@ module.exports = function () {
 
 					assert.argumentIsOptional(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
+					assert.argumentIsOptional(includePreviousPrice, 'includePreviousPrice', Boolean);
 
-					return Gateway.invoke(_this7._readPositionsEndpoint, { portfolio: portfolio || '*', position: position || '*' });
+					return Gateway.invoke(_this7._readPositionsEndpoint, { portfolio: portfolio || '*', position: position || '*', includePreviousPrice: includePreviousPrice });
 				});
 			}
 
@@ -1000,7 +1004,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.20'
+		version: '1.1.21'
 	};
 }();
 
