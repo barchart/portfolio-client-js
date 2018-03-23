@@ -16,15 +16,32 @@ module.exports = (() => {
 	 * @param {String} description
 	 * @param {Function} rangeCalculator
 	 * @param {Function} startDateCalculator
+	 * @param {Function} descriptionCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator, startDateCalculator) {
+		constructor(code, description, rangeCalculator, startDateCalculator, descriptionCalculator) {
 			super(code, description);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
+			assert.argumentIsRequired(startDateCalculator, 'startDateCalculator', Function);
+			assert.argumentIsRequired(descriptionCalculator, 'descriptionCalculator', Function);
 
 			this._rangeCalculator = rangeCalculator;
 			this._startDateCalculator = startDateCalculator;
+			this._descriptionCalculator = descriptionCalculator;
+		}
+
+		/**
+		 * Returns a human-readable description of the frame, given
+		 * start and end dates.
+		 *
+		 * @public
+		 * @param {Day} startDate
+		 * @param {Day} endDate
+		 * @return {String}
+		 */
+		describeRange(startDate, endDate) {
+			return this._descriptionCalculator(startDate, endDate);
 		}
 
 		getRanges(transactions) {
@@ -84,10 +101,10 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate);
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
 
 	function getRange(start, end) {
 		return {
@@ -169,6 +186,22 @@ module.exports = (() => {
 
 	function getYearToDateStartDate(periods) {
 		return null;
+	}
+
+	function getYearlyRangeDescription(startDate, endDate) {
+		return endDate.year.toString();
+	}
+
+	function getQuarterlyRangeDescription(startDate, endDate) {
+		return '';
+	}
+
+	function getMonthlyRangeDescription(startDate, endDate) {
+		return '';
+	}
+
+	function getYearToDateRangeDescription(startDate, endDate) {
+		return '';
 	}
 
 	function getFilteredTransactions(transactions) {
