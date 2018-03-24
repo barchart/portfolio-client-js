@@ -13,15 +13,15 @@ module.exports = (() => {
 	 * @param {String} alternateDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
-	 * @param {Boolean} hasSymbol
+	 * @param {Boolean} usesSymbols
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest, hasSymbol) {
+		constructor(code, description, alternateDescription, canReinvest, usesSymbols) {
 			super(code, description);
 
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
-			this._hasSymbol = hasSymbol;
+			this._usesSymbols = usesSymbols;
 		}
 
 		/**
@@ -50,8 +50,8 @@ module.exports = (() => {
 		 * @public
 		 * @returns {Boolean}
 		 */
-		get canReinvest() {
-			return this._canReinvest;
+		get usesSymbols() {
+			return this._usesSymbols;
 		}
 
 		/**
