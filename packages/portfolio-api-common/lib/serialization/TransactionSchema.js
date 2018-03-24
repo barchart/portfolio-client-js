@@ -388,7 +388,6 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
 		.withField('instrument.type', DataType.STRING, true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('date', DataType.DAY)
