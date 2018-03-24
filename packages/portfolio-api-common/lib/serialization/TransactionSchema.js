@@ -159,7 +159,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[TransactionSchema]';
+			return `[TransactionSchema (code=${this.code})]`;
 		}
 	}
 
