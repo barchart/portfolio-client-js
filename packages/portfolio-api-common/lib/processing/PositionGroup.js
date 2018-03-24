@@ -261,15 +261,14 @@ module.exports = (() => {
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
 
-
-		if (updates.unrealizedTodayDirection.up || unrealizedTodayDirection.down) {
-			format.unrealizedTodayDirection = unchanged;
-			format.unrealizedTodayDirection = updates.unrealizedTodayDirection;
-		}
-
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
 			format.marketDirection = updates.marketDirection;
+		}
+
+		if (updates.unrealizedTodayDirection.up || updates.unrealizedTodayDirection.down) {
+			format.unrealizedTodayDirection = unchanged;
+			format.unrealizedTodayDirection = updates.unrealizedTodayDirection;
 		}
 	}
 
