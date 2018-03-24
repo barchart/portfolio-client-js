@@ -14,15 +14,23 @@ module.exports = (() => {
 	 * @param {String} alternateDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
+	 * @param {Boolean} usesSymbols
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest) {
+		constructor(code, description, alternateDescription, canReinvest, usesSymbols) {
 			super(code, description);
 
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
+			this._usesSymbols = usesSymbols;
 		}
 
+		/**
+		 * A human-readable description.
+		 *
+		 * @public
+		 * @return {String}
+		 */
 		get alternateDescription() {
 			return this._alternateDescription;
 		}
@@ -30,6 +38,7 @@ module.exports = (() => {
 		/**
 		 * Indicates if the instrument type allows automatic reinvestment.
 		 *
+		 * @public
 		 * @returns {Boolean}
 		 */
 		get canReinvest() {
@@ -37,9 +46,20 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if an instrument of this type can be represented by a symbol.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get usesSymbols() {
+			return this._usesSymbols;
+		}
+
+		/**
 		 * Cash.
 		 *
 		 * @public
+		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get CASH() {
@@ -50,6 +70,7 @@ module.exports = (() => {
 		 * An equity issue.
 		 *
 		 * @public
+		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get EQUITY() {
@@ -60,6 +81,7 @@ module.exports = (() => {
 		 * A mutual fund.
 		 *
 		 * @public
+		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get FUND() {
@@ -70,6 +92,7 @@ module.exports = (() => {
 		 * An undefined asset (e.g. a house, or a collectible, or a salvaged alien spaceship).
 		 *
 		 * @public
+		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get OTHER() {
@@ -81,10 +104,10 @@ module.exports = (() => {
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', false);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, true);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false);
 
 	return InstrumentType;
 })();
@@ -331,7 +354,7 @@ module.exports = (() => {
 	}
 
 	function getYearToDateRangeDescription(startDate, endDate) {
-		return '';
+		return `${endDate.year.toString()} YTD`;
 	}
 
 	function getFilteredTransactions(transactions) {
