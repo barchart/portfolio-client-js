@@ -786,13 +786,13 @@ module.exports = (() => {
 				const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
 					const first = items[0];
 
-					return new PositionGroup(parent, items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
+					return new PositionGroup(this, parent, items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
 				});
 
 				const missingGroups = array.difference(currentDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup(parent, [ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
+					return new PositionGroup(this, parent, [ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
@@ -863,8 +863,18 @@ module.exports = (() => {
 			}, [ ]);
 		}
 
-		setExchangeRage(symbol, price) {
+		setExchangeRate(symbol, price) {
 
+		}
+
+		startTransaction(executor) {
+			assert.argumentIsRequired(executor, 'executor', Function);
+
+			this._tree.walk(group => group.setSuspended(true), false, false);
+
+			executor(this);
+
+			this._tree.walk(group => group.setSuspended(false), false, false);
 		}
 
 		getGroup(keys) {
@@ -913,7 +923,8 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(parent, items, currency, description, single) {
+		constructor(container, parent, items, currency, description, single) {
+			this._container = container;
 			this._parent = parent || null;
 
 			this._items = items;
@@ -922,6 +933,9 @@ module.exports = (() => {
 			this._description = description;
 
 			this._single = is.boolean(single) && single;
+
+			this._excluded = false;
+			this._suspended = false;
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -964,12 +978,11 @@ module.exports = (() => {
 						this._dataFormat.currentPrice = null;
 					}
 
-					calculatePriceData(this, sender);
+					calculatePriceData(this, sender, false);
 				});
 			});
 
-			calculateStaticData(this);
-			calculatePriceData(this);
+			this.refresh();
 		}
 
 		get items() {
@@ -990,6 +1003,41 @@ module.exports = (() => {
 
 		get single() {
 			return this._single;
+		}
+
+		get suspended() {
+			return this._suspended;
+		}
+
+		get excluded() {
+			return this._excluded;
+		}
+
+		setExcluded(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._excluded !== value) {
+				this._container.startTransaction(() => {
+					this._items.forEach((item) => {
+						item.setExcluded(value);
+					});
+				});
+			}
+		}
+
+		setSuspended(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._suspended !== value) {
+				if (this._suspended = value) {
+					this.refresh();
+				}
+			}
+		}
+
+		refresh() {
+			calculateStaticData(this);
+			calculatePriceData(this, null, true);
 		}
 
 		toString() {
@@ -1018,6 +1066,10 @@ module.exports = (() => {
 	}
 
 	function calculateStaticData(group) {
+		if (group.suspended) {
+			return;
+		}
+
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
@@ -1054,7 +1106,11 @@ module.exports = (() => {
 		format.summaryTwoTotal = formatCurrency(updates.summaryTwoTotal, currency);
 	}
 
-	function calculatePriceData(group, item) {
+	function calculatePriceData(group, item, forceRefresh) {
+		if (group.suspended) {
+			return;
+		}
+
 		const parent = group._parent;
 
 		const actual = group._dataActual;
@@ -1062,14 +1118,11 @@ module.exports = (() => {
 
 		const currency = group.currency;
 
+		const refresh = (is.boolean(forceRefresh) && forceRefresh) || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
+
 		let updates;
 
-		if (actual.market !== null && actual.unrealizedToday !== null && actual.total !== null) {
-			updates = {
-				market: actual.market.add(item.data.marketChange),
-				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
-			};
-		} else {
+		if (refresh) {
 			const items = group._items;
 
 			updates = items.reduce((updates, item) => {
@@ -1079,8 +1132,14 @@ module.exports = (() => {
 				return updates;
 			}, {
 				market: Decimal.ZERO,
+
 				unrealizedToday: Decimal.ZERO
 			});
+		} else {
+			updates = {
+				market: actual.market.add(item.data.marketChange),
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
+			};
 		}
 		
 		if (parent !== null) {
@@ -1196,10 +1255,13 @@ module.exports = (() => {
 			this._data.realized = null;
 			this._data.income = null;
 
+			this._excluded = false;
+
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
 			this._priceChangeEvent = new Event(this);
+			this._excludedChangeEvent = new Event(this);
 		}
 
 		get portfolio() {
@@ -1218,7 +1280,13 @@ module.exports = (() => {
 			return this._data;
 		}
 
+		get excluded() {
+			return this._excluded;
+		}
+
 		setPrice(price) {
+			assert.argumentIsRequired(price, 'price', Number);
+
 			if (this._data.price !== price) {
 				calculatePriceData(this, this._data.currentPrice = price);
 
@@ -1226,11 +1294,22 @@ module.exports = (() => {
 			}
 		}
 
-		registerPriceChangeHandler(handler) {
-			assert.argumentIsRequired(handler, 'handler', Function);
+		setExcluded(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
 
+			if (this._excluded !== value) {
+				this._excludedChangeEvent.fire(this, this._excluded = value);
+			}
+		}
+
+		registerPriceChangeHandler(handler) {
 			this._priceChangeEvent.register(handler);
 		}
+
+		registerExcludedChangeHandler(handler) {
+			this._excludedChangeEvent.register(handler);
+		}
+
 
 		toString() {
 			return '[PositionItem]';

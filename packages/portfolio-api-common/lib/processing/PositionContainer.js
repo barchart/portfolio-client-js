@@ -109,13 +109,13 @@ module.exports = (() => {
 				const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
 					const first = items[0];
 
-					return new PositionGroup(parent, items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
+					return new PositionGroup(this, parent, items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
 				});
 
 				const missingGroups = array.difference(currentDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
 
 				const empty = missingGroups.map((description) => {
-					return new PositionGroup(parent, [ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
+					return new PositionGroup(this, parent, [ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
 				});
 
 				const compositeGroups = populatedGroups.concat(empty);
@@ -186,8 +186,18 @@ module.exports = (() => {
 			}, [ ]);
 		}
 
-		setExchangeRage(symbol, price) {
+		setExchangeRate(symbol, price) {
 
+		}
+
+		startTransaction(executor) {
+			assert.argumentIsRequired(executor, 'executor', Function);
+
+			this._tree.walk(group => group.setSuspended(true), false, false);
+
+			executor(this);
+
+			this._tree.walk(group => group.setSuspended(false), false, false);
 		}
 
 		getGroup(keys) {

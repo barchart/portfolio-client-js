@@ -11,7 +11,8 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(parent, items, currency, description, single) {
+		constructor(container, parent, items, currency, description, single) {
+			this._container = container;
 			this._parent = parent || null;
 
 			this._items = items;
@@ -20,6 +21,9 @@ module.exports = (() => {
 			this._description = description;
 
 			this._single = is.boolean(single) && single;
+
+			this._excluded = false;
+			this._suspended = false;
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -62,12 +66,11 @@ module.exports = (() => {
 						this._dataFormat.currentPrice = null;
 					}
 
-					calculatePriceData(this, sender);
+					calculatePriceData(this, sender, false);
 				});
 			});
 
-			calculateStaticData(this);
-			calculatePriceData(this);
+			this.refresh();
 		}
 
 		get items() {
@@ -88,6 +91,41 @@ module.exports = (() => {
 
 		get single() {
 			return this._single;
+		}
+
+		get suspended() {
+			return this._suspended;
+		}
+
+		get excluded() {
+			return this._excluded;
+		}
+
+		setExcluded(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._excluded !== value) {
+				this._container.startTransaction(() => {
+					this._items.forEach((item) => {
+						item.setExcluded(value);
+					});
+				});
+			}
+		}
+
+		setSuspended(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._suspended !== value) {
+				if (this._suspended = value) {
+					this.refresh();
+				}
+			}
+		}
+
+		refresh() {
+			calculateStaticData(this);
+			calculatePriceData(this, null, true);
 		}
 
 		toString() {
@@ -116,6 +154,10 @@ module.exports = (() => {
 	}
 
 	function calculateStaticData(group) {
+		if (group.suspended) {
+			return;
+		}
+
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
@@ -152,7 +194,11 @@ module.exports = (() => {
 		format.summaryTwoTotal = formatCurrency(updates.summaryTwoTotal, currency);
 	}
 
-	function calculatePriceData(group, item) {
+	function calculatePriceData(group, item, forceRefresh) {
+		if (group.suspended) {
+			return;
+		}
+
 		const parent = group._parent;
 
 		const actual = group._dataActual;
@@ -160,14 +206,11 @@ module.exports = (() => {
 
 		const currency = group.currency;
 
+		const refresh = (is.boolean(forceRefresh) && forceRefresh) || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
+
 		let updates;
 
-		if (actual.market !== null && actual.unrealizedToday !== null && actual.total !== null) {
-			updates = {
-				market: actual.market.add(item.data.marketChange),
-				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
-			};
-		} else {
+		if (refresh) {
 			const items = group._items;
 
 			updates = items.reduce((updates, item) => {
@@ -177,8 +220,14 @@ module.exports = (() => {
 				return updates;
 			}, {
 				market: Decimal.ZERO,
+
 				unrealizedToday: Decimal.ZERO
 			});
+		} else {
+			updates = {
+				market: actual.market.add(item.data.marketChange),
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
+			};
 		}
 		
 		if (parent !== null) {

@@ -33,10 +33,13 @@ module.exports = (() => {
 			this._data.realized = null;
 			this._data.income = null;
 
+			this._excluded = false;
+
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
 			this._priceChangeEvent = new Event(this);
+			this._excludedChangeEvent = new Event(this);
 		}
 
 		get portfolio() {
@@ -55,7 +58,13 @@ module.exports = (() => {
 			return this._data;
 		}
 
+		get excluded() {
+			return this._excluded;
+		}
+
 		setPrice(price) {
+			assert.argumentIsRequired(price, 'price', Number);
+
 			if (this._data.price !== price) {
 				calculatePriceData(this, this._data.currentPrice = price);
 
@@ -63,11 +72,22 @@ module.exports = (() => {
 			}
 		}
 
-		registerPriceChangeHandler(handler) {
-			assert.argumentIsRequired(handler, 'handler', Function);
+		setExcluded(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
 
+			if (this._excluded !== value) {
+				this._excludedChangeEvent.fire(this, this._excluded = value);
+			}
+		}
+
+		registerPriceChangeHandler(handler) {
 			this._priceChangeEvent.register(handler);
 		}
+
+		registerExcludedChangeHandler(handler) {
+			this._excludedChangeEvent.register(handler);
+		}
+
 
 		toString() {
 			return '[PositionItem]';
