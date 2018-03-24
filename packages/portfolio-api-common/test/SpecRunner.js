@@ -1031,6 +1031,10 @@ module.exports = (() => {
 			return this._dataFormat;
 		}
 
+		get actual() {
+			return this._dataActual;
+		}
+
 		get single() {
 			return this._single;
 		}
@@ -1202,6 +1206,10 @@ module.exports = (() => {
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
+	}
+
+	function calculatePercent() {
+
 	}
 
 	const unchanged = { up: false, down: false };
