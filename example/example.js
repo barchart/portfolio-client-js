@@ -632,8 +632,6 @@ module.exports = function () {
 
 	var updatePortfolioRequestInterceptor = function updatePortfolioRequestInterceptor(request) {
 		return FailureReason.validateSchema(PortfolioSchema.UPDATE, request.data).then(function () {
-			request.data = request.data.portfolioData;
-
 			return Promise.resolve(request);
 		}).catch(function (e) {
 			console.error('Error serializing data to create a portfolio', e);
@@ -1006,7 +1004,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.26'
+		version: '1.1.27'
 	};
 }();
 
