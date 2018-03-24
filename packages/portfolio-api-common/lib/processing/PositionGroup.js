@@ -257,13 +257,17 @@ module.exports = (() => {
 		
 		format.market = formatCurrency(actual.market, currency);
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
+		format.marketDirection = unchanged;
 		format.marketDirection = updates.marketDirection;
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+		format.unrealizedTodayDirection = unchanged;
 		format.unrealizedTodayDirection = updates.unrealizedTodayDirection;
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
 	}
+
+	const unchanged = { up: false, down: false };
 
 	return PositionGroup;
 })();
