@@ -988,8 +988,12 @@ module.exports = (() => {
 			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.marketPercent = null;
+			this._dataFormat.marketDirection = null;
 			this._dataFormat.unrealizedToday = null;
+			this._dataFormat.unrealizedTodayNegative = false;
+			this._dataFormat.unrealizedTodayDirection = null;
 			this._dataFormat.total = null;
+			this._dataFormat.totalNegative = false;
 			this._dataFormat.summaryOneTotal = null;
 			this._dataFormat.summaryTwoTotal = null;
 
@@ -1159,13 +1163,17 @@ module.exports = (() => {
 				return updates;
 			}, {
 				market: Decimal.ZERO,
+				marketDirection: { up: false, down: false },
+				unrealizedToday: Decimal.ZERO,
+				unrealizedTodayDirection: { up: false, down: false }
 
-				unrealizedToday: Decimal.ZERO
 			});
 		} else {
 			updates = {
 				market: actual.market.add(item.data.marketChange),
-				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
+				marketDirection: { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() },
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange),
+				unrealizedTodayDirection: { up: item.data.unrealizedTodayChange.getIsPositive(), down: item.data.unrealizedTodayChange.getIsNegative() }
 			};
 		}
 		
@@ -1188,9 +1196,12 @@ module.exports = (() => {
 		
 		format.market = formatCurrency(actual.market, currency);
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
+		format.marketDirection = updates.marketDirection;
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+		format.unrealizedTodayDirection = updates.unrealizedTodayDirection;
 		format.total = formatCurrency(actual.total, currency);
+		format.totalNegative = actual.total.getIsNegative();
 	}
 
 	return PositionGroup;
