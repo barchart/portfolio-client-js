@@ -52,7 +52,6 @@ module.exports = (() => {
 			this._dataFormat.marketDirection = null;
 			this._dataFormat.unrealizedToday = null;
 			this._dataFormat.unrealizedTodayNegative = false;
-			this._dataFormat.unrealizedTodayDirection = null;
 			this._dataFormat.total = null;
 			this._dataFormat.totalNegative = false;
 			this._dataFormat.summaryOneTotal = null;
@@ -225,16 +224,14 @@ module.exports = (() => {
 			}, {
 				market: Decimal.ZERO,
 				marketDirection: unchanged,
-				unrealizedToday: Decimal.ZERO,
-				unrealizedTodayDirection: unchanged
+				unrealizedToday: Decimal.ZERO
 
 			});
 		} else {
 			updates = {
 				market: actual.market.add(item.data.marketChange),
 				marketDirection: { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() },
-				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange),
-				unrealizedTodayDirection: { up: item.data.unrealizedTodayChange.getIsPositive(), down: item.data.unrealizedTodayChange.getIsNegative() }
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
 			};
 		}
 		
@@ -256,20 +253,16 @@ module.exports = (() => {
 		actual.total = updates.unrealizedToday.add(actual.realized).add(actual.income);
 		format.market = formatCurrency(actual.market, currency);
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
-		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
-		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
-		format.total = formatCurrency(actual.total, currency);
-		format.totalNegative = actual.total.getIsNegative();
 
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
 			setTimeout(() => format.marketDirection = updates.marketDirection, 0);
 		}
 
-		if (updates.unrealizedTodayDirection.up || updates.unrealizedTodayDirection.down) {
-			format.unrealizedTodayDirection = unchanged;
-			setTimeout(() => format.unrealizedTodayDirection = updates.unrealizedTodayDirection, 0);
-		}
+		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
+		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+		format.total = formatCurrency(actual.total, currency);
+		format.totalNegative = actual.total.getIsNegative();
 	}
 
 	const unchanged = { up: false, down: false };
