@@ -391,8 +391,6 @@ module.exports = (() => {
 		.withField('instrument.name', DataType.STRING, true)
 		.withField('instrument.type', DataType.STRING, true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
