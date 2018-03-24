@@ -6,7 +6,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const TransactionType = require('./../data/TransactionType');
+const InstrumentType = require('./../data/InstrumentType'),
+	TransactionType = require('./../data/TransactionType');
 
 module.exports = (() => {
 	'use strict';
@@ -244,9 +245,9 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.name', DataType.STRING)
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
@@ -271,9 +272,9 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.name', DataType.STRING)
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
@@ -387,8 +388,8 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
