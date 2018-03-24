@@ -88,7 +88,6 @@ module.exports = (() => {
 			this._excludedChangeEvent.register(handler);
 		}
 
-
 		toString() {
 			return '[PositionItem]';
 		}
