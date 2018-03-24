@@ -111,7 +111,7 @@
 				    return;
                 }
 
-				that.gateway.updatePortfolio(that.portfolio(), portfolio)
+				that.gateway.updatePortfolio(portfolio)
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
