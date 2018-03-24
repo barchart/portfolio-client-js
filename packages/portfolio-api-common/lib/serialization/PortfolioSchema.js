@@ -155,6 +155,7 @@ module.exports = (() => {
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('update')
+		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'), true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
