@@ -201,10 +201,6 @@ module.exports = function () {
 				qb.withVariableParameter('frame', 'frame', 'frame', true).withVariableParameter('periods', 'periods', 'periods', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
-			_this._deletePortfoliosEndpoint = EndpointBuilder.for('delete-portfolio', 'delete portfolios').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
-			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
-
 			_this._readTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
 			}).withQueryBuilder(function (qb) {
@@ -474,8 +470,7 @@ module.exports = function () {
 
 						code = transaction.type;
 					} else {
-						assert.argumentIsRequired(transaction.type, 'transaction.type', Object);
-						assert.argumentIsRequired(transaction.type.code, 'transaction.type.code', String);
+						assert.argumentIsRequired(transaction.type, 'transaction.type', TransactionType, 'TransactionType');
 
 						code = transaction.type.code;
 					}
@@ -636,7 +631,7 @@ module.exports = function () {
 	};
 
 	var updatePortfolioRequestInterceptor = function updatePortfolioRequestInterceptor(request) {
-		return FailureReason.validateSchema(PortfolioSchema.UPDATE, request.data.portfolioData).then(function () {
+		return FailureReason.validateSchema(PortfolioSchema.UPDATE, request.data).then(function () {
 			request.data = request.data.portfolioData;
 
 			return Promise.resolve(request);
@@ -1011,7 +1006,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.25'
+		version: '1.1.26'
 	};
 }();
 
