@@ -239,7 +239,7 @@ module.exports = (() => {
 	}
 
 	function getYearToDateRangeDescription(startDate, endDate) {
-		return '';
+		return `${endDate.year.toString()} YTD`;
 	}
 
 	function getFilteredTransactions(transactions) {
