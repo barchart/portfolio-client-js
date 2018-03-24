@@ -1202,12 +1202,12 @@ module.exports = (() => {
 
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
-			format.marketDirection = updates.marketDirection;
+			setTimeout(() => format.marketDirection = updates.marketDirection, 0);
 		}
 
 		if (updates.unrealizedTodayDirection.up || updates.unrealizedTodayDirection.down) {
 			format.unrealizedTodayDirection = unchanged;
-			format.unrealizedTodayDirection = updates.unrealizedTodayDirection;
+			setTimeout(() => format.unrealizedTodayDirection = updates.unrealizedTodayDirection, 0);
 		}
 	}
 
