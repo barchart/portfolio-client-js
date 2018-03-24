@@ -20,6 +20,10 @@ module.exports = (() => {
 		constructor(code, description, alternateDescription, canReinvest, usesSymbols) {
 			super(code, description);
 
+			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
+			assert.argumentIsRequired(canReinvest, 'canReinvest', Boolean);
+			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
+
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
 			this._usesSymbols = usesSymbols;
