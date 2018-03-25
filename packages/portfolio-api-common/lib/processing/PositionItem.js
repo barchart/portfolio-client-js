@@ -12,10 +12,12 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionItem {
-		constructor(portfolio, position, summaries) {
+		constructor(portfolio, position, currentSummary, previousSummaries) {
 			this._portfolio = portfolio;
 			this._position = position;
-			this._summaries = summaries || [ ];
+			
+			this._currentSummary = currentSummary || null;
+			this._previousSummaries = previousSummaries || [ ];
 
 			this._data = { };
 
@@ -32,6 +34,9 @@ module.exports = (() => {
 
 			this._data.realized = null;
 			this._data.income = null;
+			
+			this._data.summaryTotalCurrent = null;
+			this._data.summaryTotalPrevious = null;
 
 			this._excluded = false;
 
@@ -50,8 +55,12 @@ module.exports = (() => {
 			return this._position;
 		}
 
-		get summaries() {
-			return this._summaries;
+		get currentSummary() {
+			return this._currentSummary;
+		}
+		
+		get previousSummaries() {
+			return this._previousSummaries;
 		}
 
 		get data() {
@@ -96,7 +105,7 @@ module.exports = (() => {
 	function calculateStaticData(item) {
 		const position = item.position;
 		const snapshot = item.position.snapshot;
-		const summaries = item.summaries;
+		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
 
@@ -115,13 +124,11 @@ module.exports = (() => {
 		data.realized = snapshot.gain;
 		data.income = snapshot.income;
 
-		const getSummaryTotal = (index) => {
+		const calculateSummaryTotalForPrevious = (index) => {
 			let summaryTotal;
 
-			if (summaries.length > index && summaries[index] !== null) {
-				const period = summaries[index].period;
-
-				summaryTotal = period.realized.add(period.unrealized).add(period.income);
+			if (previousSummaries.length > index) {
+				summaryTotal = calculateSummaryTotal(previousSummaries[index]);
 			} else {
 				summaryTotal = Decimal.ZERO;
 			}
@@ -129,8 +136,8 @@ module.exports = (() => {
 			return summaryTotal;
 		};
 
-		data.summaryOneTotal = getSummaryTotal(0);
-		data.summaryTwoTotal = getSummaryTotal(1);
+		data.summaryTotalPrevious = calculateSummaryTotalForPrevious(0);
+		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
 	}
 
 	function calculatePriceData(item, price) {
@@ -182,6 +189,20 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+	}
+	
+	function calculateSummaryTotal(summary) {
+		let returnRef;
+		
+		if (summary) {
+			const period = summary.period;
+
+			returnRef = period.realized.add(period.unrealized).add(period.income);
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+		
+		return returnRef;
 	}
 
 	return PositionItem;

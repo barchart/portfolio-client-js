@@ -18,12 +18,12 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionContainer {
-		constructor(portfolios, positions, summaries, definitions, defaultCurrency, summaryFrameType) {
+		constructor(portfolios, positions, summaries, definitions, defaultCurrency, previousSummaryFrame) {
 			this._definitions = definitions;
 			this._defaultCurrency = defaultCurrency || Currency.CAD;
 
-			this._summaryFrame = summaryFrameType || PositionSummaryFrame.YEARLY;
-			this._summaryRanges = this._summaryFrame.getRecentRanges(1);
+			this._previousSummaryFrame = previousSummaryFrame || PositionSummaryFrame.YEARLY;
+			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(1);
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -31,15 +31,25 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._summaries = summaries.reduce((map, summary) => {
-				if (this._summaryFrame === summary.frame) {
+			this._summariesCurrent = summaries.reduce((map, summary) => {
+				if (summary.frame === PositionSummaryFrame.YTD) {
+					const key = summary.position;
+
+					map[key] = summary;
+				}
+
+				return map;
+			}, { });
+			
+			this._summariesPrevious = summaries.reduce((map, summary) => {
+				if (summary.frame === this._previousSummaryFrame) {
 					const key = summary.position;
 
 					if (!map.hasOwnProperty(key)) {
-						map[key] = getSummaryArray(this._summaryRanges);
+						map[key] = getSummaryArray(this._previousSummaryRanges);
 					}
 
-					const index = this._summaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
+					const index = this._previousSummaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
 
 					if (!(index < 0)) {
 						map[key][index] = summary;
@@ -53,9 +63,10 @@ module.exports = (() => {
 				const portfolio = this._portfolios[position.portfolio];
 
 				if (position) {
-					const summaries = this._summaries[position.position] || getSummaryArray(this._summaryRanges);
+					const currentSummary = this._summariesCurrent[position.position] || null;
+					const previousSummaries = this._summariesPrevious[position.position] || getSummaryArray(this._previousSummaryRanges);
 
-					items.push(new PositionItem(portfolio, position, summaries));
+					items.push(new PositionItem(portfolio, position, currentSummary, previousSummaries));
 				}
 
 				return items;
