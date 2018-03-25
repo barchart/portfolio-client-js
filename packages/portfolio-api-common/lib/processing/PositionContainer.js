@@ -154,7 +154,7 @@ module.exports = (() => {
 					const child = tree.addChild(group);
 
 					group.registerMarketPercentChangeHandler(() => {
-						this._tree.walk((childNode, childGroup) => childGroup.refreshMarketPercent());
+						this._tree.walk((childGroup) => childGroup.refreshMarketPercent());
 					});
 
 					createGroups(child, group.items, additionalDefinitions);
