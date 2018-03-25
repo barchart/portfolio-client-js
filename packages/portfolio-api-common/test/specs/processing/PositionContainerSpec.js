@@ -4,7 +4,8 @@ const Currency = require('@barchart/common-js/lang/Currency'),
 const InstrumentType = require('./../../../lib/data/InstrumentType');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
-	PositionGroupDefinition = require('./../../../lib/processing/PositionGroupDefinition');
+	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
+	PositionTreeDefinition = require('./../../../lib/processing/definitions/PositionTreeDefinition');
 
 describe('When a position container data is gathered', () => {
 	'use strict';
@@ -58,45 +59,48 @@ describe('When a position container data is gathered', () => {
 		});
 
 		describe('and a container is created grouping by total, portfolio, and instrument', () => {
+			let name;
 			let definitions;
 			let container;
 
 			beforeEach(() => {
 				definitions = [
-					new PositionGroupDefinition('Total', x => true, x => 'Total', x => Currency.CAD),
-					new PositionGroupDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
-					new PositionGroupDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
+					new PositionTreeDefinition(name = 'the only tree', [
+						new PositionLevelDefinition('Total', x => true, x => 'Total', x => Currency.CAD),
+						new PositionLevelDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
+						new PositionLevelDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
+					])
 				];
 
 				try {
-					container = new PositionContainer(portfolios, positions, summaries, definitions);
+					container = new PositionContainer(definitions, portfolios, positions, summaries);
 				} catch (e) {
 					console.log(e);
 				}
 			});
 
 			it('the "Total" group should have two children groups', () => {
-				expect(container.getGroups([ 'Total' ]).length).toEqual(2);
+				expect(container.getGroups(name, [ 'Total' ]).length).toEqual(2);
 			});
 
 			it('the "Total" group should have three items', () => {
-				expect(container.getGroup([ 'Total' ]).items.length).toEqual(3);
+				expect(container.getGroup(name, [ 'Total' ]).items.length).toEqual(3);
 			});
 
 			it('The "a" portfolio group should have one child group', () => {
-				expect(container.getGroups([ 'Total', 'a' ]).length).toEqual(1);
+				expect(container.getGroups(name, [ 'Total', 'a' ]).length).toEqual(1);
 			});
 
 			it('the "a" portfolio group should have one item', () => {
-				expect(container.getGroup([ 'Total', 'a' ]).items.length).toEqual(1);
+				expect(container.getGroup(name, [ 'Total', 'a' ]).items.length).toEqual(1);
 			});
 
 			it('The "b" portfolio group should have two child groups', () => {
-				expect(container.getGroups([ 'Total', 'b' ]).length).toEqual(2);
+				expect(container.getGroups(name, [ 'Total', 'b' ]).length).toEqual(2);
 			});
 
 			it('the "b" portfolio group should have two items', () => {
-				expect(container.getGroup([ 'Total', 'b' ]).items.length).toEqual(2);
+				expect(container.getGroup(name, [ 'Total', 'b' ]).items.length).toEqual(2);
 			});
 		});
 	});

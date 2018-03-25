@@ -1,12 +1,15 @@
 const array = require('@barchart/common-js/lang/array'),
+	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Currency = require('@barchart/common-js/lang/Currency'),
-	assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
 const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+
+const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
+	PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
 
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
@@ -15,21 +18,31 @@ module.exports = (() => {
 	'use strict';
 
 	/**
+	 * A container for positions which groups the positions into one or more
+	 * trees for aggregation and display purposes. For example, perhaps a positions
+	 * grouped first by asset class then by position is desired.
+	 *
+	 * Furthermore, the container performs aggregation (driven primarily by price
+	 * changes) for each level of grouping in the internal tree(s).
+	 *
 	 * @public
+	 * @param {Array.<PositionTreeDefinition>} definitions
+	 * @param {Array.<Object>} portfolios
+	 * @param {Array.<Object>} positions
+	 * @param {Array.<Object>} summaries
 	 */
 	class PositionContainer {
-		constructor(portfolios, positions, summaries, definitions, defaultCurrency, summaryFrame) {
-			this._definitions = definitions;
-			this._defaultCurrency = defaultCurrency || Currency.CAD;
+		constructor(definitions, portfolios, positions, summaries) {
+			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
+			assert.argumentIsArray(portfolios, 'portfolios');
+			assert.argumentIsArray(positions, 'positions');
+			assert.argumentIsArray(summaries, 'summaries');
 			
-			const previousSummaryFrame = summaryFrame || PositionSummaryFrame.YEARLY;
+			const previousSummaryFrame = PositionSummaryFrame.YEARLY;
 			const previousSummaryRanges = previousSummaryFrame.getRecentRanges(0);
 
 			const currentSummaryFrame = PositionSummaryFrame.YTD;
 			const currentSummaryRange = array.last(currentSummaryFrame.getRecentRanges(0));
-
-			this._summaryDescriptionCurrent = previousSummaryFrame.describeRange(array.last(previousSummaryRanges));
-			this._summaryDescriptionPrevious = currentSummaryFrame.describeRange(currentSummaryRange);
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -109,111 +122,101 @@ module.exports = (() => {
 
 				return map;
 			}, { });
+			
+			this._trees = definitions.reduce((map, treeDefinition) => {
+				const tree = new Tree();
 
-			this._tree = new Tree();
+				const createGroups = (currentTree, items, levelDefinitions) => {
+					if (levelDefinitions.length === 0) {
+						return;
+					}
 
-			const createGroups = (tree, items, definitions) => {
-				if (definitions.length === 0) {
-					return;
-				}
+					const parent = currentTree.getValue() || null;
 
-				const parent = tree.getValue() || null;
+					const levelDefinition = levelDefinitions[0];
 
-				const currentDefinition = definitions[0];
-				const additionalDefinitions = array.dropLeft(definitions);
+					const populatedObjects = array.groupBy(items, levelDefinition.keySelector);
+					const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
+						const first = items[0];
 
-				const populatedObjects = array.groupBy(items, currentDefinition.keySelector);
-				const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
-					const first = items[0];
-
-					return new PositionGroup(this, parent, items, currentDefinition.currencySelector(first), currentDefinition.descriptionSelector(first), currentDefinition.single && items.length === 1);
-				});
-
-				const missingGroups = array.difference(currentDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
-
-				const empty = missingGroups.map((description) => {
-					return new PositionGroup(this, parent, [ ], currentDefinition.requiredGroups.find(group => group.description === description).currency, description);
-				});
-
-				const compositeGroups = populatedGroups.concat(empty);
-
-				let builder;
-
-				if (currentDefinition.requiredGroups.length !== 0) {
-					const ordering = currentDefinition.requiredGroups.reduce((map, group, index) => {
-						map[group.description] = index;
-
-						return map;
-					}, { });
-
-					const getIndex = (description) => {
-						if (ordering.hasOwnProperty(description)) {
-							return ordering[description];
-						} else {
-							return Number.MAX_VALUE;
-						}
-					};
-
-					builder = ComparatorBuilder.startWith((a, b) => {
-						return comparators.compareNumbers(getIndex(a.description), getIndex(b.description));
-					}).thenBy((a, b) => {
-						return comparators.compareStrings(a.description, b.description);
-					});
-				} else {
-					builder = ComparatorBuilder.startWith((a, b) => {
-						return comparators.compareStrings(a.description, b.description);
-					});
-				}
-
-				compositeGroups.sort(builder.toComparator());
-
-				compositeGroups.forEach((group) => {
-					const child = tree.addChild(group);
-
-					group.registerMarketPercentChangeHandler(() => {
-						this._tree.walk((childGroup) => childGroup.refreshMarketPercent());
+						return new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1);
 					});
 
-					createGroups(child, group.items, additionalDefinitions);
-				});
-			};
+					const missingGroups = array.difference(levelDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
 
-			createGroups(this._tree, this._items, this._definitions);
+					const empty = missingGroups.map((description) => {
+						return new PositionGroup(this, parent, [ ], levelDefinition.requiredGroups.find(group => group.description === description).currency, description);
+					});
+
+					const compositeGroups = populatedGroups.concat(empty);
+
+					let builder;
+
+					if (levelDefinition.requiredGroups.length !== 0) {
+						const ordering = levelDefinition.requiredGroups.reduce((map, group, index) => {
+							map[group.description] = index;
+
+							return map;
+						}, { });
+
+						const getIndex = (description) => {
+							if (ordering.hasOwnProperty(description)) {
+								return ordering[description];
+							} else {
+								return Number.MAX_VALUE;
+							}
+						};
+
+						builder = ComparatorBuilder.startWith((a, b) => {
+							return comparators.compareNumbers(getIndex(a.description), getIndex(b.description));
+						}).thenBy((a, b) => {
+							return comparators.compareStrings(a.description, b.description);
+						});
+					} else {
+						builder = ComparatorBuilder.startWith((a, b) => {
+							return comparators.compareStrings(a.description, b.description);
+						});
+					}
+
+					compositeGroups.sort(builder.toComparator());
+
+					compositeGroups.forEach((group) => {
+						const childTree = currentTree.addChild(group);
+
+						group.registerMarketPercentChangeHandler(() => {
+							currentTree.walk((childGroup) => childGroup.refreshMarketPercent());
+						});
+
+						createGroups(childTree, group.items, array.dropLeft(levelDefinitions));
+					});
+				};
+
+				createGroups(tree, this._items, treeDefinition.definitions);
+				
+				map[treeDefinition.name] = tree;
+
+				return map;
+			}, { });
 		}
 
 		get defaultCurrency() {
 			return this._defaultCurrency;
 		}
 		
-		getCurrentSummaryDescription() {
-			return this._summaryDescriptionCurrent;
-		}
-		
-		getPreviousSummaryDescription() {
-			return this._summaryDescriptionPrevious;
-		}
-
-		startTransaction(executor) {
-			assert.argumentIsRequired(executor, 'executor', Function);
-
-			this._tree.walk(group => group.setSuspended(true), false, false);
-
-			executor(this);
-
-			this._tree.walk(group => group.setSuspended(false), false, false);
-		}
-		
-		getSymbols() {
+		getPositionSymbols() {
 			return Object.keys(this._symbols);
 		}
 
-		setPrice(symbol, price) {
-			if (this._symbols.hasOwnProperty(symbol)) {
+		setPositionPrice(symbol, price) {
+			assert.argumentIsOptional(symbol, 'symbol', String);
+			assert.argumentIsOptional(price, 'price', Number);
+
+			if (this._symbols.hasOwnProperty(symbol) && is.number(price)) {
 				this._symbols[symbol].forEach(item => item.setPrice(price));
 			}
 		}
 
-		getCurrencySymbols() {
+		getForexSymbols() {
 			const codes = Object.keys(this._currencies);
 
 			return codes.reduce((symbols, code) => {
@@ -225,33 +228,51 @@ module.exports = (() => {
 			}, [ ]);
 		}
 
-		setExchangeRate(symbol, price) {
+		setForexPrice(symbol, price) {
+			assert.argumentIsOptional(symbol, 'symbol', String);
+			assert.argumentIsOptional(price, 'price', Number);
 
+			return;
 		}
 
-		getGroup(keys) {
-			const node = keys.reduce((tree, key) => {
-				tree = tree.findChild(group => group.description === key);
+		getGroup(name, keys) {
+			assert.argumentIsRequired(name, 'name', String);
+			assert.argumentIsArray(keys, 'keys', Number);
 
-				return tree;
-			}, this._tree);
-
-			return node.getValue();
+			return findNode(this._trees[name], keys).getValue();
 		}
 
-		getGroups(keys) {
-			const node = keys.reduce((tree, key) => {
-				tree = tree.findChild(group => group.description === key);
+		getGroups(name, keys) {
+			assert.argumentIsRequired(name, 'name', String);
+			assert.argumentIsArray(keys, 'keys', Number);
 
-				return tree;
-			}, this._tree);
+			return findNode(this._trees[name], keys).getChildren().map(node => node.getValue());
+		}
 
-			return node.getChildren().map((node) => node.getValue());
+		startTransaction(name, executor) {
+			assert.argumentIsRequired(name, 'name', String);
+			assert.argumentIsRequired(executor, 'executor', Function);
+
+			assert.argumentIsRequired(executor, 'executor', Function);
+
+			this._trees[name].walk(group => group.setSuspended(true), false, false);
+
+			executor(this);
+
+			this._trees[name].walk(group => group.setSuspended(false), false, false);
 		}
 
 		toString() {
 			return '[PositionContainer]';
 		}
+	}
+
+	function findNode(tree, keys) {
+		return keys.reduce((tree, key) => {
+			tree = tree.findChild(group => group.description === key);
+
+			return tree;
+		}, tree);
 	}
 
 	function getSummaryArray(ranges) {

@@ -8,7 +8,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * Static configuration data.
+	 * Static utility for formatting transaction data in human-readable form.
 	 *
 	 * @public
 	 */
@@ -18,54 +18,66 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Formats transactions by adding "formatted" attribute
-		 * and "instrument" attribute from position
+		 * Maps transaction objects into new objects whose properties are human-readable or,
+		 * optionally returns the original objects with a "formatted" property appended to
+		 * each transaction.
 		 *
 		 * @public
 		 * @static
-		 * @param {Array} transactions
-		 * @param {Array} positions
-		 * @param {String} returnType - Whether the return values should be appended to the transaction
-		 * 	
+		 * @param {Array<Object>} transactions
+		 * @param {Array<Object>} positions
+		 * @param {Boolean=} append
 		 * @returns {Array}
 		 */
-		static format(transactions, positions, returnType) {
-			assert.argumentIsRequired(transactions, 'transactions', Array);
-			assert.argumentIsRequired(positions, 'positions', Array);
+		static format(transactions, positions, append) {
+			assert.argumentIsArray(transactions, 'transactions');
+			assert.argumentIsArray(positions, 'positions');
+			assert.argumentIsOptional(append, 'append', Boolean);
 
-			const positionMap = {};
+			const instruments = positions.reduce((map, p) => {
+				map[p.position] = p.instrument;
 
-			positions.map(p => positionMap[p.position] = p.instrument);
+				return map;
+			}, { });
 
-			return transactions.filter(t => positionMap[t.position]).map((transaction) => {
-				transaction.instrument = positionMap[transaction.position];
+			return transactions.reduce((list, transaction) => {
+				const position = transaction.position;
 
-				let formatted = getBasicTransaction(transaction);
+				if (instruments.hasOwnProperty(position)) {
+					transaction.instrument = instruments[position];
 
-				if (formatters.has(transaction.type)) {
-					const formatterFunction = formatters.get(transaction.type);
+					let formatted = getBasicTransaction(transaction);
 
-					const formattedTransaction = formatterFunction(transaction);
+					if (formatters.has(transaction.type)) {
+						const formatterFunction = formatters.get(transaction.type);
+						const formattedTransaction = formatterFunction(transaction);
 
-					Object.keys(formattedTransaction).map((key) => {
-						if (!is.undefined(formattedTransaction[key]) && is.fn(formattedTransaction[key].toFloat)) {
-							const precision = transaction.instrument.currency.precision;
+						Object.keys(formattedTransaction).map((key) => {
+							if (!is.undefined(formattedTransaction[key]) && is.fn(formattedTransaction[key].toFloat)) {
+								const precision = transaction.instrument.currency.precision;
 
-							formattedTransaction[key] = formatter.numberToString(formattedTransaction[key].toFloat(), precision, ',');
-						}
-					});
+								formattedTransaction[key] = formatter.numberToString(formattedTransaction[key].toFloat(), precision, ',');
+							}
+						});
 
-					formatted = Object.assign({}, formatted, formattedTransaction);
+						formatted = Object.assign({}, formatted, formattedTransaction);
+					}
+
+					let transactionToInsert;
+
+					if (append) {
+						transaction.formatted = formatted;
+
+						transactionToInsert = transaction;
+					} else {
+						transactionToInsert = formatted;
+					}
+
+					list.push(transactionToInsert);
 				}
 
-				if (returnType === 'append') {
-					transaction.formatted = formatted;
-
-					return transaction;
-				} else {
-					return formatted;
-				}
-			});
+				return list;
+			}, [ ]);
 		}
 
 		toString() {
