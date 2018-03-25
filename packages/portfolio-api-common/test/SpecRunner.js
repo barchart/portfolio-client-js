@@ -1038,6 +1038,7 @@ module.exports = (() => {
 			this._dataFormat.total = null;
 			this._dataFormat.totalNegative = false;
 			this._dataFormat.summaryTotalCurrent = null;
+			this._dataActual.summaryTotalNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
 
 			this._dataFormat.unrealizedTodayNegative = false;
@@ -1214,19 +1215,22 @@ module.exports = (() => {
 			updates = items.reduce((updates, item) => {
 				updates.market = updates.market.add(item.data.market);
 				updates.unrealizedToday = updates.unrealizedToday.add(item.data.unrealizedToday);
+				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(item.data.summaryTotalCurrent);
 
 				return updates;
 			}, {
 				market: Decimal.ZERO,
 				marketDirection: unchanged,
-				unrealizedToday: Decimal.ZERO
+				unrealizedToday: Decimal.ZERO,
+				summaryTotalCurrent: Decimal.ZERO
 
 			});
 		} else {
 			updates = {
 				market: actual.market.add(item.data.marketChange),
 				marketDirection: { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() },
-				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange)
+				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange),
+				summaryTotalCurrent: actual.summaryTotalCurrent.add(item.data.summaryTotalCurrentChange)
 			};
 		}
 		
@@ -1244,6 +1248,7 @@ module.exports = (() => {
 
 		actual.market = updates.market;
 		actual.unrealizedToday = updates.unrealizedToday;
+		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.total = updates.unrealizedToday.add(actual.realized).add(actual.income);
 		
 		format.market = formatCurrency(actual.market, currency);
@@ -1255,6 +1260,10 @@ module.exports = (() => {
 
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+
+		format.summaryTotalCurrent = formatCurrency(actual.summaryTotalCurrent, currency);
+		format.summaryTotalCurrentNegative = actual.summaryTotalCurrent.getIsNegative();
+
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
 		
@@ -1389,6 +1398,8 @@ module.exports = (() => {
 			this._data.income = null;
 			
 			this._data.summaryTotalCurrent = null;
+			this._data.summaryTotalCurrentChange = null;
+
 			this._data.summaryTotalPrevious = null;
 
 			this._excluded = false;
@@ -1530,6 +1541,28 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+
+		const summary = item.currentSummary;
+
+		if (summary && price) {
+			const period = summary.period;
+
+			let unrealizedCurrent = summary.open.multiply(price).add(summary.end.basis);
+
+			let summaryTotalCurrent = period.realized.add(period.income).add(unrealizedCurrent);
+			let summaryTotalCurrentChange;
+
+			if (data.summaryTotalCurrent !== null) {
+				summaryTotalCurrentChange = summaryTotalCurrent.subtract(data.summaryTotalCurrent);
+			}  else {
+				summaryTotalCurrentChange = Decimal.ZERO;
+			}
+
+			data.summaryTotalCurrent = summaryTotalCurrent;
+			data.summaryTotalCurrentChange = summaryTotalCurrentChange;
+		} else {
+			data.summaryTotalCurrentChange = Decimal.ZERO;
+		}
 	}
 	
 	function calculateSummaryTotal(summary) {
@@ -1538,7 +1571,7 @@ module.exports = (() => {
 		if (summary) {
 			const period = summary.period;
 
-			returnRef = period.realized.add(period.unrealized).add(period.income);
+			returnRef = period.realized.add(period.income).add(period.unrealized);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
