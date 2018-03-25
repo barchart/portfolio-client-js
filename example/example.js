@@ -128,6 +128,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var assert = require('@barchart/common-js/lang/assert'),
+    Day = require('@barchart/common-js/lang/Day'),
     Disposable = require('@barchart/common-js/lang/Disposable'),
     Enum = require('@barchart/common-js/lang/Enum'),
     is = require('@barchart/common-js/lang/is');
@@ -215,7 +216,13 @@ module.exports = function () {
 			_this._readPositionSummariesEndpoint = EndpointBuilder.for('read-position-summaries', 'read position summaries').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withVariableParameter('position', 'position', 'position', false);
 			}).withQueryBuilder(function (qb) {
-				qb.withVariableParameter('frame', 'frame', 'frame', true).withVariableParameter('periods', 'periods', 'periods', true);
+				qb.withVariableParameter('frames', 'frames', 'frames', true, function (frames) {
+					return frames.map(function (f) {
+						return f.code;
+					}).join();
+				}).withVariableParameter('periods', 'periods', 'periods', true).withVariableParameter('start', 'start', 'start', true, function (s) {
+					return s.format();
+				});
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
@@ -401,14 +408,15 @@ module.exports = function () {
     * @public
     * @param {String=} portfolio
     * @param {String=} position
-    * @param {PositionSummaryFrame=|String=} frame
+    * @param {Array.<PositionSummaryFrame>=|Array.<String>=} frames
     * @param {Number=} periods
+    * @param {Day=|String=} start
     * @returns {Promise.<Position[]>}
     */
 
 		}, {
 			key: 'readPositionSummaries',
-			value: function readPositionSummaries(portfolio, position, frame, periods) {
+			value: function readPositionSummaries(portfolio, position, frames, periods, start) {
 				var _this8 = this;
 
 				return Promise.resolve().then(function () {
@@ -417,27 +425,52 @@ module.exports = function () {
 					assert.argumentIsOptional(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					if (!is.string(frame)) {
-						assert.argumentIsOptional(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
+					if (is.array(frames)) {
+						if (frames.length > 0 && is.string(frames[0])) {
+							assert.argumentIsArray(frames, 'frames', String);
+						} else {
+							assert.argumentIsArray(frames, 'frames', PositionSummaryFrame, 'PositionSummaryFrame');
+						}
+					} else {
+						if (is.string(frames)) {
+							assert.argumentIsOptional(frames, 'frames', String);
+						} else {
+							assert.argumentIsOptional(frames, 'frames', PositionSummaryFrame, 'PositionSummaryFrame');
+						}
 					}
 
 					assert.argumentIsOptional(periods, 'periods', Number);
+					assert.argumentIsOptional(start, 'start', Day);
 
 					var query = {
 						portfolio: portfolio || '*',
 						position: position || '*'
 					};
 
-					if (frame) {
-						if (is.string(frame)) {
-							query.frame = frame;
-						} else {
-							query.frame = frame.code;
-						}
+					if (frames) {
+						query.frames = frames.map(function (frame) {
+							if (is.string(frame)) {
+								return Enum.fromCode(PositionSummaryFrame, frame);
+							} else {
+								return frame;
+							}
+						});
 					}
 
 					if (periods) {
 						query.periods = periods;
+					}
+
+					if (start) {
+						var s = void 0;
+
+						if (is.string(start)) {
+							s = Day.parse(start);
+						} else {
+							s = start;
+						}
+
+						query.start = s;
 					}
 
 					return Gateway.invoke(_this8._readPositionSummariesEndpoint, query);
@@ -740,7 +773,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":52,"@barchart/portfolio-api-common/lib/data/TransactionType":53,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":55,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":57,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":58}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":52,"@barchart/portfolio-api-common/lib/data/TransactionType":53,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":55,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":57,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":58}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1053,7 +1086,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.29'
+		version: '1.1.30'
 	};
 }();
 
@@ -9482,6 +9515,7 @@ module.exports = (() => {
 	 * @extends {Enum}
 	 * @param {String} code
 	 * @param {String} description
+	 * @param {String} display
 	 * @param {Boolean} purchase
 	 * @param {Boolean} sale
 	 * @param {Boolean} income
@@ -9489,20 +9523,32 @@ module.exports = (() => {
 	 * @param {Boolean} closing
 	 */
 	class TransactionType extends Enum {
-		constructor(code, description, purchase, sale, income, opening, closing) {
+		constructor(code, description, display, purchase, sale, income, opening, closing) {
 			super(code, description);
 
+			assert.argumentIsRequired(display, 'display', String);
 			assert.argumentIsRequired(purchase, 'purchase', Boolean);
 			assert.argumentIsRequired(sale, 'sale', Boolean);
 			assert.argumentIsRequired(income, 'income', Boolean);
 			assert.argumentIsRequired(opening, 'opening', Boolean);
 			assert.argumentIsRequired(closing, 'closing', Boolean);
 
+			this._display = display;
 			this._purchase = purchase;
 			this._sale = sale;
 			this._income = income;
 			this._opening = opening;
 			this._closing = closing;
+		}
+
+		/**
+		 * A human-readable description of the transaction type.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get display() {
+			return this._display;
 		}
 
 		/**
@@ -9770,27 +9816,27 @@ module.exports = (() => {
 		}
 	}
 
-	const buy = new TransactionType('B', 'Buy', true, false, false, true,  false);
-	const sell = new TransactionType('S', 'Sell', false, true, false, false, true);
-	const buyShort = new TransactionType('BS', 'Buy To Cover', true, false, false, false, true);
-	const sellShort = new TransactionType('SS', 'Sell Short',  false, true, false, true, false);
-	const dividend = new TransactionType('DV', 'Dividend', false, false, true, false, false);
-	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', false, false, false, true, false);
-	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', false, false, false, true, false);
-	const split = new TransactionType('SP', 'Split', false, false, false, true, false);
-	const fee = new TransactionType('F', 'Fee', false, false, false, true, false);
-	const feeUnits = new TransactionType('FU', 'Fee', false, false, false, false, false);
+	const buy = new TransactionType('B', 'Buy', 'Buy', true, false, false, true,  false);
+	const sell = new TransactionType('S', 'Sell', 'Sell', false, true, false, false, true);
+	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', true, false, false, false, true);
+	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', false, true, false, true, false);
+	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', false, false, true, false, false);
+	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', false, false, false, true, false);
+	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', false, false, false, true, false);
+	const split = new TransactionType('SP', 'Split', 'Split', false, false, false, true, false);
+	const fee = new TransactionType('F', 'Fee', 'Fee', false, false, false, true, false);
+	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', false, false, false, false, false);
 
-	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', false, false, true, false, false);
-	const distributionFund = new TransactionType('DF', 'Distribution (Units)', false, false, false, true, false);
+	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', false, false, true, false, false);
+	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', false, false, false, true, false);
 
-	const deposit = new TransactionType('D', 'Deposit', false, false, false, true, false);
-	const withdrawal = new TransactionType('W', 'Withdrawal', false, false, false, false, true);
-	const debit = new TransactionType('DR', 'Debit', false, false, false, false, true);
-	const credit = new TransactionType('CR', 'Credit', false, false, false, true, false);
+	const deposit = new TransactionType('D', 'Deposit', 'Deposit', false, false, false, true, false);
+	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', false, false, false, false, true);
+	const debit = new TransactionType('DR', 'Debit', 'Debit', false, false, false, false, true);
+	const credit = new TransactionType('CR', 'Credit', 'Credit', false, false, false, true, false);
 
-	const valuation = new TransactionType('V', 'Valuation', false, false, false, false, false);
-	const income = new TransactionType('I', 'Income', false, false, true, false, false);
+	const valuation = new TransactionType('V', 'Valuation', 'Valuation', false, false, false, false, false);
+	const income = new TransactionType('I', 'Income', 'Income', false, false, true, false, false);
 
 	return TransactionType;
 })();
@@ -10444,7 +10490,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[TransactionSchema]';
+			return `[TransactionSchema (code=${this.code})]`;
 		}
 	}
 
