@@ -158,7 +158,7 @@
 			var readPositionSummaries = function() {
 				var action = 'portfolioGateway.readPositionSummaries()';
 
-				that.gateway.readPositionSummaries(that.portfolio() || null, that.position() || null, 'YEARLY', 2)
+				that.gateway.readPositionSummaries(that.portfolio() || null, that.position() || null, [ 'YEARLY', 'YTD' ], 1)
 					.then((data) => {
 						writeConsoleText(action, true);
 						writeConsoleObject(data);
