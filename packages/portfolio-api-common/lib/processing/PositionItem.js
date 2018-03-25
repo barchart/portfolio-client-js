@@ -37,6 +37,8 @@ module.exports = (() => {
 			this._data.income = null;
 			
 			this._data.summaryTotalCurrent = null;
+			this._data.summaryTotalCurrentChange = null;
+
 			this._data.summaryTotalPrevious = null;
 
 			this._excluded = false;
@@ -178,6 +180,28 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+
+		const summary = item.currentSummary;
+
+		if (summary && price) {
+			const period = summary.period;
+
+			let unrealizedCurrent = summary.open.multiply(price).add(summary.end.basis);
+
+			let summaryTotalCurrent = period.realized.add(period.income).add(unrealizedCurrent);
+			let summaryTotalCurrentChange;
+
+			if (data.summaryTotalCurrent !== null) {
+				summaryTotalCurrentChange = summaryTotalCurrent.subtract(data.summaryTotalCurrent);
+			}  else {
+				summaryTotalCurrentChange = Decimal.ZERO;
+			}
+
+			data.summaryTotalCurrent = summaryTotalCurrent;
+			data.summaryTotalCurrentChange = summaryTotalCurrentChange;
+		} else {
+			data.summaryTotalCurrentChange = Decimal.ZERO;
+		}
 	}
 	
 	function calculateSummaryTotal(summary) {
@@ -186,7 +210,7 @@ module.exports = (() => {
 		if (summary) {
 			const period = summary.period;
 
-			returnRef = period.realized.add(period.unrealized).add(period.income);
+			returnRef = period.realized.add(period.income).add(period.unrealized);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
