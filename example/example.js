@@ -170,7 +170,7 @@ module.exports = function () {
 	var PortfolioGateway = function (_Disposable) {
 		_inherits(PortfolioGateway, _Disposable);
 
-		function PortfolioGateway(protocol, host, port, requestInterceptor) {
+		function PortfolioGateway(protocol, host, port, environment, requestInterceptor) {
 			_classCallCheck(this, PortfolioGateway);
 
 			var _this = _possibleConstructorReturn(this, (PortfolioGateway.__proto__ || Object.getPrototypeOf(PortfolioGateway)).call(this));
@@ -1053,7 +1053,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.28'
+		version: '1.1.29'
 	};
 }();
 
