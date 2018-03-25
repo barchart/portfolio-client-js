@@ -29,10 +29,10 @@ describe('When a position container data is gathered', () => {
 				income: new Decimal(0),
 				gain: new Decimal(0)
 			}
-		}
+		};
 	}
 
-	describe('for two portfolios, each with the same position, and the second portfolio with an additonal position', () => {
+	describe('for two portfolios, each with the same position, and the second portfolio with an addition position', () => {
 		let portfolios;
 		let positions;
 		let summaries;

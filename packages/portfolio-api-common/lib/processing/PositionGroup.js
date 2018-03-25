@@ -1,6 +1,7 @@
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -24,6 +25,8 @@ module.exports = (() => {
 
 			this._excluded = false;
 			this._suspended = false;
+
+			this._marketPercentChangeEvent = new Event(this);
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -133,6 +136,14 @@ module.exports = (() => {
 		refresh() {
 			calculateStaticData(this);
 			calculatePriceData(this, null, true);
+		}
+
+		refreshMarketPercent() {
+			calculateMarketPercent(this, true);
+		}
+
+		registerMarketPercentChangeHandler(handler) {
+			this._marketPercentChangeEvent.register(handler);
 		}
 
 		toString() {
@@ -252,12 +263,11 @@ module.exports = (() => {
 		}
 
 		actual.market = updates.market;
-		actual.marketPercent = updates.marketPercent;
 		actual.unrealizedToday = updates.unrealizedToday;
 		actual.total = updates.unrealizedToday.add(actual.realized).add(actual.income);
+		
 		format.market = formatCurrency(actual.market, currency);
-		format.marketPercent = formatPercent(actual.marketPercent, 2);
-
+		
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
 			setTimeout(() => format.marketDirection = updates.marketDirection, 0);
@@ -267,10 +277,41 @@ module.exports = (() => {
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
+		
+		calculateMarketPercent(group, false);
 	}
 
-	function calculatePercent() {
+	function calculateMarketPercent(group, silent) {
+		if (group.suspended) {
+			return;
+		}
 
+		const parent = group._parent;
+
+		const actual = group._dataActual;
+		const format = group._dataFormat;
+		
+		let marketPercent;
+		
+		if (parent !== null) {
+			const parentData = parent._dataActual;
+
+			if (parentData.market !== null && !parentData.market.getIsZero()) {
+				marketPercent = actual.market.divide(parentData.market);
+			} else {
+				marketPercent = null;
+			}
+		} else {
+			marketPercent = null;
+		}
+
+		actual.marketPercent = marketPercent;
+		
+		format.marketPercent = formatPercent(actual.marketPercent, 2);
+		
+		if (!silent) {
+			group._marketPercentChangeEvent.fire(group);
+		}
 	}
 
 	const unchanged = { up: false, down: false };

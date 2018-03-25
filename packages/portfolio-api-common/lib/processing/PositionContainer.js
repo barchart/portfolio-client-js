@@ -153,6 +153,10 @@ module.exports = (() => {
 				compositeGroups.forEach((group) => {
 					const child = tree.addChild(group);
 
+					group.registerMarketPercentChangeHandler(() => {
+						this._tree.walk((childNode, childGroup) => childGroup.refreshMarketPercent());
+					});
+
 					createGroups(child, group.items, additionalDefinitions);
 				});
 			};
