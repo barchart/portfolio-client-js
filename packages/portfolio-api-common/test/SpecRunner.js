@@ -156,12 +156,13 @@ module.exports = (() => {
 		 * start and end dates.
 		 *
 		 * @public
-		 * @param {Day} startDate
-		 * @param {Day} endDate
+		 * @return {PositionSummaryRange} range
 		 * @return {String}
 		 */
-		describeRange(startDate, endDate) {
-			return this._descriptionCalculator(startDate, endDate);
+		describeRange(range) {
+			console.log('range: ', range);
+
+			return this._descriptionCalculator(range.start, range.end);
 		}
 
 		/**
@@ -345,20 +346,20 @@ module.exports = (() => {
 		return null;
 	}
 
-	function getYearlyRangeDescription(startDate, endDate) {
-		return endDate.year.toString();
+	function getYearlyRangeDescription(start, end) {
+		return end.year.toString();
 	}
 
-	function getQuarterlyRangeDescription(startDate, endDate) {
+	function getQuarterlyRangeDescription(start, end) {
 		return '';
 	}
 
-	function getMonthlyRangeDescription(startDate, endDate) {
+	function getMonthlyRangeDescription(start, end) {
 		return '';
 	}
 
-	function getYearToDateRangeDescription(startDate, endDate) {
-		return `${endDate.year.toString()} YTD`;
+	function getYearToDateRangeDescription(start, end) {
+		return `${end.year.toString()} YTD`;
 	}
 
 	function getFilteredTransactions(transactions) {
@@ -735,12 +736,18 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionContainer {
-		constructor(portfolios, positions, summaries, definitions, defaultCurrency, summaryFrameType) {
+		constructor(portfolios, positions, summaries, definitions, defaultCurrency, summaryFrame) {
 			this._definitions = definitions;
 			this._defaultCurrency = defaultCurrency || Currency.CAD;
+			
+			const previousSummaryFrame = summaryFrame || PositionSummaryFrame.YEARLY;
+			const previousSummaryRanges = previousSummaryFrame.getRecentRanges(0);
 
-			this._summaryFrame = summaryFrameType || PositionSummaryFrame.YEARLY;
-			this._summaryRanges = this._summaryFrame.getRecentRanges(1);
+			const currentSummaryFrame = PositionSummaryFrame.YTD;
+			const currentSummaryRange = array.last(currentSummaryFrame.getRecentRanges(0));
+
+			this._summaryDescriptionCurrent = previousSummaryFrame.describeRange(array.last(previousSummaryRanges));
+			this._summaryDescriptionPrevious = currentSummaryFrame.describeRange(currentSummaryRange);
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -748,15 +755,25 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._summaries = summaries.reduce((map, summary) => {
-				if (this._summaryFrame === summary.frame) {
+			this._summariesCurrent = summaries.reduce((map, summary) => {
+				if (summary.frame === currentSummaryFrame && currentSummaryRange.start.getIsEqual(summary.start.date) && currentSummaryRange.end.getIsEqual(summary.end.date)) {
+					const key = summary.position;
+
+					map[key] = summary;
+				}
+
+				return map;
+			}, { });
+			
+			this._summariesPrevious = summaries.reduce((map, summary) => {
+				if (summary.frame === previousSummaryFrame) {
 					const key = summary.position;
 
 					if (!map.hasOwnProperty(key)) {
-						map[key] = getSummaryArray(this._summaryRanges);
+						map[key] = getSummaryArray(previousSummaryRanges);
 					}
 
-					const index = this._summaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
+					const index = previousSummaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
 
 					if (!(index < 0)) {
 						map[key][index] = summary;
@@ -770,9 +787,10 @@ module.exports = (() => {
 				const portfolio = this._portfolios[position.portfolio];
 
 				if (position) {
-					const summaries = this._summaries[position.position] || getSummaryArray(this._summaryRanges);
+					const currentSummary = this._summariesCurrent[position.position] || null;
+					const previousSummaries = this._summariesPrevious[position.position] || getSummaryArray(previousSummaryRanges);
 
-					items.push(new PositionItem(portfolio, position, summaries));
+					items.push(new PositionItem(portfolio, position, currentSummary, previousSummaries));
 				}
 
 				return items;
@@ -884,7 +902,25 @@ module.exports = (() => {
 		get defaultCurrency() {
 			return this._defaultCurrency;
 		}
+		
+		getCurrentSummaryDescription() {
+			return this._summaryDescriptionCurrent;
+		}
+		
+		getPreviousSummaryDescription() {
+			return this._summaryDescriptionPrevious;
+		}
 
+		startTransaction(executor) {
+			assert.argumentIsRequired(executor, 'executor', Function);
+
+			this._tree.walk(group => group.setSuspended(true), false, false);
+
+			executor(this);
+
+			this._tree.walk(group => group.setSuspended(false), false, false);
+		}
+		
 		getSymbols() {
 			return Object.keys(this._symbols);
 		}
@@ -909,16 +945,6 @@ module.exports = (() => {
 
 		setExchangeRate(symbol, price) {
 
-		}
-
-		startTransaction(executor) {
-			assert.argumentIsRequired(executor, 'executor', Function);
-
-			this._tree.walk(group => group.setSuspended(true), false, false);
-
-			executor(this);
-
-			this._tree.walk(group => group.setSuspended(false), false, false);
 		}
 
 		getGroup(keys) {
@@ -998,8 +1024,8 @@ module.exports = (() => {
 			this._dataActual.marketPercent = null;
 			this._dataActual.unrealizedToday = null;
 			this._dataActual.total = null;
-			this._dataActual.summaryOneTotal = null;
-			this._dataActual.summaryTwoTotal = null;
+			this._dataActual.summaryTotalCurrent = null;
+			this._dataActual.summaryTotalPrevious = null;
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
@@ -1013,8 +1039,8 @@ module.exports = (() => {
 			this._dataFormat.unrealizedTodayNegative = false;
 			this._dataFormat.total = null;
 			this._dataFormat.totalNegative = false;
-			this._dataFormat.summaryOneTotal = null;
-			this._dataFormat.summaryTwoTotal = null;
+			this._dataFormat.summaryTotalCurrent = null;
+			this._dataFormat.summaryTotalPrevious = null;
 
 			this._dataFormat.unrealizedTodayNegative = false;
 
@@ -1143,29 +1169,29 @@ module.exports = (() => {
 			updates.basis = updates.basis.add(item.data.basis);
 			updates.realized = updates.realized.add(item.data.realized);
 			updates.income = updates.income.add(item.data.income);
-			updates.summaryOneTotal = updates.summaryOneTotal.add(item.data.summaryOneTotal);
-			updates.summaryTwoTotal = updates.summaryTwoTotal.add(item.data.summaryTwoTotal);
+			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(item.data.summaryTotalCurrent);
+			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(item.data.summaryTotalPrevious);
 
 			return updates;
 		}, {
 			basis: Decimal.ZERO,
 			realized: Decimal.ZERO,
 			income: Decimal.ZERO,
-			summaryOneTotal: Decimal.ZERO,
-			summaryTwoTotal: Decimal.ZERO
+			summaryTotalCurrent: Decimal.ZERO,
+			summaryTotalPrevious: Decimal.ZERO
 		});
 
 		actual.basis = updates.basis;
 		actual.realized = updates.realized;
 		actual.income = updates.income;
-		actual.summaryOneTotal = updates.summaryOneTotal;
-		actual.summaryTwoTotal = updates.summaryTwoTotal;
+		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
+		actual.summaryTotalPrevious = updates.summaryTotalPrevious;
 
 		format.basis = formatCurrency(actual.basis, currency);
 		format.realized = formatCurrency(actual.basis, currency);
 		format.income = formatCurrency(actual.income, currency);
-		format.summaryOneTotal = formatCurrency(updates.summaryOneTotal, currency);
-		format.summaryTwoTotal = formatCurrency(updates.summaryTwoTotal, currency);
+		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
+		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
 	}
 
 	function calculatePriceData(group, item, forceRefresh) {
@@ -1326,7 +1352,8 @@ module.exports = (() => {
 })();
 
 },{"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19}],7:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
+const array = require('@barchart/common-js/lang/array'),
+	assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
@@ -1340,10 +1367,12 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionItem {
-		constructor(portfolio, position, summaries) {
+		constructor(portfolio, position, currentSummary, previousSummaries) {
 			this._portfolio = portfolio;
 			this._position = position;
-			this._summaries = summaries || [ ];
+			
+			this._currentSummary = currentSummary || null;
+			this._previousSummaries = previousSummaries || [ ];
 
 			this._data = { };
 
@@ -1360,6 +1389,9 @@ module.exports = (() => {
 
 			this._data.realized = null;
 			this._data.income = null;
+			
+			this._data.summaryTotalCurrent = null;
+			this._data.summaryTotalPrevious = null;
 
 			this._excluded = false;
 
@@ -1378,8 +1410,12 @@ module.exports = (() => {
 			return this._position;
 		}
 
-		get summaries() {
-			return this._summaries;
+		get currentSummary() {
+			return this._currentSummary;
+		}
+		
+		get previousSummaries() {
+			return this._previousSummaries;
 		}
 
 		get data() {
@@ -1424,7 +1460,7 @@ module.exports = (() => {
 	function calculateStaticData(item) {
 		const position = item.position;
 		const snapshot = item.position.snapshot;
-		const summaries = item.summaries;
+		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
 
@@ -1443,22 +1479,8 @@ module.exports = (() => {
 		data.realized = snapshot.gain;
 		data.income = snapshot.income;
 
-		const getSummaryTotal = (index) => {
-			let summaryTotal;
-
-			if (summaries.length > index && summaries[index] !== null) {
-				const period = summaries[index].period;
-
-				summaryTotal = period.realized.add(period.unrealized).add(period.income);
-			} else {
-				summaryTotal = Decimal.ZERO;
-			}
-
-			return summaryTotal;
-		};
-
-		data.summaryOneTotal = getSummaryTotal(0);
-		data.summaryTwoTotal = getSummaryTotal(1);
+		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
+		data.summaryTotalPrevious = calculateSummaryTotal(array.last(previousSummaries));
 	}
 
 	function calculatePriceData(item, price) {
@@ -1511,11 +1533,25 @@ module.exports = (() => {
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
 	}
+	
+	function calculateSummaryTotal(summary) {
+		let returnRef;
+		
+		if (summary) {
+			const period = summary.period;
+
+			returnRef = period.realized.add(period.unrealized).add(period.income);
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+		
+		return returnRef;
+	}
 
 	return PositionItem;
 })();
 
-},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Decimal":13,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19,"@barchart/common-js/messaging/Event":20}],8:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Decimal":13,"@barchart/common-js/lang/array":16,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/is":19,"@barchart/common-js/messaging/Event":20}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
