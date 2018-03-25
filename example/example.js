@@ -82,6 +82,20 @@ module.exports = function () {
 			}
 
 			/**
+    * The host of the staging system.
+    *
+    * @public
+    * @static
+    * @returns {String}
+    */
+
+		}, {
+			key: 'stagingHost',
+			get: function get() {
+				return 'g4zerhpif5.execute-api.us-east-1.amazonaws.com/dev';
+			}
+
+			/**
     * The host of the production system.
     *
     * @public
@@ -148,6 +162,7 @@ module.exports = function () {
   * @param {String} protocol - The protocol to use (either HTTP or HTTPS).
   * @param {String} host - The host name of the Portfolio web service.
   * @param {Number} port - The TCP port number of the Portfolio web service.
+  * @param {String} environment - A description of the environment we're connecting to.
   * @param {RequestInterceptor=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
   * @extends {Disposable}
   */
@@ -162,6 +177,8 @@ module.exports = function () {
 
 			_this._started = false;
 			_this._startPromise = null;
+
+			_this._environment = environment;
 
 			var protocolType = Enum.fromCode(ProtocolType, protocol.toUpperCase());
 
@@ -226,16 +243,24 @@ module.exports = function () {
 		}
 
 		/**
-   * Initializes the connection to the remote server and returns a promise
-   * containing the current instance.
+   * Returns a description of the environment (e.g. development or production).
    *
    * @public
-   * @returns {Promise.<PortfolioGateway>}
+   * @return {*}
    */
 
 
 		_createClass(PortfolioGateway, [{
 			key: 'start',
+
+
+			/**
+    * Initializes the connection to the remote server and returns a promise
+    * containing the current instance.
+    *
+    * @public
+    * @returns {Promise.<PortfolioGateway>}
+    */
 			value: function start() {
 				var _this2 = this;
 
@@ -568,6 +593,11 @@ module.exports = function () {
 			value: function toString() {
 				return '[PortfolioGateway]';
 			}
+		}, {
+			key: 'environment',
+			get: function get() {
+				return this._environment;
+			}
 		}], [{
 			key: 'forLocal',
 			value: function forLocal(requestInterceptor) {
@@ -593,7 +623,26 @@ module.exports = function () {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
-					return start(new PortfolioGateway('https', Configuration.developmentHost, 443, requestInterceptor));
+					return start(new PortfolioGateway('https', Configuration.developmentHost, 443, 'development', requestInterceptor));
+				});
+			}
+
+			/**
+    * Creates and starts a new {@link PortfolioGateway} for use in the staging environment.
+    *
+    * @public
+    * @static
+    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise.<PortfolioGateway>}
+    */
+
+		}, {
+			key: 'forStaging',
+			value: function forStaging(requestInterceptor) {
+				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
+					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'production', 'RequestInterceptor');
+
+					return start(new PortfolioGateway('https', Configuration.stagingHost, 443, 'staging', requestInterceptor));
 				});
 			}
 
@@ -612,7 +661,7 @@ module.exports = function () {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
-					return start(new PortfolioGateway('https', Configuration.productionHost, 443, requestInterceptor));
+					return start(new PortfolioGateway('https', Configuration.productionHost, 443, 'production', requestInterceptor));
 				});
 			}
 		}]);
@@ -1004,7 +1053,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.27'
+		version: '1.1.28'
 	};
 }();
 
@@ -5471,9 +5520,9 @@ module.exports = function () {
 				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
 				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
 
-				if (a._big.gt(b)) {
+				if (a._big.gt(b._big)) {
 					return 1;
-				} else if (a._big.lt(b)) {
+				} else if (a._big.lt(b._big)) {
 					return -1;
 				} else {
 					return 0;
@@ -9059,15 +9108,27 @@ module.exports = (() => {
 	 * @param {String} alternateDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
+	 * @param {Boolean} usesSymbols
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest) {
+		constructor(code, description, alternateDescription, canReinvest, usesSymbols) {
 			super(code, description);
+
+			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
+			assert.argumentIsRequired(canReinvest, 'canReinvest', Boolean);
+			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
 
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
+			this._usesSymbols = usesSymbols;
 		}
 
+		/**
+		 * A human-readable description.
+		 *
+		 * @public
+		 * @return {String}
+		 */
 		get alternateDescription() {
 			return this._alternateDescription;
 		}
@@ -9075,6 +9136,7 @@ module.exports = (() => {
 		/**
 		 * Indicates if the instrument type allows automatic reinvestment.
 		 *
+		 * @public
 		 * @returns {Boolean}
 		 */
 		get canReinvest() {
@@ -9082,9 +9144,20 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if an instrument of this type can be represented by a symbol.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get usesSymbols() {
+			return this._usesSymbols;
+		}
+
+		/**
 		 * Cash.
 		 *
 		 * @public
+		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get CASH() {
@@ -9095,6 +9168,7 @@ module.exports = (() => {
 		 * An equity issue.
 		 *
 		 * @public
+		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get EQUITY() {
@@ -9105,6 +9179,7 @@ module.exports = (() => {
 		 * A mutual fund.
 		 *
 		 * @public
+		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get FUND() {
@@ -9115,6 +9190,7 @@ module.exports = (() => {
 		 * An undefined asset (e.g. a house, or a collectible, or a salvaged alien spaceship).
 		 *
 		 * @public
+		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get OTHER() {
@@ -9126,10 +9202,10 @@ module.exports = (() => {
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', false);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, true);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false);
 
 	return InstrumentType;
 })();
@@ -9138,6 +9214,7 @@ module.exports = (() => {
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -9153,23 +9230,68 @@ module.exports = (() => {
 	 * @param {String} description
 	 * @param {Function} rangeCalculator
 	 * @param {Function} startDateCalculator
+	 * @param {Function} descriptionCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator, startDateCalculator) {
+		constructor(code, description, rangeCalculator, startDateCalculator, descriptionCalculator) {
 			super(code, description);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
+			assert.argumentIsRequired(startDateCalculator, 'startDateCalculator', Function);
+			assert.argumentIsRequired(descriptionCalculator, 'descriptionCalculator', Function);
 
 			this._rangeCalculator = rangeCalculator;
 			this._startDateCalculator = startDateCalculator;
+			this._descriptionCalculator = descriptionCalculator;
 		}
 
+		/**
+		 * Returns a human-readable description of the frame, given
+		 * start and end dates.
+		 *
+		 * @public
+		 * @param {Day} startDate
+		 * @param {Day} endDate
+		 * @return {String}
+		 */
+		describeRange(startDate, endDate) {
+			return this._descriptionCalculator(startDate, endDate);
+		}
+
+		/**
+		 * Returns the most recent ranges for the frame.
+		 *
+		 * @public
+		 * @param {Number} periods
+		 * @returns {Array.<PositionSummaryRange>}
+		 */
+		getRecentRanges(periods) {
+			const startDate = this.getStartDate(periods);
+			const transaction = { date: startDate, snapshot: { open: Decimal.ONE } };
+
+			return this.getRanges([ transaction ]);
+		}
+
+		/**
+		 * Returns the ranges for the set of {@link Transaction} objects.
+		 *
+		 * @public
+		 * @param {Array.<Transaction>} transactions
+		 * @returns {Array.<PositionSummaryRange>}
+		 */
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
 			return this._rangeCalculator(getFilteredTransactions(transactions));
 		}
 
+		/**
+		 * Returns the start date for a frame, a given number of periods ago.
+		 *
+		 * @public
+		 * @param {Number} periods
+		 * @returns {Day}
+		 */
 		getStartDate(periods) {
 			assert.argumentIsRequired(periods, 'periods', Number);
 
@@ -9221,10 +9343,19 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate);
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
+
+	/**
+	 * The start and and date for a {@link PositionSummaryFrame}
+	 *
+	 * @typedef PositionSummaryRange
+	 * @type {Object}
+	 * @property {Day} start
+	 * @property {Day} end
+	 */
 
 	function getRange(start, end) {
 		return {
@@ -9308,6 +9439,22 @@ module.exports = (() => {
 		return null;
 	}
 
+	function getYearlyRangeDescription(startDate, endDate) {
+		return endDate.year.toString();
+	}
+
+	function getQuarterlyRangeDescription(startDate, endDate) {
+		return '';
+	}
+
+	function getMonthlyRangeDescription(startDate, endDate) {
+		return '';
+	}
+
+	function getYearToDateRangeDescription(startDate, endDate) {
+		return `${endDate.year.toString()} YTD`;
+	}
+
 	function getFilteredTransactions(transactions) {
 		return transactions.reduce((filtered, transaction) => {
 			if (!transaction.snapshot.open.getIsZero() || transaction.type.closing) {
@@ -9321,7 +9468,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40}],53:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40}],53:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -9868,6 +10015,7 @@ module.exports = (() => {
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('update')
+		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'), true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
@@ -10143,7 +10291,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const TransactionType = require('./../data/TransactionType');
+const InstrumentType = require('./../data/InstrumentType'),
+	TransactionType = require('./../data/TransactionType');
 
 module.exports = (() => {
 	'use strict';
@@ -10381,12 +10530,11 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.name', DataType.STRING)
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
-		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -10409,9 +10557,9 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.name', DataType.STRING)
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
@@ -10525,11 +10673,8 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING, true)
-		.withField('instrument.type', DataType.STRING, true)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
@@ -10610,7 +10755,7 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/TransactionType":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
+},{"./../data/InstrumentType":51,"./../data/TransactionType":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
