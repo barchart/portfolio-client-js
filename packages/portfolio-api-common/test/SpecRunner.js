@@ -160,8 +160,6 @@ module.exports = (() => {
 		 * @return {String}
 		 */
 		describeRange(range) {
-			console.log('range: ', range);
-
 			return this._descriptionCalculator(range.start, range.end);
 		}
 
