@@ -857,6 +857,10 @@ module.exports = (() => {
 				compositeGroups.forEach((group) => {
 					const child = tree.addChild(group);
 
+					group.registerMarketPercentChangeHandler(() => {
+						this._tree.walk((childNode, childGroup) => childGroup.refreshMarketPercent());
+					});
+
 					createGroups(child, group.items, additionalDefinitions);
 				});
 			};
@@ -940,6 +944,7 @@ module.exports = (() => {
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -963,6 +968,8 @@ module.exports = (() => {
 
 			this._excluded = false;
 			this._suspended = false;
+
+			this._marketPercentChangeEvent = new Event(this);
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -1072,6 +1079,14 @@ module.exports = (() => {
 		refresh() {
 			calculateStaticData(this);
 			calculatePriceData(this, null, true);
+		}
+
+		refreshMarketPercent() {
+			calculateMarketPercent(this, true);
+		}
+
+		registerMarketPercentChangeHandler(handler) {
+			this._marketPercentChangeEvent.register(handler);
 		}
 
 		toString() {
@@ -1191,12 +1206,11 @@ module.exports = (() => {
 		}
 
 		actual.market = updates.market;
-		actual.marketPercent = updates.marketPercent;
 		actual.unrealizedToday = updates.unrealizedToday;
 		actual.total = updates.unrealizedToday.add(actual.realized).add(actual.income);
+		
 		format.market = formatCurrency(actual.market, currency);
-		format.marketPercent = formatPercent(actual.marketPercent, 2);
-
+		
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
 			setTimeout(() => format.marketDirection = updates.marketDirection, 0);
@@ -1206,10 +1220,41 @@ module.exports = (() => {
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
+		
+		calculateMarketPercent(group, false);
 	}
 
-	function calculatePercent() {
+	function calculateMarketPercent(group, silent) {
+		if (group.suspended) {
+			return;
+		}
 
+		const parent = group._parent;
+
+		const actual = group._dataActual;
+		const format = group._dataFormat;
+		
+		let marketPercent;
+		
+		if (parent !== null) {
+			const parentData = parent._dataActual;
+
+			if (parentData.market !== null && !parentData.market.getIsZero()) {
+				marketPercent = actual.market.divide(parentData.market);
+			} else {
+				marketPercent = null;
+			}
+		} else {
+			marketPercent = null;
+		}
+
+		actual.marketPercent = marketPercent;
+		
+		format.marketPercent = formatPercent(actual.marketPercent, 2);
+		
+		if (!silent) {
+			group._marketPercentChangeEvent.fire(group);
+		}
 	}
 
 	const unchanged = { up: false, down: false };
@@ -1217,7 +1262,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"@barchart/common-js/lang/Currency":11,"@barchart/common-js/lang/Decimal":13,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/formatter":18,"@barchart/common-js/lang/is":19}],6:[function(require,module,exports){
+},{"@barchart/common-js/lang/Currency":11,"@barchart/common-js/lang/Decimal":13,"@barchart/common-js/lang/assert":17,"@barchart/common-js/lang/formatter":18,"@barchart/common-js/lang/is":19,"@barchart/common-js/messaging/Event":20}],6:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -5871,10 +5916,10 @@ describe('When a position container data is gathered', () => {
 				income: new Decimal(0),
 				gain: new Decimal(0)
 			}
-		}
+		};
 	}
 
-	describe('for two portfolios, each with the same position, and the second portfolio with an additonal position', () => {
+	describe('for two portfolios, each with the same position, and the second portfolio with an addition position', () => {
 		let portfolios;
 		let positions;
 		let summaries;
