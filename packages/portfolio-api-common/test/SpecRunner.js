@@ -1038,7 +1038,7 @@ module.exports = (() => {
 			this._dataFormat.total = null;
 			this._dataFormat.totalNegative = false;
 			this._dataFormat.summaryTotalCurrent = null;
-			this._dataActual.summaryTotalNegative = false;
+			this._dataActual.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
 
 			this._dataFormat.unrealizedTodayNegative = false;
@@ -3222,9 +3222,9 @@ module.exports = function () {
 				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
 				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
 
-				if (a._big.gt(b)) {
+				if (a._big.gt(b._big)) {
 					return 1;
-				} else if (a._big.lt(b)) {
+				} else if (a._big.lt(b._big)) {
 					return -1;
 				} else {
 					return 0;

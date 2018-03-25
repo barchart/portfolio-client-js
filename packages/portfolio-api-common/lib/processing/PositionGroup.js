@@ -58,7 +58,7 @@ module.exports = (() => {
 			this._dataFormat.total = null;
 			this._dataFormat.totalNegative = false;
 			this._dataFormat.summaryTotalCurrent = null;
-			this._dataActual.summaryTotalNegative = false;
+			this._dataActual.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
 
 			this._dataFormat.unrealizedTodayNegative = false;
