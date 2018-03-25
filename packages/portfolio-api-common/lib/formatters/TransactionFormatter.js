@@ -35,9 +35,9 @@ module.exports = (() => {
 
 			const positionMap = {};
 
-			positions.map((p) => positionMap[p.position] = p.instrument);
+			positions.map(p => positionMap[p.position] = p.instrument);
 
-			return transactions.filter((t) => positionMap[t.position]).map((transaction) => {
+			return transactions.filter(t => positionMap[t.position]).map((transaction) => {
 				transaction.instrument = positionMap[transaction.position];
 
 				let formatted = getBasicTransaction(transaction);
@@ -76,7 +76,7 @@ module.exports = (() => {
 	const getBasicTransaction = (t) => {
 		const basic = {
 			date: t.date,
-			type: t.type,
+			type: t.type.display,
 			sequence: t.sequence,
 			instrument: t.instrument
 		};
@@ -98,6 +98,7 @@ module.exports = (() => {
 			total: t.amount
 		};
 	};
+
 	formatters.set(TransactionType.BUY, buySellFormatter);
 	formatters.set(TransactionType.SELL, buySellFormatter);
 	formatters.set(TransactionType.BUY_SHORT, buySellFormatter);
