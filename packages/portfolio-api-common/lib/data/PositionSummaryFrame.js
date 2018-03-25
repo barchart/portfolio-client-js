@@ -37,12 +37,13 @@ module.exports = (() => {
 		 * start and end dates.
 		 *
 		 * @public
-		 * @param {Day} startDate
-		 * @param {Day} endDate
+		 * @return {PositionSummaryRange} range
 		 * @return {String}
 		 */
-		describeRange(startDate, endDate) {
-			return this._descriptionCalculator(startDate, endDate);
+		describeRange(range) {
+			console.log('range: ', range);
+
+			return this._descriptionCalculator(range.start, range.end);
 		}
 
 		/**
@@ -226,20 +227,20 @@ module.exports = (() => {
 		return null;
 	}
 
-	function getYearlyRangeDescription(startDate, endDate) {
-		return endDate.year.toString();
+	function getYearlyRangeDescription(start, end) {
+		return end.year.toString();
 	}
 
-	function getQuarterlyRangeDescription(startDate, endDate) {
+	function getQuarterlyRangeDescription(start, end) {
 		return '';
 	}
 
-	function getMonthlyRangeDescription(startDate, endDate) {
+	function getMonthlyRangeDescription(start, end) {
 		return '';
 	}
 
-	function getYearToDateRangeDescription(startDate, endDate) {
-		return `${endDate.year.toString()} YTD`;
+	function getYearToDateRangeDescription(start, end) {
+		return `${end.year.toString()} YTD`;
 	}
 
 	function getFilteredTransactions(transactions) {

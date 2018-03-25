@@ -18,12 +18,18 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionContainer {
-		constructor(portfolios, positions, summaries, definitions, defaultCurrency, previousSummaryFrame) {
+		constructor(portfolios, positions, summaries, definitions, defaultCurrency, summaryFrame) {
 			this._definitions = definitions;
 			this._defaultCurrency = defaultCurrency || Currency.CAD;
+			
+			const previousSummaryFrame = summaryFrame || PositionSummaryFrame.YEARLY;
+			const previousSummaryRanges = previousSummaryFrame.getRecentRanges(0);
 
-			this._previousSummaryFrame = previousSummaryFrame || PositionSummaryFrame.YEARLY;
-			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(1);
+			const currentSummaryFrame = PositionSummaryFrame.YTD;
+			const currentSummaryRange = array.last(currentSummaryFrame.getRecentRanges(0));
+
+			this._summaryDescriptionCurrent = previousSummaryFrame.describeRange(array.last(previousSummaryRanges));
+			this._summaryDescriptionPrevious = currentSummaryFrame.describeRange(currentSummaryRange);
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -32,7 +38,7 @@ module.exports = (() => {
 			}, { });
 
 			this._summariesCurrent = summaries.reduce((map, summary) => {
-				if (summary.frame === PositionSummaryFrame.YTD) {
+				if (summary.frame === currentSummaryFrame && currentSummaryRange.start.getIsEqual(summary.start.date) && currentSummaryRange.end.getIsEqual(summary.end.date)) {
 					const key = summary.position;
 
 					map[key] = summary;
@@ -42,14 +48,14 @@ module.exports = (() => {
 			}, { });
 			
 			this._summariesPrevious = summaries.reduce((map, summary) => {
-				if (summary.frame === this._previousSummaryFrame) {
+				if (summary.frame === previousSummaryFrame) {
 					const key = summary.position;
 
 					if (!map.hasOwnProperty(key)) {
-						map[key] = getSummaryArray(this._previousSummaryRanges);
+						map[key] = getSummaryArray(previousSummaryRanges);
 					}
 
-					const index = this._previousSummaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
+					const index = previousSummaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
 
 					if (!(index < 0)) {
 						map[key][index] = summary;
@@ -64,7 +70,7 @@ module.exports = (() => {
 
 				if (position) {
 					const currentSummary = this._summariesCurrent[position.position] || null;
-					const previousSummaries = this._summariesPrevious[position.position] || getSummaryArray(this._previousSummaryRanges);
+					const previousSummaries = this._summariesPrevious[position.position] || getSummaryArray(previousSummaryRanges);
 
 					items.push(new PositionItem(portfolio, position, currentSummary, previousSummaries));
 				}
@@ -178,7 +184,25 @@ module.exports = (() => {
 		get defaultCurrency() {
 			return this._defaultCurrency;
 		}
+		
+		getCurrentSummaryDescription() {
+			return this._summaryDescriptionCurrent;
+		}
+		
+		getPreviousSummaryDescription() {
+			return this._summaryDescriptionPrevious;
+		}
 
+		startTransaction(executor) {
+			assert.argumentIsRequired(executor, 'executor', Function);
+
+			this._tree.walk(group => group.setSuspended(true), false, false);
+
+			executor(this);
+
+			this._tree.walk(group => group.setSuspended(false), false, false);
+		}
+		
 		getSymbols() {
 			return Object.keys(this._symbols);
 		}
@@ -203,16 +227,6 @@ module.exports = (() => {
 
 		setExchangeRate(symbol, price) {
 
-		}
-
-		startTransaction(executor) {
-			assert.argumentIsRequired(executor, 'executor', Function);
-
-			this._tree.walk(group => group.setSuspended(true), false, false);
-
-			executor(this);
-
-			this._tree.walk(group => group.setSuspended(false), false, false);
 		}
 
 		getGroup(keys) {

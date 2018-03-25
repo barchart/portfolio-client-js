@@ -1,4 +1,5 @@
-const assert = require('@barchart/common-js/lang/assert'),
+const array = require('@barchart/common-js/lang/array'),
+	assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
@@ -124,20 +125,8 @@ module.exports = (() => {
 		data.realized = snapshot.gain;
 		data.income = snapshot.income;
 
-		const calculateSummaryTotalForPrevious = (index) => {
-			let summaryTotal;
-
-			if (previousSummaries.length > index) {
-				summaryTotal = calculateSummaryTotal(previousSummaries[index]);
-			} else {
-				summaryTotal = Decimal.ZERO;
-			}
-
-			return summaryTotal;
-		};
-
-		data.summaryTotalPrevious = calculateSummaryTotalForPrevious(0);
 		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
+		data.summaryTotalPrevious = calculateSummaryTotal(array.last(previousSummaries));
 	}
 
 	function calculatePriceData(item, price) {
