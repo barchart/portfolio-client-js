@@ -186,7 +186,7 @@ module.exports = (() => {
 		if (summary && price) {
 			const period = summary.period;
 
-			let unrealizedCurrent = summary.open.multiply(price).add(summary.end.basis);
+			let unrealizedCurrent = summary.end.open.multiply(price).add(summary.end.basis);
 
 			let summaryTotalCurrent = period.realized.add(period.income).add(unrealizedCurrent);
 			let summaryTotalCurrentChange;
