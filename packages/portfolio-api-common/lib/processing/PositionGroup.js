@@ -60,8 +60,7 @@ module.exports = (() => {
 			this._dataFormat.summaryTotalCurrent = null;
 			this._dataActual.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
-
-			this._dataFormat.unrealizedTodayNegative = false;
+			this._dataFormat.summaryTotalPreviousNegative = false;
 
 			this._items.forEach((item) => {
 				item.registerPriceChangeHandler((data, sender) => {
@@ -211,6 +210,7 @@ module.exports = (() => {
 		format.income = formatCurrency(actual.income, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
+		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
 	}
 
 	function calculatePriceData(group, item, forceRefresh) {
