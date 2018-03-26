@@ -1079,6 +1079,7 @@ module.exports = (() => {
 			this._dataFormat.marketPercent = null;
 			this._dataFormat.marketDirection = null;
 			this._dataFormat.unrealized = null;
+			this._dataFormat.unrealizedPercent = null;
 			this._dataFormat.unrealizedNegative = false;
 			this._dataFormat.unrealizedToday = null;
 			this._dataFormat.unrealizedTodayNegative = false;
@@ -1266,6 +1267,8 @@ module.exports = (() => {
 		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
 
+		calculateUnrealizedPercent(group);
+
 		if (group.single) {
 			const item = group._items[0];
 
@@ -1356,6 +1359,7 @@ module.exports = (() => {
 		format.totalNegative = actual.total.getIsNegative();
 		
 		calculateMarketPercent(group, false);
+		calculateUnrealizedPercent(group);
 	}
 
 	function calculateMarketPercent(group, silent) {
@@ -1389,6 +1393,14 @@ module.exports = (() => {
 		if (!silent) {
 			group._marketPercentChangeEvent.fire(group);
 		}
+	}
+
+	function calculateUnrealizedPercent(group) {
+		const actual = group._dataActual;
+		const format = group._dataFormat;
+
+		actual.unrealizedPercent = actual.unrealized.divide(actual.basis);
+		format.unrealizedPercent = formatPercent(actual.unrealizedPercent, 2);
 	}
 
 	const unchanged = { up: false, down: false };
