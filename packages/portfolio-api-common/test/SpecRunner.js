@@ -1258,7 +1258,7 @@ module.exports = (() => {
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
 
 		if (group.single) {
-			format.quantity = formatDecimal(group.position.snapshot.open, 2);
+			format.quantity = formatDecimal(group._items[0].position.snapshot.open, 2);
 		}
 	}
 
