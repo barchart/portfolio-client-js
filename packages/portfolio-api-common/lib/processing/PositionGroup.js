@@ -394,8 +394,13 @@ module.exports = (() => {
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
-		actual.unrealizedPercent = actual.unrealized.divide(actual.basis);
-		format.unrealizedPercent = formatPercent(actual.unrealizedPercent, 2);
+		if (actual.basis.getIsZero()) {
+			actual.unrealizedPercent = null;
+			format.unrealizedPercent = '—';
+		} else {
+			actual.unrealizedPercent = actual.unrealized.divide(actual.basis);
+			format.unrealizedPercent = formatPercent(actual.unrealizedPercent, 2);
+		}
 	}
 
 	const unchanged = { up: false, down: false };
