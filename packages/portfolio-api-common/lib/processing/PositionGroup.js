@@ -41,6 +41,15 @@ module.exports = (() => {
 				this._dataFormat.instrument = null;
 			}
 
+			this._dataFormat.quoteLast = null;
+			this._dataFormat.quoteOpen = null;
+			this._dataFormat.quoteHigh = null;
+			this._dataFormat.quoteLow = null;
+			this._dataFormat.quoteChange = null;
+			this._dataFormat.quoteChangePercent = null;
+			this._dataFormat.quoteTime = null;
+			this._dataFormat.quoteVolume = null;
+
 			this._dataActual.currentPrice = null;
 			this._dataActual.previousPrice = null;
 			this._dataActual.basis = null;
@@ -71,10 +80,21 @@ module.exports = (() => {
 			this._dataFormat.summaryTotalPreviousNegative = false;
 
 			this._items.forEach((item) => {
-				item.registerPriceChangeHandler((data, sender) => {
+				item.registerQuoteChangeHandler((quote, sender) => {
 					if (this._single) {
-						this._dataActual.currentPrice = data.currentPrice;
-						this._dataFormat.currentPrice = formatCurrency(new Decimal(data.currentPrice), sender.position.instrument.currency);
+						const precision = sender.position.instrument.currency.precision;
+
+						this._dataActual.currentPrice = sender.data.currentPrice;
+						this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
+
+						this._dataFormat.quoteLast = formatNumber(quote.previousPrice, precision);
+						this._dataFormat.quoteOpen = formatNumber(quote.openPrice, precision);
+						this._dataFormat.quoteHigh = formatNumber(quote.highPrice, precision);
+						this._dataFormat.quoteLow = formatNumber(quote.lowPrice, precision);
+						this._dataFormat.quoteChange = formatNumber(quote.priceChange, precision);
+						this._dataFormat.quoteChangePercent = formatPercent(quote.percentChange, 2);
+						this._dataFormat.quoteTime = quote.timeDisplay;
+						this._dataFormat.quoteVolume = formatNumber(quote.volume, 0);
 					} else {
 						this._dataActual.currentPrice = null;
 						this._dataFormat.currentPrice = null;
@@ -163,9 +183,17 @@ module.exports = (() => {
 		}
 	}
 
-	function formatNumber(decimal, precision) {
+	function formatNumber(number, precision) {
+		if (is.number(number)) {
+			return formatter.numberToString(number, precision, ',', false);
+		} else {
+			return '—';
+		}
+	}
+
+	function formatDecimal(decimal, precision) {
 		if (decimal !== null) {
-			return formatter.numberToString(decimal.toFloat(), precision, ',', false);
+			return formatNumber(decimal.toFloat(), precision);
 		} else {
 			return '—';
 		}
@@ -173,14 +201,14 @@ module.exports = (() => {
 
 	function formatPercent(decimal, precision) {
 		if (decimal !== null) {
-			return formatNumber(decimal.multiply(100), precision);
+			return formatDecimal(decimal.multiply(100), precision);
 		} else {
 			return '—';
 		}
 	}
 
 	function formatCurrency(decimal, currency) {
-		return formatNumber(decimal, currency.precision);
+		return formatDecimal(decimal, currency.precision);
 	}
 
 	function calculateStaticData(group) {

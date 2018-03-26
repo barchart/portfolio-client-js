@@ -213,12 +213,12 @@ module.exports = (() => {
 			return Object.keys(this._symbols);
 		}
 
-		setPositionPrice(symbol, price) {
+		setPositionQuote(symbol, quote) {
 			assert.argumentIsOptional(symbol, 'symbol', String);
-			assert.argumentIsOptional(price, 'price', Number);
+			assert.argumentIsOptional(quote, 'quote', Object);
 
-			if (this._symbols.hasOwnProperty(symbol) && is.number(price)) {
-				this._symbols[symbol].forEach(item => item.setPrice(price));
+			if (this._symbols.hasOwnProperty(symbol)) {
+				this._symbols[symbol].forEach(item => item.setQuote(quote));
 			}
 		}
 
@@ -234,9 +234,9 @@ module.exports = (() => {
 			}, [ ]);
 		}
 
-		setForexPrice(symbol, price) {
+		setForexQuote(symbol, quote) {
 			assert.argumentIsOptional(symbol, 'symbol', String);
-			assert.argumentIsOptional(price, 'price', Number);
+			assert.argumentIsOptional(quote, 'quote', Object);
 
 			return;
 		}

@@ -16,13 +16,16 @@ module.exports = (() => {
 		constructor(portfolio, position, currentSummary, previousSummaries) {
 			this._portfolio = portfolio;
 			this._position = position;
-			
+
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];
 
 			this._data = { };
 
 			this._data.basis = null;
+
+			this._currentQuote = null;
+			this._previousQuote = null;
 
 			this._data.currentPrice = null;
 			this._data.previousPrice = null;
@@ -46,7 +49,7 @@ module.exports = (() => {
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
-			this._priceChangeEvent = new Event(this);
+			this._quoteChangedEvent = new Event(this);
 			this._excludedChangeEvent = new Event(this);
 		}
 
@@ -70,17 +73,24 @@ module.exports = (() => {
 			return this._data;
 		}
 
+		get quote() {
+			return this._currentQuote;
+		}
+
 		get excluded() {
 			return this._excluded;
 		}
 
-		setPrice(price) {
-			assert.argumentIsRequired(price, 'price', Number);
+		setQuote(quote) {
+			assert.argumentIsRequired(quote, 'quote', Object);
 
 			if (this._data.price !== price) {
-				calculatePriceData(this, this._data.currentPrice = price);
+				this._previousQuote = this._currentQuote;
+				this._currentQuote = quote;
 
-				this._priceChangeEvent.fire(this._data);
+				calculatePriceData(this, this._currentQuote.lastPrice);
+
+				this._quoteChangedEvent.fire(this._data, this._currentQuote);
 			}
 		}
 
@@ -92,8 +102,8 @@ module.exports = (() => {
 			}
 		}
 
-		registerPriceChangeHandler(handler) {
-			this._priceChangeEvent.register(handler);
+		registerQuoteChangeHandler(handler) {
+			this._quoteChangedEvent.register(handler);
 		}
 
 		registerExcludedChangeHandler(handler) {
