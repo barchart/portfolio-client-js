@@ -861,10 +861,13 @@ module.exports = (() => {
 						return list;
 					}, [ ]);
 
-					const missingGroups = array.difference(levelDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
+					const missingGroups = array.difference(levelDefinition.requiredGroups.map(group => group.key), populatedGroups.map(group => group.key))
+						.map((key) => {
+							return levelDefinition.requiredGroups.find(g => g.key === key);
+						});
 
-					const empty = missingGroups.map((description) => {
-						return new PositionGroup(this, parent, [ ], levelDefinition.requiredGroups.find(group => group.description === description).currency, null, description);
+					const empty = missingGroups.map((group) => {
+						return new PositionGroup(this, parent, [ ], group.currency, group.key, group.description);
 					});
 
 					const compositeGroups = populatedGroups.concat(empty);
@@ -1035,9 +1038,10 @@ module.exports = (() => {
 
 			this._dataFormat = { };
 			this._dataActual = { };
-			
+
+			this._dataFormat.key = this._key;
 			this._dataFormat.description = this._description;
-			
+
 			this._dataActual.currentPrice = null;
 			this._dataActual.previousPrice = null;
 			this._dataActual.basis = null;
@@ -1578,7 +1582,7 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~keySelector} keySelector
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
-	 * @param {Array.<String>=} requiredGroups
+	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Boolean=} single
 	 */
 	class PositionLevelDefinition {
@@ -1701,6 +1705,17 @@ module.exports = (() => {
 	 * @callback PositionLevelDefinition~currencySelector
 	 * @param {PositionItem} session
 	 * @returns {Currency}
+	 */
+
+	/**
+	 * The data required to construct a group.
+	 *
+	 * @public
+	 * @typedef PositionLevelDefinition~RequiredGroup
+	 * @type {Object}
+	 * @property {String} key
+	 * @property {String} description
+	 * @property {Currency} currency
 	 */
 
 	return PositionLevelDefinition;
