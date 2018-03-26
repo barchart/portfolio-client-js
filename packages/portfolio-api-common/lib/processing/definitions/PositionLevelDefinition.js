@@ -14,7 +14,7 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~keySelector} keySelector
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
-	 * @param {Array.<String>=} requiredGroups
+	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Boolean=} single
 	 */
 	class PositionLevelDefinition {
@@ -137,6 +137,17 @@ module.exports = (() => {
 	 * @callback PositionLevelDefinition~currencySelector
 	 * @param {PositionItem} session
 	 * @returns {Currency}
+	 */
+
+	/**
+	 * The data required to construct a group.
+	 *
+	 * @public
+	 * @typedef PositionLevelDefinition~RequiredGroup
+	 * @type {Object}
+	 * @property {String} key
+	 * @property {String} description
+	 * @property {Currency} currency
 	 */
 
 	return PositionLevelDefinition;

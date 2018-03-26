@@ -31,9 +31,10 @@ module.exports = (() => {
 
 			this._dataFormat = { };
 			this._dataActual = { };
-			
+
+			this._dataFormat.key = this._key;
 			this._dataFormat.description = this._description;
-			
+
 			this._dataActual.currentPrice = null;
 			this._dataActual.previousPrice = null;
 			this._dataActual.basis = null;

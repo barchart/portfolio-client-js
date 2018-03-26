@@ -145,10 +145,13 @@ module.exports = (() => {
 						return list;
 					}, [ ]);
 
-					const missingGroups = array.difference(levelDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
+					const missingGroups = array.difference(levelDefinition.requiredGroups.map(group => group.key), populatedGroups.map(group => group.key))
+						.map((key) => {
+							return levelDefinition.requiredGroups.find(g => g.key === key);
+						});
 
-					const empty = missingGroups.map((description) => {
-						return new PositionGroup(this, parent, [ ], levelDefinition.requiredGroups.find(group => group.description === description).currency, null, description);
+					const empty = missingGroups.map((group) => {
+						return new PositionGroup(this, parent, [ ], group.currency, group.key, group.description);
 					});
 
 					const compositeGroups = populatedGroups.concat(empty);
