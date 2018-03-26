@@ -1273,7 +1273,7 @@ module.exports = (() => {
 			const item = group._items[0];
 
 			format.quantity = formatDecimal(item.position.snapshot.open, 2);
-			format.basisPrice = formatCurrency(item.basisPrice, currency);
+			format.basisPrice = formatCurrency(item.data.basisPrice, currency);
 		}
 	}
 
