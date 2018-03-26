@@ -17,7 +17,7 @@ module.exports = (() => {
 			this._parent = parent || null;
 
 			this._items = items;
-			this._currency = currency;
+			this._currency = currency || Currency.CAD;
 
 			this._description = description;
 
