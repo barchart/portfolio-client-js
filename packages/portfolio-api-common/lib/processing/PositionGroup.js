@@ -66,7 +66,7 @@ module.exports = (() => {
 				item.registerPriceChangeHandler((data, sender) => {
 					if (this._single) {
 						this._dataActual.currentPrice = data.currentPrice;
-						this._dataFormat.currentPrice = format(data.currentPrice, sender.position.instrument.currency);
+						this._dataFormat.currentPrice = formatCurrency(data.currentPrice, sender.position.instrument.currency);
 					} else {
 						this._dataActual.currentPrice = null;
 						this._dataFormat.currentPrice = null;
