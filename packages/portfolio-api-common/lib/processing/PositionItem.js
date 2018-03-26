@@ -36,13 +36,17 @@ module.exports = (() => {
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
 
-			this._data.realized = null;
-			this._data.income = null;
+			this._data.unrealized = null;
+			this._data.unrealizedChange = null;
 			
 			this._data.summaryTotalCurrent = null;
 			this._data.summaryTotalCurrentChange = null;
 
 			this._data.summaryTotalPrevious = null;
+
+			this._data.realized = null;
+			this._data.income = null;
+			this._data.basisPrice = null;
 
 			this._excluded = false;
 
@@ -138,10 +142,14 @@ module.exports = (() => {
 		data.basis = basis;
 
 		data.realized = snapshot.gain;
+		data.unrealized = Decimal.ZERO;
+
 		data.income = snapshot.income;
 
 		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
 		data.summaryTotalPrevious = calculateSummaryTotal(array.last(previousSummaries));
+
+		data.basisPrice = basis.divide(snapshot.open);
 	}
 
 	function calculatePriceData(item, price) {
@@ -174,7 +182,7 @@ module.exports = (() => {
 
 		data.market = market;
 		data.marketChange = marketChange;
-		
+
 		let unrealizedToday;
 		let unrealizedTodayChange;
 
@@ -199,9 +207,16 @@ module.exports = (() => {
 		if (summary && price) {
 			const period = summary.period;
 
-			let unrealizedCurrent = summary.end.open.multiply(price).add(summary.end.basis);
+			let unrealized = summary.end.open.multiply(price).add(summary.end.basis);
+			let unrealizedChange;
 
-			let summaryTotalCurrent = period.realized.add(period.income).add(unrealizedCurrent);
+			if (data.unrealizedToday !== null) {
+				unrealizedChange = unrealized.subtract(data.unrealized);
+			} else {
+				unrealizedChange = Decimal.ZERO;
+			}
+
+			let summaryTotalCurrent = period.realized.add(period.income).add(unrealized);
 			let summaryTotalCurrentChange;
 
 			if (data.summaryTotalCurrent !== null) {
@@ -212,8 +227,14 @@ module.exports = (() => {
 
 			data.summaryTotalCurrent = summaryTotalCurrent;
 			data.summaryTotalCurrentChange = summaryTotalCurrentChange;
+
+			data.unrealized = unrealized;
+			data.unrealizedChange = unrealizedChange;
 		} else {
 			data.summaryTotalCurrentChange = Decimal.ZERO;
+
+			data.unrealized = Decimal.ZERO;
+			data.unrealizedChange = Decimal.ZERO;
 		}
 	}
 	
