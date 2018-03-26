@@ -203,7 +203,7 @@ module.exports = (() => {
 
 	function formatPercent(decimal, precision) {
 		if (decimal !== null) {
-			return formatDecimal(decimal.multiply(100), precision);
+			return formatDecimal(decimal.multiply(100), precision) + '%';
 		} else {
 			return '—';
 		}
