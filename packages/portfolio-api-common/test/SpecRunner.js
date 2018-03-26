@@ -838,6 +838,8 @@ module.exports = (() => {
 
 				return map;
 			}, { });
+
+			this._forex = { };
 			
 			this._trees = definitions.reduce((map, treeDefinition) => {
 				const tree = new Tree();
@@ -954,7 +956,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(quote, 'quote', Object);
 
-			return;
+			this._forex[symbol] = quote;
 		}
 
 		getGroup(name, keys) {
@@ -1465,10 +1467,13 @@ module.exports = (() => {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
 			if (this._previousQuote === null || this._previousQuote.lastPrice !== quote.lastPrice) {
+				calculatePriceData(this, quote.lastPrice);
+
 				this._previousQuote = this._currentQuote;
 				this._currentQuote = quote;
 
-				calculatePriceData(this, this._currentQuote.lastPrice);
+				this._data.previousPrice = this._data.currentPrice;
+				this._data.currentPrice = price;
 
 				this._quoteChangedEvent.fire(this._data, this._currentQuote);
 			}
