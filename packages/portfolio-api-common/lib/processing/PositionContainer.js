@@ -136,16 +136,19 @@ module.exports = (() => {
 					const levelDefinition = levelDefinitions[0];
 
 					const populatedObjects = array.groupBy(items, levelDefinition.keySelector);
-					const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
+					const populatedGroups = Object.keys(populatedObjects).reduce((list, key) => {
+						const items = populatedObjects[key];
 						const first = items[0];
 
-						return new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1);
-					});
+						list.push(new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1));
+
+						return list;
+					}, [ ]);
 
 					const missingGroups = array.difference(levelDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
 
 					const empty = missingGroups.map((description) => {
-						return new PositionGroup(this, parent, [ ], levelDefinition.requiredGroups.find(group => group.description === description).currency, description);
+						return new PositionGroup(this, parent, [ ], levelDefinition.requiredGroups.find(group => group.description === description).currency, null, description);
 					});
 
 					const compositeGroups = populatedGroups.concat(empty);

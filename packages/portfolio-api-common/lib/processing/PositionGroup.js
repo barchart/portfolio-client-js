@@ -12,13 +12,14 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(container, parent, items, currency, description, single) {
+		constructor(container, parent, items, currency, key, description, single) {
 			this._container = container;
 			this._parent = parent || null;
 
 			this._items = items;
 			this._currency = currency || Currency.CAD;
 
+			this._key = key;
 			this._description = description;
 
 			this._single = is.boolean(single) && single;
@@ -79,16 +80,20 @@ module.exports = (() => {
 			this.refresh();
 		}
 
-		get items() {
-			return this._items;
+		get key() {
+			return this._key;
+		}
+
+		get description() {
+			return this._description;
 		}
 
 		get currency() {
 			return this._currency;
 		}
 
-		get description() {
-			return this._description;
+		get items() {
+			return this._items;
 		}
 
 		get data() {
