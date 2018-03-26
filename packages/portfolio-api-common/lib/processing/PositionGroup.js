@@ -94,7 +94,7 @@ module.exports = (() => {
 						this._dataFormat.quoteHigh = formatNumber(quote.highPrice, precision);
 						this._dataFormat.quoteLow = formatNumber(quote.lowPrice, precision);
 						this._dataFormat.quoteChange = formatNumber(quote.priceChange, precision);
-						this._dataFormat.quoteChangePercent = formatPercent(quote.percentChange, 2);
+						this._dataFormat.quoteChangePercent = formatPercent(new Decimal(quote.percentChange), 2);
 						this._dataFormat.quoteTime = quote.timeDisplay;
 						this._dataFormat.quoteVolume = formatNumber(quote.volume, 0);
 					} else {
