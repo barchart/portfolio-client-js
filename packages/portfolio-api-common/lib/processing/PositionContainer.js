@@ -274,11 +274,7 @@ module.exports = (() => {
 	}
 
 	function findNode(tree, keys) {
-		return keys.reduce((tree, key) => {
-			tree = tree.findChild(group => group.description === key);
-
-			return tree;
-		}, tree);
+		return keys.reduce((tree, key) => tree.findChild(group => group.key === key), tree);
 	}
 
 	function getSummaryArray(ranges) {

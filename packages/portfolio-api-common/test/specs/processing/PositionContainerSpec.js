@@ -41,18 +41,18 @@ describe('When a position container data is gathered', () => {
 		beforeEach(() => {
 			portfolios = [
 				{
-					portfolio: 'a',
+					portfolio: 'My First Portfolio',
 					name: 'a'
 				}, {
-					portfolio: 'b',
+					portfolio: 'My Second Portfolio',
 					name: 'b'
 				}
 			];
 
 			positions = [
-				getPosition('a', 'AAPL'),
-				getPosition('b', 'AAPL'),
-				getPosition('b', 'TSLA')
+				getPosition('My First Portfolio', 'AAPL'),
+				getPosition('My Second Portfolio', 'AAPL'),
+				getPosition('My Second Portfolio', 'TSLA')
 			];
 
 			summaries = [ ];
@@ -66,7 +66,7 @@ describe('When a position container data is gathered', () => {
 			beforeEach(() => {
 				definitions = [
 					new PositionTreeDefinition(name = 'the only tree', [
-						new PositionLevelDefinition('Total', x => true, x => 'Total', x => Currency.CAD),
+						new PositionLevelDefinition('Total', x => 'totals', x => 'Total', x => Currency.CAD),
 						new PositionLevelDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
 						new PositionLevelDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
 					])
@@ -80,27 +80,27 @@ describe('When a position container data is gathered', () => {
 			});
 
 			it('the "Total" group should have two children groups', () => {
-				expect(container.getGroups(name, [ 'Total' ]).length).toEqual(2);
+				expect(container.getGroups(name, [ 'totals' ]).length).toEqual(2);
 			});
 
 			it('the "Total" group should have three items', () => {
-				expect(container.getGroup(name, [ 'Total' ]).items.length).toEqual(3);
+				expect(container.getGroup(name, [ 'totals' ]).items.length).toEqual(3);
 			});
 
 			it('The "a" portfolio group should have one child group', () => {
-				expect(container.getGroups(name, [ 'Total', 'a' ]).length).toEqual(1);
+				expect(container.getGroups(name, [ 'totals', 'My First Portfolio' ]).length).toEqual(1);
 			});
 
 			it('the "a" portfolio group should have one item', () => {
-				expect(container.getGroup(name, [ 'Total', 'a' ]).items.length).toEqual(1);
+				expect(container.getGroup(name, [ 'totals', 'My First Portfolio' ]).items.length).toEqual(1);
 			});
 
 			it('The "b" portfolio group should have two child groups', () => {
-				expect(container.getGroups(name, [ 'Total', 'b' ]).length).toEqual(2);
+				expect(container.getGroups(name, [ 'totals', 'My Second Portfolio' ]).length).toEqual(2);
 			});
 
 			it('the "b" portfolio group should have two items', () => {
-				expect(container.getGroup(name, [ 'Total', 'b' ]).items.length).toEqual(2);
+				expect(container.getGroup(name, [ 'totals', 'My Second Portfolio' ]).items.length).toEqual(2);
 			});
 		});
 	});
