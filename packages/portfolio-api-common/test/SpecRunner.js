@@ -1475,7 +1475,7 @@ module.exports = (() => {
 				this._data.previousPrice = this._data.currentPrice;
 				this._data.currentPrice = quote.lastPrice;
 
-				this._quoteChangedEvent.fire(this._data, this._currentQuote);
+				this._quoteChangedEvent.fire(this._currentQuote);
 			}
 		}
 
