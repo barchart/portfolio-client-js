@@ -85,10 +85,13 @@ module.exports = (() => {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
 			if (this._previousQuote === null || this._previousQuote.lastPrice !== quote.lastPrice) {
+				calculatePriceData(this, quote.lastPrice);
+
 				this._previousQuote = this._currentQuote;
 				this._currentQuote = quote;
 
-				calculatePriceData(this, this._currentQuote.lastPrice);
+				this._data.previousPrice = this._data.currentPrice;
+				this._data.currentPrice = price;
 
 				this._quoteChangedEvent.fire(this._data, this._currentQuote);
 			}

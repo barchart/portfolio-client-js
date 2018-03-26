@@ -122,6 +122,8 @@ module.exports = (() => {
 
 				return map;
 			}, { });
+
+			this._forex = { };
 			
 			this._trees = definitions.reduce((map, treeDefinition) => {
 				const tree = new Tree();
@@ -238,7 +240,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(quote, 'quote', Object);
 
-			return;
+			this._forex[symbol] = quote;
 		}
 
 		getGroup(name, keys) {
