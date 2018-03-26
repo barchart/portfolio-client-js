@@ -1464,7 +1464,7 @@ module.exports = (() => {
 		setQuote(quote) {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
-			if (this._data.price !== price) {
+			if (this._previousQuote === null || this._previousQuote.lastPrice !== quote.lastPrice) {
 				this._previousQuote = this._currentQuote;
 				this._currentQuote = quote;
 
