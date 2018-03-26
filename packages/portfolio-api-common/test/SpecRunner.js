@@ -1038,6 +1038,8 @@ module.exports = (() => {
 			this._dataFormat.key = this._key;
 			this._dataFormat.description = this._description;
 
+			this._dataFormat.quantity = null;
+
 			if (this._single) {
 				this._dataFormat.instrument = items[0].position.instrument;
 			} else {
@@ -1254,6 +1256,10 @@ module.exports = (() => {
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
+
+		if (group.single) {
+			format.quantity = formatDecimal(group.position.snapshot.open, 2);
+		}
 	}
 
 	function calculatePriceData(group, item, forceRefresh) {
