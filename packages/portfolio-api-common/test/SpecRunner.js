@@ -852,16 +852,19 @@ module.exports = (() => {
 					const levelDefinition = levelDefinitions[0];
 
 					const populatedObjects = array.groupBy(items, levelDefinition.keySelector);
-					const populatedGroups = Object.keys(populatedObjects).map(key => populatedObjects[key]).map((items) => {
+					const populatedGroups = Object.keys(populatedObjects).reduce((list, key) => {
+						const items = populatedObjects[key];
 						const first = items[0];
 
-						return new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1);
-					});
+						list.push(new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1));
+
+						return list;
+					}, [ ]);
 
 					const missingGroups = array.difference(levelDefinition.requiredGroups.map(group => group.description), populatedGroups.map(group => group.description));
 
 					const empty = missingGroups.map((description) => {
-						return new PositionGroup(this, parent, [ ], levelDefinition.requiredGroups.find(group => group.description === description).currency, description);
+						return new PositionGroup(this, parent, [ ], levelDefinition.requiredGroups.find(group => group.description === description).currency, null, description);
 					});
 
 					const compositeGroups = populatedGroups.concat(empty);
@@ -1013,13 +1016,14 @@ module.exports = (() => {
 	 * @public
 	 */
 	class PositionGroup {
-		constructor(container, parent, items, currency, description, single) {
+		constructor(container, parent, items, currency, key, description, single) {
 			this._container = container;
 			this._parent = parent || null;
 
 			this._items = items;
 			this._currency = currency || Currency.CAD;
 
+			this._key = key;
 			this._description = description;
 
 			this._single = is.boolean(single) && single;
@@ -1080,16 +1084,20 @@ module.exports = (() => {
 			this.refresh();
 		}
 
-		get items() {
-			return this._items;
+		get key() {
+			return this._key;
+		}
+
+		get description() {
+			return this._description;
 		}
 
 		get currency() {
 			return this._currency;
 		}
 
-		get description() {
-			return this._description;
+		get items() {
+			return this._items;
 		}
 
 		get data() {
