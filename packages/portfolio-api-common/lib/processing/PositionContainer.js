@@ -214,8 +214,8 @@ module.exports = (() => {
 		}
 
 		setPositionQuote(symbol, quote) {
-			assert.argumentIsOptional(symbol, 'symbol', String);
-			assert.argumentIsOptional(quote, 'quote', Object);
+			assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(quote, 'quote', Object);
 
 			if (this._symbols.hasOwnProperty(symbol)) {
 				this._symbols[symbol].forEach(item => item.setQuote(quote));
@@ -235,8 +235,8 @@ module.exports = (() => {
 		}
 
 		setForexQuote(symbol, quote) {
-			assert.argumentIsOptional(symbol, 'symbol', String);
-			assert.argumentIsOptional(quote, 'quote', Object);
+			assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(quote, 'quote', Object);
 
 			return;
 		}
