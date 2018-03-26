@@ -149,7 +149,11 @@ module.exports = (() => {
 		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
 		data.summaryTotalPrevious = calculateSummaryTotal(array.last(previousSummaries));
 
-		data.basisPrice = basis.divide(snapshot.open);
+		if (snapshot.open.getIsZero()) {
+			data.basisPrice = Decimal.ZERO;
+		} else {
+			data.basisPrice = basis.divide(snapshot.open);
+		}
 	}
 
 	function calculatePriceData(item, price) {
