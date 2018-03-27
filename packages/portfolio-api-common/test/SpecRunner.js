@@ -1043,8 +1043,14 @@ module.exports = (() => {
 			this._dataFormat.quantity = null;
 
 			if (this._single) {
-				this._dataFormat.instrument = items[0].position.instrument;
+				const item = items[0];
+
+				this._dataFormat.portfolio = item.portfolio.portfolio;
+				this._dataFormat.position = item.position.position;
+				this._dataFormat.instrument = item.position.instrument;
 			} else {
+				this._dataFormat.portfolio = null;
+				this._dataFormat.position = null;
 				this._dataFormat.instrument = null;
 			}
 
