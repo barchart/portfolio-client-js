@@ -3,19 +3,22 @@ const array = require('@barchart/common-js/lang/array'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Currency = require('@barchart/common-js/lang/Currency'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is'),
+	Rate = require('@barchart/common-js/lang/Rate'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
 const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
-const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
-	PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
+const PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
 
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
 
 module.exports = (() => {
 	'use strict';
+
+	const DEFAULT_CURRENCY = Currency.CAD;
 
 	/**
 	 * A container for positions which groups the positions into one or more
@@ -37,7 +40,7 @@ module.exports = (() => {
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
 			assert.argumentIsArray(summaries, 'summaries');
-			
+
 			const previousSummaryFrame = PositionSummaryFrame.YEARLY;
 			const previousSummaryRanges = previousSummaryFrame.getRecentRanges(0);
 
@@ -112,18 +115,29 @@ module.exports = (() => {
 
 				if (position.instrument && position.instrument.currency) {
 					const currency = position.instrument.currency;
+					const code = currency.code;
 
-					if (!map.hasOwnProperty(currency)) {
-						map[currency] = [ ];
+					if (!map.hasOwnProperty(code)) {
+						map[code] = [ ];
 					}
 
-					map[currency].push(item);
+					map[code].push(item);
 				}
 
 				return map;
 			}, { });
 
-			this._forex = { };
+			this._forexSymbols = Object.keys(this._currencies).reduce((symbols, code) => {
+				if (code !== DEFAULT_CURRENCY.code) {
+					symbols.push(`^${DEFAULT_CURRENCY.code}${code}`);
+				}
+
+				return symbols;
+			}, [ ]);
+
+			this._forexQuotes = this._forexSymbols.map((symbol) => {
+				return Rate.fromPair(Decimal.ONE, symbol);
+			});
 			
 			this._trees = definitions.reduce((map, treeDefinition) => {
 				const tree = new Tree();
@@ -225,22 +239,26 @@ module.exports = (() => {
 		}
 
 		getForexSymbols() {
-			const codes = Object.keys(this._currencies);
+			return this._forexSymbols;
+		}
 
-			return codes.reduce((symbols, code) => {
-				if (code !== this._defaultCurrency) {
-					symbols.push(`^${this._defaultCurrency}${code}`);
-				}
-
-				return symbols;
-			}, [ ]);
+		getForexQuotes() {
+			return this._forexQuotes;
 		}
 
 		setForexQuote(symbol, quote) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(quote, 'quote', Object);
 
-			this._forex[symbol] = quote;
+			const rate = Rate.fromPair(quote.lastPrice, symbol);
+
+			const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
+
+			if (index < 0) {
+				this._forexQuotes.push(rate);
+			} else {
+				this._forexQuotes[index] = rate;
+			}
 		}
 
 		getGroup(name, keys) {

@@ -1,5 +1,6 @@
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
+	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
@@ -16,6 +17,7 @@ module.exports = (() => {
 		constructor(portfolio, position, currentSummary, previousSummaries) {
 			this._portfolio = portfolio;
 			this._position = position;
+			this._currency = position.instrument.currency || Currency.CAD;
 
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];
@@ -65,6 +67,10 @@ module.exports = (() => {
 			return this._position;
 		}
 
+		get currency() {
+			return this._currency;
+		}
+
 		get currentSummary() {
 			return this._currentSummary;
 		}
@@ -102,7 +108,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._excluded !== value) {
-				this._excludedChangeEvent.fire(this, this._excluded = value);
+				this._excludedChangeEvent.fire(this._excluded = value);
 			}
 		}
 

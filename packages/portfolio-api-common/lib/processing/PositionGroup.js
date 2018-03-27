@@ -3,7 +3,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
-	is = require('@barchart/common-js/lang/is');
+	is = require('@barchart/common-js/lang/is'),
+	Rate = require('@barchart/common-js/lang/Rate');
 
 module.exports = (() => {
 	'use strict';
@@ -112,7 +113,7 @@ module.exports = (() => {
 						this._dataFormat.currentPrice = null;
 					}
 
-					calculatePriceData(this, sender, false);
+					calculatePriceData(this, this._container.getForexQuotes(), sender, false);
 				});
 			});
 
@@ -155,6 +156,10 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
+		setForexQuote(quote) {
+
+		}
+
 		setExcluded(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
@@ -178,12 +183,14 @@ module.exports = (() => {
 		}
 
 		refresh() {
-			calculateStaticData(this);
-			calculatePriceData(this, null, true);
+			const rates = this._container.getForexQuotes();
+
+			calculateStaticData(this, rates);
+			calculatePriceData(this, rates, null, true);
 		}
 
 		refreshMarketPercent() {
-			calculateMarketPercent(this, true);
+			calculateMarketPercent(this, this._container.getForexQuotes(), true);
 		}
 
 		registerMarketPercentChangeHandler(handler) {
@@ -223,7 +230,7 @@ module.exports = (() => {
 		return formatDecimal(decimal, currency.precision);
 	}
 
-	function calculateStaticData(group) {
+	function calculateStaticData(group, rates) {
 		if (group.suspended) {
 			return;
 		}
@@ -235,13 +242,25 @@ module.exports = (() => {
 		
 		const items = group._items;
 
+		const translate = (item, value) => {
+			let translated;
+
+			if (item.currency !== currency) {
+				translated = Rate.convert(value, item.currency, currency, ...rates);
+			} else {
+				translated = value;
+			}
+
+			return translated;
+		};
+
 		let updates = items.reduce((updates, item) => {
-			updates.basis = updates.basis.add(item.data.basis);
-			updates.realized = updates.realized.add(item.data.realized);
-			updates.unrealized = updates.unrealized.add(item.data.unrealized);
-			updates.income = updates.income.add(item.data.income);
-			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(item.data.summaryTotalCurrent);
-			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(item.data.summaryTotalPrevious);
+			updates.basis = updates.basis.add(translate(item, item.data.basis));
+			updates.realized = updates.realized.add(translate(item, item.data.realized));
+			updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
+			updates.income = updates.income.add(translate(item, item.data.income));
+			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
+			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.summaryTotalPrevious));
 
 			return updates;
 		}, {
@@ -278,7 +297,7 @@ module.exports = (() => {
 		}
 	}
 
-	function calculatePriceData(group, item, forceRefresh) {
+	function calculatePriceData(group, rates, item, forceRefresh) {
 		if (group.suspended) {
 			return;
 		}
@@ -290,6 +309,18 @@ module.exports = (() => {
 
 		const currency = group.currency;
 
+		const translate = (item, value) => {
+			let translated;
+
+			if (item.currency !== currency) {
+				translated = Rate.convert(value, item.currency, currency, ...rates);
+			} else {
+				translated = value;
+			}
+
+			return translated;
+		};
+
 		const refresh = (is.boolean(forceRefresh) && forceRefresh) || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
 
 		let updates;
@@ -298,10 +329,10 @@ module.exports = (() => {
 			const items = group._items;
 
 			updates = items.reduce((updates, item) => {
-				updates.market = updates.market.add(item.data.market);
-				updates.unrealized = updates.unrealized.add(item.data.unrealized);
-				updates.unrealizedToday = updates.unrealizedToday.add(item.data.unrealizedToday);
-				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(item.data.summaryTotalCurrent);
+				updates.market = updates.market.add(translate(item, item.data.market));
+				updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
+				updates.unrealizedToday = updates.unrealizedToday.add(translate(item, item.data.unrealizedToday));
+				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
 
 				return updates;
 			}, {
@@ -314,11 +345,11 @@ module.exports = (() => {
 			});
 		} else {
 			updates = {
-				market: actual.market.add(item.data.marketChange),
+				market: actual.market.add(translate(item, item.data.marketChange)),
 				marketDirection: { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() },
-				unrealized: actual.unrealized.add(item.data.unrealizedChange),
-				unrealizedToday: actual.unrealizedToday.add(item.data.unrealizedTodayChange),
-				summaryTotalCurrent: actual.summaryTotalCurrent.add(item.data.summaryTotalCurrentChange)
+				unrealized: actual.unrealized.add(translate(item, item.data.unrealizedChange)),
+				unrealizedToday: actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange)),
+				summaryTotalCurrent: actual.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrentChange))
 			};
 		}
 		
@@ -359,11 +390,11 @@ module.exports = (() => {
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
 		
-		calculateMarketPercent(group, false);
+		calculateMarketPercent(group, rates, false);
 		calculateUnrealizedPercent(group);
 	}
 
-	function calculateMarketPercent(group, silent) {
+	function calculateMarketPercent(group, rates, silent) {
 		if (group.suspended) {
 			return;
 		}
@@ -379,7 +410,15 @@ module.exports = (() => {
 			const parentData = parent._dataActual;
 
 			if (parentData.market !== null && !parentData.market.getIsZero()) {
-				marketPercent = actual.market.divide(parentData.market);
+				let numerator;
+
+				if (group.currency !== parent.currency) {
+					numerator = Rate.convert(parentData.market, group.currency, parent.currency, ...rates);
+				} else {
+					numerator = actual.market;
+				}
+
+				marketPercent = numerator.divide(parentData.market);
 			} else {
 				marketPercent = null;
 			}
