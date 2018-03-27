@@ -1101,7 +1101,7 @@ module.exports = (() => {
 					if (this._single) {
 						const precision = sender.position.instrument.currency.precision;
 
-						this._dataActual.currentPrice = sender.data.currentPrice;
+						this._dataActual.currentPrice = quote.lastPrice;
 						this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
 
 						this._dataFormat.quoteLast = formatNumber(quote.previousPrice, precision);
@@ -1515,9 +1515,6 @@ module.exports = (() => {
 
 				this._previousQuote = this._currentQuote;
 				this._currentQuote = quote;
-
-				this._data.previousPrice = this._data.currentPrice;
-				this._data.currentPrice = quote.lastPrice;
 
 				this._quoteChangedEvent.fire(this._currentQuote);
 			}
