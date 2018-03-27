@@ -941,8 +941,26 @@ module.exports = (() => {
 			return this._defaultCurrency;
 		}
 		
-		getPositionSymbols() {
-			return Object.keys(this._symbols);
+		getPositionSymbols(display) {
+			const symbols = this._items.reduce((symbols, item) => {
+				const position = item.position;
+
+				let symbol;
+
+				if (display) {
+					symbol = extractSymbolForDisplay(position);
+				} else {
+					symbol = extractSymbolForBarchart(position);
+				}
+
+				if (symbol !== null) {
+					symbols.push(symbol);
+				}
+
+				return symbols;
+			}, [ ]);
+
+			return array.unique(symbols);
 		}
 
 		setPositionQuote(symbol, quote) {
@@ -1016,6 +1034,23 @@ module.exports = (() => {
 	function getSummaryArray(ranges) {
 		return ranges.map(range => null);
 	}
+
+	function extractSymbolForBarchart(position) {
+		if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
+			return position.instrument.symbol.barchart;
+		} else {
+			return null;
+		}
+	}
+
+	function extractSymbolForDisplay(position) {
+		if (position.instrument && position.instrument.symbol && position.instrument.symbol.display) {
+			return position.instrument.symbol.display;
+		} else {
+			return null;
+		}
+	}
+
 
 	return PositionContainer;
 })();
