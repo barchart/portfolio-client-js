@@ -95,11 +95,9 @@ module.exports = (() => {
 			}, [ ]);
 
 			this._symbols = this._items.reduce((map, item) => {
-				const position = item.position;
+				const symbol = extractSymbolForBarchart(item.position);
 
-				if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
-					const symbol = position.instrument.symbol.barchart;
-
+				if (symbol) {
 					if (!map.hasOwnProperty(symbol)) {
 						map[symbol] = [ ];
 					}
