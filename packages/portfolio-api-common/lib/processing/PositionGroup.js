@@ -413,7 +413,7 @@ module.exports = (() => {
 				let numerator;
 
 				if (group.currency !== parent.currency) {
-					numerator = Rate.convert(parentData.market, group.currency, parent.currency, ...rates);
+					numerator = Rate.convert(actual.market, group.currency, parent.currency, ...rates);
 				} else {
 					numerator = actual.market;
 				}
