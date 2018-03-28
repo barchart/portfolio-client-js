@@ -36,6 +36,7 @@ module.exports = (() => {
 
 			this._dataFormat.key = this._key;
 			this._dataFormat.description = this._description;
+			this._dataFormat.c = this._currency.code;
 
 			this._dataFormat.quantity = null;
 
