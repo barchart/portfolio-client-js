@@ -218,7 +218,15 @@ module.exports = (() => {
 				return map;
 			}, { });
 		}
-		
+
+		/**
+		 * Returns a distinct list of all symbols used by the positions
+		 * within the container.
+		 *
+		 * @public
+		 * @param {Boolean} display - If true, all "display" symbols are returned; otherwise Barchart symbols are returned.
+		 * @returns {Array.<String>}
+		 */
 		getPositionSymbols(display) {
 			const symbols = this._items.reduce((symbols, item) => {
 				const position = item.position;
@@ -241,6 +249,14 @@ module.exports = (() => {
 			return array.unique(symbols);
 		}
 
+		/**
+		 * Updates the quote for a single symbol; causing updates to any grouping
+		 * level that contains the position(s) for the symbol.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 * @param {Object} quote
+		 */
 		setPositionQuote(symbol, quote) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(quote, 'quote', Object);
@@ -250,14 +266,34 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Returns all forex symbols that are required to do currency translations.
+		 *
+		 * @public
+		 * @returns {Array.<String>}
+		 */
 		getForexSymbols() {
 			return this._forexSymbols;
 		}
 
+		/**
+		 * Returns all current forex quotes.
+		 *
+		 * @public
+		 * @returns {Array.<Object>}
+		 */
 		getForexQuotes() {
 			return this._forexQuotes;
 		}
 
+		/**
+		 * Updates the forex quote for a single currency pair; causing updates to
+		 * any grouping level that contains that requires translation.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 * @param {Object} quote
+		 */
 		setForexQuote(symbol, quote) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(quote, 'quote', Object);
@@ -275,10 +311,24 @@ module.exports = (() => {
 			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRate(rate), true, false));
 		}
 
+		/**
+		 * Updates fundamental data for a single symbol.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 * @param {Object} data
+		 */
 		setPositionFundamentalData(symbol, data) {
 			return;
 		}
 
+		/**
+		 * Indicates if a news article exists for a symbol.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 * @param {Boolean} exists
+		 */
 		setNewsArticleExists(symbol, exists) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(exists, 'exists', Boolean);
@@ -288,6 +338,13 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Returns a single level of grouping from one of the internal trees.
+		 *
+		 * @param {String} name
+		 * @param {Array.<String> keys
+		 * @returns {PositionGroup}
+		 */
 		getGroup(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', Number);
@@ -295,6 +352,14 @@ module.exports = (() => {
 			return findNode(this._trees[name], keys).getValue();
 		}
 
+		/**
+		 * Returns all child groups from a level of grouping within one of
+		 * the internal trees.
+		 *
+		 * @param {String} name
+		 * @param {Array.<String> keys
+		 * @returns {Array.<PositionGroup>}
+		 */
 		getGroups(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', Number);
