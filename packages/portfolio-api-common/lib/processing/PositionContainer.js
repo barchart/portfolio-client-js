@@ -283,6 +283,10 @@ module.exports = (() => {
 			return;
 		}
 
+		setNewsArticleExists(symbol, exists) {
+			return;
+		}
+
 		getGroup(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', Number);
