@@ -22,11 +22,11 @@ module.exports = (() => {
 
 	/**
 	 * A container for positions which groups the positions into one or more
-	 * trees for aggregation and display purposes. For example, perhaps a positions
-	 * grouped first by asset class then by position is desired.
+	 * trees for aggregation and display purposes. For example, positions could be
+	 * grouped first by asset class then by position.
 	 *
 	 * Furthermore, the container performs aggregation (driven primarily by price
-	 * changes) for each level of grouping in the internal tree(s).
+	 * changes) for each level of grouping.
 	 *
 	 * @public
 	 * @param {Array.<PositionTreeDefinition>} definitions
@@ -308,8 +308,6 @@ module.exports = (() => {
 
 		startTransaction(name, executor) {
 			assert.argumentIsRequired(name, 'name', String);
-			assert.argumentIsRequired(executor, 'executor', Function);
-
 			assert.argumentIsRequired(executor, 'executor', Function);
 
 			this._trees[name].walk(group => group.setSuspended(true), false, false);
