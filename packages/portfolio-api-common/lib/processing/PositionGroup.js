@@ -10,7 +10,17 @@ module.exports = (() => {
 	'use strict';
 
 	/**
+	 * A grouping of {@link PositionItem} instances. The group aggregates from across
+	 * all the positions and performs currency translation, as necessary.
+	 *
 	 * @public
+	 * @param {PositionContainer} container
+	 * @param {PositionGroup|null} parent
+	 * @param {Array.<PositionItem>} items
+	 * @param {Currency} currency
+	 * @param {String} key
+	 * @param {String} description
+	 * @param {Boolean=} single
 	 */
 	class PositionGroup {
 		constructor(container, parent, items, currency, key, description, single) {
@@ -135,30 +145,73 @@ module.exports = (() => {
 			this.refresh();
 		}
 
+		/**
+		 * The key of the group.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
 		get key() {
 			return this._key;
 		}
 
+		/**
+		 * The description of the group.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
 		get description() {
 			return this._description;
 		}
 
+		/**
+		 * The {@link Currency} which all aggregated data is presented in.
+		 *
+		 * @public
+		 * @returns {Currency}
+		 */
 		get currency() {
 			return this._currency;
 		}
 
+		/**
+		 * The {@link PositionItem} instances which for which aggregated data is compiled.
+		 *
+		 * @public
+		 * @returns {Currency}
+		 */
 		get items() {
 			return this._items;
 		}
 
+		/**
+		 * The string-based, human-readable aggregated data for the group.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get data() {
 			return this._dataFormat;
 		}
 
+		/**
+		 * The raw aggregated data for the group (typically {@link Decimal} instances).
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get actual() {
 			return this._dataActual;
 		}
 
+		/**
+		 * Indicates if the group will only contain one {@link PositionItem} -- that is,
+		 * indicates if the group represents a single position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
 		get single() {
 			return this._single;
 		}
@@ -167,10 +220,22 @@ module.exports = (() => {
 			return this._suspended;
 		}
 
+		/**
+		 * Indicates if the group should be excluded from higher-level aggregations.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
 		get excluded() {
 			return this._excluded;
 		}
 
+		/**
+		 * Causes aggregated data to be recalculated using a new exchange rate.
+		 *
+		 * @public
+		 * @param {Rate} rate
+		 */
 		setForexRate(rate) {
 			if (!this._bypassCurrencyTranslation) {
 				this.refresh();
@@ -199,6 +264,11 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Causes all aggregated data to be recalculated.
+		 *
+		 * @public
+		 */
 		refresh() {
 			const rates = this._container.getForexQuotes();
 
@@ -206,6 +276,12 @@ module.exports = (() => {
 			calculatePriceData(this, rates, null, true);
 		}
 
+		/**
+		 * Causes the percent of the position, with respect to the parent container's
+		 * total, to be recalculated.
+		 *
+		 * @public
+		 */
 		refreshMarketPercent() {
 			calculateMarketPercent(this, this._container.getForexQuotes(), true);
 		}
