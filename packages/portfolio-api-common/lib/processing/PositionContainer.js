@@ -357,9 +357,9 @@ module.exports = (() => {
 			let map;
 
 			if (display) {
-				map = this._symbols;
-			} else {
 				map = this._symbolsDisplay;
+			} else {
+				map = this._symbols;
 			}
 
 			if (map.hasOwnProperty(symbol)) {
