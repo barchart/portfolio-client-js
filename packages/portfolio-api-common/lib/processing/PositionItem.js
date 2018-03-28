@@ -11,7 +11,15 @@ module.exports = (() => {
 	'use strict';
 
 	/**
+	 * A container for a single position, which handles quote changes and
+	 * notifies observers -- which are typically parent-level {@link PositionGroup}
+	 * instances.
+	 *
 	 * @public
+	 * @param {Object} portfolio
+	 * @param {Object} position
+	 * @param {Object} currentSummary
+	 * @param {Array.<Object>} previousSummaries
 	 */
 	class PositionItem {
 		constructor(portfolio, position, currentSummary, previousSummaries) {
@@ -62,30 +70,72 @@ module.exports = (() => {
 			this._newsExistsChangedEvent = new Event(this);
 		}
 
+		/**
+		 * The portfolio of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get portfolio() {
 			return this._portfolio;
 		}
 
+		/**
+		 * The encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get position() {
 			return this._position;
 		}
 
+		/**
+		 * The {@link Currency} of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get currency() {
 			return this._currency;
 		}
 
+		/**
+		 * The year-to-date position summary of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get currentSummary() {
 			return this._currentSummary;
 		}
-		
+
+		/**
+		 * Previous year's summaries for the encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get previousSummaries() {
 			return this._previousSummaries;
 		}
 
+		/**
+		 * Various data regarding the encapsulated position.
+		 *
+		 * @public
+		 * @returns {*}
+		 */
 		get data() {
 			return this._data;
 		}
 
+		/**
+		 * The current quote for the symbol of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {null|{Object}}
+		 */
 		get quote() {
 			return this._currentQuote;
 		}
@@ -94,6 +144,13 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
+		/**
+		 * Sets the current quote -- causing position-level data (e.g. market value) to
+		 * be recalculated.
+		 *
+		 * @public
+		 * @param {Object} quote
+		 */
 		setQuote(quote) {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
@@ -115,6 +172,13 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Sets a flag which indicates if news article(s) exist for the encapsulated position's
+		 * symbol.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
 		setNewsArticleExists(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
@@ -123,6 +187,13 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Registers an observer for quote changes, which is fired after internal recalculations
+		 * of position data are complete.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 */
 		registerQuoteChangeHandler(handler) {
 			this._quoteChangedEvent.register(handler);
 		}
@@ -131,6 +202,12 @@ module.exports = (() => {
 			this._excludedChangeEvent.register(handler);
 		}
 
+		/**
+		 * Registers an observer changes to the status of news existence.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 */
 		registerNewsExistsChangeHandler(handler) {
 			this._newsExistsChangedEvent.register(handler);
 		}
