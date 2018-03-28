@@ -246,7 +246,7 @@ module.exports = (() => {
 		
 		const items = group._items;
 
-		group._bypassCurrencyTranslation = items.some(item => item.currency !== currency);
+		group._bypassCurrencyTranslation = items.every(item => item.currency === currency);
 
 		const translate = (item, value) => {
 			let translated;
