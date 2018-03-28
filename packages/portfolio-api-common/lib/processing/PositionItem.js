@@ -172,7 +172,7 @@ module.exports = (() => {
 		setPositionFundamentalData(data) {
 			assert.argumentIsRequired(data, 'data', Object);
 
-			this._fundamentalDataChangeEvent(this._data.fundamental = data);
+			this._fundamentalDataChangeEvent.fire(this._data.fundamental = data);
 		}
 
 		/**
