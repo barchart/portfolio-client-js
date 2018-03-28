@@ -279,7 +279,7 @@ module.exports = (() => {
 			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRate(rate), true, false));
 		}
 
-		setPositionFundamentals(data) {
+		setPositionFundamentals(symbol, data) {
 			return;
 		}
 
