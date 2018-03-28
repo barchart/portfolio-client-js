@@ -218,10 +218,6 @@ module.exports = (() => {
 				return map;
 			}, { });
 		}
-
-		get defaultCurrency() {
-			return this._defaultCurrency;
-		}
 		
 		getPositionSymbols(display) {
 			const symbols = this._items.reduce((symbols, item) => {
