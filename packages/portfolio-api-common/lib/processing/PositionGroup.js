@@ -49,6 +49,7 @@ module.exports = (() => {
 
 			this._dataFormat.key = this._key;
 			this._dataFormat.description = this._description;
+			this._dataFormat.hide = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
 			this._dataFormat.basisPrice = null;
