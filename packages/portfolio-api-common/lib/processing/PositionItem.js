@@ -35,10 +35,12 @@ module.exports = (() => {
 			this._data.basis = null;
 
 			this._currentQuote = null;
-			this._previousQuote = null;
+
+			this._currentPrice = null;
+			this._previousPrice = null;
 
 			this._data.currentPrice = null;
-			this._data.previousPrice = null;
+			this._data.currentPricePrevious = null;
 
 			this._data.market = null;
 			this._data.marketChange = null;
@@ -154,10 +156,12 @@ module.exports = (() => {
 		setQuote(quote) {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
-			if (this._previousQuote === null || this._previousQuote.lastPrice !== quote.lastPrice) {
+			if (this._currentPricePrevious !== quote.lastPrice) {
 				calculatePriceData(this, quote.lastPrice);
 
-				this._previousQuote = this._currentQuote;
+				this._currentPricePrevious = this._currentPrice;
+				this._currentPrice = quote.lastPrice;
+
 				this._currentQuote = quote;
 
 				this._quoteChangedEvent.fire(this._currentQuote);
