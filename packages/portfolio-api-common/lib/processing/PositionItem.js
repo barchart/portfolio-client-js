@@ -62,13 +62,10 @@ module.exports = (() => {
 
 			this._data.newsExists = false;
 
-			this._excluded = false;
-
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
 			this._quoteChangedEvent = new Event(this);
-			this._excludedChangeEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
 		}
 
@@ -142,10 +139,6 @@ module.exports = (() => {
 			return this._currentQuote;
 		}
 
-		get excluded() {
-			return this._excluded;
-		}
-
 		/**
 		 * Sets the current quote -- causing position-level data (e.g. market value) to
 		 * be recalculated.
@@ -165,14 +158,6 @@ module.exports = (() => {
 				this._currentQuote = quote;
 
 				this._quoteChangedEvent.fire(this._currentQuote);
-			}
-		}
-
-		setExcluded(value) {
-			assert.argumentIsRequired(value, 'value', Boolean);
-
-			if (this._excluded !== value) {
-				this._excludedChangeEvent.fire(this._excluded = value);
 			}
 		}
 
@@ -200,10 +185,6 @@ module.exports = (() => {
 		 */
 		registerQuoteChangeHandler(handler) {
 			this._quoteChangedEvent.register(handler);
-		}
-
-		registerExcludedChangeHandler(handler) {
-			this._excludedChangeEvent.register(handler);
 		}
 
 		/**

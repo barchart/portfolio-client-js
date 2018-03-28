@@ -40,6 +40,7 @@ module.exports = (() => {
 			this._suspended = false;
 
 			this._marketPercentChangeEvent = new Event(this);
+			this._excludedChangeEvent = new Event(this);
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -246,11 +247,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._excluded !== value) {
-				this._container.startTransaction(() => {
-					this._items.forEach((item) => {
-						item.setExcluded(value);
-					});
-				});
+				this._excludedChangeEvent(this._excluded = value);
 			}
 		}
 

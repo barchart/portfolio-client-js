@@ -108,6 +108,20 @@ module.exports = (() => {
 				return map;
 			}, { });
 
+			this._symbolsDisplay = this._items.reduce((map, item) => {
+				const symbol = extractSymbolForDisplay(item.position);
+
+				if (symbol) {
+					if (!map.hasOwnProperty(symbol)) {
+						map[symbol] = [ ];
+					}
+
+					map[symbol].push(item);
+				}
+
+				return map;
+			}, { });
+
 			this._currencies = this._items.reduce((map, item) => {
 				const position = item.position;
 
@@ -327,14 +341,24 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} symbol
+		 * @param {Boolean} display
 		 * @param {Boolean} exists
 		 */
-		setNewsArticleExists(symbol, exists) {
+		setNewsArticleExists(symbol, display, exists) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(display, 'display', Boolean);
 			assert.argumentIsRequired(exists, 'exists', Boolean);
 
-			if (this._symbols.hasOwnProperty(symbol)) {
-				this._symbols[symbol].forEach(item => item.setNewsArticleExists(exists));
+			let map;
+
+			if (display) {
+				map = this._symbols;
+			} else {
+				map = this._symbolsDisplay;
+			}
+
+			if (map.hasOwnProperty(symbol)) {
+				map[symbol].forEach(item => item.setNewsArticleExists(exists));
 			}
 		}
 
