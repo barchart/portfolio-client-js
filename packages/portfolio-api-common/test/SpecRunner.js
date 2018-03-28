@@ -738,11 +738,11 @@ module.exports = (() => {
 
 	/**
 	 * A container for positions which groups the positions into one or more
-	 * trees for aggregation and display purposes. For example, perhaps a positions
-	 * grouped first by asset class then by position is desired.
+	 * trees for aggregation and display purposes. For example, positions could be
+	 * grouped first by asset class then by position.
 	 *
 	 * Furthermore, the container performs aggregation (driven primarily by price
-	 * changes) for each level of grouping in the internal tree(s).
+	 * changes) for each level of grouping.
 	 *
 	 * @public
 	 * @param {Array.<PositionTreeDefinition>} definitions
@@ -935,10 +935,14 @@ module.exports = (() => {
 			}, { });
 		}
 
-		get defaultCurrency() {
-			return this._defaultCurrency;
-		}
-		
+		/**
+		 * Returns a distinct list of all symbols used by the positions
+		 * within the container.
+		 *
+		 * @public
+		 * @param {Boolean} display - If true, all "display" symbols are returned; otherwise Barchart symbols are returned.
+		 * @returns {Array.<String>}
+		 */
 		getPositionSymbols(display) {
 			const symbols = this._items.reduce((symbols, item) => {
 				const position = item.position;
@@ -961,6 +965,14 @@ module.exports = (() => {
 			return array.unique(symbols);
 		}
 
+		/**
+		 * Updates the quote for a single symbol; causing updates to any grouping
+		 * level that contains the position(s) for the symbol.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 * @param {Object} quote
+		 */
 		setPositionQuote(symbol, quote) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(quote, 'quote', Object);
@@ -970,14 +982,34 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Returns all forex symbols that are required to do currency translations.
+		 *
+		 * @public
+		 * @returns {Array.<String>}
+		 */
 		getForexSymbols() {
 			return this._forexSymbols;
 		}
 
+		/**
+		 * Returns all current forex quotes.
+		 *
+		 * @public
+		 * @returns {Array.<Object>}
+		 */
 		getForexQuotes() {
 			return this._forexQuotes;
 		}
 
+		/**
+		 * Updates the forex quote for a single currency pair; causing updates to
+		 * any grouping level that contains that requires translation.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 * @param {Object} quote
+		 */
 		setForexQuote(symbol, quote) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(quote, 'quote', Object);
@@ -995,10 +1027,24 @@ module.exports = (() => {
 			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRate(rate), true, false));
 		}
 
-		setPositionFundamentals(symbol, data) {
+		/**
+		 * Updates fundamental data for a single symbol.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 * @param {Object} data
+		 */
+		setPositionFundamentalData(symbol, data) {
 			return;
 		}
 
+		/**
+		 * Indicates if a news article exists for a symbol.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 * @param {Boolean} exists
+		 */
 		setNewsArticleExists(symbol, exists) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
 			assert.argumentIsRequired(exists, 'exists', Boolean);
@@ -1008,6 +1054,13 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Returns a single level of grouping from one of the internal trees.
+		 *
+		 * @param {String} name
+		 * @param {Array.<String> keys
+		 * @returns {PositionGroup}
+		 */
 		getGroup(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', Number);
@@ -1015,6 +1068,14 @@ module.exports = (() => {
 			return findNode(this._trees[name], keys).getValue();
 		}
 
+		/**
+		 * Returns all child groups from a level of grouping within one of
+		 * the internal trees.
+		 *
+		 * @param {String} name
+		 * @param {Array.<String> keys
+		 * @returns {Array.<PositionGroup>}
+		 */
 		getGroups(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', Number);
@@ -1024,8 +1085,6 @@ module.exports = (() => {
 
 		startTransaction(name, executor) {
 			assert.argumentIsRequired(name, 'name', String);
-			assert.argumentIsRequired(executor, 'executor', Function);
-
 			assert.argumentIsRequired(executor, 'executor', Function);
 
 			this._trees[name].walk(group => group.setSuspended(true), false, false);
@@ -1081,7 +1140,17 @@ module.exports = (() => {
 	'use strict';
 
 	/**
+	 * A grouping of {@link PositionItem} instances. The group aggregates from across
+	 * all the positions and performs currency translation, as necessary.
+	 *
 	 * @public
+	 * @param {PositionContainer} container
+	 * @param {PositionGroup|null} parent
+	 * @param {Array.<PositionItem>} items
+	 * @param {Currency} currency
+	 * @param {String} key
+	 * @param {String} description
+	 * @param {Boolean=} single
 	 */
 	class PositionGroup {
 		constructor(container, parent, items, currency, key, description, single) {
@@ -1206,30 +1275,73 @@ module.exports = (() => {
 			this.refresh();
 		}
 
+		/**
+		 * The key of the group.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
 		get key() {
 			return this._key;
 		}
 
+		/**
+		 * The description of the group.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
 		get description() {
 			return this._description;
 		}
 
+		/**
+		 * The {@link Currency} which all aggregated data is presented in.
+		 *
+		 * @public
+		 * @returns {Currency}
+		 */
 		get currency() {
 			return this._currency;
 		}
 
+		/**
+		 * The {@link PositionItem} instances which for which aggregated data is compiled.
+		 *
+		 * @public
+		 * @returns {Currency}
+		 */
 		get items() {
 			return this._items;
 		}
 
+		/**
+		 * The string-based, human-readable aggregated data for the group.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get data() {
 			return this._dataFormat;
 		}
 
+		/**
+		 * The raw aggregated data for the group (typically {@link Decimal} instances).
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get actual() {
 			return this._dataActual;
 		}
 
+		/**
+		 * Indicates if the group will only contain one {@link PositionItem} -- that is,
+		 * indicates if the group represents a single position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
 		get single() {
 			return this._single;
 		}
@@ -1238,10 +1350,22 @@ module.exports = (() => {
 			return this._suspended;
 		}
 
+		/**
+		 * Indicates if the group should be excluded from higher-level aggregations.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
 		get excluded() {
 			return this._excluded;
 		}
 
+		/**
+		 * Causes aggregated data to be recalculated using a new exchange rate.
+		 *
+		 * @public
+		 * @param {Rate} rate
+		 */
 		setForexRate(rate) {
 			if (!this._bypassCurrencyTranslation) {
 				this.refresh();
@@ -1270,6 +1394,11 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Causes all aggregated data to be recalculated.
+		 *
+		 * @public
+		 */
 		refresh() {
 			const rates = this._container.getForexQuotes();
 
@@ -1277,6 +1406,12 @@ module.exports = (() => {
 			calculatePriceData(this, rates, null, true);
 		}
 
+		/**
+		 * Causes the percent of the position, with respect to the parent container's
+		 * total, to be recalculated.
+		 *
+		 * @public
+		 */
 		refreshMarketPercent() {
 			calculateMarketPercent(this, this._container.getForexQuotes(), true);
 		}
@@ -1560,7 +1695,15 @@ module.exports = (() => {
 	'use strict';
 
 	/**
+	 * A container for a single position, which handles quote changes and
+	 * notifies observers -- which are typically parent-level {@link PositionGroup}
+	 * instances.
+	 *
 	 * @public
+	 * @param {Object} portfolio
+	 * @param {Object} position
+	 * @param {Object} currentSummary
+	 * @param {Array.<Object>} previousSummaries
 	 */
 	class PositionItem {
 		constructor(portfolio, position, currentSummary, previousSummaries) {
@@ -1576,10 +1719,12 @@ module.exports = (() => {
 			this._data.basis = null;
 
 			this._currentQuote = null;
-			this._previousQuote = null;
+
+			this._currentPrice = null;
+			this._previousPrice = null;
 
 			this._data.currentPrice = null;
-			this._data.previousPrice = null;
+			this._data.currentPricePrevious = null;
 
 			this._data.market = null;
 			this._data.marketChange = null;
@@ -1611,30 +1756,72 @@ module.exports = (() => {
 			this._newsExistsChangedEvent = new Event(this);
 		}
 
+		/**
+		 * The portfolio of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get portfolio() {
 			return this._portfolio;
 		}
 
+		/**
+		 * The encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get position() {
 			return this._position;
 		}
 
+		/**
+		 * The {@link Currency} of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get currency() {
 			return this._currency;
 		}
 
+		/**
+		 * The year-to-date position summary of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get currentSummary() {
 			return this._currentSummary;
 		}
-		
+
+		/**
+		 * Previous year's summaries for the encapsulated position.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
 		get previousSummaries() {
 			return this._previousSummaries;
 		}
 
+		/**
+		 * Various data regarding the encapsulated position.
+		 *
+		 * @public
+		 * @returns {*}
+		 */
 		get data() {
 			return this._data;
 		}
 
+		/**
+		 * The current quote for the symbol of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {null|{Object}}
+		 */
 		get quote() {
 			return this._currentQuote;
 		}
@@ -1643,13 +1830,22 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
+		/**
+		 * Sets the current quote -- causing position-level data (e.g. market value) to
+		 * be recalculated.
+		 *
+		 * @public
+		 * @param {Object} quote
+		 */
 		setQuote(quote) {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
-			if (this._previousQuote === null || this._previousQuote.lastPrice !== quote.lastPrice) {
+			if (this._currentPricePrevious !== quote.lastPrice) {
 				calculatePriceData(this, quote.lastPrice);
 
-				this._previousQuote = this._currentQuote;
+				this._currentPricePrevious = this._currentPrice;
+				this._currentPrice = quote.lastPrice;
+
 				this._currentQuote = quote;
 
 				this._quoteChangedEvent.fire(this._currentQuote);
@@ -1664,6 +1860,13 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Sets a flag which indicates if news article(s) exist for the encapsulated position's
+		 * symbol.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
 		setNewsArticleExists(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
@@ -1672,6 +1875,13 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Registers an observer for quote changes, which is fired after internal recalculations
+		 * of position data are complete.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 */
 		registerQuoteChangeHandler(handler) {
 			this._quoteChangedEvent.register(handler);
 		}
@@ -1680,6 +1890,12 @@ module.exports = (() => {
 			this._excludedChangeEvent.register(handler);
 		}
 
+		/**
+		 * Registers an observer changes to the status of news existence.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 */
 		registerNewsExistsChangeHandler(handler) {
 			this._newsExistsChangedEvent.register(handler);
 		}
