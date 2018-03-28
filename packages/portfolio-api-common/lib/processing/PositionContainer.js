@@ -396,6 +396,16 @@ module.exports = (() => {
 			return findNode(this._trees[name], keys).getChildren().map(node => node.getValue());
 		}
 
+		getPositions(portfolio) {
+			return this._items.reduce((positions, item) => {
+				if (item.position.portfolio === portfolio) {
+					positions.push(item);
+				}
+
+				return positions;
+			}, []);
+		}
+
 		startTransaction(name, executor) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsRequired(executor, 'executor', Function);
