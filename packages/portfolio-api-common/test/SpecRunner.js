@@ -824,6 +824,20 @@ module.exports = (() => {
 				return map;
 			}, { });
 
+			this._symbolsDisplay = this._items.reduce((map, item) => {
+				const symbol = extractSymbolForDisplay(item.position);
+
+				if (symbol) {
+					if (!map.hasOwnProperty(symbol)) {
+						map[symbol] = [ ];
+					}
+
+					map[symbol].push(item);
+				}
+
+				return map;
+			}, { });
+
 			this._currencies = this._items.reduce((map, item) => {
 				const position = item.position;
 
@@ -1043,14 +1057,24 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} symbol
+		 * @param {Boolean} display
 		 * @param {Boolean} exists
 		 */
-		setNewsArticleExists(symbol, exists) {
+		setNewsArticleExists(symbol, display, exists) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(display, 'display', Boolean);
 			assert.argumentIsRequired(exists, 'exists', Boolean);
 
-			if (this._symbols.hasOwnProperty(symbol)) {
-				this._symbols[symbol].forEach(item => item.setNewsArticleExists(exists));
+			let map;
+
+			if (display) {
+				map = this._symbols;
+			} else {
+				map = this._symbolsDisplay;
+			}
+
+			if (map.hasOwnProperty(symbol)) {
+				map[symbol].forEach(item => item.setNewsArticleExists(exists));
 			}
 		}
 
@@ -1170,6 +1194,7 @@ module.exports = (() => {
 			this._suspended = false;
 
 			this._marketPercentChangeEvent = new Event(this);
+			this._excludedChangeEvent = new Event(this);
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -1376,11 +1401,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._excluded !== value) {
-				this._container.startTransaction(() => {
-					this._items.forEach((item) => {
-						item.setExcluded(value);
-					});
-				});
+				this._excludedChangeEvent(this._excluded = value);
 			}
 		}
 
@@ -1746,13 +1767,10 @@ module.exports = (() => {
 
 			this._data.newsExists = false;
 
-			this._excluded = false;
-
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
 			this._quoteChangedEvent = new Event(this);
-			this._excludedChangeEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
 		}
 
@@ -1826,10 +1844,6 @@ module.exports = (() => {
 			return this._currentQuote;
 		}
 
-		get excluded() {
-			return this._excluded;
-		}
-
 		/**
 		 * Sets the current quote -- causing position-level data (e.g. market value) to
 		 * be recalculated.
@@ -1849,14 +1863,6 @@ module.exports = (() => {
 				this._currentQuote = quote;
 
 				this._quoteChangedEvent.fire(this._currentQuote);
-			}
-		}
-
-		setExcluded(value) {
-			assert.argumentIsRequired(value, 'value', Boolean);
-
-			if (this._excluded !== value) {
-				this._excludedChangeEvent.fire(this._excluded = value);
 			}
 		}
 
@@ -1884,10 +1890,6 @@ module.exports = (() => {
 		 */
 		registerQuoteChangeHandler(handler) {
 			this._quoteChangedEvent.register(handler);
-		}
-
-		registerExcludedChangeHandler(handler) {
-			this._excludedChangeEvent.register(handler);
 		}
 
 		/**
