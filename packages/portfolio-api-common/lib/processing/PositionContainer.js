@@ -333,7 +333,12 @@ module.exports = (() => {
 		 * @param {Object} data
 		 */
 		setPositionFundamentalData(symbol, data) {
-			return;
+			assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(data, 'data', Object);
+
+			if (this._symbols.hasOwnProperty(symbol)) {
+				this._symbols[symbol].forEach(item => item.setPositionFundamentalData(data));
+			}
 		}
 
 		/**

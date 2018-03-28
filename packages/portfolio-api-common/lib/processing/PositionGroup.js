@@ -63,10 +63,12 @@ module.exports = (() => {
 				this._dataFormat.portfolio = item.portfolio.portfolio;
 				this._dataFormat.position = item.position.position;
 				this._dataFormat.instrument = item.position.instrument;
+				this._dataFormat.fundamental = item.fundamental || { };
 			} else {
 				this._dataFormat.portfolio = null;
 				this._dataFormat.position = null;
 				this._dataFormat.instrument = null;
+				this._dataFormat.fundamental = { };
 			}
 
 			this._dataFormat.quoteLast = null;
@@ -137,8 +139,12 @@ module.exports = (() => {
 
 				if (this._single) {
 					item.registerNewsExistsChangeHandler((exists, sender) => {
+						this._dataActual.newsExists = exists;
 						this._dataFormat.newsExists = exists;
-						this._dataFormat.newsExists = exists;
+					});
+
+					item._fundamentalDataChangeEvent((data, sender) => {
+						this._dataFormat.fundamental = data;
 					});
 				}
 			});

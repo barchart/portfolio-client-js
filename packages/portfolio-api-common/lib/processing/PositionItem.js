@@ -50,7 +50,7 @@ module.exports = (() => {
 
 			this._data.unrealized = null;
 			this._data.unrealizedChange = null;
-			
+
 			this._data.summaryTotalCurrent = null;
 			this._data.summaryTotalCurrentChange = null;
 
@@ -61,12 +61,14 @@ module.exports = (() => {
 			this._data.basisPrice = null;
 
 			this._data.newsExists = false;
+			this._data.fundamental = { };
 
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
+			this._fundamentalDataChangeEvent = new Event(this);
 		}
 
 		/**
@@ -162,6 +164,18 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets fundamental data for the position.
+		 *
+		 * @public
+		 * @param {Object} data
+		 */
+		setPositionFundamentalData(data) {
+			assert.argumentIsRequired(data, 'data', Object);
+
+			this._fundamentalDataChangeEvent(this._data.fundamental = data);
+		}
+
+		/**
 		 * Sets a flag which indicates if news article(s) exist for the encapsulated position's
 		 * symbol.
 		 *
@@ -185,6 +199,16 @@ module.exports = (() => {
 		 */
 		registerQuoteChangeHandler(handler) {
 			this._quoteChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for fundamental data changes.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 */
+		registerFundamentalDataChangeHandler(handler) {
+			this._fundamentalDataChangeEvent.register(handler);
 		}
 
 		/**
@@ -321,10 +345,10 @@ module.exports = (() => {
 			data.unrealizedChange = Decimal.ZERO;
 		}
 	}
-	
+
 	function calculateSummaryTotal(summary) {
 		let returnRef;
-		
+
 		if (summary) {
 			const period = summary.period;
 
@@ -332,7 +356,7 @@ module.exports = (() => {
 		} else {
 			returnRef = Decimal.ZERO;
 		}
-		
+
 		return returnRef;
 	}
 
