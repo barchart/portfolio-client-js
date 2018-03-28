@@ -50,6 +50,8 @@ module.exports = (() => {
 			this._data.income = null;
 			this._data.basisPrice = null;
 
+			this._data.newsExists = false;
+
 			this._excluded = false;
 
 			calculateStaticData(this);
@@ -57,6 +59,7 @@ module.exports = (() => {
 
 			this._quoteChangedEvent = new Event(this);
 			this._excludedChangeEvent = new Event(this);
+			this._newsExistsChangedEvent = new Event(this);
 		}
 
 		get portfolio() {
@@ -112,12 +115,24 @@ module.exports = (() => {
 			}
 		}
 
+		setNewsArticleExists(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._data.newsExists !== value) {
+				this._newsExistsChangedEvent.fire(this._data.newsExists = value);
+			}
+		}
+
 		registerQuoteChangeHandler(handler) {
 			this._quoteChangedEvent.register(handler);
 		}
 
 		registerExcludedChangeHandler(handler) {
 			this._excludedChangeEvent.register(handler);
+		}
+
+		registerNewsExistsChangeHandler(handler) {
+			this._newsExistsChangedEvent.register(handler);
 		}
 
 		toString() {

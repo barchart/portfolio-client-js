@@ -284,7 +284,12 @@ module.exports = (() => {
 		}
 
 		setNewsArticleExists(symbol, exists) {
-			return;
+			assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(exists, 'exists', Boolean);
+
+			if (this._symbols.hasOwnProperty(symbol)) {
+				this._symbols[symbol].forEach(item => item.setNewsArticleExists(exists));
+			}
 		}
 
 		getGroup(name, keys) {
