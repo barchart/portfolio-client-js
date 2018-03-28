@@ -995,8 +995,17 @@ module.exports = (() => {
 			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRate(rate), true, false));
 		}
 
-		setPositionFundamentals(data) {
+		setPositionFundamentals(symbol, data) {
 			return;
+		}
+
+		setNewsArticleExists(symbol, exists) {
+			assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(exists, 'exists', Boolean);
+
+			if (this._symbols.hasOwnProperty(symbol)) {
+				this._symbols[symbol].forEach(item => item.setNewsArticleExists(exists));
+			}
 		}
 
 		getGroup(name, keys) {
@@ -1098,9 +1107,15 @@ module.exports = (() => {
 
 			this._dataFormat.key = this._key;
 			this._dataFormat.description = this._description;
-			this._dataFormat.c = this._currency.code;
-
+			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
+			this._dataFormat.basisPrice = null;
+
+			this._dataActual.key = this._key;
+			this._dataActual.description = this._description;
+			this._dataActual.newsExists = false;
+			this._dataActual.quantity = null;
+			this._dataActual.basisPrice = null;
 
 			if (this._single) {
 				const item = items[0];
@@ -1179,6 +1194,13 @@ module.exports = (() => {
 
 					calculatePriceData(this, this._container.getForexQuotes(), sender, false);
 				});
+
+				if (this._single) {
+					item.registerNewsExistsChangeHandler((exists, sender) => {
+						this._dataFormat.newsExists = exists;
+						this._dataFormat.newsExists = exists;
+					});
+				}
 			});
 
 			this.refresh();
@@ -1360,8 +1382,11 @@ module.exports = (() => {
 		if (group.single) {
 			const item = group._items[0];
 
-			format.quantity = formatDecimal(item.position.snapshot.open, 2);
-			format.basisPrice = formatCurrency(item.data.basisPrice, currency);
+			actual.quantity = item.position.snapshot.open;
+			actual.basisPrice = item.data.basisPrice;
+
+			format.quantity = formatDecimal(actual.quantity, 2);
+			format.basisPrice = formatCurrency(actual.basisPrice, currency);
 		}
 	}
 
@@ -1574,6 +1599,8 @@ module.exports = (() => {
 			this._data.income = null;
 			this._data.basisPrice = null;
 
+			this._data.newsExists = false;
+
 			this._excluded = false;
 
 			calculateStaticData(this);
@@ -1581,6 +1608,7 @@ module.exports = (() => {
 
 			this._quoteChangedEvent = new Event(this);
 			this._excludedChangeEvent = new Event(this);
+			this._newsExistsChangedEvent = new Event(this);
 		}
 
 		get portfolio() {
@@ -1636,12 +1664,24 @@ module.exports = (() => {
 			}
 		}
 
+		setNewsArticleExists(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._data.newsExists !== value) {
+				this._newsExistsChangedEvent.fire(this._data.newsExists = value);
+			}
+		}
+
 		registerQuoteChangeHandler(handler) {
 			this._quoteChangedEvent.register(handler);
 		}
 
 		registerExcludedChangeHandler(handler) {
 			this._excludedChangeEvent.register(handler);
+		}
+
+		registerNewsExistsChangeHandler(handler) {
+			this._newsExistsChangedEvent.register(handler);
 		}
 
 		toString() {
