@@ -146,7 +146,7 @@ module.exports = (() => {
 						this._dataFormat.newsExists = exists;
 					});
 
-					item._fundamentalDataChangeEvent((data, sender) => {
+					item.registerFundamentalDataChangeHandler((data, sender) => {
 						this._dataFormat.fundamental = data;
 					});
 				}
