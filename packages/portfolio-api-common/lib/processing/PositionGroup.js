@@ -264,7 +264,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._showClosedPositions !== value) {
-				this._showClosedPositionsChangeEvent(this._showClosedPositions = value);
+				this._showClosedPositionsChangeEvent.fire(this._showClosedPositions = value);
 			}
 		}
 
