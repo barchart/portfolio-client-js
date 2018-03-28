@@ -275,6 +275,10 @@ module.exports = (() => {
 			} else {
 				this._forexQuotes[index] = rate;
 			}
+
+			this._trees.forEach((tree) => {
+				tree.walk(group => group.setForexRate(rate), true, false);
+			});
 		}
 
 		setPositionFundamentals(data) {

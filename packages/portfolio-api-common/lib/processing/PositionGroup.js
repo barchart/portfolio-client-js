@@ -19,6 +19,7 @@ module.exports = (() => {
 
 			this._items = items;
 			this._currency = currency || Currency.CAD;
+			this._bypassCurrencyTranslation = false;
 
 			this._key = key;
 			this._description = description;
@@ -156,8 +157,10 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
-		setForexQuote(quote) {
-
+		setForexRate(rate) {
+			if (!this._bypassCurrencyTranslation) {
+				this.refresh();
+			}
 		}
 
 		setExcluded(value) {
@@ -241,6 +244,8 @@ module.exports = (() => {
 		const currency = group.currency;
 		
 		const items = group._items;
+
+		group._bypassCurrencyTranslation = items.some(item => item.currency !== currency);
 
 		const translate = (item, value) => {
 			let translated;
