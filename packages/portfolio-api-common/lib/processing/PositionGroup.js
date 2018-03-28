@@ -38,9 +38,11 @@ module.exports = (() => {
 
 			this._excluded = false;
 			this._suspended = false;
+			this._showClosedPositions = false;
 
 			this._marketPercentChangeEvent = new Event(this);
 			this._excludedChangeEvent = new Event(this);
+			this._showClosedPositionsChangeEvent = new Event(this);
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -254,6 +256,14 @@ module.exports = (() => {
 
 			if (this._excluded !== value) {
 				this._excludedChangeEvent(this._excluded = value);
+			}
+		}
+
+		setShowClosedPositions(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._showClosedPositions !== value) {
+				this._showClosedPositionsChangeEvent(this._showClosedPositions = value);
 			}
 		}
 
