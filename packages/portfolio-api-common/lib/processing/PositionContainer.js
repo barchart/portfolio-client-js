@@ -277,6 +277,10 @@ module.exports = (() => {
 			}
 		}
 
+		setPositionFundamentals(data) {
+			return;
+		}
+
 		getGroup(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', Number);
