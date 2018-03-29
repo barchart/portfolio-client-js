@@ -44,6 +44,8 @@ module.exports = (() => {
 			this._excludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
 
+			this._excludedItems = { };
+
 			this._dataFormat = { };
 			this._dataActual = { };
 
@@ -73,6 +75,15 @@ module.exports = (() => {
 				this._dataFormat.instrument = null;
 				this._dataFormat.fundamental = { };
 			}
+
+			this._dataActual.quoteLast = null;
+			this._dataActual.quoteOpen = null;
+			this._dataActual.quoteHigh = null;
+			this._dataActual.quoteLow = null;
+			this._dataActual.quoteChange = null;
+			this._dataActual.quoteChangePercent = null;
+			this._dataActual.quoteTime = null;
+			this._dataActual.quoteVolume = null;
 
 			this._dataFormat.quoteLast = null;
 			this._dataFormat.quoteOpen = null;
@@ -124,14 +135,23 @@ module.exports = (() => {
 						this._dataActual.currentPrice = quote.lastPrice;
 						this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
 
-						this._dataFormat.quoteLast = formatNumber(quote.previousPrice, precision);
-						this._dataFormat.quoteOpen = formatNumber(quote.openPrice, precision);
-						this._dataFormat.quoteHigh = formatNumber(quote.highPrice, precision);
-						this._dataFormat.quoteLow = formatNumber(quote.lowPrice, precision);
-						this._dataFormat.quoteChange = formatNumber(quote.priceChange, precision);
-						this._dataFormat.quoteChangePercent = formatPercent(new Decimal(quote.percentChange || 0), 2);
-						this._dataFormat.quoteTime = quote.timeDisplay;
-						this._dataFormat.quoteVolume = formatNumber(quote.volume, 0);
+						this._dataActual.quoteLast = quote.previousPrice;
+						this._dataActual.quoteOpen = quote.openPrice;
+						this._dataActual.quoteHigh = quote.highPrice;
+						this._dataActual.quoteLow = quote.lowPrice;
+						this._dataActual.quoteChange = quote.priceChange;
+						this._dataActual.quoteChangePercent = quote.percentChange;
+						this._dataActual.quoteTime = quote.timeDisplay;
+						this._dataActual.quoteVolume = quote.volume;
+
+						this._dataFormat.quoteLast = formatNumber(this._dataActual.quoteLast , precision);
+						this._dataFormat.quoteOpen = formatNumber(this._dataActual.quoteOpen, precision);
+						this._dataFormat.quoteHigh = formatNumber(this._dataActual.quoteHigh, precision);
+						this._dataFormat.quoteLow = formatNumber(this._dataActual.quoteLow, precision);
+						this._dataFormat.quoteChange = formatNumber(this._dataActual.quoteChange, precision);
+						this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
+						this._dataFormat.quoteTime = this._dataActual.quoteTime;
+						this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
 					} else {
 						this._dataActual.currentPrice = null;
 						this._dataFormat.currentPrice = null;
@@ -238,6 +258,20 @@ module.exports = (() => {
 		 */
 		get excluded() {
 			return this._excluded;
+		}
+
+		addExcludedItems(items) {
+			items.forEach((item) => {
+				const key = item.position.position;
+
+				if (this._excludedItems.hasOwnProperty(key)) {
+
+				}
+			});
+		}
+
+		removeExcludedItems(items) {
+
 		}
 
 		/**

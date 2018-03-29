@@ -214,8 +214,14 @@ module.exports = (() => {
 
 					compositeGroups.sort(builder.toComparator());
 
+					const initializeGroupObservers = (group, groupTree) => {
+
+					};
+
 					compositeGroups.forEach((group) => {
 						const childTree = currentTree.addChild(group);
+
+						initializeGroupObservers(group, childTree);
 
 						group.registerMarketPercentChangeHandler(() => {
 							currentTree.walk((childGroup) => childGroup.refreshMarketPercent());
