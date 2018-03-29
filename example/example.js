@@ -213,6 +213,10 @@ module.exports = function () {
 				qb.withVariableParameter('includePreviousPrice', 'includePreviousPrice', 'includePreviousPrice', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
+			_this._deletePositionEndpoint = EndpointBuilder.for('delete-portfolio', 'delete portfolios').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
+			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
 			_this._readPositionSummariesEndpoint = EndpointBuilder.for('read-position-summaries', 'read position summaries').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withVariableParameter('position', 'position', 'position', false);
 			}).withQueryBuilder(function (qb) {
@@ -1086,7 +1090,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.30'
+		version: '1.1.31'
 	};
 }();
 
@@ -5553,9 +5557,9 @@ module.exports = function () {
 				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
 				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
 
-				if (a._big.gt(b._big)) {
+				if (a._big.gt(b)) {
 					return 1;
-				} else if (a._big.lt(b._big)) {
+				} else if (a._big.lt(b)) {
 					return -1;
 				} else {
 					return 0;
@@ -9141,27 +9145,15 @@ module.exports = (() => {
 	 * @param {String} alternateDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
-	 * @param {Boolean} usesSymbols
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest, usesSymbols) {
+		constructor(code, description, alternateDescription, canReinvest) {
 			super(code, description);
-
-			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
-			assert.argumentIsRequired(canReinvest, 'canReinvest', Boolean);
-			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
 
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
-			this._usesSymbols = usesSymbols;
 		}
 
-		/**
-		 * A human-readable description.
-		 *
-		 * @public
-		 * @return {String}
-		 */
 		get alternateDescription() {
 			return this._alternateDescription;
 		}
@@ -9169,7 +9161,6 @@ module.exports = (() => {
 		/**
 		 * Indicates if the instrument type allows automatic reinvestment.
 		 *
-		 * @public
 		 * @returns {Boolean}
 		 */
 		get canReinvest() {
@@ -9177,20 +9168,9 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if an instrument of this type can be represented by a symbol.
-		 *
-		 * @public
-		 * @returns {Boolean}
-		 */
-		get usesSymbols() {
-			return this._usesSymbols;
-		}
-
-		/**
 		 * Cash.
 		 *
 		 * @public
-		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get CASH() {
@@ -9201,7 +9181,6 @@ module.exports = (() => {
 		 * An equity issue.
 		 *
 		 * @public
-		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get EQUITY() {
@@ -9212,7 +9191,6 @@ module.exports = (() => {
 		 * A mutual fund.
 		 *
 		 * @public
-		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get FUND() {
@@ -9223,7 +9201,6 @@ module.exports = (() => {
 		 * An undefined asset (e.g. a house, or a collectible, or a salvaged alien spaceship).
 		 *
 		 * @public
-		 * @static
 		 * @returns {InstrumentType}
 		 */
 		static get OTHER() {
@@ -9235,10 +9212,10 @@ module.exports = (() => {
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, true);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false, false);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false);
 
 	return InstrumentType;
 })();
@@ -9247,7 +9224,6 @@ module.exports = (() => {
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
-	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -9263,68 +9239,23 @@ module.exports = (() => {
 	 * @param {String} description
 	 * @param {Function} rangeCalculator
 	 * @param {Function} startDateCalculator
-	 * @param {Function} descriptionCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator, startDateCalculator, descriptionCalculator) {
+		constructor(code, description, rangeCalculator, startDateCalculator) {
 			super(code, description);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
-			assert.argumentIsRequired(startDateCalculator, 'startDateCalculator', Function);
-			assert.argumentIsRequired(descriptionCalculator, 'descriptionCalculator', Function);
 
 			this._rangeCalculator = rangeCalculator;
 			this._startDateCalculator = startDateCalculator;
-			this._descriptionCalculator = descriptionCalculator;
 		}
 
-		/**
-		 * Returns a human-readable description of the frame, given
-		 * start and end dates.
-		 *
-		 * @public
-		 * @param {Day} startDate
-		 * @param {Day} endDate
-		 * @return {String}
-		 */
-		describeRange(startDate, endDate) {
-			return this._descriptionCalculator(startDate, endDate);
-		}
-
-		/**
-		 * Returns the most recent ranges for the frame.
-		 *
-		 * @public
-		 * @param {Number} periods
-		 * @returns {Array.<PositionSummaryRange>}
-		 */
-		getRecentRanges(periods) {
-			const startDate = this.getStartDate(periods);
-			const transaction = { date: startDate, snapshot: { open: Decimal.ONE } };
-
-			return this.getRanges([ transaction ]);
-		}
-
-		/**
-		 * Returns the ranges for the set of {@link Transaction} objects.
-		 *
-		 * @public
-		 * @param {Array.<Transaction>} transactions
-		 * @returns {Array.<PositionSummaryRange>}
-		 */
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
 			return this._rangeCalculator(getFilteredTransactions(transactions));
 		}
 
-		/**
-		 * Returns the start date for a frame, a given number of periods ago.
-		 *
-		 * @public
-		 * @param {Number} periods
-		 * @returns {Day}
-		 */
 		getStartDate(periods) {
 			assert.argumentIsRequired(periods, 'periods', Number);
 
@@ -9376,19 +9307,10 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
-
-	/**
-	 * The start and and date for a {@link PositionSummaryFrame}
-	 *
-	 * @typedef PositionSummaryRange
-	 * @type {Object}
-	 * @property {Day} start
-	 * @property {Day} end
-	 */
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate);
 
 	function getRange(start, end) {
 		return {
@@ -9472,22 +9394,6 @@ module.exports = (() => {
 		return null;
 	}
 
-	function getYearlyRangeDescription(startDate, endDate) {
-		return endDate.year.toString();
-	}
-
-	function getQuarterlyRangeDescription(startDate, endDate) {
-		return '';
-	}
-
-	function getMonthlyRangeDescription(startDate, endDate) {
-		return '';
-	}
-
-	function getYearToDateRangeDescription(startDate, endDate) {
-		return `${endDate.year.toString()} YTD`;
-	}
-
 	function getFilteredTransactions(transactions) {
 		return transactions.reduce((filtered, transaction) => {
 			if (!transaction.snapshot.open.getIsZero() || transaction.type.closing) {
@@ -9501,7 +9407,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40}],53:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40}],53:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -9515,7 +9421,6 @@ module.exports = (() => {
 	 * @extends {Enum}
 	 * @param {String} code
 	 * @param {String} description
-	 * @param {String} display
 	 * @param {Boolean} purchase
 	 * @param {Boolean} sale
 	 * @param {Boolean} income
@@ -9523,32 +9428,20 @@ module.exports = (() => {
 	 * @param {Boolean} closing
 	 */
 	class TransactionType extends Enum {
-		constructor(code, description, display, purchase, sale, income, opening, closing) {
+		constructor(code, description, purchase, sale, income, opening, closing) {
 			super(code, description);
 
-			assert.argumentIsRequired(display, 'display', String);
 			assert.argumentIsRequired(purchase, 'purchase', Boolean);
 			assert.argumentIsRequired(sale, 'sale', Boolean);
 			assert.argumentIsRequired(income, 'income', Boolean);
 			assert.argumentIsRequired(opening, 'opening', Boolean);
 			assert.argumentIsRequired(closing, 'closing', Boolean);
 
-			this._display = display;
 			this._purchase = purchase;
 			this._sale = sale;
 			this._income = income;
 			this._opening = opening;
 			this._closing = closing;
-		}
-
-		/**
-		 * A human-readable description of the transaction type.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		get display() {
-			return this._display;
 		}
 
 		/**
@@ -9816,27 +9709,27 @@ module.exports = (() => {
 		}
 	}
 
-	const buy = new TransactionType('B', 'Buy', 'Buy', true, false, false, true,  false);
-	const sell = new TransactionType('S', 'Sell', 'Sell', false, true, false, false, true);
-	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', true, false, false, false, true);
-	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', false, true, false, true, false);
-	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', false, false, true, false, false);
-	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', false, false, false, true, false);
-	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', false, false, false, true, false);
-	const split = new TransactionType('SP', 'Split', 'Split', false, false, false, true, false);
-	const fee = new TransactionType('F', 'Fee', 'Fee', false, false, false, true, false);
-	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', false, false, false, false, false);
+	const buy = new TransactionType('B', 'Buy', true, false, false, true,  false);
+	const sell = new TransactionType('S', 'Sell', false, true, false, false, true);
+	const buyShort = new TransactionType('BS', 'Buy To Cover', true, false, false, false, true);
+	const sellShort = new TransactionType('SS', 'Sell Short',  false, true, false, true, false);
+	const dividend = new TransactionType('DV', 'Dividend', false, false, true, false, false);
+	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', false, false, false, true, false);
+	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', false, false, false, true, false);
+	const split = new TransactionType('SP', 'Split', false, false, false, true, false);
+	const fee = new TransactionType('F', 'Fee', false, false, false, true, false);
+	const feeUnits = new TransactionType('FU', 'Fee', false, false, false, false, false);
 
-	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', false, false, true, false, false);
-	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', false, false, false, true, false);
+	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', false, false, true, false, false);
+	const distributionFund = new TransactionType('DF', 'Distribution (Units)', false, false, false, true, false);
 
-	const deposit = new TransactionType('D', 'Deposit', 'Deposit', false, false, false, true, false);
-	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', false, false, false, false, true);
-	const debit = new TransactionType('DR', 'Debit', 'Debit', false, false, false, false, true);
-	const credit = new TransactionType('CR', 'Credit', 'Credit', false, false, false, true, false);
+	const deposit = new TransactionType('D', 'Deposit', false, false, false, true, false);
+	const withdrawal = new TransactionType('W', 'Withdrawal', false, false, false, false, true);
+	const debit = new TransactionType('DR', 'Debit', false, false, false, false, true);
+	const credit = new TransactionType('CR', 'Credit', false, false, false, true, false);
 
-	const valuation = new TransactionType('V', 'Valuation', 'Valuation', false, false, false, false, false);
-	const income = new TransactionType('I', 'Income', 'Income', false, false, true, false, false);
+	const valuation = new TransactionType('V', 'Valuation', false, false, false, false, false);
+	const income = new TransactionType('I', 'Income', false, false, true, false, false);
 
 	return TransactionType;
 })();
@@ -10061,7 +9954,6 @@ module.exports = (() => {
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('update')
-		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'), true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
@@ -10337,8 +10229,7 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const InstrumentType = require('./../data/InstrumentType'),
-	TransactionType = require('./../data/TransactionType');
+const TransactionType = require('./../data/TransactionType');
 
 module.exports = (() => {
 	'use strict';
@@ -10490,7 +10381,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return `[TransactionSchema (code=${this.code})]`;
+			return '[TransactionSchema]';
 		}
 	}
 
@@ -10576,11 +10467,12 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
+		.withField('currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
@@ -10603,9 +10495,9 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
@@ -10719,8 +10611,11 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
@@ -10801,7 +10696,7 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":51,"./../data/TransactionType":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
+},{"./../data/TransactionType":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
