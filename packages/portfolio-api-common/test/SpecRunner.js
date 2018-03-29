@@ -1048,12 +1048,21 @@ module.exports = (() => {
 		 * @param {String} symbol
 		 * @param {Object} data
 		 */
-		setPositionFundamentalData(symbol, data) {
+		setPositionFundamentalData(symbol, display, data) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(display, 'display', Boolean);
 			assert.argumentIsRequired(data, 'data', Object);
 
-			if (this._symbols.hasOwnProperty(symbol)) {
-				this._symbols[symbol].forEach(item => item.setPositionFundamentalData(data));
+			let map;
+
+			if (display) {
+				map = this._symbolsDisplay;
+			} else {
+				map = this._symbols;
+			}
+
+			if (map.hasOwnProperty(symbol)) {
+				map[symbol].forEach(item => item.setPositionFundamentalData(data));
 			}
 		}
 
