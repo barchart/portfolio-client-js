@@ -930,8 +930,14 @@ module.exports = (() => {
 
 					compositeGroups.sort(builder.toComparator());
 
+					const initializeGroupObservers = (group, groupTree) => {
+
+					};
+
 					compositeGroups.forEach((group) => {
 						const childTree = currentTree.addChild(group);
+
+						initializeGroupObservers(group, childTree);
 
 						group.registerMarketPercentChangeHandler(() => {
 							currentTree.walk((childGroup) => childGroup.refreshMarketPercent());
@@ -1222,6 +1228,8 @@ module.exports = (() => {
 			this._excludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
 
+			this._excludedItems = { };
+
 			this._dataFormat = { };
 			this._dataActual = { };
 
@@ -1251,6 +1259,15 @@ module.exports = (() => {
 				this._dataFormat.instrument = null;
 				this._dataFormat.fundamental = { };
 			}
+
+			this._dataActual.quoteLast = null;
+			this._dataActual.quoteOpen = null;
+			this._dataActual.quoteHigh = null;
+			this._dataActual.quoteLow = null;
+			this._dataActual.quoteChange = null;
+			this._dataActual.quoteChangePercent = null;
+			this._dataActual.quoteTime = null;
+			this._dataActual.quoteVolume = null;
 
 			this._dataFormat.quoteLast = null;
 			this._dataFormat.quoteOpen = null;
@@ -1302,14 +1319,23 @@ module.exports = (() => {
 						this._dataActual.currentPrice = quote.lastPrice;
 						this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
 
-						this._dataFormat.quoteLast = formatNumber(quote.previousPrice, precision);
-						this._dataFormat.quoteOpen = formatNumber(quote.openPrice, precision);
-						this._dataFormat.quoteHigh = formatNumber(quote.highPrice, precision);
-						this._dataFormat.quoteLow = formatNumber(quote.lowPrice, precision);
-						this._dataFormat.quoteChange = formatNumber(quote.priceChange, precision);
-						this._dataFormat.quoteChangePercent = formatPercent(new Decimal(quote.percentChange || 0), 2);
-						this._dataFormat.quoteTime = quote.timeDisplay;
-						this._dataFormat.quoteVolume = formatNumber(quote.volume, 0);
+						this._dataActual.quoteLast = quote.previousPrice;
+						this._dataActual.quoteOpen = quote.openPrice;
+						this._dataActual.quoteHigh = quote.highPrice;
+						this._dataActual.quoteLow = quote.lowPrice;
+						this._dataActual.quoteChange = quote.priceChange;
+						this._dataActual.quoteChangePercent = quote.percentChange;
+						this._dataActual.quoteTime = quote.timeDisplay;
+						this._dataActual.quoteVolume = quote.volume;
+
+						this._dataFormat.quoteLast = formatNumber(this._dataActual.quoteLast , precision);
+						this._dataFormat.quoteOpen = formatNumber(this._dataActual.quoteOpen, precision);
+						this._dataFormat.quoteHigh = formatNumber(this._dataActual.quoteHigh, precision);
+						this._dataFormat.quoteLow = formatNumber(this._dataActual.quoteLow, precision);
+						this._dataFormat.quoteChange = formatNumber(this._dataActual.quoteChange, precision);
+						this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
+						this._dataFormat.quoteTime = this._dataActual.quoteTime;
+						this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
 					} else {
 						this._dataActual.currentPrice = null;
 						this._dataFormat.currentPrice = null;
@@ -1416,6 +1442,20 @@ module.exports = (() => {
 		 */
 		get excluded() {
 			return this._excluded;
+		}
+
+		addExcludedItems(items) {
+			items.forEach((item) => {
+				const key = item.position.position;
+
+				if (this._excludedItems.hasOwnProperty(key)) {
+
+				}
+			});
+		}
+
+		removeExcludedItems(items) {
+
 		}
 
 		/**
@@ -2878,7 +2918,7 @@ module.exports = function () {
 	var Currency = function (_Enum) {
 		_inherits(Currency, _Enum);
 
-		function Currency(code, description, precision) {
+		function Currency(code, description, precision, alternateDescription) {
 			_classCallCheck(this, Currency);
 
 			var _this = _possibleConstructorReturn(this, (Currency.__proto__ || Object.getPrototypeOf(Currency)).call(this, code, description));
@@ -2886,7 +2926,11 @@ module.exports = function () {
 			assert.argumentIsRequired(precision, 'precision', Number);
 			assert.argumentIsValid(precision, 'precision', is.integer, 'is an integer');
 
+			assert.argumentIsOptional(alternateDescription, 'alternateDescription', String);
+
 			_this._precision = precision;
+
+			_this._alternateDescription = alternateDescription || description;
 			return _this;
 		}
 
@@ -2907,6 +2951,19 @@ module.exports = function () {
 			key: 'precision',
 			get: function get() {
 				return this._precision;
+			}
+
+			/**
+    * An alternate human-readable description.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'alternateDescription',
+			get: function get() {
+				return this._alternateDescription;
 			}
 
 			/**
@@ -2966,9 +3023,9 @@ module.exports = function () {
 		return Currency;
 	}(Enum);
 
-	var cad = new Currency('CAD', 'Canadian Dollar', 2);
-	var eur = new Currency('EUR', 'Euro', 2);
-	var usd = new Currency('USD', 'US Dollar', 2);
+	var cad = new Currency('CAD', 'Canadian Dollar', 2, 'CAD$');
+	var eur = new Currency('EUR', 'Euro', 2, 'EUR');
+	var usd = new Currency('USD', 'US Dollar', 2, 'US$');
 
 	return Currency;
 }();
@@ -3942,9 +3999,9 @@ module.exports = function () {
 				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
 				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
 
-				if (a._big.gt(b)) {
+				if (a._big.gt(b._big)) {
 					return 1;
-				} else if (a._big.lt(b)) {
+				} else if (a._big.lt(b._big)) {
 					return -1;
 				} else {
 					return 0;
@@ -4405,12 +4462,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var assert = require('./assert'),
-    is = require('./is'),
     memoize = require('./memoize');
 
 var Currency = require('./Currency'),
-    Decimal = require('./Decimal'),
-    Enum = require('./Enum');
+    Decimal = require('./Decimal');
 
 module.exports = function () {
 	'use strict';
@@ -4590,12 +4645,7 @@ module.exports = function () {
 				assert.argumentIsRequired(amount, 'amount', Decimal, 'Decimal');
 				assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
 				assert.argumentIsRequired(desiredCurrency, 'desiredCurrency', Currency, 'Currency');
-
-				for (var _len = arguments.length, rates = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-					rates[_key - 3] = arguments[_key];
-				}
-
-				assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
+				//assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
 
 				var converted = void 0;
 
@@ -4604,6 +4654,10 @@ module.exports = function () {
 				} else {
 					var numerator = desiredCurrency;
 					var denominator = currency;
+
+					for (var _len = arguments.length, rates = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+						rates[_key - 3] = arguments[_key];
+					}
 
 					var rate = rates.find(function (r) {
 						return r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator;
@@ -4655,7 +4709,7 @@ module.exports = function () {
 	return Rate;
 }();
 
-},{"./Currency":12,"./Decimal":14,"./Enum":16,"./assert":19,"./is":21,"./memoize":22}],18:[function(require,module,exports){
+},{"./Currency":12,"./Decimal":14,"./assert":19,"./memoize":22}],18:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
