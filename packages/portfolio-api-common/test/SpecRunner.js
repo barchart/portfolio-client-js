@@ -897,7 +897,7 @@ module.exports = (() => {
 						const items = populatedObjects[key];
 						const first = items[0];
 
-						list.push(new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1));
+						list.push(new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1, levelDefinition.aggregateCash));
 
 						return list;
 					}, [ ]);
@@ -1239,7 +1239,6 @@ module.exports = (() => {
 		}
 	}
 
-
 	return PositionContainer;
 })();
 
@@ -1253,6 +1252,8 @@ const array = require('@barchart/common-js/lang/array'),
 	formatter = require('@barchart/common-js/lang/formatter'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate');
+
+const InstrumentType = require('./../data/InstrumentType');
 
 module.exports = (() => {
 	'use strict';
@@ -1271,9 +1272,10 @@ module.exports = (() => {
 	 * @param {String} key
 	 * @param {String} description
 	 * @param {Boolean=} single
+	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, parent, items, currency, key, description, single) {
+		constructor(container, parent, items, currency, key, description, single, aggregateCash) {
 			this._id = counter++;
 			this._container = container;
 			this._parent = parent || null;
@@ -1286,6 +1288,7 @@ module.exports = (() => {
 			this._description = description;
 
 			this._single = is.boolean(single) && single;
+			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
 			this._suspended = false;
@@ -1363,6 +1366,7 @@ module.exports = (() => {
 			this._dataActual.total = null;
 			this._dataActual.summaryTotalCurrent = null;
 			this._dataActual.summaryTotalPrevious = null;
+			this._dataActual.cashTotal = null;
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
@@ -1383,6 +1387,7 @@ module.exports = (() => {
 			this._dataActual.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
 			this._dataFormat.summaryTotalPreviousNegative = false;
+			this._dataFormat.cashTotal = null;
 
 			this._items.forEach((item) => {
 				this._disposeStack.push(item.registerQuoteChangeHandler((quote, sender) => {
@@ -1563,6 +1568,13 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Set a flag to indicate if parent groups should exclude this group's
+		 * items from their calculations.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
 		setExcluded(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
@@ -1701,6 +1713,10 @@ module.exports = (() => {
 			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
 			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.summaryTotalPrevious));
 
+			if (item.position.type === InstrumentType.CASH) {
+				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
+			}
+
 			return updates;
 		}, {
 			basis: Decimal.ZERO,
@@ -1708,7 +1724,8 @@ module.exports = (() => {
 			unrealized: Decimal.ZERO,
 			income: Decimal.ZERO,
 			summaryTotalCurrent: Decimal.ZERO,
-			summaryTotalPrevious: Decimal.ZERO
+			summaryTotalPrevious: Decimal.ZERO,
+			cashTotal: Decimal.ZERO
 		});
 
 		actual.basis = updates.basis;
@@ -1717,6 +1734,7 @@ module.exports = (() => {
 		actual.income = updates.income;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.summaryTotalPrevious = updates.summaryTotalPrevious;
+		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
 		format.realized = formatCurrency(actual.basis, currency);
@@ -1725,6 +1743,7 @@ module.exports = (() => {
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
+		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
 		calculateUnrealizedPercent(group);
 
@@ -1886,7 +1905,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"@barchart/common-js/collections/specialized/DisposableStack":13,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/Rate":19,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/formatter":22,"@barchart/common-js/lang/is":23,"@barchart/common-js/messaging/Event":25}],6:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"@barchart/common-js/collections/specialized/DisposableStack":13,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/Rate":19,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/formatter":22,"@barchart/common-js/lang/is":23,"@barchart/common-js/messaging/Event":25}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -1924,9 +1943,7 @@ module.exports = (() => {
 			this._data.basis = null;
 
 			this._currentQuote = null;
-
 			this._currentPrice = null;
-			this._previousPrice = null;
 
 			this._data.currentPrice = null;
 			this._data.currentPricePrevious = null;
@@ -2273,10 +2290,12 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
 	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
+	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Boolean=} single
+	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionLevelDefinition {
-		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single) {
+		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsRequired(keySelector, 'keySelector', Function);
 			assert.argumentIsRequired(descriptionSelector, 'descriptionSelector', Function);
@@ -2287,6 +2306,7 @@ module.exports = (() => {
 			}
 
 			assert.argumentIsOptional(single, 'single', Boolean);
+			assert.argumentIsOptional(aggregateCash, 'aggregateCash', Boolean);
 
 			this._name = name;
 
@@ -2296,6 +2316,7 @@ module.exports = (() => {
 
 			this._requiredGroups = requiredGroups || [ ];
 			this._single = is.boolean(single) && single;
+			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 		}
 
 		/**
@@ -2360,6 +2381,16 @@ module.exports = (() => {
 		 */
 		get single() {
 			return this._single;
+		}
+
+		/**
+		 * Indicates if the grouping level should aggregate cash positions.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get aggregateCash() {
+			return this._aggregateCash;
 		}
 
 		toString() {
