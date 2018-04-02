@@ -1348,6 +1348,8 @@ module.exports = (() => {
 			this._dataFormat.quoteChangePercent = null;
 			this._dataFormat.quoteTime = null;
 			this._dataFormat.quoteVolume = null;
+			this._dataFormat.quoteChangeDirection = unchanged;
+			this._dataFormat.quoteChangeNegative = false;
 
 			this._dataActual.currentPrice = null;
 			this._dataActual.previousPrice = null;
@@ -1407,6 +1409,9 @@ module.exports = (() => {
 						this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
 						this._dataFormat.quoteTime = this._dataActual.quoteTime;
 						this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
+
+						setTimeout(() => this._dataFormat.quoteChangeDirection = { up: this._dataActual.quoteChange.getIsPositive(), down: this._dataActual.quoteChange.getIsNegative() });
+						this._dataFormat.quoteChangeNegative = this._dataActual.quoteChange.getIsNegative();
 					} else {
 						this._dataActual.currentPrice = null;
 						this._dataFormat.currentPrice = null;
@@ -1431,7 +1436,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A unique (and otherwise meaningless) idenfitifer for the group.
+		 * A unique (and otherwise meaningless) identifier for the group.
 		 *
 		 * @public
 		 * @returns {Number}
