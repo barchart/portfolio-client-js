@@ -34,9 +34,10 @@ module.exports = (() => {
 	 * @param {Array.<Object>} portfolios
 	 * @param {Array.<Object>} positions
 	 * @param {Array.<Object>} summaries
+	 * @param {Object=} exclusionDependencies
 	 */
 	class PositionContainer {
-		constructor(definitions, portfolios, positions, summaries) {
+		constructor(definitions, portfolios, positions, summaries, exclusionDependencies) {
 			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
@@ -242,6 +243,42 @@ module.exports = (() => {
 									parentGroup.setExcludedItems(array.unique(excludedItems));
 								}
 							}, false);
+
+							const treeName = treeDefinition.name;
+
+							if (exclusionDependencies && exclusionDependencies.hasOwnProperty(treeName)) {
+								let dependantNames = exclusionDependencies[treeName];
+
+								if (is.string(dependantNames)) {
+									dependantNames = [ dependantNames ];
+								} else if (!is.array(dependantNames)) {
+									dependantNames = [ ];
+								}
+
+								const dependantTrees = dependantNames.reduce((trees, name) => {
+									if ( this._trees.hasOwnProperty(name)) {
+										trees.push(this._trees[name]);
+									}
+
+									return trees;
+								}, [ ]);
+
+								if (dependantTrees.length > 0) {
+									let excludedItems = [ ];
+
+									groupTree.walk((childGroup) => {
+										if (childGroup.excluded) {
+											excludedItems = excludedItems.concat(childGroup.items);
+										}
+									}, false, false);
+
+									dependantTrees.forEach((dependantTrees) => {
+										dependantTrees.walk((childGroup) => {
+											childGroup.setExcludedItems(excludedItems);
+										}, false, false);
+									});
+								}
+							}
 						}));
 					};
 

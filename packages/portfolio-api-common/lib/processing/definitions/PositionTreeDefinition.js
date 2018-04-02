@@ -24,6 +24,7 @@ module.exports = (() => {
 		/**
 		 * The name of the tree.
 		 *
+		 * @public
 		 * @returns {String}
 		 */
 		get name() {
