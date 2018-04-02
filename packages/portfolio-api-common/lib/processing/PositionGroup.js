@@ -123,6 +123,7 @@ module.exports = (() => {
 			this._dataActual.summaryTotalPrevious = null;
 			this._dataActual.cashTotal = null;
 
+			this._dataFormat.type = null;
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
 			this._dataFormat.basis = null;
@@ -507,6 +508,8 @@ module.exports = (() => {
 
 		if (group.single) {
 			const item = group._items[0];
+
+			format.type = item.data.type || null;
 
 			actual.quantity = item.position.snapshot.open;
 			actual.basisPrice = item.data.basisPrice;
