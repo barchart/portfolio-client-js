@@ -293,6 +293,8 @@ module.exports = (() => {
 				const key = item.position.position;
 
 				map[key] = item;
+
+				return map;
 			}, { });
 
 			this.refresh();
