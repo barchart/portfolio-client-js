@@ -181,7 +181,7 @@ module.exports = (() => {
 						const items = populatedObjects[key];
 						const first = items[0];
 
-						list.push(new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1));
+						list.push(new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1, levelDefinition.aggregateCash));
 
 						return list;
 					}, [ ]);

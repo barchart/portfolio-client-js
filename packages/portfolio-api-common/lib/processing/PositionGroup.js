@@ -8,6 +8,8 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate');
 
+const InstrumentType = require('./../data/InstrumentType');
+
 module.exports = (() => {
 	'use strict';
 
@@ -25,9 +27,10 @@ module.exports = (() => {
 	 * @param {String} key
 	 * @param {String} description
 	 * @param {Boolean=} single
+	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, parent, items, currency, key, description, single) {
+		constructor(container, parent, items, currency, key, description, single, aggregateCash) {
 			this._id = counter++;
 			this._container = container;
 			this._parent = parent || null;
@@ -40,6 +43,7 @@ module.exports = (() => {
 			this._description = description;
 
 			this._single = is.boolean(single) && single;
+			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
 			this._suspended = false;
@@ -117,6 +121,7 @@ module.exports = (() => {
 			this._dataActual.total = null;
 			this._dataActual.summaryTotalCurrent = null;
 			this._dataActual.summaryTotalPrevious = null;
+			this._dataActual.cashTotal = null;
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
@@ -137,6 +142,7 @@ module.exports = (() => {
 			this._dataActual.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
 			this._dataFormat.summaryTotalPreviousNegative = false;
+			this._dataFormat.cashTotal = null;
 
 			this._items.forEach((item) => {
 				this._disposeStack.push(item.registerQuoteChangeHandler((quote, sender) => {
@@ -317,6 +323,13 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Set a flag to indicate if parent groups should exclude this group's
+		 * items from their calculations.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
 		setExcluded(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
@@ -455,6 +468,10 @@ module.exports = (() => {
 			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
 			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.summaryTotalPrevious));
 
+			if (item.position.type === InstrumentType.CASH) {
+				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
+			}
+
 			return updates;
 		}, {
 			basis: Decimal.ZERO,
@@ -462,7 +479,8 @@ module.exports = (() => {
 			unrealized: Decimal.ZERO,
 			income: Decimal.ZERO,
 			summaryTotalCurrent: Decimal.ZERO,
-			summaryTotalPrevious: Decimal.ZERO
+			summaryTotalPrevious: Decimal.ZERO,
+			cashTotal: Decimal.ZERO
 		});
 
 		actual.basis = updates.basis;
@@ -471,6 +489,7 @@ module.exports = (() => {
 		actual.income = updates.income;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.summaryTotalPrevious = updates.summaryTotalPrevious;
+		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
 		format.realized = formatCurrency(actual.basis, currency);
@@ -479,6 +498,7 @@ module.exports = (() => {
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
+		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
 		calculateUnrealizedPercent(group);
 

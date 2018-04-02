@@ -15,10 +15,12 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
 	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
+	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Boolean=} single
+	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionLevelDefinition {
-		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single) {
+		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsRequired(keySelector, 'keySelector', Function);
 			assert.argumentIsRequired(descriptionSelector, 'descriptionSelector', Function);
@@ -29,6 +31,7 @@ module.exports = (() => {
 			}
 
 			assert.argumentIsOptional(single, 'single', Boolean);
+			assert.argumentIsOptional(aggregateCash, 'aggregateCash', Boolean);
 
 			this._name = name;
 
@@ -38,6 +41,7 @@ module.exports = (() => {
 
 			this._requiredGroups = requiredGroups || [ ];
 			this._single = is.boolean(single) && single;
+			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 		}
 
 		/**
@@ -102,6 +106,16 @@ module.exports = (() => {
 		 */
 		get single() {
 			return this._single;
+		}
+
+		/**
+		 * Indicates if the grouping level should aggregate cash positions.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get aggregateCash() {
+			return this._aggregateCash;
 		}
 
 		toString() {
