@@ -1532,7 +1532,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._excluded !== value) {
-				this._groupExcludedChangeEvent(this._excluded = value);
+				this._groupExcludedChangeEvent.fire(this._excluded = value);
 			}
 		}
 
