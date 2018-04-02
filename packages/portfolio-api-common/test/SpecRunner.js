@@ -1368,7 +1368,6 @@ module.exports = (() => {
 			this._dataActual.summaryTotalPrevious = null;
 			this._dataActual.cashTotal = null;
 
-			this._dataFormat.type = null;
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.previousPrice = null;
 			this._dataFormat.basis = null;
@@ -1389,6 +1388,7 @@ module.exports = (() => {
 			this._dataFormat.summaryTotalPrevious = null;
 			this._dataFormat.summaryTotalPreviousNegative = false;
 			this._dataFormat.cashTotal = null;
+			this._dataFormat.portfolioType = null;
 
 			this._items.forEach((item) => {
 				this._disposeStack.push(item.registerQuoteChangeHandler((quote, sender) => {
@@ -1754,14 +1754,28 @@ module.exports = (() => {
 		if (group.single) {
 			const item = group._items[0];
 
-			format.type = item.data.type || null;
-
 			actual.quantity = item.position.snapshot.open;
 			actual.basisPrice = item.data.basisPrice;
 
 			format.quantity = formatDecimal(actual.quantity, 2);
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
 		}
+
+		const groupItems = group._items;
+
+		let portfolioType = null;
+
+		if (groupItems.length > 0) {
+			const portfolio = groupItems[0].portfolio;
+
+			if (groupItems.every(i => i.portfolio.portfolio === portfolio.portfolio)) {
+				if (portfolio.miscellany && portfolio.miscellany.data.type && portfolio.miscellany.data.type.value) {
+					portfolioType = portfolio.miscellany.data.type.value;
+				}
+			}
+		}
+
+		format.portfolioType = portfolioType;
 	}
 
 	function calculatePriceData(group, rates, item, forceRefresh) {
@@ -1975,8 +1989,6 @@ module.exports = (() => {
 			this._data.newsExists = false;
 			this._data.fundamental = { };
 
-			this._data.type = null;
-
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
@@ -2150,10 +2162,6 @@ module.exports = (() => {
 		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
-
-		if (portfolio.miscellany && portfolio.miscellany.data.type && portfolio.miscellany.data.type.value) {
-			data.type = portfolio.miscellany.data.type.value;
-		}
 
 		data.previousPrice = position.previous || null;
 
