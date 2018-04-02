@@ -504,12 +504,12 @@ module.exports = (() => {
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
+		format.type = item.data.type || null;
+
 		calculateUnrealizedPercent(group);
 
 		if (group.single) {
 			const item = group._items[0];
-
-			format.type = item.data.type || null;
 
 			actual.quantity = item.position.snapshot.open;
 			actual.basisPrice = item.data.basisPrice;
