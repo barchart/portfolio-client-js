@@ -750,10 +750,9 @@ module.exports = (() => {
 	 * @param {Array.<Object>} portfolios
 	 * @param {Array.<Object>} positions
 	 * @param {Array.<Object>} summaries
-	 * @param {Object=} exclusionDependencies
 	 */
 	class PositionContainer {
-		constructor(definitions, portfolios, positions, summaries, exclusionDependencies) {
+		constructor(definitions, portfolios, positions, summaries) {
 			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
@@ -962,17 +961,9 @@ module.exports = (() => {
 
 							const treeName = treeDefinition.name;
 
-							if (exclusionDependencies && exclusionDependencies.hasOwnProperty(treeName)) {
-								let dependantNames = exclusionDependencies[treeName];
-
-								if (is.string(dependantNames)) {
-									dependantNames = [ dependantNames ];
-								} else if (!is.array(dependantNames)) {
-									dependantNames = [ ];
-								}
-
-								const dependantTrees = dependantNames.reduce((trees, name) => {
-									if ( this._trees.hasOwnProperty(name)) {
+							if (treeDefinition.exclusionDependencies.length > 0) {
+								const dependantTrees = treeDefinition.exclusionDependencies.reduce((trees, name) => {
+									if (this._trees.hasOwnProperty(name)) {
 										trees.push(this._trees[name]);
 									}
 
@@ -2444,12 +2435,17 @@ module.exports = (() => {
 	 * @param {Array.<PositionLevelDefinition>} definitions
 	 */
 	class PositionTreeDefinitions {
-		constructor(name, definitions) {
+		constructor(name, definitions, exclusionDependencies) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(definitions, 'definitions', PositionLevelDefinition, 'PositionLevelDefinition');
 
+			if (exclusionDependencies) {
+				assert.argumentIsArray(exclusionDependencies, 'exclusionDependencies', String);
+			}
+
 			this._name = name;
 			this._definitions = definitions;
+			this._exclusionDependencies = exclusionDependencies || [ ];
 		}
 
 		/**
@@ -2473,6 +2469,17 @@ module.exports = (() => {
 		 */
 		get definitions() {
 			return this._definitions;
+		}
+
+		/**
+		 * Returns the names of other trees which should be impacted when a
+		 * group (from the current tree) is excluded.
+		 *
+		 * @public
+		 * @return {Array.<String>}
+		 */
+		get exclusionDependencies() {
+			return this._exclusionDependencies;
 		}
 
 		toString() {
