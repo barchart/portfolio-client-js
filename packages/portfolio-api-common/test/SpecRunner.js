@@ -945,11 +945,11 @@ module.exports = (() => {
 
 					const initializeGroupObservers = (group, groupTree) => {
 						addGroupBinding(group, group.registerGroupExcludedChangeHandler((excluded, sender) => {
-							groupTree.climb((parentGroup, parentTree) => {
-								if (parentGroup !== null) {
+							groupTree.climb((parentGroup) => {
+								if (parentGroup) {
 									let excludedItems = [];
 
-									currentTree.walk((childGroup, childTree) => {
+									currentTree.walk((childGroup) => {
 										if (childGroup.excluded) {
 											excludedItems = excludedItems.concat(childGroup.items);
 										}
