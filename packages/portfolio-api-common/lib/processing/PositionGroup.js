@@ -545,18 +545,6 @@ module.exports = (() => {
 				summaryTotalCurrent: actual.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrentChange))
 			};
 		}
-		
-		if (parent !== null) {
-			const parentData = parent._dataActual;
-
-			if (parentData.market !== null && !parentData.market.getIsZero()) {
-				updates.marketPercent = updates.market.divide(parentData.market);
-			} else {
-				updates.marketPercent = null;
-			}
-		} else {
-			updates.marketPercent = null;
-		}
 
 		actual.market = updates.market;
 		actual.unrealized = updates.unrealized;
@@ -593,13 +581,14 @@ module.exports = (() => {
 		}
 
 		const parent = group._parent;
+		const excluded = group._excluded;
 
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 		
 		let marketPercent;
 		
-		if (parent !== null) {
+		if (parent !== null && !excluded) {
 			const parentData = parent._dataActual;
 
 			if (parentData.market !== null && !parentData.market.getIsZero()) {
