@@ -523,6 +523,5 @@ module.exports = (() => {
 		}
 	}
 
-
 	return PositionContainer;
 })();
