@@ -230,14 +230,15 @@ module.exports = (() => {
 	}
 
 	function calculateStaticData(item) {
+		const portfolio = item.portfolio;
 		const position = item.position;
 		const snapshot = item.position.snapshot;
 		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
 
-		if (position.miscellany && position.miscellany.type && position.miscellany.type.value) {
-			data.type = position.miscellany.type.value;
+		if (portfolio.miscellany && portfolio.miscellany.data.type && portfolio.miscellany.data.type.value) {
+			data.type = portfolio.miscellany.data.type.value;
 		}
 
 		data.previousPrice = position.previous || null;
