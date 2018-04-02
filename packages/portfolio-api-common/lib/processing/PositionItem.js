@@ -61,8 +61,6 @@ module.exports = (() => {
 			this._data.newsExists = false;
 			this._data.fundamental = { };
 
-			this._data.type = null;
-
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
@@ -236,10 +234,6 @@ module.exports = (() => {
 		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
-
-		if (portfolio.miscellany && portfolio.miscellany.data.type && portfolio.miscellany.data.type.value) {
-			data.type = portfolio.miscellany.data.type.value;
-		}
 
 		data.previousPrice = position.previous || null;
 
