@@ -4,6 +4,7 @@ const array = require('@barchart/common-js/lang/array'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate'),
 	Tree = require('@barchart/common-js/collections/Tree');
@@ -46,6 +47,18 @@ module.exports = (() => {
 
 			const currentSummaryFrame = PositionSummaryFrame.YTD;
 			const currentSummaryRange = array.last(currentSummaryFrame.getRecentRanges(0));
+
+			this._groupBindings = { };
+
+			const addGroupBinding = (group, dispoable) => {
+				const id = group.id;
+
+				if (!this._groupBindings.hasOwnProperty(id)) {
+					this._groupBindings[id] = new DisposableStack();
+				}
+
+				this._groupBindings[id].push(dispoable);
+			};
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -215,7 +228,19 @@ module.exports = (() => {
 					compositeGroups.sort(builder.toComparator());
 
 					const initializeGroupObservers = (group, groupTree) => {
+						addGroupBinding(group, group.registerGroupExcludedChangeHandler((excluded, sender) => {
+							groupTree.climb((parentGroup, parentTree) => {
+								let excludedItems = [ ];
 
+								currentTree.walk((childGroup, childTree) => {
+									if (childGroup.excluded) {
+										excludedItems = excludedItems.concat(childGroup.items);
+									}
+								}, false, false);
+
+								parentGroup.setExcludedItems(array.unique(excludedItems));
+							}, false);
+						}));
 					};
 
 					compositeGroups.forEach((group) => {
@@ -223,9 +248,9 @@ module.exports = (() => {
 
 						initializeGroupObservers(group, childTree);
 
-						group.registerMarketPercentChangeHandler(() => {
+						addGroupBinding(group, group.registerMarketPercentChangeHandler(() => {
 							currentTree.walk((childGroup) => childGroup.refreshMarketPercent());
-						});
+						}));
 
 						createGroups(childTree, group.items, array.dropLeft(levelDefinitions));
 					});
@@ -385,6 +410,7 @@ module.exports = (() => {
 		/**
 		 * Returns a single level of grouping from one of the internal trees.
 		 *
+		 * @public
 		 * @param {String} name
 		 * @param {Array.<String> keys
 		 * @returns {PositionGroup}
@@ -400,6 +426,7 @@ module.exports = (() => {
 		 * Returns all child groups from a level of grouping within one of
 		 * the internal trees.
 		 *
+		 * @public
 		 * @param {String} name
 		 * @param {Array.<String> keys
 		 * @returns {Array.<PositionGroup>}
@@ -411,6 +438,13 @@ module.exports = (() => {
 			return findNode(this._trees[name], keys).getChildren().map(node => node.getValue());
 		}
 
+		/**
+		 * Returns all positions for the given portfolio.
+		 *
+		 * @public
+		 * @param {String} portfolio
+		 * @return {Array.<Object>}
+		 */
 		getPositions(portfolio) {
 			return this._items.reduce((positions, item) => {
 				if (item.position.portfolio === portfolio) {

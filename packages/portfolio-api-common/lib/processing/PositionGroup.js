@@ -1,6 +1,8 @@
-const assert = require('@barchart/common-js/lang/assert'),
+const array = require('@barchart/common-js/lang/array'),
+	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
 	is = require('@barchart/common-js/lang/is'),
@@ -8,6 +10,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 
 module.exports = (() => {
 	'use strict';
+
+	let counter = 0;
 
 	/**
 	 * A grouping of {@link PositionItem} instances. The group aggregates from across
@@ -24,6 +28,7 @@ module.exports = (() => {
 	 */
 	class PositionGroup {
 		constructor(container, parent, items, currency, key, description, single) {
+			this._id = counter++;
 			this._container = container;
 			this._parent = parent || null;
 
@@ -41,10 +46,14 @@ module.exports = (() => {
 			this._showClosedPositions = false;
 
 			this._marketPercentChangeEvent = new Event(this);
-			this._excludedChangeEvent = new Event(this);
+			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
 
-			this._excludedItems = { };
+			this._disposeStack = new DisposableStack();
+
+			this._excludedItems = [ ];
+			this._excludedItemMap = { };
+			this._consideredItems = this._items;
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -128,7 +137,7 @@ module.exports = (() => {
 			this._dataFormat.summaryTotalPreviousNegative = false;
 
 			this._items.forEach((item) => {
-				item.registerQuoteChangeHandler((quote, sender) => {
+				this._disposeStack.push(item.registerQuoteChangeHandler((quote, sender) => {
 					if (this._single) {
 						const precision = sender.position.instrument.currency.precision;
 
@@ -158,21 +167,31 @@ module.exports = (() => {
 					}
 
 					calculatePriceData(this, this._container.getForexQuotes(), sender, false);
-				});
+				}));
 
 				if (this._single) {
-					item.registerNewsExistsChangeHandler((exists, sender) => {
+					this._disposeStack.push(item.registerNewsExistsChangeHandler((exists, sender) => {
 						this._dataActual.newsExists = exists;
 						this._dataFormat.newsExists = exists;
-					});
+					}));
 
-					item.registerFundamentalDataChangeHandler((data, sender) => {
+					this._disposeStack.push(item.registerFundamentalDataChangeHandler((data, sender) => {
 						this._dataFormat.fundamental = data;
-					});
+					}));
 				}
 			});
 
 			this.refresh();
+		}
+
+		/**
+		 * A unique (and otherwise meaningless) idenfitifer for the group.
+		 *
+		 * @public
+		 * @returns {Number}
+		 */
+		get id() {
+			return this._id;
 		}
 
 		/**
@@ -260,18 +279,23 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
-		addExcludedItems(items) {
-			items.forEach((item) => {
+		/**
+		 * Sets the list of items which are excluded from group aggregation calculations.
+		 *
+		 * @public
+		 * @param {Array.<Object>} items
+		 */
+		setExcludedItems(items) {
+			this._excludedItems = items;
+			this._consideredItems = array.difference(this._items, this._excludedItems);
+
+			this._excludedItemMap = this._excludedItems.reduce((map, item) => {
 				const key = item.position.position;
 
-				if (this._excludedItems.hasOwnProperty(key)) {
+				map[key] = item;
+			}, { });
 
-				}
-			});
-		}
-
-		removeExcludedItems(items) {
-
+			this.refresh();
 		}
 
 		/**
@@ -290,7 +314,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._excluded !== value) {
-				this._excludedChangeEvent(this._excluded = value);
+				this._groupExcludedChangeEvent(this._excluded = value);
 			}
 		}
 
@@ -334,8 +358,27 @@ module.exports = (() => {
 			calculateMarketPercent(this, this._container.getForexQuotes(), true);
 		}
 
+		/**
+		 * Adds an observer for change in the market percentage of the group.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @return {Disposable}
+		 */
 		registerMarketPercentChangeHandler(handler) {
-			this._marketPercentChangeEvent.register(handler);
+			return this._marketPercentChangeEvent.register(handler);
+		}
+
+		/**
+		 * Adds an observer for changes to the exclusion of the group
+		 * from higher level aggregations.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @return {Disposable}
+		 */
+		registerGroupExcludedChangeHandler(handler) {
+			return this._groupExcludedChangeEvent.register(handler);
 		}
 
 		toString() {
@@ -381,7 +424,7 @@ module.exports = (() => {
 
 		const currency = group.currency;
 		
-		const items = group._items;
+		const items = group._consideredItems;
 
 		group._bypassCurrencyTranslation = items.every(item => item.currency === currency);
 
@@ -449,11 +492,16 @@ module.exports = (() => {
 		}
 
 		const parent = group._parent;
+		const currency = group.currency;
 
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
-		const currency = group.currency;
+		const refresh = (is.boolean(forceRefresh) && forceRefresh) || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
+
+		if (!refresh && group._excludedItemMap.hasOwnProperty(item.position.position)) {
+			return;
+		}
 
 		const translate = (item, value) => {
 			let translated;
@@ -467,12 +515,10 @@ module.exports = (() => {
 			return translated;
 		};
 
-		const refresh = (is.boolean(forceRefresh) && forceRefresh) || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
-
 		let updates;
 
 		if (refresh) {
-			const items = group._items;
+			const items = group._consideredItems;
 
 			updates = items.reduce((updates, item) => {
 				updates.market = updates.market.add(translate(item, item.data.market));
@@ -487,7 +533,6 @@ module.exports = (() => {
 				unrealized: Decimal.ZERO,
 				unrealizedToday: Decimal.ZERO,
 				summaryTotalCurrent: Decimal.ZERO
-
 			});
 		} else {
 			updates = {

@@ -196,9 +196,10 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Function} handler
+		 * @returns {Disposable}
 		 */
 		registerQuoteChangeHandler(handler) {
-			this._quoteChangedEvent.register(handler);
+			return this._quoteChangedEvent.register(handler);
 		}
 
 		/**
@@ -206,9 +207,10 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Function} handler
+		 * @returns {Disposable}
 		 */
 		registerFundamentalDataChangeHandler(handler) {
-			this._fundamentalDataChangeEvent.register(handler);
+			return this._fundamentalDataChangeEvent.register(handler);
 		}
 
 		/**
@@ -216,9 +218,10 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Function} handler
+		 * @returns {Disposable}
 		 */
 		registerNewsExistsChangeHandler(handler) {
-			this._newsExistsChangedEvent.register(handler);
+			return this._newsExistsChangedEvent.register(handler);
 		}
 
 		toString() {
