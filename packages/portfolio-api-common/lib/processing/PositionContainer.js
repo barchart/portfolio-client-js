@@ -243,8 +243,6 @@ module.exports = (() => {
 								}
 							}, false);
 
-							const treeName = treeDefinition.name;
-
 							if (treeDefinition.exclusionDependencies.length > 0) {
 								const dependantTrees = treeDefinition.exclusionDependencies.reduce((trees, name) => {
 									if (this._trees.hasOwnProperty(name)) {
@@ -257,7 +255,7 @@ module.exports = (() => {
 								if (dependantTrees.length > 0) {
 									let excludedItems = [ ];
 
-									groupTree.walk((childGroup) => {
+									tree.walk((childGroup) => {
 										if (childGroup.excluded) {
 											excludedItems = excludedItems.concat(childGroup.items);
 										}
