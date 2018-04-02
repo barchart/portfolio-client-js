@@ -34,10 +34,9 @@ module.exports = (() => {
 	 * @param {Array.<Object>} portfolios
 	 * @param {Array.<Object>} positions
 	 * @param {Array.<Object>} summaries
-	 * @param {Object=} exclusionDependencies
 	 */
 	class PositionContainer {
-		constructor(definitions, portfolios, positions, summaries, exclusionDependencies) {
+		constructor(definitions, portfolios, positions, summaries) {
 			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
@@ -246,17 +245,9 @@ module.exports = (() => {
 
 							const treeName = treeDefinition.name;
 
-							if (exclusionDependencies && exclusionDependencies.hasOwnProperty(treeName)) {
-								let dependantNames = exclusionDependencies[treeName];
-
-								if (is.string(dependantNames)) {
-									dependantNames = [ dependantNames ];
-								} else if (!is.array(dependantNames)) {
-									dependantNames = [ ];
-								}
-
-								const dependantTrees = dependantNames.reduce((trees, name) => {
-									if ( this._trees.hasOwnProperty(name)) {
+							if (treeDefinition.exclusionDependencies.length > 0) {
+								const dependantTrees = treeDefinition.exclusionDependencies.reduce((trees, name) => {
+									if (this._trees.hasOwnProperty(name)) {
 										trees.push(this._trees[name]);
 									}
 

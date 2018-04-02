@@ -13,12 +13,17 @@ module.exports = (() => {
 	 * @param {Array.<PositionLevelDefinition>} definitions
 	 */
 	class PositionTreeDefinitions {
-		constructor(name, definitions) {
+		constructor(name, definitions, exclusionDependencies) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(definitions, 'definitions', PositionLevelDefinition, 'PositionLevelDefinition');
 
+			if (exclusionDependencies) {
+				assert.argumentIsArray(exclusionDependencies, 'exclusionDependencies', String);
+			}
+
 			this._name = name;
 			this._definitions = definitions;
+			this._exclusionDependencies = exclusionDependencies || [ ];
 		}
 
 		/**
@@ -42,6 +47,17 @@ module.exports = (() => {
 		 */
 		get definitions() {
 			return this._definitions;
+		}
+
+		/**
+		 * Returns the names of other trees which should be impacted when a
+		 * group (from the current tree) is excluded.
+		 *
+		 * @public
+		 * @return {Array.<String>}
+		 */
+		get exclusionDependencies() {
+			return this._exclusionDependencies;
 		}
 
 		toString() {
