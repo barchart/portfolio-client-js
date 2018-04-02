@@ -116,7 +116,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":16,"@barchart/common-js/lang/assert":19}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":18,"@barchart/common-js/lang/assert":21}],2:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -373,7 +373,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":13,"@barchart/common-js/lang/Decimal":14,"@barchart/common-js/lang/Enum":16,"@barchart/common-js/lang/array":18,"@barchart/common-js/lang/assert":19,"@barchart/common-js/lang/is":21}],3:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":15,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/Enum":18,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/is":23}],3:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -713,13 +713,14 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":16,"@barchart/common-js/lang/assert":19}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":18,"@barchart/common-js/lang/assert":21}],4:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate'),
 	Tree = require('@barchart/common-js/collections/Tree');
@@ -762,6 +763,18 @@ module.exports = (() => {
 
 			const currentSummaryFrame = PositionSummaryFrame.YTD;
 			const currentSummaryRange = array.last(currentSummaryFrame.getRecentRanges(0));
+
+			this._groupBindings = { };
+
+			const addGroupBinding = (group, dispoable) => {
+				const id = group.id;
+
+				if (!this._groupBindings.hasOwnProperty(id)) {
+					this._groupBindings[id] = new DisposableStack();
+				}
+
+				this._groupBindings[id].push(dispoable);
+			};
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -931,7 +944,19 @@ module.exports = (() => {
 					compositeGroups.sort(builder.toComparator());
 
 					const initializeGroupObservers = (group, groupTree) => {
+						addGroupBinding(group, group.registerGroupExcludedChangeHandler((excluded, sender) => {
+							groupTree.climb((parentGroup, parentTree) => {
+								let excludedItems = [ ];
 
+								currentTree.walk((childGroup, childTree) => {
+									if (childGroup.excluded) {
+										excludedItems = excludedItems.concat(childGroup.items);
+									}
+								}, false, false);
+
+								parentGroup.setExcludedItems(array.unique(excludedItems));
+							}, false);
+						}));
 					};
 
 					compositeGroups.forEach((group) => {
@@ -939,9 +964,9 @@ module.exports = (() => {
 
 						initializeGroupObservers(group, childTree);
 
-						group.registerMarketPercentChangeHandler(() => {
+						addGroupBinding(group, group.registerMarketPercentChangeHandler(() => {
 							currentTree.walk((childGroup) => childGroup.refreshMarketPercent());
-						});
+						}));
 
 						createGroups(childTree, group.items, array.dropLeft(levelDefinitions));
 					});
@@ -1101,6 +1126,7 @@ module.exports = (() => {
 		/**
 		 * Returns a single level of grouping from one of the internal trees.
 		 *
+		 * @public
 		 * @param {String} name
 		 * @param {Array.<String> keys
 		 * @returns {PositionGroup}
@@ -1116,6 +1142,7 @@ module.exports = (() => {
 		 * Returns all child groups from a level of grouping within one of
 		 * the internal trees.
 		 *
+		 * @public
 		 * @param {String} name
 		 * @param {Array.<String> keys
 		 * @returns {Array.<PositionGroup>}
@@ -1127,6 +1154,13 @@ module.exports = (() => {
 			return findNode(this._trees[name], keys).getChildren().map(node => node.getValue());
 		}
 
+		/**
+		 * Returns all positions for the given portfolio.
+		 *
+		 * @public
+		 * @param {String} portfolio
+		 * @return {Array.<Object>}
+		 */
 		getPositions(portfolio) {
 			return this._items.reduce((positions, item) => {
 				if (item.position.portfolio === portfolio) {
@@ -1181,10 +1215,12 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":2,"./PositionGroup":5,"./PositionItem":6,"./definitions/PositionTreeDefinition":8,"@barchart/common-js/collections/Tree":9,"@barchart/common-js/collections/sorting/ComparatorBuilder":10,"@barchart/common-js/collections/sorting/comparators":11,"@barchart/common-js/lang/Currency":12,"@barchart/common-js/lang/Decimal":14,"@barchart/common-js/lang/Rate":17,"@barchart/common-js/lang/array":18,"@barchart/common-js/lang/assert":19,"@barchart/common-js/lang/is":21}],5:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
+},{"./../data/PositionSummaryFrame":2,"./PositionGroup":5,"./PositionItem":6,"./definitions/PositionTreeDefinition":8,"@barchart/common-js/collections/Tree":10,"@barchart/common-js/collections/sorting/ComparatorBuilder":11,"@barchart/common-js/collections/sorting/comparators":12,"@barchart/common-js/collections/specialized/DisposableStack":13,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/Rate":19,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/is":23}],5:[function(require,module,exports){
+const array = require('@barchart/common-js/lang/array'),
+	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
 	is = require('@barchart/common-js/lang/is'),
@@ -1192,6 +1228,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 
 module.exports = (() => {
 	'use strict';
+
+	let counter = 0;
 
 	/**
 	 * A grouping of {@link PositionItem} instances. The group aggregates from across
@@ -1208,6 +1246,7 @@ module.exports = (() => {
 	 */
 	class PositionGroup {
 		constructor(container, parent, items, currency, key, description, single) {
+			this._id = counter++;
 			this._container = container;
 			this._parent = parent || null;
 
@@ -1225,10 +1264,14 @@ module.exports = (() => {
 			this._showClosedPositions = false;
 
 			this._marketPercentChangeEvent = new Event(this);
-			this._excludedChangeEvent = new Event(this);
+			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
 
-			this._excludedItems = { };
+			this._disposeStack = new DisposableStack();
+
+			this._excludedItems = [ ];
+			this._excludedItemMap = { };
+			this._consideredItems = this._items;
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -1312,7 +1355,7 @@ module.exports = (() => {
 			this._dataFormat.summaryTotalPreviousNegative = false;
 
 			this._items.forEach((item) => {
-				item.registerQuoteChangeHandler((quote, sender) => {
+				this._disposeStack.push(item.registerQuoteChangeHandler((quote, sender) => {
 					if (this._single) {
 						const precision = sender.position.instrument.currency.precision;
 
@@ -1342,21 +1385,31 @@ module.exports = (() => {
 					}
 
 					calculatePriceData(this, this._container.getForexQuotes(), sender, false);
-				});
+				}));
 
 				if (this._single) {
-					item.registerNewsExistsChangeHandler((exists, sender) => {
+					this._disposeStack.push(item.registerNewsExistsChangeHandler((exists, sender) => {
 						this._dataActual.newsExists = exists;
 						this._dataFormat.newsExists = exists;
-					});
+					}));
 
-					item.registerFundamentalDataChangeHandler((data, sender) => {
+					this._disposeStack.push(item.registerFundamentalDataChangeHandler((data, sender) => {
 						this._dataFormat.fundamental = data;
-					});
+					}));
 				}
 			});
 
 			this.refresh();
+		}
+
+		/**
+		 * A unique (and otherwise meaningless) idenfitifer for the group.
+		 *
+		 * @public
+		 * @returns {Number}
+		 */
+		get id() {
+			return this._id;
 		}
 
 		/**
@@ -1444,18 +1497,23 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
-		addExcludedItems(items) {
-			items.forEach((item) => {
+		/**
+		 * Sets the list of items which are excluded from group aggregation calculations.
+		 *
+		 * @public
+		 * @param {Array.<Object>} items
+		 */
+		setExcludedItems(items) {
+			this._excludedItems = items;
+			this._consideredItems = array.difference(this._items, this._excludedItems);
+
+			this._excludedItemMap = this._excludedItems.reduce((map, item) => {
 				const key = item.position.position;
 
-				if (this._excludedItems.hasOwnProperty(key)) {
+				map[key] = item;
+			}, { });
 
-				}
-			});
-		}
-
-		removeExcludedItems(items) {
-
+			this.refresh();
 		}
 
 		/**
@@ -1474,7 +1532,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._excluded !== value) {
-				this._excludedChangeEvent(this._excluded = value);
+				this._groupExcludedChangeEvent(this._excluded = value);
 			}
 		}
 
@@ -1518,8 +1576,27 @@ module.exports = (() => {
 			calculateMarketPercent(this, this._container.getForexQuotes(), true);
 		}
 
+		/**
+		 * Adds an observer for change in the market percentage of the group.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @return {Disposable}
+		 */
 		registerMarketPercentChangeHandler(handler) {
-			this._marketPercentChangeEvent.register(handler);
+			return this._marketPercentChangeEvent.register(handler);
+		}
+
+		/**
+		 * Adds an observer for changes to the exclusion of the group
+		 * from higher level aggregations.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @return {Disposable}
+		 */
+		registerGroupExcludedChangeHandler(handler) {
+			return this._groupExcludedChangeEvent.register(handler);
 		}
 
 		toString() {
@@ -1565,7 +1642,7 @@ module.exports = (() => {
 
 		const currency = group.currency;
 		
-		const items = group._items;
+		const items = group._consideredItems;
 
 		group._bypassCurrencyTranslation = items.every(item => item.currency === currency);
 
@@ -1633,11 +1710,16 @@ module.exports = (() => {
 		}
 
 		const parent = group._parent;
+		const currency = group.currency;
 
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
-		const currency = group.currency;
+		const refresh = (is.boolean(forceRefresh) && forceRefresh) || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
+
+		if (!refresh && group._excludedItemMap.hasOwnProperty(item.position.position)) {
+			return;
+		}
 
 		const translate = (item, value) => {
 			let translated;
@@ -1651,12 +1733,10 @@ module.exports = (() => {
 			return translated;
 		};
 
-		const refresh = (is.boolean(forceRefresh) && forceRefresh) || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
-
 		let updates;
 
 		if (refresh) {
-			const items = group._items;
+			const items = group._consideredItems;
 
 			updates = items.reduce((updates, item) => {
 				updates.market = updates.market.add(translate(item, item.data.market));
@@ -1671,7 +1751,6 @@ module.exports = (() => {
 				unrealized: Decimal.ZERO,
 				unrealizedToday: Decimal.ZERO,
 				summaryTotalCurrent: Decimal.ZERO
-
 			});
 		} else {
 			updates = {
@@ -1783,7 +1862,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"@barchart/common-js/lang/Currency":12,"@barchart/common-js/lang/Decimal":14,"@barchart/common-js/lang/Rate":17,"@barchart/common-js/lang/assert":19,"@barchart/common-js/lang/formatter":20,"@barchart/common-js/lang/is":21,"@barchart/common-js/messaging/Event":23}],6:[function(require,module,exports){
+},{"@barchart/common-js/collections/specialized/DisposableStack":13,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/Rate":19,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/formatter":22,"@barchart/common-js/lang/is":23,"@barchart/common-js/messaging/Event":25}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -1982,9 +2061,10 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Function} handler
+		 * @returns {Disposable}
 		 */
 		registerQuoteChangeHandler(handler) {
-			this._quoteChangedEvent.register(handler);
+			return this._quoteChangedEvent.register(handler);
 		}
 
 		/**
@@ -1992,9 +2072,10 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Function} handler
+		 * @returns {Disposable}
 		 */
 		registerFundamentalDataChangeHandler(handler) {
-			this._fundamentalDataChangeEvent.register(handler);
+			return this._fundamentalDataChangeEvent.register(handler);
 		}
 
 		/**
@@ -2002,9 +2083,10 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Function} handler
+		 * @returns {Disposable}
 		 */
 		registerNewsExistsChangeHandler(handler) {
-			this._newsExistsChangedEvent.register(handler);
+			return this._newsExistsChangedEvent.register(handler);
 		}
 
 		toString() {
@@ -2149,7 +2231,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Currency":12,"@barchart/common-js/lang/Decimal":14,"@barchart/common-js/lang/array":18,"@barchart/common-js/lang/assert":19,"@barchart/common-js/lang/is":21,"@barchart/common-js/messaging/Event":23}],7:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/is":23,"@barchart/common-js/messaging/Event":25}],7:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -2305,7 +2387,7 @@ module.exports = (() => {
 	return PositionLevelDefinition;
 })();
 
-},{"@barchart/common-js/lang/assert":19,"@barchart/common-js/lang/is":21}],8:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/is":23}],8:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert');
 
 const PositionLevelDefinition = require('./PositionLevelDefinition');
@@ -2359,7 +2441,139 @@ module.exports = (() => {
 	return PositionTreeDefinitions;
 })();
 
-},{"./PositionLevelDefinition":7,"@barchart/common-js/lang/assert":19}],9:[function(require,module,exports){
+},{"./PositionLevelDefinition":7,"@barchart/common-js/lang/assert":21}],9:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./../lang/assert');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A stack collection (supports LIFO operations).
+  *
+  * @public
+  */
+
+	var Stack = function () {
+		function Stack() {
+			_classCallCheck(this, Stack);
+
+			this._array = [];
+		}
+
+		/**
+   * Adds an item to the stack.
+   *
+   * @public
+   * @param {object} item
+   * @returns {object} - The item added to the stack.
+   */
+
+
+		_createClass(Stack, [{
+			key: 'push',
+			value: function push(item) {
+				this._array.unshift(item);
+
+				return item;
+			}
+
+			/**
+    * Removes and returns an item from the stack. Throws if the stack is empty.
+    *
+    * @public
+    * @returns {object} - The removed from the stack.
+    */
+
+		}, {
+			key: 'pop',
+			value: function pop() {
+				if (this.empty()) {
+					throw new Error('Stack is empty');
+				}
+
+				return this._array.shift();
+			}
+
+			/**
+    * Returns the next item in the stack (without removing it). Throws if the stack is empty.
+    *
+    * @public
+    * @returns {object} - The item added to the queue.
+    */
+
+		}, {
+			key: 'peek',
+			value: function peek() {
+				if (this.empty()) {
+					throw new Error('Stack is empty');
+				}
+
+				return this._array[0];
+			}
+
+			/**
+    * Returns true if the queue is empty; otherwise false.
+    *
+    * @public
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'empty',
+			value: function empty() {
+				return this._array.length === 0;
+			}
+
+			/**
+    * Runs an action on each item in the stack.
+    *
+    * @public
+    * @param {Function} action - The action to run.
+    */
+
+		}, {
+			key: 'scan',
+			value: function scan(action) {
+				assert.argumentIsRequired(action, 'action', Function);
+
+				this._array.forEach(function (x) {
+					return action(x);
+				});
+			}
+
+			/**
+    * Outputs an array of the stacks's items; without affecting the
+    * queue's internal state;
+    *
+    * @public
+    * @returns {Array}
+    */
+
+		}, {
+			key: 'toArray',
+			value: function toArray() {
+				return this._array.slice(0);
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Stack]';
+			}
+		}]);
+
+		return Stack;
+	}();
+
+	return Stack;
+}();
+
+},{"./../lang/assert":21}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2668,7 +2882,7 @@ module.exports = function () {
 	return Tree;
 }();
 
-},{"./../lang/is":21}],10:[function(require,module,exports){
+},{"./../lang/is":23}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2812,7 +3026,7 @@ module.exports = function () {
 	return ComparatorBuilder;
 }();
 
-},{"./../../lang/assert":19,"./comparators":11}],11:[function(require,module,exports){
+},{"./../../lang/assert":21,"./comparators":12}],12:[function(require,module,exports){
 'use strict';
 
 var assert = require('./../../lang/assert');
@@ -2887,7 +3101,115 @@ module.exports = function () {
 	};
 }();
 
-},{"./../../lang/assert":19}],12:[function(require,module,exports){
+},{"./../../lang/assert":21}],13:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Stack = require('./../Stack');
+
+var assert = require('./../../lang/assert'),
+    Disposable = require('./../../lang/Disposable'),
+    is = require('./../../lang/is');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A stack of {@link Disposable} instances which itself inherits {@Disposable}.
+  * When {@link DisposableStack#dispose} is called, then each item in the collection
+  * is disposed in order.
+  *
+  * @public
+  * @extends {Disposable}
+  */
+
+	var DisposableStack = function (_Disposable) {
+		_inherits(DisposableStack, _Disposable);
+
+		function DisposableStack() {
+			_classCallCheck(this, DisposableStack);
+
+			var _this = _possibleConstructorReturn(this, (DisposableStack.__proto__ || Object.getPrototypeOf(DisposableStack)).call(this));
+
+			_this._stack = new Stack();
+			return _this;
+		}
+
+		/**
+   * Adds a new {@link Disposable} instance to the stack.
+   *
+   * @public
+   * @param {Disposable} disposable - The item to add.
+   */
+
+
+		_createClass(DisposableStack, [{
+			key: 'push',
+			value: function push(disposable) {
+				assert.argumentIsRequired(disposable, 'disposable', Disposable, 'Disposable');
+
+				if (this.getIsDisposed()) {
+					throw new Error('Unable to push item onto DisposableStack because it has been disposed.');
+				}
+
+				this._stack.push(disposable);
+			}
+		}, {
+			key: '_onDispose',
+			value: function _onDispose() {
+				while (!this._stack.empty()) {
+					this._stack.pop().dispose();
+				}
+			}
+		}], [{
+			key: 'fromArray',
+			value: function fromArray(bindings) {
+				assert.argumentIsArray(bindings, 'bindings', Disposable, 'Disposable');
+
+				var returnRef = new DisposableStack();
+
+				for (var i = 0; i < bindings.length; i++) {
+					returnRef.push(bindings[i]);
+				}
+
+				return returnRef;
+			}
+		}, {
+			key: 'pushPromise',
+			value: function pushPromise(stack, promise) {
+				assert.argumentIsRequired(stack, 'stack', DisposableStack, 'DisposableStack');
+				assert.argumentIsRequired(promise, 'promise');
+
+				return promise.then(function (b) {
+					var bindings = void 0;
+
+					if (is.array(b)) {
+						bindings = b;
+					} else {
+						bindings = [b];
+					}
+
+					bindings.forEach(function (binding) {
+						return stack.push(binding);
+					});
+				});
+			}
+		}]);
+
+		return DisposableStack;
+	}(Disposable);
+
+	return DisposableStack;
+}();
+
+},{"./../../lang/Disposable":17,"./../../lang/assert":21,"./../../lang/is":23,"./../Stack":9}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3030,7 +3352,7 @@ module.exports = function () {
 	return Currency;
 }();
 
-},{"./Enum":16,"./assert":19,"./is":21}],13:[function(require,module,exports){
+},{"./Enum":18,"./assert":21,"./is":23}],15:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3583,7 +3905,7 @@ module.exports = function () {
 	return Day;
 }();
 
-},{"./../collections/sorting/ComparatorBuilder":10,"./../collections/sorting/comparators":11,"./assert":19,"./is":21}],14:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":11,"./../collections/sorting/comparators":12,"./assert":21,"./is":23}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4163,7 +4485,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":16,"./assert":19,"./is":21,"big.js":24}],15:[function(require,module,exports){
+},{"./Enum":18,"./assert":21,"./is":23,"big.js":26}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4312,7 +4634,7 @@ module.exports = function () {
 	return Disposable;
 }();
 
-},{"./assert":19}],16:[function(require,module,exports){
+},{"./assert":21}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4454,7 +4776,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":19}],17:[function(require,module,exports){
+},{"./assert":21}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4709,7 +5031,7 @@ module.exports = function () {
 	return Rate;
 }();
 
-},{"./Currency":12,"./Decimal":14,"./assert":19,"./memoize":22}],18:[function(require,module,exports){
+},{"./Currency":14,"./Decimal":16,"./assert":21,"./memoize":24}],20:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -5090,7 +5412,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":19,"./is":21}],19:[function(require,module,exports){
+},{"./assert":21,"./is":23}],21:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -5238,7 +5560,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":21}],20:[function(require,module,exports){
+},{"./is":23}],22:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -5303,7 +5625,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -5526,7 +5848,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -5599,7 +5921,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":19,"./is":21}],23:[function(require,module,exports){
+},{"./assert":21,"./is":23}],25:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5771,7 +6093,7 @@ module.exports = function () {
 	return Event;
 }();
 
-},{"./../lang/Disposable":15,"./../lang/assert":19}],24:[function(require,module,exports){
+},{"./../lang/Disposable":17,"./../lang/assert":21}],26:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -6712,7 +7034,7 @@ module.exports = function () {
   }
 })(this);
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -7069,7 +7391,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":2,"./../../../lib/data/TransactionType":3,"@barchart/common-js/lang/Day":13,"@barchart/common-js/lang/Decimal":14}],26:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":2,"./../../../lib/data/TransactionType":3,"@barchart/common-js/lang/Day":15,"@barchart/common-js/lang/Decimal":16}],28:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -7178,4 +7500,4 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":1,"./../../../lib/processing/PositionContainer":4,"./../../../lib/processing/definitions/PositionLevelDefinition":7,"./../../../lib/processing/definitions/PositionTreeDefinition":8,"@barchart/common-js/lang/Currency":12,"@barchart/common-js/lang/Decimal":14}]},{},[25,26]);
+},{"./../../../lib/data/InstrumentType":1,"./../../../lib/processing/PositionContainer":4,"./../../../lib/processing/definitions/PositionLevelDefinition":7,"./../../../lib/processing/definitions/PositionTreeDefinition":8,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16}]},{},[27,28]);
