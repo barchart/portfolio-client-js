@@ -170,8 +170,8 @@ module.exports = (() => {
 						this._dataFormat.quoteTime = this._dataActual.quoteTime;
 						this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
 
-						const quoteChangePositive = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange.getIsPositive() > 0;
-						const quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange.getIsPositive() < 0;
+						const quoteChangePositive = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange > 0;
+						const quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
 
 						setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
 						this._dataFormat.quoteChangeNegative = quoteChangeNegative;
