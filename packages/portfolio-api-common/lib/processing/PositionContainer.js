@@ -230,15 +230,17 @@ module.exports = (() => {
 					const initializeGroupObservers = (group, groupTree) => {
 						addGroupBinding(group, group.registerGroupExcludedChangeHandler((excluded, sender) => {
 							groupTree.climb((parentGroup, parentTree) => {
-								let excludedItems = [ ];
+								if (parentGroup !== null) {
+									let excludedItems = [];
 
-								currentTree.walk((childGroup, childTree) => {
-									if (childGroup.excluded) {
-										excludedItems = excludedItems.concat(childGroup.items);
-									}
-								}, false, false);
+									currentTree.walk((childGroup, childTree) => {
+										if (childGroup.excluded) {
+											excludedItems = excludedItems.concat(childGroup.items);
+										}
+									}, false, false);
 
-								parentGroup.setExcludedItems(array.unique(excludedItems));
+									parentGroup.setExcludedItems(array.unique(excludedItems));
+								}
 							}, false);
 						}));
 					};
