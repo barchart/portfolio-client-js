@@ -22,6 +22,7 @@ module.exports = (() => {
 	 * @public
 	 * @param {PositionContainer} container
 	 * @param {PositionGroup|null} parent
+	 * @param {LevelDefinition} definition
 	 * @param {Array.<PositionItem>} items
 	 * @param {Currency} currency
 	 * @param {String} key
@@ -30,8 +31,10 @@ module.exports = (() => {
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, parent, items, currency, key, description, single, aggregateCash) {
+		constructor(container, parent, definition, items, currency, key, description, single, aggregateCash) {
 			this._id = counter++;
+
+			this._definition = definition;
 			this._container = container;
 			this._parent = parent || null;
 
@@ -207,6 +210,16 @@ module.exports = (() => {
 		 */
 		get id() {
 			return this._id;
+		}
+
+		/**
+		 * The {@link LevelDefinition} which was used to generate this group.
+		 *
+		 * @public
+		 * @returns {LevelDefinition}
+		 */
+		get definition() {
+			return this._definition;
 		}
 
 		/**
