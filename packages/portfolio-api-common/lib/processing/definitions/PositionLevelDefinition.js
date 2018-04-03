@@ -136,7 +136,6 @@ module.exports = (() => {
 			};
 		}
 
-
 		static getKeyForPortfolioGroup(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 
@@ -165,7 +164,6 @@ module.exports = (() => {
 				currency: currency
 			}
 		}
-
 
 		static getKeyForAssetClassGroup(type, currency) {
 			assert.argumentIsRequired(type, 'type', InstrumentType, 'InstrumentType');
