@@ -20,7 +20,7 @@ module.exports = (() => {
 	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Boolean=} single
 	 * @param {Boolean=} aggregateCash
-	 * @param {Function=} injectPositions
+	 * @param {Function=} requiredGroupGenerator
 	 */
 	class PositionLevelDefinition {
 		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash, requiredGroupGenerator) {

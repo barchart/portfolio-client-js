@@ -209,7 +209,7 @@ module.exports = (() => {
 								if (group.definition === parentLevelDefinition) {
 									parentTrees.push(groupTree);
 								}
-							});
+							}, false, false);
 						}
 
 						const overrideRequiredGroups = [ portfolioRequiredGroup ];
