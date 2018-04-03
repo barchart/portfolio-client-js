@@ -895,14 +895,45 @@ module.exports = (() => {
 
 				this._definitions.forEach((treeDefinition) => {
 					const tree = this._trees[treeDefinition.name];
+					const levelDefinitions = treeDefinition.definitions;
 
-					treeDefinition.definitions.forEach((levelDefinition) => {
-						const requiredGroup = levelDefinition.generateRequiredGroup(portfolio);
+					let portfolioRequiredGroup = null;
 
-						if (requiredGroup !== null) {
+					let portfolioLevelDefinition = null;
+					let portfolioLevelDefinitionIndex = null;
 
+					levelDefinitions.forEach((levelDefinition, i) => {
+						if (portfolioRequiredGroup === null) {
+							portfolioRequiredGroup = levelDefinition.generateRequiredGroup(portfolio);
+
+							if (portfolioRequiredGroup !== null) {
+								portfolioLevelDefinition = levelDefinition;
+								portfolioLevelDefinitionIndex = i;
+							}
 						}
 					});
+
+					if (portfolioRequiredGroup !== null) {
+						let parentTrees = [ ];
+
+						if (portfolioLevelDefinitionIndex === 0) {
+							parentTrees.push(tree);
+						} else {
+							const parentLevelDefinition = levelDefinitions[ portfolioLevelDefinitionIndex - 1 ];
+
+							tree.walk((group, groupTree) => {
+								if (group.definition === parentLevelDefinition) {
+									parentTrees.push(groupTree);
+								}
+							});
+						}
+
+						const overrideRequiredGroups = [ portfolioRequiredGroup ];
+
+						parentTrees.forEach((t) => {
+							createGroups.call(this, tree, t, [ ], treeDefinition, levelDefinitions.slice(portfolioLevelDefinitionIndex), overrideRequiredGroups);
+						});
+					}
 				});
 			}
 		}
@@ -1160,7 +1191,7 @@ module.exports = (() => {
 		this._groupBindings[id].push(dispoable);
 	}
 
-	function createGroups(parentTree, currentTree, items, treeDefinition, levelDefinitions) {
+	function createGroups(parentTree, currentTree, items, treeDefinition, levelDefinitions, overrideRequiredGroups) {
 		if (levelDefinitions.length === 0) {
 			return;
 		}
@@ -1174,26 +1205,28 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(this, parent, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1, levelDefinition.aggregateCash));
+			list.push(new PositionGroup(this, parent, levelDefinition, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.single && items.length === 1, levelDefinition.aggregateCash));
 
 			return list;
 		}, [ ]);
 
-		const missingGroups = array.difference(levelDefinition.requiredGroups.map(group => group.key), populatedGroups.map(group => group.key))
+		const requiredGroupsToUse = overrideRequiredGroups || levelDefinition.requiredGroups;
+
+		const missingGroups = array.difference(requiredGroupsToUse.map(group => group.key), populatedGroups.map(group => group.key))
 			.map((key) => {
-				return levelDefinition.requiredGroups.find(g => g.key === key);
+				return requiredGroupsToUse.find(g => g.key === key);
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(this, parent, [ ], group.currency, group.key, group.description);
+			return new PositionGroup(this, parent, levelDefinition, [ ], group.currency, group.key, group.description);
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
 
 		let builder;
 
-		if (levelDefinition.requiredGroups.length !== 0) {
-			const ordering = levelDefinition.requiredGroups.reduce((map, group, index) => {
+		if (requiredGroupsToUse.length !== 0) {
+			const ordering = requiredGroupsToUse.reduce((map, group, index) => {
 				map[group.description] = index;
 
 				return map;
@@ -1305,6 +1338,7 @@ module.exports = (() => {
 	 * @public
 	 * @param {PositionContainer} container
 	 * @param {PositionGroup|null} parent
+	 * @param {LevelDefinition} definition
 	 * @param {Array.<PositionItem>} items
 	 * @param {Currency} currency
 	 * @param {String} key
@@ -1313,8 +1347,10 @@ module.exports = (() => {
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, parent, items, currency, key, description, single, aggregateCash) {
+		constructor(container, parent, definition, items, currency, key, description, single, aggregateCash) {
 			this._id = counter++;
+
+			this._definition = definition;
 			this._container = container;
 			this._parent = parent || null;
 
@@ -1490,6 +1526,16 @@ module.exports = (() => {
 		 */
 		get id() {
 			return this._id;
+		}
+
+		/**
+		 * The {@link LevelDefinition} which was used to generate this group.
+		 *
+		 * @public
+		 * @returns {LevelDefinition}
+		 */
+		get definition() {
+			return this._definition;
 		}
 
 		/**
@@ -2654,7 +2700,7 @@ module.exports = (() => {
 		 * bottom-most level of the tree (i.e. leaf nodes).
 		 *
 		 * @public
-		 * @returns {Array.<PositionTreeDefinition>}
+		 * @returns {Array.<PositionLevelDefinitions>}
 		 */
 		get definitions() {
 			return this._definitions;
