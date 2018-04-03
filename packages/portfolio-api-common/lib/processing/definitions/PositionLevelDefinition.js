@@ -1,5 +1,8 @@
 const assert = require('@barchart/common-js/lang/assert'),
+	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
+
+const InstrumentType = require('./../../data/InstrumentType');
 
 module.exports = (() => {
 	'use strict';
@@ -14,7 +17,6 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~keySelector} keySelector
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
-	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Boolean=} single
 	 * @param {Boolean=} aggregateCash
@@ -116,6 +118,67 @@ module.exports = (() => {
 		 */
 		get aggregateCash() {
 			return this._aggregateCash;
+		}
+
+		/**
+		 * Builds a {@link PositionLevelDefinition~RequiredGroup} for a portfolio.
+		 *
+		 * @public
+		 * @static
+		 * @param {Object} portfolio
+		 * @return {PositionLevelDefinition~RequiredGroup}
+		 */
+		static buildRequiredGroupForPortfolio(portfolio) {
+			return {
+				key: PositionLevelDefinition.getKeyForPortfolioGroup(portfolio),
+				description: PositionLevelDefinition.getDescriptionForPortfolioGroup(portfolio),
+				currency: Currency.CAD
+			};
+		}
+
+
+		static getKeyForPortfolioGroup(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+
+			return portfolio.portfolio;
+		}
+
+		static getDescriptionForPortfolioGroup(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+
+			return portfolio.name;
+		}
+
+		/**
+		 * Builds a {@link PositionLevelDefinition~RequiredGroup} for an asset class.
+		 *
+		 * @public
+		 * @static
+		 * @param {InstrumentType} type
+		 * @param {Currency} currency
+		 * @return {PositionLevelDefinition~RequiredGroup}
+		 */
+		static buildRequiredGroupForAssetClass(type, currency) {
+			return {
+				key: PositionLevelDefinition.getKeyForAssetClassGroup(type, currency),
+				description: PositionLevelDefinition.getDescriptionForAssetClassGroup(type, currency),
+				currency: currency
+			}
+		}
+
+
+		static getKeyForAssetClassGroup(type, currency) {
+			assert.argumentIsRequired(type, 'type', InstrumentType, 'InstrumentType');
+			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+
+			return `${type.code}|${currency.code}`;
+		}
+
+		static getDescriptionForAssetClassGroup(type, currency) {
+			assert.argumentIsRequired(type, 'type', InstrumentType, 'InstrumentType');
+			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+
+			return `${type.alternateDescription}${currency.code === 'CAD' ? '' : ` (${currency.alternateDescription})`}`;
 		}
 
 		toString() {

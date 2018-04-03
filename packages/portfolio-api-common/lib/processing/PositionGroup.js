@@ -294,6 +294,16 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
+		addItems(items) {
+
+			this.refresh();
+		}
+
+		removeItems(items) {
+
+			this.refresh();
+		}
+
 		/**
 		 * Sets the list of items which are excluded from group aggregation calculations.
 		 *

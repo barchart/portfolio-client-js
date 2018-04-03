@@ -292,6 +292,22 @@ module.exports = (() => {
 			}, { });
 		}
 
+		addPortfolio(portfolio) {
+
+		}
+
+		removePortfolio(portfolio) {
+
+		}
+
+		mutatePosition(position, summary) {
+
+		}
+
+		removePosition(position) {
+
+		}
+
 		/**
 		 * Returns a distinct list of all symbols used by the positions
 		 * within the container.
