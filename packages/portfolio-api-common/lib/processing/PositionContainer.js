@@ -409,6 +409,16 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns all portfolios in the container
+		 *
+		 * @public
+		 * @return {Array.<Object>}
+		 */
+		getPortfolios() {
+			return this._portfolios;
+		}
+
+		/**
 		 * Returns all positions for the given portfolio.
 		 *
 		 * @public
