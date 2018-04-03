@@ -20,9 +20,10 @@ module.exports = (() => {
 	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Boolean=} single
 	 * @param {Boolean=} aggregateCash
+	 * @param {Function=} injectPositions
 	 */
 	class PositionLevelDefinition {
-		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash) {
+		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash, requiredGroupGenerator) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsRequired(keySelector, 'keySelector', Function);
 			assert.argumentIsRequired(descriptionSelector, 'descriptionSelector', Function);
@@ -34,6 +35,7 @@ module.exports = (() => {
 
 			assert.argumentIsOptional(single, 'single', Boolean);
 			assert.argumentIsOptional(aggregateCash, 'aggregateCash', Boolean);
+			assert.argumentIsOptional(requiredGroupGenerator, 'requiredGroupGenerator', Function);
 
 			this._name = name;
 
@@ -42,8 +44,11 @@ module.exports = (() => {
 			this._currencySelector = currencySelector;
 
 			this._requiredGroups = requiredGroups || [ ];
+
 			this._single = is.boolean(single) && single;
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
+
+			this._requiredGroupGenerator = requiredGroupGenerator || (input => null);
 		}
 
 		/**
@@ -121,6 +126,23 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Given an input, potentially creates a new {@link PositionLevelDefinition~RequiredGroup}.
+		 *
+		 * @public
+		 * @param {*} input
+		 * @returns {PositionLevelDefinition~RequiredGroup|null}
+		 */
+		generateRequiredGroup(input) {
+			const requiredGroup = this._requiredGroupGenerator(input);
+
+			if (requiredGroup !== null) {
+				this._requiredGroups.push(requiredGroup);
+			}
+
+			return requiredGroup;
+		}
+
+		/**
 		 * Builds a {@link PositionLevelDefinition~RequiredGroup} for a portfolio.
 		 *
 		 * @public
@@ -148,6 +170,20 @@ module.exports = (() => {
 			return portfolio.name;
 		}
 
+		static getRequiredGroupGeneratorForPortfolio() {
+			return (portfolio) => {
+				let requiredGroup;
+
+				if (is.object(portfolio) && is.string(portfolio.portfolio) && is.string(portfolio.name)) {
+					requiredGroup = PositionLevelDefinition.buildRequiredGroupForPortfolio(portfolio);
+				} else {
+					requiredGroup = null;
+				}
+
+				return requiredGroup;
+			};
+		}
+
 		/**
 		 * Builds a {@link PositionLevelDefinition~RequiredGroup} for an asset class.
 		 *
@@ -162,7 +198,7 @@ module.exports = (() => {
 				key: PositionLevelDefinition.getKeyForAssetClassGroup(type, currency),
 				description: PositionLevelDefinition.getDescriptionForAssetClassGroup(type, currency),
 				currency: currency
-			}
+			};
 		}
 
 		static getKeyForAssetClassGroup(type, currency) {
