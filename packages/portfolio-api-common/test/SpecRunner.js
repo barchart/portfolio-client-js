@@ -925,7 +925,7 @@ module.exports = (() => {
 								if (group.definition === parentLevelDefinition) {
 									parentTrees.push(groupTree);
 								}
-							});
+							}, false, false);
 						}
 
 						const overrideRequiredGroups = [ portfolioRequiredGroup ];
@@ -2420,7 +2420,7 @@ module.exports = (() => {
 	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
 	 * @param {Boolean=} single
 	 * @param {Boolean=} aggregateCash
-	 * @param {Function=} injectPositions
+	 * @param {Function=} requiredGroupGenerator
 	 */
 	class PositionLevelDefinition {
 		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash, requiredGroupGenerator) {
@@ -3534,7 +3534,7 @@ module.exports = function () {
 	var Currency = function (_Enum) {
 		_inherits(Currency, _Enum);
 
-		function Currency(code, description, precision) {
+		function Currency(code, description, precision, alternateDescription) {
 			_classCallCheck(this, Currency);
 
 			var _this = _possibleConstructorReturn(this, (Currency.__proto__ || Object.getPrototypeOf(Currency)).call(this, code, description));
@@ -3542,7 +3542,11 @@ module.exports = function () {
 			assert.argumentIsRequired(precision, 'precision', Number);
 			assert.argumentIsValid(precision, 'precision', is.integer, 'is an integer');
 
+			assert.argumentIsOptional(alternateDescription, 'alternateDescription', String);
+
 			_this._precision = precision;
+
+			_this._alternateDescription = alternateDescription || description;
 			return _this;
 		}
 
@@ -3563,6 +3567,19 @@ module.exports = function () {
 			key: 'precision',
 			get: function get() {
 				return this._precision;
+			}
+
+			/**
+    * An alternate human-readable description.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'alternateDescription',
+			get: function get() {
+				return this._alternateDescription;
 			}
 
 			/**
@@ -3622,9 +3639,9 @@ module.exports = function () {
 		return Currency;
 	}(Enum);
 
-	var cad = new Currency('CAD', 'Canadian Dollar', 2);
-	var eur = new Currency('EUR', 'Euro', 2);
-	var usd = new Currency('USD', 'US Dollar', 2);
+	var cad = new Currency('CAD', 'Canadian Dollar', 2, 'CAD$');
+	var eur = new Currency('EUR', 'Euro', 2, 'EUR');
+	var usd = new Currency('USD', 'US Dollar', 2, 'US$');
 
 	return Currency;
 }();
@@ -4598,9 +4615,9 @@ module.exports = function () {
 				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
 				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
 
-				if (a._big.gt(b)) {
+				if (a._big.gt(b._big)) {
 					return 1;
-				} else if (a._big.lt(b)) {
+				} else if (a._big.lt(b._big)) {
 					return -1;
 				} else {
 					return 0;
@@ -5061,12 +5078,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var assert = require('./assert'),
-    is = require('./is'),
     memoize = require('./memoize');
 
 var Currency = require('./Currency'),
-    Decimal = require('./Decimal'),
-    Enum = require('./Enum');
+    Decimal = require('./Decimal');
 
 module.exports = function () {
 	'use strict';
@@ -5246,12 +5261,7 @@ module.exports = function () {
 				assert.argumentIsRequired(amount, 'amount', Decimal, 'Decimal');
 				assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
 				assert.argumentIsRequired(desiredCurrency, 'desiredCurrency', Currency, 'Currency');
-
-				for (var _len = arguments.length, rates = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-					rates[_key - 3] = arguments[_key];
-				}
-
-				assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
+				//assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
 
 				var converted = void 0;
 
@@ -5260,6 +5270,10 @@ module.exports = function () {
 				} else {
 					var numerator = desiredCurrency;
 					var denominator = currency;
+
+					for (var _len = arguments.length, rates = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+						rates[_key - 3] = arguments[_key];
+					}
 
 					var rate = rates.find(function (r) {
 						return r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator;
@@ -5311,7 +5325,7 @@ module.exports = function () {
 	return Rate;
 }();
 
-},{"./Currency":14,"./Decimal":16,"./Enum":18,"./assert":21,"./is":23,"./memoize":24}],20:[function(require,module,exports){
+},{"./Currency":14,"./Decimal":16,"./assert":21,"./memoize":24}],20:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
