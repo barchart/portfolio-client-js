@@ -1416,8 +1416,8 @@ module.exports = (() => {
 						this._dataFormat.quoteTime = this._dataActual.quoteTime;
 						this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
 
-						const quoteChangePositive = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange > 0;
-						const quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
+						const quoteChangePositive = quote.lastPriceDirection === 'up';
+						const quoteChangeNegative = quote.lastPriceDirection === 'down';
 
 						setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
 						this._dataFormat.quoteChangeNegative = quoteChangeNegative;
