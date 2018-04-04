@@ -4,6 +4,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 
 const InstrumentType = require('./../../data/InstrumentType');
 
+const PositionLevelType = require('./PositionLevelType');
+
 module.exports = (() => {
 	'use strict';
 
@@ -23,8 +25,9 @@ module.exports = (() => {
 	 * @param {Function=} requiredGroupGenerator
 	 */
 	class PositionLevelDefinition {
-		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash, requiredGroupGenerator) {
+		constructor(name, type, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash, requiredGroupGenerator) {
 			assert.argumentIsRequired(name, 'name', String);
+			assert.argumentIsRequired(type, 'type', PositionLevelType, 'PositionLevelType');
 			assert.argumentIsRequired(keySelector, 'keySelector', Function);
 			assert.argumentIsRequired(descriptionSelector, 'descriptionSelector', Function);
 			assert.argumentIsRequired(currencySelector, 'currencySelector', Function);
@@ -38,6 +41,7 @@ module.exports = (() => {
 			assert.argumentIsOptional(requiredGroupGenerator, 'requiredGroupGenerator', Function);
 
 			this._name = name;
+			this._type = type;
 
 			this._keySelector = keySelector;
 			this._descriptionSelector = descriptionSelector;
@@ -59,6 +63,16 @@ module.exports = (() => {
 		 */
 		get name() {
 			return this._name;
+		}
+
+		/**
+		 * A general description of the type of items grouped together.
+		 *
+		 * @public
+		 * @return {PositionLevelType}
+		 */
+		get type() {
+			return this._type;
 		}
 
 		/**

@@ -373,6 +373,12 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Stops (or starts) group-level aggregation calculations.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
 		setSuspended(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
