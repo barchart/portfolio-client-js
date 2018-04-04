@@ -116,7 +116,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":18,"@barchart/common-js/lang/assert":21}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/assert":22}],2:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -373,7 +373,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":15,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/Enum":18,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/is":23}],3:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":16,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],3:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -713,7 +713,7 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":18,"@barchart/common-js/lang/assert":21}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/assert":22}],4:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
@@ -883,6 +883,13 @@ module.exports = (() => {
 			}, { });
 		}
 
+		/**
+		 * Adds a new portfolio to the container, injecting it into aggregation
+		 * trees, as necessary.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 */
 		addPortfolio(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
@@ -938,8 +945,25 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Removes an existing portfolio, and all of it's positions, from the container. This
+		 * also triggers removal of the portfolio and it's positions from any applicable
+		 * aggregation trees.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 */
 		removePortfolio(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
 
+			this.startTransaction(() => {
+				const itemsToRemove = getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(i => removePositionItem.call(this, i));
+
+				itemsToRemove.forEach(item => removePositionItem.call(this, item));
+
+
+			});
 		}
 
 		mutatePosition(position, summary) {
@@ -947,7 +971,7 @@ module.exports = (() => {
 		}
 
 		removePosition(position) {
-
+			removePositionItem.call(this, this._items.find((item) => item.position.position === position));
 		}
 
 		/**
@@ -1125,13 +1149,13 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Returns all portfolios in the container
+		 * Returns all portfolios in the container.
 		 *
 		 * @public
 		 * @return {Array.<Object>}
 		 */
 		getPortfolios() {
-			return this._portfolios;
+			return Object.keys(this._portfolios).map(id => this._portfolios[id]);
 		}
 
 		/**
@@ -1142,24 +1166,42 @@ module.exports = (() => {
 		 * @return {Array.<Object>}
 		 */
 		getPositions(portfolio) {
-			return this._items.reduce((positions, item) => {
-				if (item.position.portfolio === portfolio) {
-					positions.push(item);
-				}
+			assert.argumentIsRequired(portfolio, 'portfolio', String);
 
-				return positions;
-			}, []);
+			return getPositionItemsForPortfolio(this._items, portfolio).map(item => item.position);
 		}
 
-		startTransaction(name, executor) {
-			assert.argumentIsRequired(name, 'name', String);
+		/**
+		 * Pauses aggregation calculations during the processing of an action.
+		 *
+		 * @public
+		 * @param {Function} executor
+		 * @param {String=|Array.<String>=} names
+		 */
+		startTransaction(executor, names) {
+			let namesToUse;
+
+			if (is.array(names)) {
+				assert.argumentIsArray(names, 'names', String);
+
+				namesToUse = names;
+			} else {
+				assert.argumentIsOptional(names, 'names', String);
+
+				if (names) {
+					namesToUse = [ names ];
+				} else {
+					namesToUse = Object.keys(this._trees);
+				}
+			}
+
 			assert.argumentIsRequired(executor, 'executor', Function);
 
-			this._trees[name].walk(group => group.setSuspended(true), false, false);
+			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(true), false, false));
 
 			executor(this);
 
-			this._trees[name].walk(group => group.setSuspended(false), false, false);
+			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(false), false, false));
 		}
 
 		toString() {
@@ -1320,10 +1362,28 @@ module.exports = (() => {
 		});
 	}
 
+	function getPositionItemsForPortfolio(items, portfolio) {
+		return items.reduce((positionItems, item) => {
+			if (item.position.portfolio === portfolio) {
+				positionItems.push(item.position);
+			}
+
+			return positionItems;
+		}, [ ]);
+	}
+
+	function removePositionItem(positionItem) {
+		if (!positionItem) {
+			return;
+		}
+
+		positionItem.dispose();
+	}
+
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":2,"./PositionGroup":5,"./PositionItem":6,"./definitions/PositionTreeDefinition":8,"@barchart/common-js/collections/Tree":10,"@barchart/common-js/collections/sorting/ComparatorBuilder":11,"@barchart/common-js/collections/sorting/comparators":12,"@barchart/common-js/collections/specialized/DisposableStack":13,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/Rate":19,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/is":23}],5:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":2,"./PositionGroup":5,"./PositionItem":6,"./definitions/PositionTreeDefinition":9,"@barchart/common-js/collections/Tree":11,"@barchart/common-js/collections/sorting/ComparatorBuilder":12,"@barchart/common-js/collections/sorting/comparators":13,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],5:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -1699,11 +1759,19 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Stops (or starts) group-level aggregation calculations.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
 		setSuspended(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._suspended !== value) {
-				if (this._suspended = value) {
+				this._suspended = value;
+
+				if (!this._suspended) {
 					this.refresh();
 				}
 			}
@@ -2029,11 +2097,12 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/InstrumentType":1,"@barchart/common-js/collections/specialized/DisposableStack":13,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/Rate":19,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/formatter":22,"@barchart/common-js/lang/is":23,"@barchart/common-js/messaging/Event":25}],6:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/formatter":23,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Disposable = require('@barchart/common-js/lang/Disposable'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -2053,8 +2122,10 @@ module.exports = (() => {
 	 * @param {Object} currentSummary
 	 * @param {Array.<Object>} previousSummaries
 	 */
-	class PositionItem {
+	class PositionItem extends Disposable {
 		constructor(portfolio, position, currentSummary, previousSummaries) {
+			super();
+
 			this._portfolio = portfolio;
 			this._position = position;
 			this._currency = position.instrument.currency || Currency.CAD;
@@ -2099,6 +2170,7 @@ module.exports = (() => {
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
 			this._fundamentalDataChangeEvent = new Event(this);
+			this._positionItemDisposeEvent = new Event(this);
 		}
 
 		/**
@@ -2181,6 +2253,10 @@ module.exports = (() => {
 		setQuote(quote) {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
+			if (this.getIsDisposed()) {
+				return;
+			}
+
 			if (this._currentPricePrevious !== quote.lastPrice) {
 				calculatePriceData(this, quote.lastPrice);
 
@@ -2202,6 +2278,10 @@ module.exports = (() => {
 		setPositionFundamentalData(data) {
 			assert.argumentIsRequired(data, 'data', Object);
 
+			if (this.getIsDisposed()) {
+				return;
+			}
+
 			this._fundamentalDataChangeEvent.fire(this._data.fundamental = data);
 		}
 
@@ -2214,6 +2294,10 @@ module.exports = (() => {
 		 */
 		setNewsArticleExists(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this.getIsDisposed()) {
+				return;
+			}
 
 			if (this._data.newsExists !== value) {
 				this._newsExistsChangedEvent.fire(this._data.newsExists = value);
@@ -2252,6 +2336,26 @@ module.exports = (() => {
 		 */
 		registerNewsExistsChangeHandler(handler) {
 			return this._newsExistsChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for object disposal.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerPositionItemDisposeHandler(handler) {
+			return this._positionItemDisposeEvent.register(handler);
+		}
+
+		_onDispose() {
+			this._positionItemDisposeEvent.fire(this);
+
+			this._quoteChangedEvent.clear();
+			this._newsExistsChangedEvent.clear();
+			this._fundamentalDataChangeEvent.clear();
+			this._positionItemDisposeEvent.clear();
 		}
 
 		toString() {
@@ -2397,12 +2501,14 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16,"@barchart/common-js/lang/array":20,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/is":23,"@barchart/common-js/messaging/Event":25}],7:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],7:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
 
 const InstrumentType = require('./../../data/InstrumentType');
+
+const PositionLevelType = require('./PositionLevelType');
 
 module.exports = (() => {
 	'use strict';
@@ -2423,8 +2529,9 @@ module.exports = (() => {
 	 * @param {Function=} requiredGroupGenerator
 	 */
 	class PositionLevelDefinition {
-		constructor(name, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash, requiredGroupGenerator) {
+		constructor(name, type, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash, requiredGroupGenerator) {
 			assert.argumentIsRequired(name, 'name', String);
+			assert.argumentIsRequired(type, 'type', PositionLevelType, 'PositionLevelType');
 			assert.argumentIsRequired(keySelector, 'keySelector', Function);
 			assert.argumentIsRequired(descriptionSelector, 'descriptionSelector', Function);
 			assert.argumentIsRequired(currencySelector, 'currencySelector', Function);
@@ -2438,6 +2545,7 @@ module.exports = (() => {
 			assert.argumentIsOptional(requiredGroupGenerator, 'requiredGroupGenerator', Function);
 
 			this._name = name;
+			this._type = type;
 
 			this._keySelector = keySelector;
 			this._descriptionSelector = descriptionSelector;
@@ -2459,6 +2567,16 @@ module.exports = (() => {
 		 */
 		get name() {
 			return this._name;
+		}
+
+		/**
+		 * A general description of the type of items grouped together.
+		 *
+		 * @public
+		 * @return {PositionLevelType}
+		 */
+		get type() {
+			return this._type;
 		}
 
 		/**
@@ -2664,7 +2782,38 @@ module.exports = (() => {
 	return PositionLevelDefinition;
 })();
 
-},{"./../../data/InstrumentType":1,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/assert":21,"@barchart/common-js/lang/is":23}],8:[function(require,module,exports){
+},{"./../../data/InstrumentType":1,"./PositionLevelType":8,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],8:[function(require,module,exports){
+const Enum = require('@barchart/common-js/lang/Enum');
+
+module.exports = (() => {
+	'use strict';
+
+	class PositionLevelType extends Enum {
+		constructor(code) {
+			super(code, code);
+		}
+
+		static get PORTFOLIO() {
+			return portfolio;
+		}
+
+		static get POSITION() {
+			return position;
+		}
+
+		static get OTHER() {
+			return other;
+		}
+	}
+
+	const portfolio = new PositionLevelType('PORTFOLIO');
+	const position = new PositionLevelType('POSITION');
+	const other = new PositionLevelType('OTHER');
+
+	return PositionLevelType;
+})();
+
+},{"@barchart/common-js/lang/Enum":19}],9:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert');
 
 const PositionLevelDefinition = require('./PositionLevelDefinition');
@@ -2735,7 +2884,7 @@ module.exports = (() => {
 	return PositionTreeDefinitions;
 })();
 
-},{"./PositionLevelDefinition":7,"@barchart/common-js/lang/assert":21}],9:[function(require,module,exports){
+},{"./PositionLevelDefinition":7,"@barchart/common-js/lang/assert":22}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2867,7 +3016,7 @@ module.exports = function () {
 	return Stack;
 }();
 
-},{"./../lang/assert":21}],10:[function(require,module,exports){
+},{"./../lang/assert":22}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3176,7 +3325,7 @@ module.exports = function () {
 	return Tree;
 }();
 
-},{"./../lang/is":23}],11:[function(require,module,exports){
+},{"./../lang/is":24}],12:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3320,7 +3469,7 @@ module.exports = function () {
 	return ComparatorBuilder;
 }();
 
-},{"./../../lang/assert":21,"./comparators":12}],12:[function(require,module,exports){
+},{"./../../lang/assert":22,"./comparators":13}],13:[function(require,module,exports){
 'use strict';
 
 var assert = require('./../../lang/assert');
@@ -3395,7 +3544,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./../../lang/assert":21}],13:[function(require,module,exports){
+},{"./../../lang/assert":22}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3503,7 +3652,7 @@ module.exports = function () {
 	return DisposableStack;
 }();
 
-},{"./../../lang/Disposable":17,"./../../lang/assert":21,"./../../lang/is":23,"./../Stack":9}],14:[function(require,module,exports){
+},{"./../../lang/Disposable":18,"./../../lang/assert":22,"./../../lang/is":24,"./../Stack":10}],15:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3646,7 +3795,7 @@ module.exports = function () {
 	return Currency;
 }();
 
-},{"./Enum":18,"./assert":21,"./is":23}],15:[function(require,module,exports){
+},{"./Enum":19,"./assert":22,"./is":24}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4199,7 +4348,7 @@ module.exports = function () {
 	return Day;
 }();
 
-},{"./../collections/sorting/ComparatorBuilder":11,"./../collections/sorting/comparators":12,"./assert":21,"./is":23}],16:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":12,"./../collections/sorting/comparators":13,"./assert":22,"./is":24}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4779,7 +4928,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":18,"./assert":21,"./is":23,"big.js":26}],17:[function(require,module,exports){
+},{"./Enum":19,"./assert":22,"./is":24,"big.js":27}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4928,7 +5077,7 @@ module.exports = function () {
 	return Disposable;
 }();
 
-},{"./assert":21}],18:[function(require,module,exports){
+},{"./assert":22}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5070,7 +5219,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":21}],19:[function(require,module,exports){
+},{"./assert":22}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5325,7 +5474,7 @@ module.exports = function () {
 	return Rate;
 }();
 
-},{"./Currency":14,"./Decimal":16,"./assert":21,"./memoize":24}],20:[function(require,module,exports){
+},{"./Currency":15,"./Decimal":17,"./assert":22,"./memoize":25}],21:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -5706,7 +5855,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":21,"./is":23}],21:[function(require,module,exports){
+},{"./assert":22,"./is":24}],22:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -5854,7 +6003,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":23}],22:[function(require,module,exports){
+},{"./is":24}],23:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -5919,7 +6068,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -6142,7 +6291,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -6215,7 +6364,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":21,"./is":23}],25:[function(require,module,exports){
+},{"./assert":22,"./is":24}],26:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6387,7 +6536,7 @@ module.exports = function () {
 	return Event;
 }();
 
-},{"./../lang/Disposable":17,"./../lang/assert":21}],26:[function(require,module,exports){
+},{"./../lang/Disposable":18,"./../lang/assert":22}],27:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -7328,7 +7477,7 @@ module.exports = function () {
   }
 })(this);
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -7685,7 +7834,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":2,"./../../../lib/data/TransactionType":3,"@barchart/common-js/lang/Day":15,"@barchart/common-js/lang/Decimal":16}],28:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":2,"./../../../lib/data/TransactionType":3,"@barchart/common-js/lang/Day":16,"@barchart/common-js/lang/Decimal":17}],29:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -7693,6 +7842,7 @@ const InstrumentType = require('./../../../lib/data/InstrumentType');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./../../../lib/processing/definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./../../../lib/processing/definitions/PositionTreeDefinition');
 
 describe('When a position container data is gathered', () => {
@@ -7754,9 +7904,9 @@ describe('When a position container data is gathered', () => {
 			beforeEach(() => {
 				definitions = [
 					new PositionTreeDefinition(name = 'the only tree', [
-						new PositionLevelDefinition('Total', x => 'totals', x => 'Total', x => Currency.CAD),
-						new PositionLevelDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
-						new PositionLevelDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
+						new PositionLevelDefinition('Total', PositionLevelType.OTHER, x => 'totals', x => 'Total', x => Currency.CAD),
+						new PositionLevelDefinition('Portfolio', PositionLevelType.PORTFOLIO, x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
+						new PositionLevelDefinition('Position', PositionLevelType.POSITION, x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
 					])
 				];
 
@@ -7794,4 +7944,4 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":1,"./../../../lib/processing/PositionContainer":4,"./../../../lib/processing/definitions/PositionLevelDefinition":7,"./../../../lib/processing/definitions/PositionTreeDefinition":8,"@barchart/common-js/lang/Currency":14,"@barchart/common-js/lang/Decimal":16}]},{},[27,28]);
+},{"./../../../lib/data/InstrumentType":1,"./../../../lib/processing/PositionContainer":4,"./../../../lib/processing/definitions/PositionLevelDefinition":7,"./../../../lib/processing/definitions/PositionLevelType":8,"./../../../lib/processing/definitions/PositionTreeDefinition":9,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17}]},{},[28,29]);
