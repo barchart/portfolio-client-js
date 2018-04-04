@@ -167,6 +167,13 @@ module.exports = (() => {
 			}, { });
 		}
 
+		/**
+		 * Adds a new portfolio to the container, injecting it into aggregation
+		 * trees, as necessary.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 */
 		addPortfolio(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
@@ -222,8 +229,21 @@ module.exports = (() => {
 			}
 		}
 
+		/**
+		 * Removes an existing portfolio, and all of it's positions, from the container. This
+		 * also triggers removal of the portfolio and it's positions from any applicable
+		 * aggregation trees.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 */
 		removePortfolio(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
 
+			this.startTransaction(() => {
+				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(i => removePositionItem.call(this, i));
+			});
 		}
 
 		mutatePosition(position, summary) {
@@ -231,7 +251,7 @@ module.exports = (() => {
 		}
 
 		removePosition(position) {
-
+			removePositionItem.call(this, this._items.find((item) => item.position.position === position));
 		}
 
 		/**
@@ -381,11 +401,11 @@ module.exports = (() => {
 		 * Returns a single level of grouping from one of the internal trees.
 		 *
 		 * @public
-		 * @param {String} name
+		 * @param {String} names
 		 * @param {Array.<String> keys
 		 * @returns {PositionGroup}
 		 */
-		getGroup(name, keys) {
+		getGroup(names, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', Number);
 
@@ -409,13 +429,13 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Returns all portfolios in the container
+		 * Returns all portfolios in the container.
 		 *
 		 * @public
 		 * @return {Array.<Object>}
 		 */
 		getPortfolios() {
-			return this._portfolios;
+			return Object.keys(this._portfolios).map(id => this._portfolios[id]);
 		}
 
 		/**
@@ -426,24 +446,42 @@ module.exports = (() => {
 		 * @return {Array.<Object>}
 		 */
 		getPositions(portfolio) {
-			return this._items.reduce((positions, item) => {
-				if (item.position.portfolio === portfolio) {
-					positions.push(item);
-				}
+			assert.argumentIsRequired(portfolio, 'portfolio', String);
 
-				return positions;
-			}, []);
+			return getPositionItemsForPortfolio(this._items, portfolio).map(item => item.position);
 		}
 
-		startTransaction(name, executor) {
-			assert.argumentIsRequired(name, 'name', String);
+		/**
+		 * Pauses aggregation calculations during the processing of an action.
+		 *
+		 * @public
+		 * @param {Function} executor
+		 * @param {String=|Array.<String>=} names
+		 */
+		startTransaction(executor, names) {
+			let namesToUse;
+
+			if (is.array(names)) {
+				assert.argumentIsArray(names, 'names', String);
+
+				namesToUse = names;
+			} else {
+				assert.argumentIsOptional(names, 'names', String);
+
+				if (names) {
+					namesToUse = [ names ];
+				} else {
+					namesToUse = Object.keys(this._trees);
+				}
+			}
+
 			assert.argumentIsRequired(executor, 'executor', Function);
 
-			this._trees[name].walk(group => group.setSuspended(true), false, false);
+			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(true), false, false));
 
 			executor(this);
 
-			this._trees[name].walk(group => group.setSuspended(false), false, false);
+			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(false), false, false));
 		}
 
 		toString() {
@@ -602,6 +640,24 @@ module.exports = (() => {
 
 			createGroups.call(this, parentTree, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
 		});
+	}
+
+	function getPositionItemsForPortfolio(items, portfolio) {
+		return items.reduce((positionItems, item) => {
+			if (item.position.portfolio === portfolio) {
+				positionItems.push(item.position);
+			}
+
+			return positionItems;
+		}, [ ]);
+	}
+
+	function removePositionItem(positionItem) {
+		if (!positionItem) {
+			return;
+		}
+
+		positionItem.dispose();
 	}
 
 	return PositionContainer;

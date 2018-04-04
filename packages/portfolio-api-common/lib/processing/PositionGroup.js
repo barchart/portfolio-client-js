@@ -377,7 +377,9 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._suspended !== value) {
-				if (this._suspended = value) {
+				this._suspended = value;
+
+				if (!this._suspended) {
 					this.refresh();
 				}
 			}

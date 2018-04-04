@@ -2,6 +2,7 @@ const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Disposable = require('@barchart/common-js/lang/Disposable'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -21,8 +22,10 @@ module.exports = (() => {
 	 * @param {Object} currentSummary
 	 * @param {Array.<Object>} previousSummaries
 	 */
-	class PositionItem {
+	class PositionItem extends Disposable {
 		constructor(portfolio, position, currentSummary, previousSummaries) {
+			super();
+
 			this._portfolio = portfolio;
 			this._position = position;
 			this._currency = position.instrument.currency || Currency.CAD;
@@ -67,6 +70,7 @@ module.exports = (() => {
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
 			this._fundamentalDataChangeEvent = new Event(this);
+			this._positionItemDisposeEvent = new Event(this);
 		}
 
 		/**
@@ -149,6 +153,10 @@ module.exports = (() => {
 		setQuote(quote) {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
+			if (this.getIsDisposed()) {
+				return;
+			}
+
 			if (this._currentPricePrevious !== quote.lastPrice) {
 				calculatePriceData(this, quote.lastPrice);
 
@@ -170,6 +178,10 @@ module.exports = (() => {
 		setPositionFundamentalData(data) {
 			assert.argumentIsRequired(data, 'data', Object);
 
+			if (this.getIsDisposed()) {
+				return;
+			}
+
 			this._fundamentalDataChangeEvent.fire(this._data.fundamental = data);
 		}
 
@@ -182,6 +194,10 @@ module.exports = (() => {
 		 */
 		setNewsArticleExists(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this.getIsDisposed()) {
+				return;
+			}
 
 			if (this._data.newsExists !== value) {
 				this._newsExistsChangedEvent.fire(this._data.newsExists = value);
@@ -220,6 +236,26 @@ module.exports = (() => {
 		 */
 		registerNewsExistsChangeHandler(handler) {
 			return this._newsExistsChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for object disposal.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerPositionItemDisposeHandler(handler) {
+			return this._positionItemDisposeEvent.register(handler);
+		}
+
+		_onDispose() {
+			this._positionItemDisposeEvent.fire(this);
+
+			this._quoteChangedEvent.clear();
+			this._newsExistsChangedEvent.clear();
+			this._fundamentalDataChangeEvent.clear();
+			this._positionItemDisposeEvent.clear();
 		}
 
 		toString() {
