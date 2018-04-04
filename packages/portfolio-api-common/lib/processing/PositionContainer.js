@@ -405,11 +405,11 @@ module.exports = (() => {
 		 * Returns a single level of grouping from one of the internal trees.
 		 *
 		 * @public
-		 * @param {String} names
+		 * @param {String} name
 		 * @param {Array.<String> keys
 		 * @returns {PositionGroup}
 		 */
-		getGroup(names, keys) {
+		getGroup(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', Number);
 

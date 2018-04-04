@@ -5,6 +5,7 @@ const InstrumentType = require('./../../../lib/data/InstrumentType');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./../../../lib/processing/definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./../../../lib/processing/definitions/PositionTreeDefinition');
 
 describe('When a position container data is gathered', () => {
@@ -66,9 +67,9 @@ describe('When a position container data is gathered', () => {
 			beforeEach(() => {
 				definitions = [
 					new PositionTreeDefinition(name = 'the only tree', [
-						new PositionLevelDefinition('Total', x => 'totals', x => 'Total', x => Currency.CAD),
-						new PositionLevelDefinition('Portfolio', x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
-						new PositionLevelDefinition('Position', x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
+						new PositionLevelDefinition('Total', PositionLevelType.OTHER, x => 'totals', x => 'Total', x => Currency.CAD),
+						new PositionLevelDefinition('Portfolio', PositionLevelType.PORTFOLIO, x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.CAD),
+						new PositionLevelDefinition('Position', PositionLevelType.POSITION, x => x.position.position, x => x.position.instrument.symbol.barchart, x =>  x.position.instrument.currency)
 					])
 				];
 
