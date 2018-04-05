@@ -2,6 +2,7 @@ const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Disposable = require('@barchart/common-js/lang/Disposable'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
@@ -149,7 +150,7 @@ module.exports = (() => {
 			this._dataFormat.portfolioType = null;
 
 			this._items.forEach((item) => {
-				this._disposeStack.push(item.registerQuoteChangeHandler((quote, sender) => {
+				const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
 					if (this._single) {
 						const precision = sender.position.instrument.currency.precision;
 
@@ -185,18 +186,39 @@ module.exports = (() => {
 					}
 
 					calculatePriceData(this, this._container.getForexQuotes(), sender, false);
-				}));
+				});
+
+				let newsBinding = Disposable.getEmpty();
+				let fundamentalBinding = Disposable.getEmpty();
 
 				if (this._single) {
-					this._disposeStack.push(item.registerNewsExistsChangeHandler((exists, sender) => {
+					newsBinding = item.registerNewsExistsChangeHandler((exists, sender) => {
 						this._dataActual.newsExists = exists;
 						this._dataFormat.newsExists = exists;
-					}));
+					});
 
-					this._disposeStack.push(item.registerFundamentalDataChangeHandler((data, sender) => {
+					fundamentalBinding = item.registerFundamentalDataChangeHandler((data, sender) => {
 						this._dataFormat.fundamental = data;
-					}));
+					});
 				}
+
+				this._disposeStack.push(quoteBinding);
+				this._disposeStack.push(newsBinding);
+				this._disposeStack.push(fundamentalBinding);
+
+				this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
+					quoteBinding.dispose();
+					newsBinding.dispose();
+					fundamentalBinding.dispose();
+
+					array.remove(this._items, i => i === item);
+					array.remove(this._excludedItems, i => i === item);
+					array.remove(this._consideredItems, i => i === item);
+
+					delete this._excludedItemMap[item.position.position];
+
+					this.refresh();
+				}));
 			});
 
 			this.refresh();
@@ -392,11 +414,16 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Causes all aggregated data to be recalculated.
+		 * Causes all aggregated data to be recalculated (assuming the group has not
+		 * been suspended).
 		 *
 		 * @public
 		 */
 		refresh() {
+			if (this._suspended) {
+				return;
+			}
+
 			const rates = this._container.getForexQuotes();
 
 			calculateStaticData(this, rates);

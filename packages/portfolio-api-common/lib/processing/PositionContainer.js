@@ -11,7 +11,9 @@ const array = require('@barchart/common-js/lang/array'),
 
 const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
-const PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
+const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./definitions/PositionLevelType'),
+	PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
 
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
@@ -128,10 +130,9 @@ module.exports = (() => {
 			}, { });
 
 			this._currencies = this._items.reduce((map, item) => {
-				const position = item.position;
+				const currency = extractCurrency(item.position);
 
-				if (position.instrument && position.instrument.currency) {
-					const currency = position.instrument.currency;
+				if (currency) {
 					const code = currency.code;
 
 					if (!map.hasOwnProperty(code)) {
@@ -246,7 +247,17 @@ module.exports = (() => {
 
 				itemsToRemove.forEach(item => removePositionItem.call(this, item));
 
+				delete this._portfolios[portfolio.portfolio];
 
+				Object.keys(this._trees).forEach((key) => {
+					const tree = this._tree[key];
+
+					tree.walk((group, groupNode) => {
+						if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
+							groupNode.sever();
+						}
+					}, true, false);
+				});
 			});
 		}
 
@@ -338,7 +349,6 @@ module.exports = (() => {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
 			const rate = Rate.fromPair(quote.lastPrice, symbol);
-
 			const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
 
 			if (index < 0) {
@@ -517,6 +527,14 @@ module.exports = (() => {
 		}
 	}
 
+	function extractCurrency(position) {
+		if (position.instrument && position.instrument.currency) {
+			return position.instrument.currency;
+		} else {
+			return null;
+		}
+	}
+
 	function addGroupBinding(group, dispoable) {
 		const id = group.id;
 
@@ -659,6 +677,29 @@ module.exports = (() => {
 	function removePositionItem(positionItem) {
 		if (!positionItem) {
 			return;
+		}
+
+		delete this._summariesCurrent[positionItem.position.position];
+		delete this._summariesPrevious[positionItem.position.position];
+
+		array.remove(this._items, i => i === positionItem);
+
+		const barchartSymbol = extractSymbolForBarchart(positionItem.position);
+
+		if (this._symbols.hasOwnProperty(barchartSymbol)) {
+			array.remove(this._symbols[barchartSymbol], i => i === positionItem);
+		}
+
+		const displaySymbol = extractSymbolForDisplay(positionItem.position);
+
+		if (this._symbolsDisplay.hasOwnProperty(displaySymbol)) {
+			array.remove(this._symbols[displaySymbol], i => i === positionItem);
+		}
+
+		const currency = extractCurrency(positionItem.position);
+
+		if (currency && this._currencies.hasOwnProperty(currency.code)) {
+			array.remove(this._currencies[currency.code], i => i === positionItem);
 		}
 
 		positionItem.dispose();
