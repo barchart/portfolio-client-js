@@ -243,9 +243,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
 
 			this.startTransaction(() => {
-				const itemsToRemove = getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(i => removePositionItem.call(this, i));
-
-				itemsToRemove.forEach(item => removePositionItem.call(this, item));
+				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => removePositionItem.call(this, item));
 
 				delete this._portfolios[portfolio.portfolio];
 
