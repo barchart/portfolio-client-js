@@ -46,6 +46,9 @@ module.exports = (() => {
 			this._data.market = null;
 			this._data.marketChange = null;
 
+			this._data.marketAbsolute = null;
+			this._data.marketAbsoluteChange = null;
+
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
 
@@ -328,6 +331,18 @@ module.exports = (() => {
 
 		data.market = market;
 		data.marketChange = marketChange;
+
+		let marketAbsolute = market.absolute;
+		let marketAbsoluteChange;
+
+		if (data.marketAbsolute === null) {
+			marketAbsoluteChange = marketAbsolute;
+		} else {
+			marketAbsoluteChange = marketAbsolute.subtract(data.marketAbsolute);
+		}
+
+		data.marketAbsolute = market;
+		data.marketAbsoluteChange = marketChange;
 
 		let unrealizedToday;
 		let unrealizedTodayChange;

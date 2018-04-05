@@ -627,6 +627,7 @@ module.exports = (() => {
 
 			updates = items.reduce((updates, item) => {
 				updates.market = updates.market.add(translate(item, item.data.market));
+				updates.marketAbsolute = updates.marketAbsolute.add(translate(item, item.data.market));
 				updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 				updates.unrealizedToday = updates.unrealizedToday.add(translate(item, item.data.unrealizedToday));
 				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
@@ -634,6 +635,7 @@ module.exports = (() => {
 				return updates;
 			}, {
 				market: Decimal.ZERO,
+				marketAbsolute: Decimal.ZERO,
 				marketDirection: unchanged,
 				unrealized: Decimal.ZERO,
 				unrealizedToday: Decimal.ZERO,
@@ -642,6 +644,7 @@ module.exports = (() => {
 		} else {
 			updates = {
 				market: actual.market.add(translate(item, item.data.marketChange)),
+				marketAbsolute: actual.marketAbsolute.add(translate(item, item.data.marketAbsoluteChange)),
 				marketDirection: { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() },
 				unrealized: actual.unrealized.add(translate(item, item.data.unrealizedChange)),
 				unrealizedToday: actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange)),
@@ -650,6 +653,7 @@ module.exports = (() => {
 		}
 
 		actual.market = updates.market;
+		actual.marketAbsolute = updates.marketAbsolute;
 		actual.unrealized = updates.unrealized;
 		actual.unrealizedToday = updates.unrealizedToday;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
@@ -694,16 +698,16 @@ module.exports = (() => {
 		if (parent !== null && !excluded) {
 			const parentData = parent._dataActual;
 
-			if (parentData.market !== null && !parentData.market.getIsZero()) {
+			if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsZero()) {
 				let numerator;
 
 				if (group.currency !== parent.currency) {
 					numerator = Rate.convert(actual.market, group.currency, parent.currency, ...rates);
 				} else {
-					numerator = actual.market;
+					numerator = actual.marketAbsolute;
 				}
 
-				marketPercent = numerator.divide(parentData.market);
+				marketPercent = numerator.divide(parentData.marketAbsolute);
 			} else {
 				marketPercent = null;
 			}
