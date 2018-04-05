@@ -964,9 +964,7 @@ module.exports = (() => {
 				delete this._portfolios[portfolio.portfolio];
 
 				Object.keys(this._trees).forEach((key) => {
-					const tree = this._tree[key];
-
-					tree.walk((group, groupNode) => {
+					this._trees[key].walk((group, groupNode) => {
 						if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
 							groupNode.sever();
 						}
