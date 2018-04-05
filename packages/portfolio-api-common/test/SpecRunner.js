@@ -2509,8 +2509,8 @@ module.exports = (() => {
 			marketAbsoluteChange = marketAbsolute.subtract(data.marketAbsolute);
 		}
 
-		data.marketAbsolute = market;
-		data.marketAbsoluteChange = marketChange;
+		data.marketAbsolute = marketAbsolute;
+		data.marketAbsoluteChange = marketAbsoluteChange;
 
 		let unrealizedToday;
 		let unrealizedTodayChange;
