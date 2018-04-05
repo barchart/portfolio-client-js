@@ -1,4 +1,4 @@
-(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -727,7 +727,9 @@ const array = require('@barchart/common-js/lang/array'),
 
 const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
-const PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
+const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./definitions/PositionLevelType'),
+	PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
 
 const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
@@ -844,10 +846,9 @@ module.exports = (() => {
 			}, { });
 
 			this._currencies = this._items.reduce((map, item) => {
-				const position = item.position;
+				const currency = extractCurrency(item.position);
 
-				if (position.instrument && position.instrument.currency) {
-					const currency = position.instrument.currency;
+				if (currency) {
 					const code = currency.code;
 
 					if (!map.hasOwnProperty(code)) {
@@ -962,7 +963,17 @@ module.exports = (() => {
 
 				itemsToRemove.forEach(item => removePositionItem.call(this, item));
 
+				delete this._portfolios[portfolio.portfolio];
 
+				Object.keys(this._trees).forEach((key) => {
+					const tree = this._tree[key];
+
+					tree.walk((group, groupNode) => {
+						if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
+							groupNode.sever();
+						}
+					}, true, false);
+				});
 			});
 		}
 
@@ -1054,7 +1065,6 @@ module.exports = (() => {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
 			const rate = Rate.fromPair(quote.lastPrice, symbol);
-
 			const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
 
 			if (index < 0) {
@@ -1233,6 +1243,14 @@ module.exports = (() => {
 		}
 	}
 
+	function extractCurrency(position) {
+		if (position.instrument && position.instrument.currency) {
+			return position.instrument.currency;
+		} else {
+			return null;
+		}
+	}
+
 	function addGroupBinding(group, dispoable) {
 		const id = group.id;
 
@@ -1377,17 +1395,41 @@ module.exports = (() => {
 			return;
 		}
 
+		delete this._summariesCurrent[positionItem.position.position];
+		delete this._summariesPrevious[positionItem.position.position];
+
+		array.remove(this._items, i => i === positionItem);
+
+		const barchartSymbol = extractSymbolForBarchart(positionItem.position);
+
+		if (this._symbols.hasOwnProperty(barchartSymbol)) {
+			array.remove(this._symbols[barchartSymbol], i => i === positionItem);
+		}
+
+		const displaySymbol = extractSymbolForDisplay(positionItem.position);
+
+		if (this._symbolsDisplay.hasOwnProperty(displaySymbol)) {
+			array.remove(this._symbols[displaySymbol], i => i === positionItem);
+		}
+
+		const currency = extractCurrency(positionItem.position);
+
+		if (currency && this._currencies.hasOwnProperty(currency.code)) {
+			array.remove(this._currencies[currency.code], i => i === positionItem);
+		}
+
 		positionItem.dispose();
 	}
 
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":2,"./PositionGroup":5,"./PositionItem":6,"./definitions/PositionTreeDefinition":9,"@barchart/common-js/collections/Tree":11,"@barchart/common-js/collections/sorting/ComparatorBuilder":12,"@barchart/common-js/collections/sorting/comparators":13,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],5:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":2,"./PositionGroup":5,"./PositionItem":6,"./definitions/PositionLevelDefinition":7,"./definitions/PositionLevelType":8,"./definitions/PositionTreeDefinition":9,"@barchart/common-js/collections/Tree":11,"@barchart/common-js/collections/sorting/ComparatorBuilder":12,"@barchart/common-js/collections/sorting/comparators":13,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],5:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Disposable = require('@barchart/common-js/lang/Disposable'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
@@ -1535,7 +1577,7 @@ module.exports = (() => {
 			this._dataFormat.portfolioType = null;
 
 			this._items.forEach((item) => {
-				this._disposeStack.push(item.registerQuoteChangeHandler((quote, sender) => {
+				const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
 					if (this._single) {
 						const precision = sender.position.instrument.currency.precision;
 
@@ -1571,18 +1613,39 @@ module.exports = (() => {
 					}
 
 					calculatePriceData(this, this._container.getForexQuotes(), sender, false);
-				}));
+				});
+
+				let newsBinding = Disposable.getEmpty();
+				let fundamentalBinding = Disposable.getEmpty();
 
 				if (this._single) {
-					this._disposeStack.push(item.registerNewsExistsChangeHandler((exists, sender) => {
+					newsBinding = item.registerNewsExistsChangeHandler((exists, sender) => {
 						this._dataActual.newsExists = exists;
 						this._dataFormat.newsExists = exists;
-					}));
+					});
 
-					this._disposeStack.push(item.registerFundamentalDataChangeHandler((data, sender) => {
+					fundamentalBinding = item.registerFundamentalDataChangeHandler((data, sender) => {
 						this._dataFormat.fundamental = data;
-					}));
+					});
 				}
+
+				this._disposeStack.push(quoteBinding);
+				this._disposeStack.push(newsBinding);
+				this._disposeStack.push(fundamentalBinding);
+
+				this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
+					quoteBinding.dispose();
+					newsBinding.dispose();
+					fundamentalBinding.dispose();
+
+					array.remove(this._items, i => i === item);
+					array.remove(this._excludedItems, i => i === item);
+					array.remove(this._consideredItems, i => i === item);
+
+					delete this._excludedItemMap[item.position.position];
+
+					this.refresh();
+				}));
 			});
 
 			this.refresh();
@@ -1778,11 +1841,16 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Causes all aggregated data to be recalculated.
+		 * Causes all aggregated data to be recalculated (assuming the group has not
+		 * been suspended).
 		 *
 		 * @public
 		 */
 		refresh() {
+			if (this._suspended) {
+				return;
+			}
+
 			const rates = this._container.getForexQuotes();
 
 			calculateStaticData(this, rates);
@@ -2097,7 +2165,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/InstrumentType":1,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/formatter":23,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],6:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/formatter":23,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -3155,6 +3223,23 @@ module.exports = function () {
 						break;
 					}
 				}
+			}
+
+			/**
+    * Removes the current node from the parent tree. Use on a root node
+    * has no effect.
+    *
+    * @public
+    */
+
+		}, {
+			key: 'sever',
+			value: function sever() {
+				if (this.getIsRoot()) {
+					return;
+				}
+
+				this.getParent().removeChild(this);
 			}
 
 			/**
@@ -4552,6 +4637,20 @@ module.exports = function () {
 			}
 
 			/**
+    * Returns true if the current instance is greater than or equal to the value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsGreaterThanOrEqual',
+			value: function getIsGreaterThanOrEqual(other) {
+				return this._big.gte(getBig(other));
+			}
+
+			/**
     * Returns true if the current instance is less than the value.
     *
     * @public
@@ -4563,6 +4662,20 @@ module.exports = function () {
 			key: 'getIsLessThan',
 			value: function getIsLessThan(other) {
 				return this._big.lt(getBig(other));
+			}
+
+			/**
+    * Returns true if the current instance is less than or equal to the value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsLessThanOrEqual',
+			value: function getIsLessThanOrEqual(other) {
+				return this._big.lte(getBig(other));
 			}
 
 			/**
@@ -5851,6 +5964,26 @@ module.exports = function () {
 			});
 
 			return returnRef;
+		},
+
+
+		/**
+   * Removes the first item from an array which matches a predicate.
+   *
+   * @static
+   * @public
+   * @param {Array} a
+   * @param {Function} predicate
+   */
+		remove: function remove(a, predicate) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsRequired(predicate, 'predicate', Function);
+
+			var index = a.findIndex(predicate);
+
+			if (!(index < 0)) {
+				a.splice(index, 1);
+			}
 		}
 	};
 }();
