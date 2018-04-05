@@ -2500,7 +2500,7 @@ module.exports = (() => {
 		data.market = market;
 		data.marketChange = marketChange;
 
-		let marketAbsolute = market.absolute;
+		let marketAbsolute = market.absolute();
 		let marketAbsoluteChange;
 
 		if (data.marketAbsolute === null) {
