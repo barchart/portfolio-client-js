@@ -2050,7 +2050,7 @@ module.exports = (() => {
 
 			updates = items.reduce((updates, item) => {
 				updates.market = updates.market.add(translate(item, item.data.market));
-				updates.marketAbsolute = updates.marketAbsolute.add(translate(item, item.data.market));
+				updates.marketAbsolute = updates.marketAbsolute.add(translate(item, item.data.marketAbsolute));
 				updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 				updates.unrealizedToday = updates.unrealizedToday.add(translate(item, item.data.unrealizedToday));
 				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
