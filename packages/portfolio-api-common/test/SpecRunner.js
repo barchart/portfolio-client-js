@@ -760,12 +760,6 @@ module.exports = (() => {
 			assert.argumentIsArray(positions, 'positions');
 			assert.argumentIsArray(summaries, 'summaries');
 
-			const previousSummaryFrame = PositionSummaryFrame.YEARLY;
-			const previousSummaryRanges = previousSummaryFrame.getRecentRanges(0);
-
-			const currentSummaryFrame = PositionSummaryFrame.YTD;
-			const currentSummaryRange = array.last(currentSummaryFrame.getRecentRanges(0));
-
 			this._definitions = definitions;
 
 			this._groupBindings = { };
@@ -776,71 +770,42 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._summariesCurrent = summaries.reduce((map, summary) => {
-				if (summary.frame === currentSummaryFrame && currentSummaryRange.start.getIsEqual(summary.start.date) && currentSummaryRange.end.getIsEqual(summary.end.date)) {
-					const key = summary.position;
+			this._currentSummaryFrame = PositionSummaryFrame.YTD;
+			this._currentSummaryRange = array.last(this._currentSummaryFrame.getRecentRanges(0));
 
-					map[key] = summary;
-				}
+			this._summariesCurrent = summaries.reduce((map, summary) => {
+				addSummaryCurrent(map, summary, this._currentSummaryFrame, this._currentSummaryRange);
 
 				return map;
 			}, { });
-			
+
+			this._previousSummaryFrame = PositionSummaryFrame.YEARLY;
+			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(0);
+
 			this._summariesPrevious = summaries.reduce((map, summary) => {
-				if (summary.frame === previousSummaryFrame) {
-					const key = summary.position;
-
-					if (!map.hasOwnProperty(key)) {
-						map[key] = getSummaryArray(previousSummaryRanges);
-					}
-
-					const index = previousSummaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
-
-					if (!(index < 0)) {
-						map[key][index] = summary;
-					}
-				}
+				addSummaryPrevious(map, summary, this._previousSummaryFrame, this._previousSummaryRanges);
 
 				return map;
 			}, { });
 
 			this._items = positions.reduce((items, position) => {
-				const portfolio = this._portfolios[position.portfolio];
+				const item = createPositionItem.call(this, position);
 
-				if (position) {
-					const currentSummary = this._summariesCurrent[position.position] || null;
-					const previousSummaries = this._summariesPrevious[position.position] || getSummaryArray(previousSummaryRanges);
-
-					items.push(new PositionItem(portfolio, position, currentSummary, previousSummaries));
+				if (item) {
+					items.push(item);
 				}
 
 				return items;
 			}, [ ]);
 
 			this._symbols = this._items.reduce((map, item) => {
-				const symbol = extractSymbolForBarchart(item.position);
-
-				if (symbol) {
-					if (!map.hasOwnProperty(symbol)) {
-						map[symbol] = [ ];
-					}
-
-					map[symbol].push(item);
-				}
+				addBarchartSymbol(map, item);
 
 				return map;
 			}, { });
 
 			this._symbolsDisplay = this._items.reduce((map, item) => {
-				const symbol = extractSymbolForDisplay(item.position);
-
-				if (symbol) {
-					if (!map.hasOwnProperty(symbol)) {
-						map[symbol] = [ ];
-					}
-
-					map[symbol].push(item);
-				}
+				addDisplaySymbol(map, item);
 
 				return map;
 			}, { });
@@ -973,12 +938,40 @@ module.exports = (() => {
 			});
 		}
 
-		mutatePosition(position, summary) {
+		/**
+		 * Adds a new position to the container or updates an existing position already
+		 * in the container.
+		 *
+		 * @public
+		 * @param {Object} position
+		 * @param {Array.<Object>} summaries
+		 */
+		updatePosition(position, summaries) {
+			assert.argumentIsRequired(position, 'position', Object);
+			assert.argumentIsRequired(position.position, 'position.position', String);
+			assert.argumentIsRequired(position.portfolio, 'position.portfolio', String);
+			assert.argumentIsArray(summaries, 'summaries');
 
+			if (!this._portfolios.hasOwnProperty(position.portfolio)) {
+				return;
+			}
+
+			this.startTransaction(() => {
+				this.removePosition(position);
+			});
 		}
 
+		/**
+		 * Removes a single position from the container.
+		 *
+		 * @public
+		 * @param {Object} position
+		 */
 		removePosition(position) {
-			removePositionItem.call(this, this._items.find((item) => item.position.position === position));
+			assert.argumentIsRequired(position, 'position', Object);
+			assert.argumentIsRequired(position.position, 'position.position', String);
+
+			removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
 		}
 
 		/**
@@ -1219,10 +1212,6 @@ module.exports = (() => {
 		return keys.reduce((tree, key) => tree.findChild(group => group.key === key), tree);
 	}
 
-	function getSummaryArray(ranges) {
-		return ranges.map(range => null);
-	}
-
 	function extractSymbolForBarchart(position) {
 		if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
 			return position.instrument.symbol.barchart;
@@ -1386,6 +1375,75 @@ module.exports = (() => {
 		}, [ ]);
 	}
 
+	function getSummaryArray(ranges) {
+		return ranges.map(range => null);
+	}
+
+	function addSummaryCurrent(map, summary, currentSummaryFrame, currentSummaryRange) {
+		if (summary.frame === currentSummaryFrame && currentSummaryRange.start.getIsEqual(summary.start.date) && currentSummaryRange.end.getIsEqual(summary.end.date)) {
+			const key = summary.position;
+
+			map[key] = summary;
+		}
+	}
+
+	function addSummaryPrevious(map, summary, previousSummaryFrame, previousSummaryRanges) {
+		if (summary.frame === previousSummaryFrame) {
+			const key = summary.position;
+
+			if (!map.hasOwnProperty(key)) {
+				map[key] = getSummaryArray(previousSummaryRanges);
+			}
+
+			const index = previousSummaryRanges.findIndex(r => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
+
+			if (!(index < 0)) {
+				map[key][index] = summary;
+			}
+		}
+	}
+
+	function addBarchartSymbol(map, item) {
+		const barchartSymbol = extractSymbolForBarchart(item.position);
+
+		if (barchartSymbol) {
+			if (!map.hasOwnProperty(barchartSymbol)) {
+				map[barchartSymbol] = [ ];
+			}
+
+			map[barchartSymbol].push(item);
+		}
+	}
+
+	function addDisplaySymbol(map, item) {
+		const displaySymbol = extractSymbolForDisplay(item.position);
+
+		if (displaySymbol) {
+			if (!map.hasOwnProperty(displaySymbol)) {
+				map[displaySymbol] = [ ];
+			}
+
+			map[displaySymbol].push(item);
+		}
+	}
+
+	function createPositionItem(position) {
+		const portfolio = this._portfolios[position.portfolio];
+
+		let returnRef;
+
+		if (portfolio) {
+			const currentSummary = this._summariesCurrent[ position.position ] || null;
+			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
+
+			returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries);
+		} else {
+			returnRef = null;
+		}
+
+		return returnRef;
+	}
+
 	function removePositionItem(positionItem) {
 		if (!positionItem) {
 			return;
@@ -1413,6 +1471,12 @@ module.exports = (() => {
 		if (currency && this._currencies.hasOwnProperty(currency.code)) {
 			array.remove(this._currencies[currency.code], i => i === positionItem);
 		}
+
+		this._trees[key].walk((group, groupNode) => {
+			if (group.definition.type === PositionLevelType.POSITION && group.key === positionItem.position.position) {
+				groupNode.sever();
+			}
+		}, true, false);
 
 		positionItem.dispose();
 	}
