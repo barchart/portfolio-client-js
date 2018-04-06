@@ -1327,7 +1327,9 @@ module.exports = (() => {
 		}));
 
 		addGroupBinding.call(this, group, group.registerMarketPercentChangeHandler(() => {
-			groupTree.getParent().walk((childGroup) => childGroup.refreshMarketPercent());
+			if (!groupTree.getIsRoot()) {
+				groupTree.getParent().walk((childGroup) => childGroup.refreshMarketPercent());
+			}
 		}));
 	}
 
