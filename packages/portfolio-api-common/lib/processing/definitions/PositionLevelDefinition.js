@@ -20,12 +20,11 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
 	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
-	 * @param {Boolean=} single
 	 * @param {Boolean=} aggregateCash
 	 * @param {Function=} requiredGroupGenerator
 	 */
 	class PositionLevelDefinition {
-		constructor(name, type, keySelector, descriptionSelector, currencySelector, requiredGroups, single, aggregateCash, requiredGroupGenerator) {
+		constructor(name, type, keySelector, descriptionSelector, currencySelector, requiredGroups, aggregateCash, requiredGroupGenerator) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsRequired(type, 'type', PositionLevelType, 'PositionLevelType');
 			assert.argumentIsRequired(keySelector, 'keySelector', Function);
@@ -36,7 +35,6 @@ module.exports = (() => {
 				assert.argumentIsArray(requiredGroups, 'requiredGroups', String);
 			}
 
-			assert.argumentIsOptional(single, 'single', Boolean);
 			assert.argumentIsOptional(aggregateCash, 'aggregateCash', Boolean);
 			assert.argumentIsOptional(requiredGroupGenerator, 'requiredGroupGenerator', Function);
 
@@ -49,7 +47,7 @@ module.exports = (() => {
 
 			this._requiredGroups = requiredGroups || [ ];
 
-			this._single = is.boolean(single) && single;
+			this._single = type === PositionLevelType.POSITION;
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._requiredGroupGenerator = requiredGroupGenerator || (input => null);

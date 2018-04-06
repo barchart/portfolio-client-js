@@ -28,11 +28,10 @@ module.exports = (() => {
 	 * @param {Currency} currency
 	 * @param {String} key
 	 * @param {String} description
-	 * @param {Boolean=} single
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, parent, definition, items, currency, key, description, single, aggregateCash) {
+		constructor(container, parent, definition, items, currency, key, description, aggregateCash) {
 			this._id = counter++;
 
 			this._definition = definition;
@@ -46,7 +45,7 @@ module.exports = (() => {
 			this._key = key;
 			this._description = description;
 
-			this._single = is.boolean(single) && single;
+			this._single = this._definition.single;
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
