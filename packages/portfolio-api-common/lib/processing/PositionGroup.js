@@ -78,7 +78,7 @@ module.exports = (() => {
 			this._dataActual.quantity = null;
 			this._dataActual.basisPrice = null;
 
-			if (this._single) {
+			if (this._single && items.length === 1) {
 				const item = items[0];
 
 				this._dataFormat.portfolio = item.portfolio.portfolio;
@@ -564,7 +564,7 @@ module.exports = (() => {
 
 		calculateUnrealizedPercent(group);
 
-		if (group.single) {
+		if (group.single && group._items.length === 1) {
 			const item = group._items[0];
 
 			actual.quantity = item.position.snapshot.open;
