@@ -793,11 +793,13 @@ module.exports = (() => {
 			array.remove(this._currencies[currency.code], i => i === positionItem);
 		}
 
-		this._trees[key].walk((group, groupNode) => {
-			if (group.definition.type === PositionLevelType.POSITION && group.key === positionItem.position.position) {
-				groupNode.sever();
-			}
-		}, true, false);
+		Object.keys(this._trees).forEach((key) => {
+			this._trees[key].walk((group, groupNode) => {
+				if (group.definition.type === PositionLevelType.POSITION && group.key === positionItem.position.position) {
+					groupNode.sever();
+				}
+			}, true, false);
+		});
 
 		positionItem.dispose();
 	}
