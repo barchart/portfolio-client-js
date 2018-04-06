@@ -784,7 +784,7 @@ module.exports = (() => {
 		const displaySymbol = extractSymbolForDisplay(positionItem.position);
 
 		if (this._symbolsDisplay.hasOwnProperty(displaySymbol)) {
-			array.remove(this._symbols[displaySymbol], i => i === positionItem);
+			array.remove(this._symbolsDisplay[displaySymbol], i => i === positionItem);
 		}
 
 		const currency = extractCurrency(positionItem.position);
