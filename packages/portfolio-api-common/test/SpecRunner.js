@@ -841,7 +841,7 @@ module.exports = (() => {
 			this._trees = this._definitions.reduce((map, treeDefinition) => {
 				const tree = new Tree();
 
-				createGroups.call(this, tree, tree, this._items, treeDefinition, treeDefinition.definitions);
+				createGroups.call(this, tree, this._items, treeDefinition, treeDefinition.definitions);
 				
 				map[treeDefinition.name] = tree;
 
@@ -904,7 +904,7 @@ module.exports = (() => {
 						const overrideRequiredGroups = [ portfolioRequiredGroup ];
 
 						parentTrees.forEach((t) => {
-							createGroups.call(this, tree, t, [ ], treeDefinition, levelDefinitions.slice(portfolioLevelDefinitionIndex), overrideRequiredGroups);
+							createGroups.call(this, t, [ ], treeDefinition, levelDefinitions.slice(portfolioLevelDefinitionIndex), overrideRequiredGroups);
 						});
 					}
 				});
@@ -958,6 +958,41 @@ module.exports = (() => {
 
 			this.startTransaction(() => {
 				this.removePosition(position);
+
+				summaries.forEach((summary) => {
+					addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
+					addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
+				});
+
+				const item = createPositionItem(position);
+
+				addBarchartSymbol(this._symbols, item);
+				addDisplaySymbol(this._symbolsDisplay, item);
+
+				this._items.push(item);
+
+				const createGroupOrInjectItem = (parentTree, treeDefinition, levelDefinitions) => {
+					const levelDefinition = levelDefinitions[0];
+					const levelKey = levelDefinition.keySelector(item);
+
+					let groupTree;
+
+					if (parentTree.getChildren().length > 0) {
+						groupTree = parentTree.getChildren().findChild(childGroup => childGroup.key === levelKey) || null;
+					} else {
+						groupTree = null;
+					}
+
+					if (groupTree !== null) {
+						groupTree.addItem(item);
+
+						createGroupOrInjectItem(groupTree, treeDefinition, array.dropLeft(levelDefinitions));
+					} else {
+						createGroups.call(this, parentTree, [ item ], treeDefinition, levelDefinitions, [ ]);
+					}
+				};
+
+				this._definitions.forEach(definition => createGroupOrInjectItem(this._trees[definition.name], definition, definition.definitions));
 			});
 		}
 
@@ -1121,7 +1156,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {Array.<String> keys
+		 * @param {Array.<String>} keys
 		 * @returns {PositionGroup}
 		 */
 		getGroup(name, keys) {
@@ -1137,7 +1172,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {Array.<String> keys
+		 * @param {Array.<String>} keys
 		 * @returns {Array.<PositionGroup>}
 		 */
 		getGroups(name, keys) {
@@ -1246,12 +1281,62 @@ module.exports = (() => {
 		this._groupBindings[id].push(dispoable);
 	}
 
-	function createGroups(parentTree, currentTree, items, treeDefinition, levelDefinitions, overrideRequiredGroups) {
+	function initializeGroupObservers(groupTree, treeDefinition) {
+		const group = groupTree.getValue();
+
+		addGroupBinding.call(this, group, group.registerGroupExcludedChangeHandler(() => {
+			groupTree.climb((parentGroup, parentTree) => {
+				if (parentGroup) {
+					let excludedItems = [];
+
+					parentTree.walk((childGroup) => {
+						if (childGroup.excluded) {
+							excludedItems = excludedItems.concat(childGroup.items);
+						}
+					}, false, false);
+
+					parentGroup.setExcludedItems(array.unique(excludedItems));
+				}
+			}, false);
+
+			if (treeDefinition.exclusionDependencies.length > 0) {
+				const dependantTrees = treeDefinition.exclusionDependencies.reduce((trees, name) => {
+					if (this._trees.hasOwnProperty(name)) {
+						trees.push(this._trees[name]);
+					}
+
+					return trees;
+				}, [ ]);
+
+				if (dependantTrees.length > 0) {
+					let excludedItems = [ ];
+
+					groupTree.getRoot().walk((childGroup) => {
+						if (childGroup.excluded) {
+							excludedItems = excludedItems.concat(childGroup.items);
+						}
+					}, false, false);
+
+					dependantTrees.forEach((dependantTrees) => {
+						dependantTrees.walk((childGroup) => {
+							childGroup.setExcludedItems(excludedItems);
+						}, false, false);
+					});
+				}
+			}
+		}));
+
+		addGroupBinding.call(this, group, group.registerMarketPercentChangeHandler(() => {
+			groupTree.getParent().walk((childGroup) => childGroup.refreshMarketPercent());
+		}));
+	}
+
+	function createGroups(parentTree, items, treeDefinition, levelDefinitions, overrideRequiredGroups) {
 		if (levelDefinitions.length === 0) {
 			return;
 		}
 
-		const parent = currentTree.getValue() || null;
+		const parent = parentTree.getValue() || null;
 
 		const levelDefinition = levelDefinitions[0];
 
@@ -1308,60 +1393,12 @@ module.exports = (() => {
 
 		compositeGroups.sort(builder.toComparator());
 
-		const initializeGroupObservers = (group, groupTree) => {
-			addGroupBinding.call(this, group, group.registerGroupExcludedChangeHandler((excluded, sender) => {
-				groupTree.climb((parentGroup) => {
-					if (parentGroup) {
-						let excludedItems = [];
-
-						currentTree.walk((childGroup) => {
-							if (childGroup.excluded) {
-								excludedItems = excludedItems.concat(childGroup.items);
-							}
-						}, false, false);
-
-						parentGroup.setExcludedItems(array.unique(excludedItems));
-					}
-				}, false);
-
-				if (treeDefinition.exclusionDependencies.length > 0) {
-					const dependantTrees = treeDefinition.exclusionDependencies.reduce((trees, name) => {
-						if (this._trees.hasOwnProperty(name)) {
-							trees.push(this._trees[name]);
-						}
-
-						return trees;
-					}, [ ]);
-
-					if (dependantTrees.length > 0) {
-						let excludedItems = [ ];
-
-						parentTree.walk((childGroup) => {
-							if (childGroup.excluded) {
-								excludedItems = excludedItems.concat(childGroup.items);
-							}
-						}, false, false);
-
-						dependantTrees.forEach((dependantTrees) => {
-							dependantTrees.walk((childGroup) => {
-								childGroup.setExcludedItems(excludedItems);
-							}, false, false);
-						});
-					}
-				}
-			}));
-		};
-
 		compositeGroups.forEach((group) => {
-			const childTree = currentTree.addChild(group);
+			const childTree = parentTree.addChild(group);
 
-			initializeGroupObservers(group, childTree);
+			initializeGroupObservers.call(this, childTree, treeDefinition);
 
-			addGroupBinding.call(this, group, group.registerMarketPercentChangeHandler(() => {
-				currentTree.walk((childGroup) => childGroup.refreshMarketPercent());
-			}));
-
-			createGroups.call(this, parentTree, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
+			createGroups.call(this, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
 		});
 	}
 
@@ -1816,12 +1853,13 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
-		addItems(items) {
-
-			this.refresh();
-		}
-
-		removeItems(items) {
+		/**
+		 * Adds a new {@link PositionItem} to the group.
+		 *
+		 * @public
+		 * @param {PositionItem} item
+		 */
+		addItem(item) {
 
 			this.refresh();
 		}
@@ -2891,7 +2929,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @callback PositionLevelDefinition~keySelector
-	 * @param {PositionItem} session
+	 * @param {PositionItem} item
 	 * @returns {String}
 	 */
 
@@ -2901,7 +2939,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @callback PositionLevelDefinition~descriptionSelector
-	 * @param {PositionItem} session
+	 * @param {PositionItem} item
 	 * @returns {String}
 	 */
 
@@ -2911,7 +2949,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @callback PositionLevelDefinition~currencySelector
-	 * @param {PositionItem} session
+	 * @param {PositionItem} item
 	 * @returns {Currency}
 	 */
 
