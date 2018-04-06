@@ -240,7 +240,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @callback PositionLevelDefinition~keySelector
-	 * @param {PositionItem} session
+	 * @param {PositionItem} item
 	 * @returns {String}
 	 */
 
@@ -250,7 +250,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @callback PositionLevelDefinition~descriptionSelector
-	 * @param {PositionItem} session
+	 * @param {PositionItem} item
 	 * @returns {String}
 	 */
 
@@ -260,7 +260,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @callback PositionLevelDefinition~currencySelector
-	 * @param {PositionItem} session
+	 * @param {PositionItem} item
 	 * @returns {Currency}
 	 */
 

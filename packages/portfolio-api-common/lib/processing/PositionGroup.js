@@ -329,12 +329,13 @@ module.exports = (() => {
 			return this._excluded;
 		}
 
-		addItems(items) {
-
-			this.refresh();
-		}
-
-		removeItems(items) {
+		/**
+		 * Adds a new {@link PositionItem} to the group.
+		 *
+		 * @public
+		 * @param {PositionItem} item
+		 */
+		addItem(item) {
 
 			this.refresh();
 		}
