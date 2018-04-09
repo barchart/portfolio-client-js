@@ -486,7 +486,7 @@ module.exports = (() => {
 		getPositions(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', String);
 
-			return getPositionItemsForPortfolio(this._items, portfolio).map(item => item.position);
+			return getPositionItemsForPortfolio(this._items, portfolio);
 		}
 
 		/**
