@@ -262,7 +262,7 @@ module.exports = (() => {
 					let groupTree;
 
 					if (parentTree.getChildren().length > 0) {
-						groupTree = parentTree.getChildren().findChild(childGroup => childGroup.key === levelKey) || null;
+						groupTree = parentTree.getChildren().find(childGroup => childGroup.key === levelKey) || null;
 					} else {
 						groupTree = null;
 					}
