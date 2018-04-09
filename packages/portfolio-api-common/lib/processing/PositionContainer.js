@@ -248,7 +248,7 @@ module.exports = (() => {
 					addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
 				});
 
-				const item = createPositionItem(position);
+				const item = createPositionItem.call(this, position);
 
 				addBarchartSymbol(this._symbols, item);
 				addDisplaySymbol(this._symbolsDisplay, item);
