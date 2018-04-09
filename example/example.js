@@ -510,7 +510,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} transaction
-    * @returns {Promise.<Transaction[]>}
+    * @returns {Promise.<TransactionCreateResult>}
     */
 
 		}, {
@@ -760,8 +760,12 @@ module.exports = function () {
 
 	var responseInterceptorForTransactionCreateDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			var positions = JSON.parse(response.data.positions, PositionSchema.CLIENT.schema.getReviver());
-			var summaries = JSON.parse(response.data.summaries, PositionSummarySchema.CLIENT.schema.getReviver());
+			var positions = response.data.positions.map(function (p) {
+				return JSON.parse(p, PositionSchema.CLIENT.schema.getReviver());
+			});
+			var summaries = response.data.summaries.map(function (s) {
+				return JSON.parse(s, PositionSummarySchema.CLIENT.schema.getReviver());
+			});
 
 			return {
 				positions: positions,
@@ -787,6 +791,15 @@ module.exports = function () {
 			throw new Error('Unable to use gateway, the gateway has not started.');
 		}
 	}
+
+	/**
+  * The result of transaction create operation.
+  *
+  * @typedef TransactionCreateResult
+  * @type {Object}
+  * @property {Array.<Object>} positions - All positions updated as a consequence of processing the transaction.
+  * @property {Array.<Object>} summaries - All position summaries updated as a consequence of processing the transaction.
+  */
 
 	return PortfolioGateway;
 }();
@@ -1104,7 +1117,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.32'
+		version: '1.1.33'
 	};
 }();
 
