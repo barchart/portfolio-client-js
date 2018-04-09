@@ -262,13 +262,13 @@ module.exports = (() => {
 					let groupTree;
 
 					if (parentTree.getChildren().length > 0) {
-						groupTree = parentTree.getChildren().find(childGroup => childGroup.key === levelKey) || null;
+						groupTree = parentTree.findChild(childGroup => childGroup.key === levelKey) || null;
 					} else {
 						groupTree = null;
 					}
 
 					if (groupTree !== null) {
-						groupTree.addItem(item);
+						groupTree.getValue().addItem(item);
 
 						createGroupOrInjectItem(groupTree, treeDefinition, array.dropLeft(levelDefinitions));
 					} else {

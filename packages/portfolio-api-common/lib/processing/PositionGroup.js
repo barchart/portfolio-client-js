@@ -60,7 +60,7 @@ module.exports = (() => {
 
 			this._excludedItems = [ ];
 			this._excludedItemMap = { };
-			this._consideredItems = this._items;
+			this._consideredItems = this._items.slice(0);
 
 			this._dataFormat = { };
 			this._dataActual = { };
@@ -149,76 +149,7 @@ module.exports = (() => {
 			this._dataFormat.portfolioType = null;
 
 			this._items.forEach((item) => {
-				const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
-					if (this._single) {
-						const precision = sender.position.instrument.currency.precision;
-
-						this._dataActual.currentPrice = quote.lastPrice;
-						this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
-
-						this._dataActual.quoteLast = quote.previousPrice;
-						this._dataActual.quoteOpen = quote.openPrice;
-						this._dataActual.quoteHigh = quote.highPrice;
-						this._dataActual.quoteLow = quote.lowPrice;
-						this._dataActual.quoteChange = quote.priceChange;
-						this._dataActual.quoteChangePercent = quote.percentChange;
-						this._dataActual.quoteTime = quote.timeDisplay;
-						this._dataActual.quoteVolume = quote.volume;
-
-						this._dataFormat.quoteLast = formatNumber(this._dataActual.quoteLast , precision);
-						this._dataFormat.quoteOpen = formatNumber(this._dataActual.quoteOpen, precision);
-						this._dataFormat.quoteHigh = formatNumber(this._dataActual.quoteHigh, precision);
-						this._dataFormat.quoteLow = formatNumber(this._dataActual.quoteLow, precision);
-						this._dataFormat.quoteChange = formatNumber(this._dataActual.quoteChange, precision);
-						this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
-						this._dataFormat.quoteTime = this._dataActual.quoteTime;
-						this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
-
-						const quoteChangePositive = quote.lastPriceDirection === 'up';
-						const quoteChangeNegative = quote.lastPriceDirection === 'down';
-
-						setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
-
-						this._dataFormat.quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
-					} else {
-						this._dataActual.currentPrice = null;
-						this._dataFormat.currentPrice = null;
-					}
-
-					calculatePriceData(this, this._container.getForexQuotes(), sender, false);
-				});
-
-				let newsBinding = Disposable.getEmpty();
-				let fundamentalBinding = Disposable.getEmpty();
-
-				if (this._single) {
-					newsBinding = item.registerNewsExistsChangeHandler((exists, sender) => {
-						this._dataActual.newsExists = exists;
-						this._dataFormat.newsExists = exists;
-					});
-
-					fundamentalBinding = item.registerFundamentalDataChangeHandler((data, sender) => {
-						this._dataFormat.fundamental = data;
-					});
-				}
-
-				this._disposeStack.push(quoteBinding);
-				this._disposeStack.push(newsBinding);
-				this._disposeStack.push(fundamentalBinding);
-
-				this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
-					quoteBinding.dispose();
-					newsBinding.dispose();
-					fundamentalBinding.dispose();
-
-					array.remove(this._items, i => i === item);
-					array.remove(this._excludedItems, i => i === item);
-					array.remove(this._consideredItems, i => i === item);
-
-					delete this._excludedItemMap[item.position.position];
-
-					this.refresh();
-				}));
+				bindItem.call(this, item);
 			});
 
 			this.refresh();
@@ -336,6 +267,10 @@ module.exports = (() => {
 		 * @param {PositionItem} item
 		 */
 		addItem(item) {
+			this._items.push(item);
+			this._consideredItems.push(item);
+
+			bindItem.call(this, item);
 
 			this.refresh();
 		}
@@ -467,6 +402,79 @@ module.exports = (() => {
 		toString() {
 			return '[PositionGroup]';
 		}
+	}
+
+	function bindItem(item) {
+		const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
+			if (this._single) {
+				const precision = sender.position.instrument.currency.precision;
+
+				this._dataActual.currentPrice = quote.lastPrice;
+				this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
+
+				this._dataActual.quoteLast = quote.previousPrice;
+				this._dataActual.quoteOpen = quote.openPrice;
+				this._dataActual.quoteHigh = quote.highPrice;
+				this._dataActual.quoteLow = quote.lowPrice;
+				this._dataActual.quoteChange = quote.priceChange;
+				this._dataActual.quoteChangePercent = quote.percentChange;
+				this._dataActual.quoteTime = quote.timeDisplay;
+				this._dataActual.quoteVolume = quote.volume;
+
+				this._dataFormat.quoteLast = formatNumber(this._dataActual.quoteLast , precision);
+				this._dataFormat.quoteOpen = formatNumber(this._dataActual.quoteOpen, precision);
+				this._dataFormat.quoteHigh = formatNumber(this._dataActual.quoteHigh, precision);
+				this._dataFormat.quoteLow = formatNumber(this._dataActual.quoteLow, precision);
+				this._dataFormat.quoteChange = formatNumber(this._dataActual.quoteChange, precision);
+				this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
+				this._dataFormat.quoteTime = this._dataActual.quoteTime;
+				this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
+
+				const quoteChangePositive = quote.lastPriceDirection === 'up';
+				const quoteChangeNegative = quote.lastPriceDirection === 'down';
+
+				setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
+
+				this._dataFormat.quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
+			} else {
+				this._dataActual.currentPrice = null;
+				this._dataFormat.currentPrice = null;
+			}
+
+			calculatePriceData(this, this._container.getForexQuotes(), sender, false);
+		});
+
+		let newsBinding = Disposable.getEmpty();
+		let fundamentalBinding = Disposable.getEmpty();
+
+		if (this._single) {
+			newsBinding = item.registerNewsExistsChangeHandler((exists, sender) => {
+				this._dataActual.newsExists = exists;
+				this._dataFormat.newsExists = exists;
+			});
+
+			fundamentalBinding = item.registerFundamentalDataChangeHandler((data, sender) => {
+				this._dataFormat.fundamental = data;
+			});
+		}
+
+		this._disposeStack.push(quoteBinding);
+		this._disposeStack.push(newsBinding);
+		this._disposeStack.push(fundamentalBinding);
+
+		this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
+			quoteBinding.dispose();
+			newsBinding.dispose();
+			fundamentalBinding.dispose();
+
+			array.remove(this._items, i => i === item);
+			array.remove(this._excludedItems, i => i === item);
+			array.remove(this._consideredItems, i => i === item);
+
+			delete this._excludedItemMap[item.position.position];
+
+			this.refresh();
+		}));
 	}
 
 	function formatNumber(number, precision) {
