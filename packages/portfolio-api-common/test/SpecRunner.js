@@ -972,6 +972,10 @@ module.exports = (() => {
 				this._items.push(item);
 
 				const createGroupOrInjectItem = (parentTree, treeDefinition, levelDefinitions) => {
+					if (levelDefinitions.length === 0) {
+						return;
+					}
+
 					const levelDefinition = levelDefinitions[0];
 					const levelKey = levelDefinition.keySelector(item);
 
