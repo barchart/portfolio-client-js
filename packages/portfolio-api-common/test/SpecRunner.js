@@ -1805,6 +1805,11 @@ module.exports = (() => {
 			bindItem.call(this, item);
 
 			this.refresh();
+
+			if (this._excluded) {
+				this.setExcluded(false);
+				this.setExcluded(true);
+			}
 		}
 
 		/**
