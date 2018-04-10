@@ -1206,7 +1206,10 @@ module.exports = (() => {
 		getPositions(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', String);
 
-			return getPositionItemsForPortfolio(this._items, portfolio);
+			return getPositionItemsForPortfolio(this._items, portfolio)
+				.map((item) => {
+					return item.position;
+				});
 		}
 
 		/**
@@ -1411,7 +1414,7 @@ module.exports = (() => {
 	function getPositionItemsForPortfolio(items, portfolio) {
 		return items.reduce((positionItems, item) => {
 			if (item.position.portfolio === portfolio) {
-				positionItems.push(item.position);
+				positionItems.push(item);
 			}
 
 			return positionItems;
