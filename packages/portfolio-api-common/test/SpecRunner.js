@@ -1278,7 +1278,7 @@ module.exports = (() => {
 		 * @param {Function} handler
 		 * @returns {Disposable}
 		 */
-		registerPositionSymbolAddedHandler(handler) {
+		registerPositionSymbolRemovedHandler(handler) {
 			return this._positionSymbolRemovedEvent.register(handler);
 		}
 
