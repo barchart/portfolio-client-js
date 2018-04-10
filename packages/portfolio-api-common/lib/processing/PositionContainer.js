@@ -5,6 +5,7 @@ const array = require('@barchart/common-js/lang/array'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
+	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate'),
 	Tree = require('@barchart/common-js/collections/Tree');
@@ -47,6 +48,9 @@ module.exports = (() => {
 			this._definitions = definitions;
 
 			this._groupBindings = { };
+
+			this._positionSymbolAddedEvent = new Event(this);
+			this._positionSymbolRemovedEvent = new Event(this);
 
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
@@ -241,7 +245,9 @@ module.exports = (() => {
 			}
 
 			this.startTransaction(() => {
-				this.removePosition(position);
+				const existingBarchartSymbols = this.getPositionSymbols(false);
+
+				removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
 
 				summaries.forEach((summary) => {
 					addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
@@ -281,6 +287,12 @@ module.exports = (() => {
 				};
 
 				this._definitions.forEach(definition => createGroupOrInjectItem(this._trees[definition.name], definition, definition.definitions));
+
+				const addedBarchartSymbol = extractSymbolForBarchart(item.position);
+
+				if (!existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === addedBarchartSymbol)) {
+					this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
+				}
 			});
 		}
 
@@ -527,6 +539,30 @@ module.exports = (() => {
 			executor(this);
 
 			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(false), false, false));
+		}
+
+		/**
+		 * Registers an observer for symbol addition (this occurs when a new position is added
+		 * for a symbol that does not already exist in the container).
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerPositionSymbolAddedHandler(handler) {
+			return this._positionSymbolAddedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for symbol removal (this occurs when the last position for a
+		 * symbol is removed from the container).
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerPositionSymbolAddedHandler(handler) {
+			return this._positionSymbolRemovedEvent.register(handler);
 		}
 
 		toString() {
