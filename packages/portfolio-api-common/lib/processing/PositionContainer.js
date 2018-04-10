@@ -543,7 +543,8 @@ module.exports = (() => {
 
 		/**
 		 * Registers an observer for symbol addition (this occurs when a new position is added
-		 * for a symbol that does not already exist in the container).
+		 * for a symbol that does not already exist in the container). This event only fires
+		 * after the constructor completes (and initial positions have been added).
 		 *
 		 * @public
 		 * @param {Function} handler
