@@ -290,7 +290,7 @@ module.exports = (() => {
 
 				const addedBarchartSymbol = extractSymbolForBarchart(item.position);
 
-				if (!existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === addedBarchartSymbol)) {
+				if (addedBarchartSymbol !== null && !existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === addedBarchartSymbol)) {
 					this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
 				}
 			});
