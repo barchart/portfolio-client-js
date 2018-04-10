@@ -24,6 +24,11 @@ module.exports = (() => {
 
 	const DEFAULT_CURRENCY = Currency.CAD;
 
+	const REQUIRED_CURRENCIES = [
+		Currency.CAD,
+		Currency.USD
+	];
+
 	/**
 	 * A container for positions which groups the positions into one or more
 	 * trees for aggregation and display purposes. For example, positions could be
@@ -114,7 +119,9 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._forexSymbols = Object.keys(this._currencies).reduce((symbols, code) => {
+			const forexCurrencyCodes = array.unique(Object.keys(this._currencies).concat(REQUIRED_CURRENCIES.map(c => c.code)));
+
+			this._forexSymbols = forexCurrencyCodes.reduce((symbols, code) => {
 				if (code !== DEFAULT_CURRENCY.code) {
 					symbols.push(`^${DEFAULT_CURRENCY.code}${code}`);
 				}
