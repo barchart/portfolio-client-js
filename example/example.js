@@ -1060,8 +1060,8 @@ module.exports = function () {
 
 		}, {
 			key: 'forStagingClient',
-			value: function forStagingClient(externalRequestInterceptor) {
-				return JwtGateway.forStaging(externalRequestInterceptor).then(function (jwtGateway) {
+			value: function forStagingClient(externalRequestInterceptorPromise) {
+				return JwtGateway.forStaging(externalRequestInterceptorPromise).then(function (jwtGateway) {
 					return jwtGateway.toRequestInterceptor();
 				});
 			}
@@ -1077,7 +1077,7 @@ module.exports = function () {
 
 		}, {
 			key: 'forProduction',
-			value: function forProduction(externalRequestInterceptor) {
+			value: function forProduction(externalRequestInterceptorPromise) {
 				return externalRequestInterceptorPromise.then(function (externalRequestInterceptor) {
 					return start(new JwtGateway(_forProduction(externalRequestInterceptor), 300000));
 				});
@@ -1094,8 +1094,8 @@ module.exports = function () {
 
 		}, {
 			key: 'forProductionClient',
-			value: function forProductionClient(externalRequestInterceptor) {
-				return JwtGateway.forProduction(externalRequestInterceptor).then(function (jwtGateway) {
+			value: function forProductionClient(externalRequestInterceptorPromise) {
+				return JwtGateway.forProduction(externalRequestInterceptorPromise).then(function (jwtGateway) {
 					return jwtGateway.toRequestInterceptor();
 				});
 			}
@@ -1155,7 +1155,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.40'
+		version: '1.1.41'
 	};
 }();
 
