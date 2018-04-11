@@ -911,8 +911,6 @@ module.exports = function () {
 				return Promise.resolve().then(function () {
 					checkStart.call(_this3);
 
-					debugger;
-
 					return Gateway.invoke(_this3._endpoint);
 				}).catch(function (e) {
 					var failure = FailureReason.forRequest({ endpoint: _this3._endpoint }).addItem(FailureType.REQUEST_IDENTITY_FAILURE).format();
@@ -942,8 +940,6 @@ module.exports = function () {
 					var refreshPromise = scheduler.backoff(function () {
 						return _this4.readToken();
 					}, 100, 'Read JWT token', 3).then(function (token) {
-						debugger;
-
 						if (_this4._refreshInterval) {
 							cachePromise = refreshPromise;
 						}
@@ -1133,17 +1129,13 @@ module.exports = function () {
 	function _forStaging(externalRequestInterceptor) {
 		return EndpointBuilder.for('translate-jwt-token-for-staging', 'lookup Barchart user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.stagingHost).withPathBuilder(function (pb) {
 			return pb.withLiteralParameter('token', 'token').withLiteralParameter('system', 'tgam').withLiteralParameter('converter', 'converter');
-		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
-			return response.token;
-		})).endpoint;
+		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
 	function _forProduction(externalRequestInterceptor) {
 		return EndpointBuilder.for('translate-jwt-token-for-production', 'lookup Barchart user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.productionHost).withPathBuilder(function (pb) {
 			return pb.withLiteralParameter('token', 'token').withLiteralParameter('system', 'tgam').withLiteralParameter('converter', 'converter');
-		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
-			return response.token;
-		})).endpoint;
+		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
 	return JwtGateway;
@@ -1161,7 +1153,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.38'
+		version: '1.1.39'
 	};
 }();
 
