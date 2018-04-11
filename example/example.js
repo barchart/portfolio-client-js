@@ -1033,12 +1033,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Creates and starts a new {@link JwtGateway} for use in the development environment.
+    * Creates and starts a new {@link JwtGateway} for use in the staging environment.
     *
     * @public
     * @static
     * @param {String} userId - The identifier of the user to impersonate.
-    * @param {String} userLegacyId - The legacy identifier of the user to impersonate.
     * @returns {Promise.<JwtGateway>}
     */
 
@@ -1049,11 +1048,10 @@ module.exports = function () {
 			}
 
 			/**
-    * Creates and starts a new {@link RequestInterceptor} for use in the development environment.
+    * Creates and starts a new {@link RequestInterceptor} for use in the staging environment.
     *
     * @public
     * @static
-    * @param {String} userId - The identifier of the user to impersonate.
     * @returns {Promise.<RequestInterceptor>}
     */
 
@@ -1083,7 +1081,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Creates and starts a new {@link RequestInterceptor} for use in the development environment.
+    * Creates and starts a new {@link RequestInterceptor} for use in the production environment.
     *
     * @public
     * @static
@@ -1128,11 +1126,9 @@ module.exports = function () {
 	}
 
 	function _forStaging(externalRequestInterceptor) {
-		return EndpointBuilder.for('translate-jwt-token-for-production', 'lookup Barchart user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.stagingHost).withPathBuilder(function (pb) {
+		return EndpointBuilder.for('translate-jwt-token-for-staging', 'lookup Barchart user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.stagingHost).withPathBuilder(function (pb) {
 			return pb.withLiteralParameter('token', 'token').withLiteralParameter('system', 'tgam').withLiteralParameter('converter', 'converter');
-		})
-		// .withRequestInterceptor(externalRequestInterceptor)
-		.withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
+		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
 			return response.token;
 		})).endpoint;
 	}
@@ -1160,7 +1156,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.36'
+		version: '1.1.37'
 	};
 }();
 
@@ -10740,6 +10736,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10751,6 +10748,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10762,6 +10760,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10778,6 +10777,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10789,6 +10789,7 @@ module.exports = (() => {
 		.withField('rate', DataType.DECIMAL)
 		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10801,6 +10802,7 @@ module.exports = (() => {
 		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10813,6 +10815,7 @@ module.exports = (() => {
 		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10824,6 +10827,7 @@ module.exports = (() => {
 		.withField('rate', DataType.DECIMAL)
 		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10836,6 +10840,7 @@ module.exports = (() => {
 		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10848,6 +10853,7 @@ module.exports = (() => {
 		.withField('denominator', DataType.DECIMAL)
 		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10857,6 +10863,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('fee', DataType.DECIMAL)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10867,6 +10874,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('fee', DataType.DECIMAL)
 		.withField('price', DataType.DECIMAL)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10879,6 +10887,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10889,6 +10898,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10899,6 +10909,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10909,6 +10920,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10919,6 +10931,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('value', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -10929,6 +10942,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('income', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
