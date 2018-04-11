@@ -92,7 +92,7 @@ module.exports = function () {
 		}, {
 			key: 'stagingHost',
 			get: function get() {
-				return '24ok2r76k6.execute-api.us-east-1.amazonaws.com/dev';
+				return '24ok2r76k6.execute-api.us-east-1.amazonaws.com/stage';
 			}
 
 			/**
@@ -1160,7 +1160,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.35'
+		version: '1.1.36'
 	};
 }();
 
