@@ -911,6 +911,8 @@ module.exports = function () {
 				return Promise.resolve().then(function () {
 					checkStart.call(_this3);
 
+					debugger;
+
 					return Gateway.invoke(_this3._endpoint);
 				}).catch(function (e) {
 					var failure = FailureReason.forRequest({ endpoint: _this3._endpoint }).addItem(FailureType.REQUEST_IDENTITY_FAILURE).format();
@@ -940,6 +942,8 @@ module.exports = function () {
 					var refreshPromise = scheduler.backoff(function () {
 						return _this4.readToken();
 					}, 100, 'Read JWT token', 3).then(function (token) {
+						debugger;
+
 						if (_this4._refreshInterval) {
 							cachePromise = refreshPromise;
 						}
@@ -1037,7 +1041,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {String} userId - The identifier of the user to impersonate.
+    * @param {RequestInterceptor} externalRequestInterceptor
     * @returns {Promise.<JwtGateway>}
     */
 
@@ -1052,6 +1056,7 @@ module.exports = function () {
     *
     * @public
     * @static
+    * @param {RequestInterceptor} externalRequestInterceptor
     * @returns {Promise.<RequestInterceptor>}
     */
 
@@ -1156,7 +1161,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.37'
+		version: '1.1.38'
 	};
 }();
 
