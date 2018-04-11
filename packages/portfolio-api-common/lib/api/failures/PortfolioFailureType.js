@@ -39,7 +39,7 @@ module.exports = (() => {
 	}
 
 	const transactionCreateFailedOutOfSequence = new FailureType('TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE', 'Unable to create transaction, because the transaction date is out-of-sequence. In other words, it would occur before an existing transaction. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
-	const transactionCreateFailedDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_DIRECTION_SWITCH', 'Unable to create transaction, because the postion direction would switch (from long to short or vice versa). Please close the position (to a zero balance) before switching direction.');
+	const transactionCreateFailedDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_DIRECTION_SWITCH', 'Unable to create transaction, because the position direction would be switched (from long to short or vice versa). Please close the position (to a zero balance) first, then enter a second transaction.');
 
 	return PortfolioFailureType;
 })();
