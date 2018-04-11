@@ -254,6 +254,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -265,6 +266,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -276,6 +278,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -292,6 +295,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -303,6 +307,7 @@ module.exports = (() => {
 		.withField('rate', DataType.DECIMAL)
 		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -315,6 +320,7 @@ module.exports = (() => {
 		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -327,6 +333,7 @@ module.exports = (() => {
 		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -338,6 +345,7 @@ module.exports = (() => {
 		.withField('rate', DataType.DECIMAL)
 		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -350,6 +358,7 @@ module.exports = (() => {
 		.withField('effective', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -362,6 +371,7 @@ module.exports = (() => {
 		.withField('denominator', DataType.DECIMAL)
 		.withField('effective', DataType.DAY)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -371,6 +381,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('fee', DataType.DECIMAL)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -381,6 +392,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('fee', DataType.DECIMAL)
 		.withField('price', DataType.DECIMAL)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -393,6 +405,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -403,6 +416,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -413,6 +427,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -423,6 +438,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -433,6 +449,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('value', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -443,6 +460,7 @@ module.exports = (() => {
 		.withField('date', DataType.DAY)
 		.withField('income', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
