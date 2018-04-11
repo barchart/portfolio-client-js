@@ -677,7 +677,7 @@ module.exports = function () {
 			key: 'forStaging',
 			value: function forStaging(requestInterceptor) {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
-					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'production', 'RequestInterceptor');
+					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
 					return start(new PortfolioGateway('https', Configuration.stagingHost, 443, 'staging', requestInterceptor));
 				});
@@ -1037,14 +1037,16 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor} externalRequestInterceptor
+    * @param {Promise.<RequestInterceptor>} externalRequestInterceptorPromise
     * @returns {Promise.<JwtGateway>}
     */
 
 		}, {
 			key: 'forStaging',
-			value: function forStaging(externalRequestInterceptor) {
-				return start(new JwtGateway(_forStaging(externalRequestInterceptor), 60000));
+			value: function forStaging(externalRequestInterceptorPromise) {
+				return externalRequestInterceptorPromise.then(function (externalRequestInterceptor) {
+					return start(new JwtGateway(_forStaging(externalRequestInterceptor), 300000));
+				});
 			}
 
 			/**
@@ -1052,7 +1054,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor} externalRequestInterceptor
+    * @param {Promise.<RequestInterceptor>} externalRequestInterceptorPromise
     * @returns {Promise.<RequestInterceptor>}
     */
 
@@ -1069,16 +1071,16 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor} externalRequestInterceptor
+    * @param {Promise.<RequestInterceptor>} externalRequestInterceptorPromise
     * @returns {Promise.<JwtGateway>}
     */
 
 		}, {
 			key: 'forProduction',
 			value: function forProduction(externalRequestInterceptor) {
-				assert.argumentIsRequired(externalRequestInterceptor, 'externalRequestInterceptor', RequestInterceptor, 'RequestInterceptor');
-
-				return start(new JwtGateway(_forProduction(externalRequestInterceptor), 300000));
+				return externalRequestInterceptorPromise.then(function (externalRequestInterceptor) {
+					return start(new JwtGateway(_forProduction(externalRequestInterceptor), 300000));
+				});
 			}
 
 			/**
@@ -1086,7 +1088,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor} externalRequestInterceptor
+    * @param {Promise.<RequestInterceptor>} externalRequestInterceptorPromise
     * @returns {Promise.<RequestInterceptor>}
     */
 
@@ -1153,7 +1155,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.39'
+		version: '1.1.40'
 	};
 }();
 
