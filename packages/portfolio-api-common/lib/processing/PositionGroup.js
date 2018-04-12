@@ -463,6 +463,12 @@ module.exports = (() => {
 			});
 		}
 
+		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio, sender) => {
+			const descriptionSelector = this._definition.descriptionSelector;
+
+			this._description = descriptionSelector(this._items[0]);
+		}));
+
 		this._disposeStack.push(quoteBinding);
 		this._disposeStack.push(newsBinding);
 		this._disposeStack.push(fundamentalBinding);

@@ -207,6 +207,21 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Updates the portfolio data. For example, a portfolio's name might change.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 */
+		updatePortfolio(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
+
+			this.startTransaction(() => {
+				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
+			});
+		}
+
+		/**
 		 * Removes an existing portfolio, and all of it's positions, from the container. This
 		 * also triggers removal of the portfolio and it's positions from any applicable
 		 * aggregation trees.

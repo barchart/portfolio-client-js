@@ -73,6 +73,7 @@ module.exports = (() => {
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
 			this._fundamentalDataChangeEvent = new Event(this);
+			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 		}
 
@@ -144,6 +145,19 @@ module.exports = (() => {
 		 */
 		get quote() {
 			return this._currentQuote;
+		}
+
+		updatePortfolio(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
+
+			if (portfolio.portfolio !== this._portfolio.portfolio) {
+				throw new Error('Unable to move position into new portfolio.');
+			}
+
+			if (this._portfolio !== portfolio) {
+				this._portfolioChangedEvent.fire(this._portfolio = portfolio);
+			}
 		}
 
 		/**
@@ -242,6 +256,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Registers an observer changes to portfolio metadata.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerPortfolioChangeHandler(handler) {
+			return this._portfolioChangedEvent.register(handler);
+		}
+
+		/**
 		 * Registers an observer for object disposal.
 		 *
 		 * @public
@@ -258,6 +283,7 @@ module.exports = (() => {
 			this._quoteChangedEvent.clear();
 			this._newsExistsChangedEvent.clear();
 			this._fundamentalDataChangeEvent.clear();
+			this._portfolioChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
 		}
 
