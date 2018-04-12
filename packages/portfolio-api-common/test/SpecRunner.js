@@ -923,6 +923,21 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Updates the portfolio data. For example, a portfolio's name might change.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 */
+		updatePortfolio(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
+
+			this.startTransaction(() => {
+				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
+			});
+		}
+
+		/**
 		 * Removes an existing portfolio, and all of it's positions, from the container. This
 		 * also triggers removal of the portfolio and it's positions from any applicable
 		 * aggregation trees.
@@ -2042,6 +2057,12 @@ module.exports = (() => {
 			});
 		}
 
+		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio, sender) => {
+			const descriptionSelector = this._definition.descriptionSelector;
+
+			this._description = descriptionSelector(this._items[0]);
+		}));
+
 		this._disposeStack.push(quoteBinding);
 		this._disposeStack.push(newsBinding);
 		this._disposeStack.push(fundamentalBinding);
@@ -2411,6 +2432,7 @@ module.exports = (() => {
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
 			this._fundamentalDataChangeEvent = new Event(this);
+			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 		}
 
@@ -2482,6 +2504,19 @@ module.exports = (() => {
 		 */
 		get quote() {
 			return this._currentQuote;
+		}
+
+		updatePortfolio(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
+
+			if (portfolio.portfolio !== this._portfolio.portfolio) {
+				throw new Error('Unable to move position into new portfolio.');
+			}
+
+			if (this._portfolio !== portfolio) {
+				this._portfolioChangedEvent.fire(this._portfolio = portfolio);
+			}
 		}
 
 		/**
@@ -2580,6 +2615,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Registers an observer changes to portfolio metadata.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerPortfolioChangeHandler(handler) {
+			return this._portfolioChangedEvent.register(handler);
+		}
+
+		/**
 		 * Registers an observer for object disposal.
 		 *
 		 * @public
@@ -2596,6 +2642,7 @@ module.exports = (() => {
 			this._quoteChangedEvent.clear();
 			this._newsExistsChangedEvent.clear();
 			this._fundamentalDataChangeEvent.clear();
+			this._portfolioChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
 		}
 
