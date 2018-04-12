@@ -467,6 +467,9 @@ module.exports = (() => {
 			const descriptionSelector = this._definition.descriptionSelector;
 
 			this._description = descriptionSelector(this._items[0]);
+
+			this._dataActual.description = this._description;
+			this._dataFormat.description = this._description;
 		}));
 
 		this._disposeStack.push(quoteBinding);
