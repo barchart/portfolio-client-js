@@ -1,3 +1,5 @@
+const uuid = require('uuid');
+
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -16,16 +18,19 @@ module.exports = (() => {
 	 * @param {Boolean} usesSymbols
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest, usesSymbols) {
+		constructor(code, description, alternateDescription, canReinvest, usesSymbols, generator) {
 			super(code, description);
 
 			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
 			assert.argumentIsRequired(canReinvest, 'canReinvest', Boolean);
 			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
+			assert.argumentIsRequired(generator, 'generator', Function);
 
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
 			this._usesSymbols = usesSymbols;
+
+			this._generator = generator;
 		}
 
 		/**
@@ -56,6 +61,23 @@ module.exports = (() => {
 		 */
 		get usesSymbols() {
 			return this._usesSymbols;
+		}
+
+		/**
+		 * Generates an identifier for the instrument.
+		 *
+		 * @public
+		 * @param instrument
+		 * @returns {String}
+		 */
+		generateIdentifier(instrument) {
+			assert.argumentIsRequired(instrument, 'instrument');
+
+			if (instrument.type !== this) {
+				throw new Error('Unable to generate instrument identifier for incompatible type.');
+			}
+
+			return this._generator(instrument);
 		}
 
 		/**
@@ -102,15 +124,34 @@ module.exports = (() => {
 			return other;
 		}
 
+		/**
+		 * Generates an identifier for the instrument.
+		 *
+		 * @static
+		 * @public
+		 * @param instrument
+		 * @returns {String}
+		 */
+		static generateIdentifier(instrument) {
+			return map[instrument.type.code].generateIdentifier(instrument);
+		}
+
 		toString() {
 			return '[InstrumentType]';
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, true);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false, false);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
+
+	const map = { };
+
+	map[cash.code] = cash;
+	map[equity.code] = equity;
+	map[fund.code] = fund;
+	map[other.code] = other;
 
 	return InstrumentType;
 })();
