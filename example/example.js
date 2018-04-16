@@ -244,7 +244,7 @@ module.exports = function () {
 			}).withBody('portfolio data').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForTransactionCreateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deleteTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('transaction', 'transaction', 'transaction', false);
+				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
 			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readTransactionsReportEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
@@ -553,7 +553,7 @@ module.exports = function () {
     * @public
     * @param {String} portfolio
     * @param {String} position
-    * @param {String} transaction
+    * @param {Number} transaction
     * @returns {Promise.<Transaction[]>}
     */
 
@@ -567,9 +567,9 @@ module.exports = function () {
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
-					assert.argumentIsRequired(transaction, 'transaction', String);
+					assert.argumentIsRequired(sequence, 'sequence', Number);
 
-					return Gateway.invoke(_this11._deleteTransactionsEndpoint, { portfolio: portfolio, position: position, transaction: transaction });
+					return Gateway.invoke(_this11._deleteTransactionsEndpoint, { portfolio: portfolio, position: position, sequence: sequence });
 				});
 			}
 
@@ -1155,7 +1155,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.41'
+		version: '1.1.42'
 	};
 }();
 
