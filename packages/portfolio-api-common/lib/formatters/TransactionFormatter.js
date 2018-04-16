@@ -90,7 +90,8 @@ module.exports = (() => {
 			date: t.date,
 			type: t.type.display,
 			sequence: t.sequence,
-			instrument: t.instrument
+			instrument: t.instrument,
+			position: t.position
 		};
 
 		if (basic.instrument) {
