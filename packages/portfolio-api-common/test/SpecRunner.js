@@ -68,7 +68,7 @@ module.exports = (() => {
 		 * Generates an identifier for the instrument.
 		 *
 		 * @public
-		 * @param instrument
+		 * @param {Object} instrument
 		 * @returns {String}
 		 */
 		generateIdentifier(instrument) {
@@ -130,7 +130,7 @@ module.exports = (() => {
 		 *
 		 * @static
 		 * @public
-		 * @param instrument
+		 * @param {Object} instrument
 		 * @returns {String}
 		 */
 		static generateIdentifier(instrument) {
