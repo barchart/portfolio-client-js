@@ -15,19 +15,26 @@ module.exports = (() => {
 	 * @param {String} alternateDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
+	 * @param {Boolean} canShort
+	 * @param {Boolean} canSwitchDirection
 	 * @param {Boolean} usesSymbols
+	 * @param {Function} usesSymbols
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest, usesSymbols, generator) {
+		constructor(code, description, alternateDescription, canReinvest, canShort, canSwitchDirection, usesSymbols, generator) {
 			super(code, description);
 
 			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
 			assert.argumentIsRequired(canReinvest, 'canReinvest', Boolean);
+			assert.argumentIsRequired(canShort, 'canShort', Boolean);
+			assert.argumentIsRequired(canSwitchDirection, 'canSwitchDirection', Boolean);
 			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
 			assert.argumentIsRequired(generator, 'generator', Function);
 
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
+			this._canShort = canShort;
+			this._canSwitchDirection = canSwitchDirection;
 			this._usesSymbols = usesSymbols;
 
 			this._generator = generator;
@@ -51,6 +58,27 @@ module.exports = (() => {
 		 */
 		get canReinvest() {
 			return this._canReinvest;
+		}
+
+		/**
+		 * Indicates if short-selling is possible for this instrument type.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get canShort() {
+			return this._canShort;
+		}
+
+		/**
+		 * Indicates if one transaction is allowed to switch a position size from
+		 * positive to negative (or vice versa).
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get canSwitchDirection() {
+			return this._canSwitchDirection;
 		}
 
 		/**
@@ -141,10 +169,10 @@ module.exports = (() => {
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false, true, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
 
 	const map = { };
 
