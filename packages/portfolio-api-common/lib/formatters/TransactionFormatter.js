@@ -1,4 +1,5 @@
 const assert = require('@barchart/common-js/lang/assert'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is'),
 	formatter = require('@barchart/common-js/lang/formatter');
 
@@ -53,7 +54,7 @@ module.exports = (() => {
 						const formattedTransaction = formatterFunction(transaction);
 
 						Object.keys(formattedTransaction).map((key) => {
-							if (!is.undefined(formattedTransaction[key]) && is.fn(formattedTransaction[key].toFloat)) {
+							if (!is.undefined(formattedTransaction[key]) && formattedTransaction[key] instanceof Decimal) {
 								const precision = transaction.instrument.currency.precision;
 
 								formattedTransaction[key] = formatter.numberToString(formattedTransaction[key].toFloat(), precision, ',');
