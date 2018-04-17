@@ -371,7 +371,7 @@ module.exports = (() => {
 
 			const descriptionSelector = this._definition.descriptionSelector;
 
-			this._description = descriptionSelector(this._items[0]);
+			this._description = descriptionSelector(portfolio);
 
 			this._dataActual.description = this._description;
 			this._dataFormat.description = this._description;
