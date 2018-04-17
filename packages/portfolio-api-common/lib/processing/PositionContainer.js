@@ -218,6 +218,8 @@ module.exports = (() => {
 
 			this.startTransaction(() => {
 				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
+
+				updateEmptyPortfolioGroups.call(this);
 			});
 		}
 
@@ -683,7 +685,7 @@ module.exports = (() => {
 		}));
 	}
 
-	function createGroups(parentTree, items, treeDefinition, levelDefinitions, overrideRequiredGroups) {
+	function createGroups(parentTree, items, treeDefinition, levelDefinitions, overrideRequiredGroups, recursive) {
 		if (levelDefinitions.length === 0) {
 			return;
 		}
@@ -750,7 +752,22 @@ module.exports = (() => {
 
 			initializeGroupObservers.call(this, childTree, treeDefinition);
 
-			createGroups.call(this, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
+			createGroups.call(this, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions), null, true);
+		});
+
+		if (!recursive) {
+			updateEmptyPortfolioGroups.call(this);
+		}
+	}
+
+
+	function updateEmptyPortfolioGroups() {
+		Object.keys(this._trees).forEach((key) => {
+			this._trees[key].walk((group) => {
+				if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio) && group.getIsEmpty()) {
+					group.updatePortfolio(portfolio);
+				}
+			}, true, false);
 		});
 	}
 

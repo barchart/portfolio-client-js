@@ -11,6 +11,9 @@ const array = require('@barchart/common-js/lang/array'),
 
 const InstrumentType = require('./../data/InstrumentType');
 
+const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./definitions/PositionLevelType');
+
 module.exports = (() => {
 	'use strict';
 
@@ -355,6 +358,36 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Updates the portfolio data. For example, a portfolio's name might change. This
+		 * function only affects {@link PositionLevelType.PORTFOLIO} groups.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 */
+		updatePortfolio(portfolio) {
+			if (this._definition.type !== PositionLevelType.PORTFOLIO || this._key !== PositionLevelDefinition.getKeyForPortfolioGroup(portfolio) || !this.getIsEmpty()) {
+				return;
+			}
+
+			const descriptionSelector = this._definition.descriptionSelector;
+
+			this._description = descriptionSelector(this._items[0]);
+
+			this._dataActual.description = this._description;
+			this._dataFormat.description = this._description;
+
+			let portfolioType;
+
+			if (portfolio.miscellany && portfolio.miscellany.data.type && portfolio.miscellany.data.type.value) {
+				portfolioType = portfolio.miscellany.data.type.value;
+			} else {
+				portfolioType = null;
+			}
+
+			this._dataFormat.portfolioType = portfolioType;
+		}
+
+		/**
 		 * Causes all aggregated data to be recalculated (assuming the group has not
 		 * been suspended).
 		 *
@@ -379,6 +412,16 @@ module.exports = (() => {
 		 */
 		refreshMarketPercent() {
 			calculateMarketPercent(this, this._container.getForexQuotes(), true);
+		}
+
+		/**
+		 * Indicates if the group contains any items.
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		getIsEmpty() {
+			return this._items.length === 0;
 		}
 
 		/**
