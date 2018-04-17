@@ -899,6 +899,8 @@ module.exports = (() => {
 
 				return map;
 			}, { });
+
+			Object.keys(this._portfolios).forEach(key => updateEmptyPortfolioGroups.call(this, this._portfolios[key]));
 		}
 
 		/**
@@ -960,6 +962,8 @@ module.exports = (() => {
 						});
 					}
 				});
+
+				updateEmptyPortfolioGroups.call(this, portfolio);
 			}
 		}
 
@@ -975,6 +979,8 @@ module.exports = (() => {
 
 			this.startTransaction(() => {
 				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
+
+				updateEmptyPortfolioGroups.call(this, portfolio);
 			});
 		}
 
@@ -1511,6 +1517,17 @@ module.exports = (() => {
 		});
 	}
 
+
+	function updateEmptyPortfolioGroups(portfolio) {
+		Object.keys(this._trees).forEach((key) => {
+			this._trees[key].walk((group) => {
+				if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio) && group.getIsEmpty()) {
+					group.updatePortfolio(portfolio);
+				}
+			}, true, false);
+		});
+	}
+
 	function getPositionItemsForPortfolio(items, portfolio) {
 		return items.reduce((positionItems, item) => {
 			if (item.position.portfolio === portfolio) {
@@ -1645,6 +1662,9 @@ const array = require('@barchart/common-js/lang/array'),
 	Rate = require('@barchart/common-js/lang/Rate');
 
 const InstrumentType = require('./../data/InstrumentType');
+
+const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./definitions/PositionLevelType');
 
 module.exports = (() => {
 	'use strict';
@@ -1990,6 +2010,36 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Updates the portfolio data. For example, a portfolio's name might change. This
+		 * function only affects {@link PositionLevelType.PORTFOLIO} groups.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 */
+		updatePortfolio(portfolio) {
+			if (this._definition.type !== PositionLevelType.PORTFOLIO || this._key !== PositionLevelDefinition.getKeyForPortfolioGroup(portfolio) || !this.getIsEmpty()) {
+				return;
+			}
+
+			const descriptionSelector = this._definition.descriptionSelector;
+
+			this._description = descriptionSelector(this._items[0]);
+
+			this._dataActual.description = this._description;
+			this._dataFormat.description = this._description;
+
+			let portfolioType;
+
+			if (portfolio.miscellany && portfolio.miscellany.data.type && portfolio.miscellany.data.type.value) {
+				portfolioType = portfolio.miscellany.data.type.value;
+			} else {
+				portfolioType = null;
+			}
+
+			this._dataFormat.portfolioType = portfolioType;
+		}
+
+		/**
 		 * Causes all aggregated data to be recalculated (assuming the group has not
 		 * been suspended).
 		 *
@@ -2014,6 +2064,16 @@ module.exports = (() => {
 		 */
 		refreshMarketPercent() {
 			calculateMarketPercent(this, this._container.getForexQuotes(), true);
+		}
+
+		/**
+		 * Indicates if the group contains any items.
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		getIsEmpty() {
+			return this._items.length === 0;
 		}
 
 		/**
@@ -2400,7 +2460,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/InstrumentType":1,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/formatter":23,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],6:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"./definitions/PositionLevelDefinition":7,"./definitions/PositionLevelType":8,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/formatter":23,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
