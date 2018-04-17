@@ -2023,7 +2023,7 @@ module.exports = (() => {
 
 			const descriptionSelector = this._definition.descriptionSelector;
 
-			this._description = descriptionSelector(portfolio);
+			this._description = PositionLevelDefinition.getDescriptionForPortfolioGroup(portfolio);
 
 			this._dataActual.description = this._description;
 			this._dataFormat.description = this._description;
