@@ -6,7 +6,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+const PositionDirection = require('./../data/PositionDirection'),
+	PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
 module.exports = (() => {
 	'use strict';
@@ -76,11 +77,13 @@ module.exports = (() => {
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
 		.withField('start.open', DataType.DECIMAL)
+		.withField('start.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('start.basis', DataType.DECIMAL)
 		.withField('start.value', DataType.DECIMAL)
 		.withField('end.date', DataType.DAY)
 		.withField('end.sequence', DataType.NUMBER)
 		.withField('end.open', DataType.DECIMAL)
+		.withField('end.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('end.basis', DataType.DECIMAL)
 		.withField('end.value', DataType.DECIMAL)
 		.withField('period.buys', DataType.DECIMAL)
@@ -108,11 +111,13 @@ module.exports = (() => {
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
 		.withField('start.open', DataType.DECIMAL)
+		.withField('start.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('start.basis', DataType.DECIMAL)
 		.withField('start.value', DataType.DECIMAL)
 		.withField('end.date', DataType.DAY)
 		.withField('end.sequence', DataType.NUMBER)
 		.withField('end.open', DataType.DECIMAL)
+		.withField('end.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('end.basis', DataType.DECIMAL)
 		.withField('end.value', DataType.DECIMAL)
 		.withField('period.buys', DataType.DECIMAL)
