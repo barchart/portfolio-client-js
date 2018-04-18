@@ -11,7 +11,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 */
-	class TypeValidator {
+	class TransactionValidator {
 		constructor() {
 
 		}
@@ -49,13 +49,13 @@ module.exports = (() => {
 		 * @return {Boolean}
 		 */
 		static validateTransactionTypeFor(instrumentType, transactionType, userInitiated) {
-			const transactionTypes = TypeValidator.getTransactionTypesFor(instrumentType, userInitiated);
+			const transactionTypes = TransactionValidator.getTransactionTypesFor(instrumentType, userInitiated);
 
 			return transactionType.some(t => t === transactionType);
 		}
 
 		toString() {
-			return '[TypeValidator]';
+			return '[TransactionValidator]';
 		}
 	}
 
@@ -100,5 +100,5 @@ module.exports = (() => {
 	associateTypes(InstrumentType.CASH, TransactionType.DEBIT, false);
 	associateTypes(InstrumentType.CASH, TransactionType.CREDIT, false);
 
-	return TypeValidator;
+	return TransactionValidator;
 })();
