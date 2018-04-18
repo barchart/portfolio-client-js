@@ -44,6 +44,7 @@ module.exports = (() => {
 		 * @static
 		 * @public
 		 * @param {InstrumentType} instrumentType
+		 * @param {TransactionType} transactionType
 		 * @param {Boolean=} userInitiated
 		 * @return {Boolean}
 		 */
