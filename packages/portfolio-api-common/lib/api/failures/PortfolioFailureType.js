@@ -35,6 +35,18 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The transaction type is not valid, given the current position size
+		 * (e.g. sell is invalid for a short position, sell short must be used).
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_POSITION() {
+			return transactionCreateFailedTypeInvalidForPosition;
+		}
+
+		/**
 		 * The transaction would cause the position to change (from long to
 		 * short, or vice versa).
 		 *
@@ -74,7 +86,8 @@ module.exports = (() => {
 	const positionCreateFailedNoPortfolio = new FailureType('POSITION_CREATE_FAILED_NO_PORTFOLIO', 'Unable to create transaction. The referenced portfolio does not exist. Has it been deleted?');
 
 	const transactionCreateFailedOutOfSequence = new FailureType('TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE', 'Unable to create transaction, because the transaction date is out-of-sequence. In other words, it would occur before an existing transaction. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
-	const transactionCreateFailedDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_DIRECTION_SWITCH', 'Unable to create transaction, because the position direction would be switched (from long to short or vice versa). Please close the position (to a zero balance) first, then enter a second transaction.');
+	const transactionCreateFailedTypeInvalidForPosition = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_FOR_POSITION', 'A {L|type.description} are not allowed. At the time of the transaction, your position is {L|direction} (i.e. {L|sign}).');
+	const transactionCreateFailedDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_DIRECTION_SWITCH', 'Unable to create transaction, because the position direction would be switched (from long to short or vice versa). Please close the position (to a zero balance), then enter a second transaction.');
 	const transactionCreateRewriteUnsupported = new FailureType('TRANSACTION_CREATE_REWRITE_UNSUPPORTED', 'Unable to re-write transaction history. This operation is not currently supported (but will be implemented soon).');
 
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');

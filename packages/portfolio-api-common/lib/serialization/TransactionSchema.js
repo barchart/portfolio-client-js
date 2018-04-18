@@ -7,6 +7,7 @@ const assert = require('@barchart/common-js/lang/assert'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const InstrumentType = require('./../data/InstrumentType'),
+	PositionDirection = require('./../data/PositionDirection'),
 	TransactionType = require('./../data/TransactionType');
 
 module.exports = (() => {
@@ -176,6 +177,7 @@ module.exports = (() => {
 		.withField('reference.position', DataType.STRING, true)
 		.withField('reference.sequence', DataType.NUMBER, true)
 		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -219,6 +221,7 @@ module.exports = (() => {
 		.withField('reference.position', DataType.STRING, true)
 		.withField('reference.sequence', DataType.NUMBER, true)
 		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
