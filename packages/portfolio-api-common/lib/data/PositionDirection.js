@@ -118,20 +118,6 @@ module.exports = (() => {
 				return even;
 			}
 		}
-
-		/**
-		 * Returns true of the direction switched (from long to short, or
-		 * short to long).
-		 *
-		 * @public
-		 * @static
-		 * @param {PositionDirection} a
-		 * @param {PositionDirection} b
-		 * @returns {Boolean}
-		 */
-		static switched(a, b) {
-			return !a.closed && !b.closed && a.positive !== b.positive;
-		}
 	}
 
 	const long = new PositionDirection('LONG', 'Long', 'positive');
