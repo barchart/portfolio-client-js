@@ -25,7 +25,7 @@ module.exports = (() => {
 		 * @param {Boolean=} userInitiated
 		 * @return {Array.<TransactionType>}
 		 */
-		static getValidTransactionTypesFor(instrumentType, userInitiated) {
+		static getTransactionTypesFor(instrumentType, userInitiated) {
 			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
 			assert.argumentIsOptional(userInitiated, 'userInitiated', Boolean);
 
@@ -48,7 +48,7 @@ module.exports = (() => {
 		 * @return {Boolean}
 		 */
 		static validateTransactionTypeFor(instrumentType, transactionType, userInitiated) {
-			const transactionTypes = TypeValidator.getValidTransactionTypesFor(instrumentType, userInitiated);
+			const transactionTypes = TypeValidator.getTransactionTypesFor(instrumentType, userInitiated);
 
 			return transactionType.some(t => t === transactionType);
 		}
