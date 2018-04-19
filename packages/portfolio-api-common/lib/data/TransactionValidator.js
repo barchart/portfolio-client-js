@@ -72,11 +72,11 @@ module.exports = (() => {
 		 * @param {PositionDirection} direction
 		 * @return {Boolean}
 		 */
-		static validateDirection(transactionType, direction) {
-			assert.argumentIsRequired(transactionType, 'transactionType', TransactionType, 'TransactionType');
+		static validateDirection(instrumentType, direction) {
+			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
 			assert.argumentIsRequired(direction, 'direction', PositionDirection, 'PositionDirection');
 
-			return validDirections[transactionType.code].some(d => d === direction);
+			return validDirections[instrumentType.code].some(d => d === direction);
 		}
 
 		/**
