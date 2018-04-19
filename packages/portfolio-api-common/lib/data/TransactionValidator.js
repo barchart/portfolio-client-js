@@ -24,9 +24,10 @@ module.exports = (() => {
 		 * @public
 		 * @param {InstrumentType} instrumentType
 		 * @param {Boolean=} userInitiated
+		 * @pararm {PositionDirection=} currentDirection
 		 * @return {Array.<TransactionType>}
 		 */
-		static getTransactionTypesFor(instrumentType, userInitiated) {
+		static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
 			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
 			assert.argumentIsOptional(userInitiated, 'userInitiated', Boolean);
 
@@ -96,7 +97,7 @@ module.exports = (() => {
 
 	const validTransactionTypes = { };
 
-	function associateTypes(instrumentType, transactionType, userInitiated) {
+	function associateTypes(instrumentType, transactionType, userInitiated, directions) {
 		const instrumentTypeCode = instrumentType.code;
 
 		if (!validTransactionTypes.hasOwnProperty(instrumentTypeCode)) {

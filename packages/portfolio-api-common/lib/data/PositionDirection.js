@@ -19,7 +19,7 @@ module.exports = (() => {
 		constructor(code, description, sign) {
 			super(code, description);
 
-			assert.argumentIsString(sign, 'sign', String);
+			assert.argumentIsRequired(sign, 'sign', String);
 			
 			this._sign = sign;
 		}
