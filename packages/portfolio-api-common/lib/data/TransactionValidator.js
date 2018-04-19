@@ -38,7 +38,7 @@ module.exports = (() => {
 			}
 
 			if (currentDirection) {
-				valid.filter(data => data.directions.some(d => d === currentDirection));
+				valid = valid.filter(data => data.directions.some(d => d === currentDirection));
 			}
 
 			return valid.map(d => d.type);
