@@ -91,7 +91,7 @@ module.exports = (() => {
 		 * @return {Boolean}
 		 */
 		static validateDirectionSwitch(instrumentType, currentDirection, proposedDirection) {
-			return currentDirection === null || instrumentType.canSwitchDirection || (!currentDirection.closed && !proposedDirection.closed && currentDirection.positive !== proposedDirection.positive);
+			return currentDirection === null || instrumentType.canSwitchDirection || (currentDirection.closed || proposedDirection.closed || currentDirection.positive === proposedDirection.positive);
 		}
 
 		toString() {
