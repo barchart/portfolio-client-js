@@ -76,10 +76,6 @@ module.exports = (() => {
 			return transactionDeleteFailedOutOfSequence;
 		}
 
-		static get TRANSACTION_DELETE_UNSUPPORTED() {
-			return transactionDeleteUnsupported;
-		}
-
 		toString() {
 			return '[PortfolioFailureType]';
 		}
@@ -93,7 +89,6 @@ module.exports = (() => {
 	const transactionCreateFailedInvalidDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DIRECTION_SWITCH', 'Unable to process transaction, the transaction would switch the position from {L|currentDirection.description} to {L|proposedDirection.description} (i.e. {L|currentDirection.sign} to {L|proposedDirection.sign} shares/units). This is not allowed. Please close the current position (i.e. zero it out) and then enter a second transaction.');
 
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
-	const transactionDeleteUnsupported = new FailureType('TRANSACTION_DELETE_UNSUPPORTED', 'Unable to delete transaction. This operation is not currently supported (but will be implemented soon).');
 
 	return PortfolioFailureType;
 })();
