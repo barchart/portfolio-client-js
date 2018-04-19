@@ -55,7 +55,7 @@ module.exports = (() => {
 
 			const transactionTypes = TransactionValidator.getTransactionTypesFor(instrumentType, userInitiated);
 
-			return transactionType.some(t => t === transactionType);
+			return transactionTypes.some(t => t === transactionType);
 		}
 
 		/**
