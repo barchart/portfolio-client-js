@@ -34,7 +34,11 @@ module.exports = (() => {
 			let valid = validTransactionTypes[instrumentType.code] || [ ];
 
 			if (userInitiated) {
-				valid = valid.filter(d => d.user === userInitiated);
+				valid = valid.filter(data => data.user === userInitiated);
+			}
+
+			if (currentDirection) {
+				valid.filter(data => data.directions.some(d => d === currentDirection));
 			}
 
 			return valid.map(d => d.type);
@@ -104,30 +108,30 @@ module.exports = (() => {
 			validTransactionTypes[instrumentTypeCode] = [ ];
 		}
 
-		validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated });
+		validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [ PositionDirection.LONG, PositionDirection.SHORT, PositionDirection.EVEN ]  });
 	}
 
-	associateTypes(InstrumentType.EQUITY, TransactionType.BUY, true);
-	associateTypes(InstrumentType.EQUITY, TransactionType.SELL, true);
-	associateTypes(InstrumentType.EQUITY, TransactionType.SELL_SHORT, true);
-	associateTypes(InstrumentType.EQUITY, TransactionType.BUY_SHORT, true);
-	associateTypes(InstrumentType.EQUITY, TransactionType.FEE, true);
+	associateTypes(InstrumentType.EQUITY, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.FEE, true, [ PositionDirection.LONG, PositionDirection.SHORT ]);
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_REINVEST, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_STOCK, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SPLIT, false);
 
-	associateTypes(InstrumentType.FUND, TransactionType.BUY, true);
-	associateTypes(InstrumentType.FUND, TransactionType.SELL, true);
-	associateTypes(InstrumentType.FUND, TransactionType.FEE, true);
+	associateTypes(InstrumentType.FUND, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.FUND, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.FUND, TransactionType.FEE, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.FUND, TransactionType.FEE_UNITS, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_CASH, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_FUND, false);
 
-	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true);
-	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true);
-	associateTypes(InstrumentType.OTHER, TransactionType.INCOME, true);
-	associateTypes(InstrumentType.OTHER, TransactionType.FEE, true);
+	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.OTHER, TransactionType.INCOME, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.OTHER, TransactionType.FEE, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.VALUATION, true);
 
 	associateTypes(InstrumentType.CASH, TransactionType.DEPOSIT, true);
