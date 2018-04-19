@@ -152,19 +152,19 @@ module.exports = (() => {
 		validDirections[instrumentTypeCode].push(positionDirection);
 	}
 
-	associateTypes(InstrumentType.EQUITY, PositionDirection.EVEN);
-	associateTypes(InstrumentType.EQUITY, PositionDirection.LONG);
-	associateTypes(InstrumentType.EQUITY, PositionDirection.SHORT);
+	associateDirections(InstrumentType.EQUITY, PositionDirection.EVEN);
+	associateDirections(InstrumentType.EQUITY, PositionDirection.LONG);
+	associateDirections(InstrumentType.EQUITY, PositionDirection.SHORT);
 
-	associateTypes(InstrumentType.FUND, PositionDirection.EVEN);
-	associateTypes(InstrumentType.FUND, PositionDirection.LONG);
+	associateDirections(InstrumentType.FUND, PositionDirection.EVEN);
+	associateDirections(InstrumentType.FUND, PositionDirection.LONG);
 
-	associateTypes(InstrumentType.OTHER, PositionDirection.EVEN);
-	associateTypes(InstrumentType.OTHER, PositionDirection.LONG);
+	associateDirections(InstrumentType.OTHER, PositionDirection.EVEN);
+	associateDirections(InstrumentType.OTHER, PositionDirection.LONG);
 
-	associateTypes(InstrumentType.CASH, PositionDirection.EVEN);
-	associateTypes(InstrumentType.CASH, PositionDirection.LONG);
-	associateTypes(InstrumentType.CASH, PositionDirection.SHORT);
+	associateDirections(InstrumentType.CASH, PositionDirection.EVEN);
+	associateDirections(InstrumentType.CASH, PositionDirection.LONG);
+	associateDirections(InstrumentType.CASH, PositionDirection.SHORT);
 
 	return TransactionValidator;
 })();
