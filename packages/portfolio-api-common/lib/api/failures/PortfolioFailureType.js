@@ -76,6 +76,17 @@ module.exports = (() => {
 			return transactionDeleteFailedOutOfSequence;
 		}
 
+		/**
+		 * Unable to delete, the transaction cannot be found.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_DELETE_FAILED_NO_TRANSACTION() {
+			return transactionDeleteFailedNoTransaction;
+		}
+
 		toString() {
 			return '[PortfolioFailureType]';
 		}
@@ -89,6 +100,7 @@ module.exports = (() => {
 	const transactionCreateFailedInvalidDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DIRECTION_SWITCH', 'Unable to process transaction, the transaction would switch the position from {L|currentDirection.description} to {L|proposedDirection.description} (i.e. {L|currentDirection.sign} to {L|proposedDirection.sign} shares/units). This is not allowed. Please close the current position (i.e. zero it out) and then enter a second transaction.');
 
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
+	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.');
 
 	return PortfolioFailureType;
 })();
