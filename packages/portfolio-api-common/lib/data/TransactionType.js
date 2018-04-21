@@ -61,7 +61,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the trade was a purchase.
+		 * Indicates if the transaction was a purchase.
 		 *
 		 * @public
 		 * @returns {Boolean}
@@ -71,7 +71,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the trade was a sale.
+		 * Indicates if the transaction was a sale.
 		 *
 		 * @public
 		 * @returns {Boolean}
@@ -91,7 +91,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the transactions opens the position (i.e. increases its
+		 * Indicates if the transaction opens the position (i.e. increases its
 		 * magnitude).
 		 *
 		 * @public
@@ -102,7 +102,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the transactions closes the position (i.e. decreases its
+		 * Indicates if the transaction closes the position (i.e. decreases its
 		 * magnitude).
 		 *
 		 * @public
@@ -113,8 +113,8 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the transactions is a fee (which neither opens or closes) the
-		 * position.
+		 * Indicates if the transaction is a chart that neither opens nor
+		 * closes the position.
 		 *
 		 * @public
 		 * @returns {Boolean}
