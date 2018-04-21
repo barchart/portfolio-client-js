@@ -872,7 +872,7 @@ module.exports = (() => {
 			}, { });
 
 			this._previousSummaryFrame = PositionSummaryFrame.YEARLY;
-			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(0);
+			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(1);
 
 			this._summariesPrevious = summaries.reduce((map, summary) => {
 				addSummaryPrevious(map, summary, this._previousSummaryFrame, this._previousSummaryRanges);
@@ -1821,6 +1821,7 @@ module.exports = (() => {
 			this._dataActual.total = null;
 			this._dataActual.summaryTotalCurrent = null;
 			this._dataActual.summaryTotalPrevious = null;
+			this._dataActual.summaryTotalPrevious2 = null;
 			this._dataActual.cashTotal = null;
 
 			this._dataFormat.currentPrice = null;
@@ -1842,6 +1843,8 @@ module.exports = (() => {
 			this._dataActual.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
 			this._dataFormat.summaryTotalPreviousNegative = false;
+			this._dataFormat.summaryTotalPrevious2 = null;
+			this._dataFormat.summaryTotalPrevious2Negative = false;
 			this._dataFormat.cashTotal = null;
 			this._dataFormat.portfolioType = null;
 
@@ -2289,6 +2292,7 @@ module.exports = (() => {
 			updates.income = updates.income.add(translate(item, item.data.income));
 			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
 			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.summaryTotalPrevious));
+			updates.summaryTotalPrevious2 = updates.summaryTotalPrevious2.add(translate(item, item.data.summaryTotalPrevious2));
 
 			if (item.position.instrument.type === InstrumentType.CASH) {
 				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
@@ -2302,6 +2306,7 @@ module.exports = (() => {
 			income: Decimal.ZERO,
 			summaryTotalCurrent: Decimal.ZERO,
 			summaryTotalPrevious: Decimal.ZERO,
+			summaryTotalPrevious2: Decimal.ZERO,
 			cashTotal: Decimal.ZERO
 		});
 
@@ -2311,6 +2316,7 @@ module.exports = (() => {
 		actual.income = updates.income;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.summaryTotalPrevious = updates.summaryTotalPrevious;
+		actual.summaryTotalPrevious2 = updates.summaryTotalPrevious2;
 		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
@@ -2320,6 +2326,8 @@ module.exports = (() => {
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
+		format.summaryTotalPrevious2 = formatCurrency(updates.summaryTotalPrevious2, currency);
+		format.summaryTotalPrevious2Negative = updates.summaryTotalPrevious2.getIsNegative();
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
 		calculateUnrealizedPercent(group);
@@ -2503,8 +2511,7 @@ module.exports = (() => {
 })();
 
 },{"./../data/InstrumentType":1,"./definitions/PositionLevelDefinition":7,"./definitions/PositionLevelType":8,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/formatter":23,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],6:[function(require,module,exports){
-const array = require('@barchart/common-js/lang/array'),
-	assert = require('@barchart/common-js/lang/assert'),
+const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
@@ -2564,6 +2571,7 @@ module.exports = (() => {
 			this._data.summaryTotalCurrentChange = null;
 
 			this._data.summaryTotalPrevious = null;
+			this._data.summaryTotalPrevious2 = null;
 
 			this._data.realized = null;
 			this._data.income = null;
@@ -2823,7 +2831,8 @@ module.exports = (() => {
 		data.income = snapshot.income;
 
 		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
-		data.summaryTotalPrevious = calculateSummaryTotal(array.last(previousSummaries));
+		data.summaryTotalPrevious = calculateSummaryTotal(getPreviousSummary(previousSummaries, 1));
+		data.summaryTotalPrevious2 = calculateSummaryTotal(getPreviousSummary(previousSummaries, 2));
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -2944,10 +2953,24 @@ module.exports = (() => {
 		return returnRef;
 	}
 
+	function getPreviousSummary(previousSummaries, count) {
+		const index = previousSummaries.length - count;
+
+		let summary;
+
+		if (!(index < 0)) {
+			summary = previousSummaries[index];
+		} else {
+			summary = null;
+		}
+
+		return summary;
+	}
+
 	return PositionItem;
 })();
 
-},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],7:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],7:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
