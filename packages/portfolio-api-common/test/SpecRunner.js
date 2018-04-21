@@ -558,6 +558,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if the transactions is a fee (which neither opens or closes) the
+		 * position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get fee() {
+			return this._fee;
+		}
+
+		/**
 		 * A purchase.
 		 *
 		 * @public
