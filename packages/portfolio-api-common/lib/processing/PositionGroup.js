@@ -127,6 +127,7 @@ module.exports = (() => {
 			this._dataActual.total = null;
 			this._dataActual.summaryTotalCurrent = null;
 			this._dataActual.summaryTotalPrevious = null;
+			this._dataActual.summaryTotalPrevious2 = null;
 			this._dataActual.cashTotal = null;
 
 			this._dataFormat.currentPrice = null;
@@ -148,6 +149,8 @@ module.exports = (() => {
 			this._dataActual.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
 			this._dataFormat.summaryTotalPreviousNegative = false;
+			this._dataFormat.summaryTotalPrevious2 = null;
+			this._dataFormat.summaryTotalPrevious2Negative = false;
 			this._dataFormat.cashTotal = null;
 			this._dataFormat.portfolioType = null;
 
@@ -595,6 +598,7 @@ module.exports = (() => {
 			updates.income = updates.income.add(translate(item, item.data.income));
 			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
 			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.summaryTotalPrevious));
+			updates.summaryTotalPrevious2 = updates.summaryTotalPrevious2.add(translate(item, item.data.summaryTotalPrevious2));
 
 			if (item.position.instrument.type === InstrumentType.CASH) {
 				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
@@ -608,6 +612,7 @@ module.exports = (() => {
 			income: Decimal.ZERO,
 			summaryTotalCurrent: Decimal.ZERO,
 			summaryTotalPrevious: Decimal.ZERO,
+			summaryTotalPrevious2: Decimal.ZERO,
 			cashTotal: Decimal.ZERO
 		});
 
@@ -617,6 +622,7 @@ module.exports = (() => {
 		actual.income = updates.income;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.summaryTotalPrevious = updates.summaryTotalPrevious;
+		actual.summaryTotalPrevious2 = updates.summaryTotalPrevious2;
 		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
@@ -626,6 +632,8 @@ module.exports = (() => {
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
+		format.summaryTotalPrevious2 = formatCurrency(updates.summaryTotalPrevious2, currency);
+		format.summaryTotalPrevious2Negative = updates.summaryTotalPrevious2.getIsNegative();
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
 		calculateUnrealizedPercent(group);

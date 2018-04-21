@@ -1,5 +1,4 @@
-const array = require('@barchart/common-js/lang/array'),
-	assert = require('@barchart/common-js/lang/assert'),
+const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
@@ -59,6 +58,7 @@ module.exports = (() => {
 			this._data.summaryTotalCurrentChange = null;
 
 			this._data.summaryTotalPrevious = null;
+			this._data.summaryTotalPrevious2 = null;
 
 			this._data.realized = null;
 			this._data.income = null;
@@ -318,7 +318,8 @@ module.exports = (() => {
 		data.income = snapshot.income;
 
 		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
-		data.summaryTotalPrevious = calculateSummaryTotal(array.last(previousSummaries));
+		data.summaryTotalPrevious = calculateSummaryTotal(getPreviousSummary(previousSummaries, 1));
+		data.summaryTotalPrevious2 = calculateSummaryTotal(getPreviousSummary(previousSummaries, 2));
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -437,6 +438,20 @@ module.exports = (() => {
 		}
 
 		return returnRef;
+	}
+
+	function getPreviousSummary(previousSummaries, count) {
+		const index = previousSummaries.length - count;
+
+		let summary;
+
+		if (!(index < 0)) {
+			summary = previousSummaries[index];
+		} else {
+			summary = null;
+		}
+
+		return summary;
 	}
 
 	return PositionItem;

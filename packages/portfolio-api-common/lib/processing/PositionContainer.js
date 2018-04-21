@@ -73,7 +73,7 @@ module.exports = (() => {
 			}, { });
 
 			this._previousSummaryFrame = PositionSummaryFrame.YEARLY;
-			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(0);
+			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(1);
 
 			this._summariesPrevious = summaries.reduce((map, summary) => {
 				addSummaryPrevious(map, summary, this._previousSummaryFrame, this._previousSummaryRanges);
