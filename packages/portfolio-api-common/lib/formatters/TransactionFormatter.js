@@ -27,7 +27,7 @@ module.exports = (() => {
 		 * @static
 		 * @param {Array<Object>} transactions
 		 * @param {Array<Object>} positions
-		 * @param {Boolean=} append
+		 * @param {Boolean=} append - Warning, if true, the transaction array will be mutated.
 		 * @returns {Array}
 		 */
 		static format(transactions, positions, append) {
@@ -36,18 +36,19 @@ module.exports = (() => {
 			assert.argumentIsOptional(append, 'append', Boolean);
 
 			const instruments = positions.reduce((map, p) => {
-				map[p.position] = p.instrument;
+				const instrument = Object.assign({ }, p.instrument || { });
 
-				return map;
+				delete instrument.id;
+
+				map[p.position] = instrument;
 			}, { });
 
 			return transactions.reduce((list, transaction) => {
 				const position = transaction.position;
 
 				if (instruments.hasOwnProperty(position)) {
-					transaction.instrument = instruments[position];
-
-					let formatted = getBasicTransaction(transaction);
+					let instrument = instruments[position];
+					let formatted = getBasicTransaction(transaction, instrument);
 
 					if (formatters.has(transaction.type)) {
 						const formatterFunction = formatters.get(transaction.type);
@@ -55,7 +56,7 @@ module.exports = (() => {
 
 						Object.keys(formattedTransaction).map((key) => {
 							if (!is.undefined(formattedTransaction[key]) && formattedTransaction[key] instanceof Decimal) {
-								const precision = transaction.instrument.currency.precision;
+								const precision = instrument.currency.precision;
 
 								formattedTransaction[key] = formatter.numberToString(formattedTransaction[key].toFloat(), precision, ',');
 							}
@@ -86,20 +87,14 @@ module.exports = (() => {
 		}
 	}
 
-	const getBasicTransaction = (t) => {
-		const basic = {
+	const getBasicTransaction = (t, i) => {
+		return {
 			date: t.date,
 			type: t.type.display,
 			sequence: t.sequence,
-			instrument: t.instrument,
+			instrument: i,
 			position: t.position
 		};
-
-		if (basic.instrument) {
-			delete basic.instrument.id;
-		}
-
-		return basic;
 	};
 
 	const formatters = new Map();
