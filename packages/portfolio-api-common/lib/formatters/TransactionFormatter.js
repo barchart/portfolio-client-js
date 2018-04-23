@@ -170,6 +170,7 @@ module.exports = (() => {
 
 	formatters.set(TransactionType.FEE, (t) => {
 		return {
+			fee: t.charge.amount,
 			total: t.charge.amount
 		};
 	});
