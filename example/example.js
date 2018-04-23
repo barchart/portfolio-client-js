@@ -744,7 +744,7 @@ module.exports = function () {
 		try {
 			return JSON.parse(response.data, PositionSchema.CLIENT.schema.getReviver());
 		} catch (e) {
-			console.log('Error deserializing position summaries', e);
+			console.log('Error deserializing positions', e);
 		}
 	});
 
@@ -1169,7 +1169,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.48'
+		version: '1.1.49'
 	};
 }();
 
