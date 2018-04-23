@@ -779,8 +779,8 @@ module.exports = function () {
 				replaced: response.data.replaced
 			};
 
-			if (response.transactions) {
-				returnRef.transactions = response.transactions;
+			if (response.data.transactions) {
+				returnRef.transactions = response.data.transactions;
 			}
 
 			return returnRef;
@@ -1169,7 +1169,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.49'
+		version: '1.1.50'
 	};
 }();
 
