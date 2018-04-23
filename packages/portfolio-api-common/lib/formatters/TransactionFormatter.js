@@ -41,6 +41,8 @@ module.exports = (() => {
 				delete instrument.id;
 
 				map[p.position] = instrument;
+
+				return map;
 			}, { });
 
 			return transactions.reduce((list, transaction) => {
