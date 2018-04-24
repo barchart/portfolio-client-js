@@ -135,7 +135,7 @@ module.exports = (() => {
 	);
 
 	const update = new PositionSchema(SchemaBuilder.withName('update')
-		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
 		.withField('reinvest', DataType.BOOLEAN, true)
 		.schema
 	);
