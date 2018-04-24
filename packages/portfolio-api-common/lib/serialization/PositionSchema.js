@@ -88,7 +88,7 @@ module.exports = (() => {
 		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
 		.withField('valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('reinvest', DataType.BOOLEAN)
+		.withField('reinvest', DataType.BOOLEAN, true)
 		.withField('snapshot.date', DataType.DAY)
 		.withField('snapshot.open', DataType.DECIMAL)
 		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
