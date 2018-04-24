@@ -565,6 +565,20 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns a single position for a portfolio.
+		 *
+		 * @public
+		 * @param {String} portfolio
+		 * @param {String} position
+		 * @return {Object|null}
+		 */
+		getPosition(portfolio, position) {
+			assert.argumentIsRequired(position, 'position', String);
+
+			return this.getPositions(portfolio).find(p => p.position === position) || null;
+		}
+
+		/**
 		 * Pauses aggregation calculations during the processing of an action.
 		 *
 		 * @public
