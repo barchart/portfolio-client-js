@@ -213,6 +213,10 @@ module.exports = function () {
 				qb.withVariableParameter('includePreviousPrice', 'includePreviousPrice', 'includePreviousPrice', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
+			_this._updatePositionEndpoint = EndpointBuilder.for('update-position', 'update position').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
+			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(RequestInterceptor.fromDelegate(updatePositionRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
 			_this._deletePositionEndpoint = EndpointBuilder.for('delete-position', 'delete position').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
 			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
@@ -361,7 +365,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Updates a portfolio
+    * Deletes a portfolio
     *
     * @public
     * @param {String} portfolio - ID of the portfolio to update
@@ -409,6 +413,28 @@ module.exports = function () {
 			}
 
 			/**
+    * Updates a position
+    *
+    * @public
+    * @param {Object} position
+    * @return {Promise.<Position>}
+    */
+
+		}, {
+			key: 'updatePosition',
+			value: function updatePosition(position) {
+				var _this8 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this8);
+
+					assert.argumentIsRequired(position, 'position', Object);
+
+					return Gateway.invoke(_this8._updatePositionEndpoint, PositionSchema.UPDATE.schema.format(position));
+				});
+			}
+
+			/**
     * Retrieves positions for a user, a user's portfolio, or a single position.
     *
     * @public
@@ -423,10 +449,10 @@ module.exports = function () {
 		}, {
 			key: 'readPositionSummaries',
 			value: function readPositionSummaries(portfolio, position, frames, periods, start) {
-				var _this8 = this;
+				var _this9 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this8);
+					checkStart.call(_this9);
 
 					assert.argumentIsOptional(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
@@ -479,7 +505,7 @@ module.exports = function () {
 						query.start = s;
 					}
 
-					return Gateway.invoke(_this8._readPositionSummariesEndpoint, query);
+					return Gateway.invoke(_this9._readPositionSummariesEndpoint, query);
 				});
 			}
 
@@ -495,15 +521,15 @@ module.exports = function () {
 		}, {
 			key: 'deletePosition',
 			value: function deletePosition(portfolio, position) {
-				var _this9 = this;
+				var _this10 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this9);
+					checkStart.call(_this10);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
 
-					return Gateway.invoke(_this9._deletePositionEndpoint, { portfolio: portfolio, position: position });
+					return Gateway.invoke(_this10._deletePositionEndpoint, { portfolio: portfolio, position: position });
 				});
 			}
 
@@ -518,10 +544,10 @@ module.exports = function () {
 		}, {
 			key: 'createTransaction',
 			value: function createTransaction(transaction) {
-				var _this10 = this;
+				var _this11 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this10);
+					checkStart.call(_this11);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
@@ -545,7 +571,7 @@ module.exports = function () {
 
 					var schema = TransactionSchema.forCreate(Enum.fromCode(TransactionType, code));
 
-					return Gateway.invoke(_this10._createTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this11._createTransactionEndpoint, schema.schema.format(transaction));
 				});
 			}
 
@@ -564,10 +590,10 @@ module.exports = function () {
 		}, {
 			key: 'deleteTransaction',
 			value: function deleteTransaction(portfolio, position, sequence, force, echo) {
-				var _this11 = this;
+				var _this12 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this11);
+					checkStart.call(_this12);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
@@ -575,7 +601,7 @@ module.exports = function () {
 					assert.argumentIsOptional(force, 'force', Boolean);
 					assert.argumentIsOptional(echo, 'echo', Boolean);
 
-					return Gateway.invoke(_this11._deleteTransactionEndpoint, { portfolio: portfolio, position: position, sequence: sequence, force: is.boolean(force) && force, echo: is.boolean(echo) && echo });
+					return Gateway.invoke(_this12._deleteTransactionEndpoint, { portfolio: portfolio, position: position, sequence: sequence, force: is.boolean(force) && force, echo: is.boolean(echo) && echo });
 				});
 			}
 
@@ -591,20 +617,6 @@ module.exports = function () {
 		}, {
 			key: 'readTransactions',
 			value: function readTransactions(portfolio, position) {
-				var _this12 = this;
-
-				return Promise.resolve().then(function () {
-					checkStart.call(_this12);
-
-					assert.argumentIsRequired(portfolio, 'portfolio', String);
-					assert.argumentIsOptional(position, 'position', String);
-
-					return Gateway.invoke(_this12._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
-				});
-			}
-		}, {
-			key: 'readTransactionsFormatted',
-			value: function readTransactionsFormatted(portfolio, position) {
 				var _this13 = this;
 
 				return Promise.resolve().then(function () {
@@ -613,7 +625,21 @@ module.exports = function () {
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					return Gateway.invoke(_this13._readTransactionsReportEndpoint, { portfolio: portfolio, position: position || '*' });
+					return Gateway.invoke(_this13._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
+				});
+			}
+		}, {
+			key: 'readTransactionsFormatted',
+			value: function readTransactionsFormatted(portfolio, position) {
+				var _this14 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this14);
+
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+					assert.argumentIsOptional(position, 'position', String);
+
+					return Gateway.invoke(_this14._readTransactionsReportEndpoint, { portfolio: portfolio, position: position || '*' });
 				});
 			}
 
@@ -726,7 +752,17 @@ module.exports = function () {
 		return FailureReason.validateSchema(PortfolioSchema.UPDATE, request.data).then(function () {
 			return Promise.resolve(request);
 		}).catch(function (e) {
-			console.error('Error serializing data to create a portfolio', e);
+			console.error('Error serializing data to update a portfolio', e);
+
+			return Promise.reject();
+		});
+	};
+
+	var updatePositionRequestInterceptor = function updatePositionRequestInterceptor(request) {
+		return FailureReason.validateSchema(PositionSchema.UPDATE, request.data).then(function () {
+			return Promise.resolve(request);
+		}).catch(function (e) {
+			console.error('Error serializing data to update a position', e);
 
 			return Promise.reject();
 		});
@@ -1169,7 +1205,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.50'
+		version: '1.1.51'
 	};
 }();
 
