@@ -47,6 +47,7 @@ module.exports = (() => {
 
 			return transactions.reduce((list, transaction) => {
 				const position = transaction.position;
+				const position = transaction.position;
 
 				if (instruments.hasOwnProperty(position)) {
 					let instrument = instruments[position];
@@ -118,7 +119,7 @@ module.exports = (() => {
 	formatters.set(TransactionType.DIVIDEND, (t) => {
 		return {
 			shares: t.snapshot.open,
-			total: t.dividend.amout,
+			total: t.dividend.amount,
 			rate: t.dividend.rate
 		};
 	});
