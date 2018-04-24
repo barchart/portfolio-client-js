@@ -13,7 +13,18 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The portfolio referenced does not exist.
+		 * The portfolio does not exist.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get PORTFOLIO_UPDATE_FAILED_NO_PORTFOLIO() {
+			return portfolioUpdateFailedNoPortfolio;
+		}
+
+		/**
+		 * The portfolio does not exist.
 		 *
 		 * @public
 		 * @static
@@ -24,7 +35,18 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The referenced position does not exist.
+		 * The portfolio does not exist.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get POSITION_UPDATE_FAILED_NO_POSITION() {
+			return positionUpdateFailedNoPosition;
+		}
+
+		/**
+		 * The position does not exist.
 		 *
 		 * @public
 		 * @static
@@ -103,7 +125,10 @@ module.exports = (() => {
 		}
 	}
 
-	const positionCreateFailedNoPortfolio = new FailureType('POSITION_CREATE_FAILED_NO_PORTFOLIO', 'Unable to create transaction. The referenced portfolio does not exist. Has it been deleted?');
+	const portfolioUpdateFailedNoPortfolio = new FailureType('PORTFOLIO_UPDATED_FAILED_NO_PORTFOLIO', 'Unable to update portfolio. The portfolio does not exist, has it been deleted?');
+
+	const positionCreateFailedNoPortfolio = new FailureType('POSITION_CREATE_FAILED_NO_PORTFOLIO', 'Unable to create transaction. The portfolio does not exist, has it been deleted?');
+	const positionUpdateFailedNoPosition = new FailureType('POSITION_UPDATE_FAILED_NO_POSITION', 'Unable to update preferences for position. The position does not exist, has it been deleted?');
 
 	const transactionCreateFailedNoPosition = new FailureType('TRANSACTION_CREATE_FAILED_NO_POSITION', 'Unable to create transaction. The referenced position does not exist. Has it been deleted?');
 	const transactionCreateFailedOutOfSequence = new FailureType('TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE', 'Unable to process transaction, because the transaction date is out-of-sequence. In other words, it would occur before an existing transaction. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
