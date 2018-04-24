@@ -1436,7 +1436,7 @@ module.exports = (() => {
 		let returnRef = null;
 
 		if (groupNode) {
-			const resultNode = groupNode.findParent(candidate => predicate(candidate));
+			const resultNode = groupNode.findParent((candidateGroup, candidateNode) => !candidateNode.getIsRoot() && predicate(candidateGroup));
 
 			if (resultNode) {
 				returnRef = resultNode.getValue();
