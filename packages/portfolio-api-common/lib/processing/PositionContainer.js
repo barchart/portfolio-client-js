@@ -132,7 +132,9 @@ module.exports = (() => {
 			this._forexQuotes = this._forexSymbols.map((symbol) => {
 				return Rate.fromPair(Decimal.ONE, symbol);
 			});
-			
+
+			this._nodes = { };
+
 			this._trees = this._definitions.reduce((map, treeDefinition) => {
 				const tree = new Tree();
 
@@ -247,7 +249,7 @@ module.exports = (() => {
 				Object.keys(this._trees).forEach((key) => {
 					this._trees[key].walk((group, groupNode) => {
 						if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
-							groupNode.sever();
+							severGroupNode.call(this, groupNode);
 						}
 					}, true, false);
 				});
@@ -511,6 +513,32 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns the immediate parent {@link PositionGroup} of a {@link PositionGroup}.
+		 *
+		 * @public
+		 * @param {PositionGroup} position
+		 * @returns {PositionGroup|null}
+		 */
+		getParentGroup(group) {
+			assert.argumentIsRequired(group, 'group', PositionGroup, 'PositionGroup');
+
+			return findParentGroup.call(this, candidate => true);
+		}
+
+		/**
+		 * Returns the a parent {@link PositionGroup} which represents a portfolio.
+		 *
+		 * @public
+		 * @param {PositionGroup} position
+		 * @returns {PositionGroup|null}
+		 */
+		getParentGroupForPortfolio(group) {
+			assert.argumentIsRequired(group, 'group', PositionGroup, 'PositionGroup');
+
+			return findParentGroup.call(this, candidate => candidate.definition.type === PositionLevelType.PORTFOLIO);
+		}
+
+		/**
 		 * Returns all portfolios in the container.
 		 *
 		 * @public
@@ -601,6 +629,22 @@ module.exports = (() => {
 
 	function findNode(tree, keys) {
 		return keys.reduce((tree, key) => tree.findChild(group => group.key === key), tree);
+	}
+
+	function findParentGroup(group, predicate) {
+		const groupNode = this._nodes[group.id];
+
+		let returnRef = null;
+
+		if (groupNode) {
+			const resultNode = groupNode.findParent(candidate => predicate(candidate));
+
+			if (resultNode) {
+				returnRef = resultNode.getValue();
+			}
+		}
+
+		return returnRef;
 	}
 
 	function extractSymbolForBarchart(position) {
@@ -694,8 +738,6 @@ module.exports = (() => {
 			return;
 		}
 
-		const parent = parentTree.getValue() || null;
-
 		const levelDefinition = levelDefinitions[0];
 
 		const populatedObjects = array.groupBy(items, levelDefinition.keySelector);
@@ -703,7 +745,7 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(this, parent, levelDefinition, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
+			list.push(new PositionGroup(this, levelDefinition, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
 
 			return list;
 		}, [ ]);
@@ -716,7 +758,7 @@ module.exports = (() => {
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(this, parent, levelDefinition, [ ], group.currency, group.key, group.description);
+			return new PositionGroup(this, levelDefinition, [ ], group.currency, group.key, group.description);
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
@@ -753,6 +795,8 @@ module.exports = (() => {
 
 		compositeGroups.forEach((group) => {
 			const childTree = parentTree.addChild(group);
+
+			this._nodes[group.id] = childTree;
 
 			initializeGroupObservers.call(this, childTree, treeDefinition);
 
@@ -881,12 +925,17 @@ module.exports = (() => {
 		Object.keys(this._trees).forEach((key) => {
 			this._trees[key].walk((group, groupNode) => {
 				if (group.definition.type === PositionLevelType.POSITION && group.key === positionItem.position.position) {
-					groupNode.sever();
+					severGroupNode.call(this, groupNode);
 				}
 			}, true, false);
 		});
 
 		positionItem.dispose();
+	}
+
+	function severGroupNode(groupNodeToSever) {
+		groupNodeToSever.sever();
+		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
 	}
 
 	return PositionContainer;

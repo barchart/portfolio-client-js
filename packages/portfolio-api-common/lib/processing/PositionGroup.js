@@ -25,7 +25,6 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {PositionContainer} container
-	 * @param {PositionGroup|null} parent
 	 * @param {LevelDefinition} definition
 	 * @param {Array.<PositionItem>} items
 	 * @param {Currency} currency
@@ -34,12 +33,11 @@ module.exports = (() => {
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, parent, definition, items, currency, key, description, aggregateCash) {
+		constructor(container, definition, items, currency, key, description, aggregateCash) {
 			this._id = counter++;
 
 			this._definition = definition;
 			this._container = container;
-			this._parent = parent || null;
 
 			this._items = items;
 			this._currency = currency || Currency.CAD;
@@ -122,6 +120,7 @@ module.exports = (() => {
 			this._dataActual.income = null;
 			this._dataActual.market = null;
 			this._dataActual.marketPercent = null;
+			this._dataActual.marketPercentPortfolio = null;
 			this._dataActual.unrealized = null;
 			this._dataActual.unrealizedToday = null;
 			this._dataActual.total = null;
@@ -137,6 +136,7 @@ module.exports = (() => {
 			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.marketPercent = null;
+			this._dataFormat.marketPercentPortfolio = null;
 			this._dataFormat.marketDirection = null;
 			this._dataFormat.unrealized = null;
 			this._dataFormat.unrealizedPercent = null;
@@ -146,7 +146,7 @@ module.exports = (() => {
 			this._dataFormat.total = null;
 			this._dataFormat.totalNegative = false;
 			this._dataFormat.summaryTotalCurrent = null;
-			this._dataActual.summaryTotalCurrentNegative = false;
+			this._dataFormat.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
 			this._dataFormat.summaryTotalPreviousNegative = false;
 			this._dataFormat.summaryTotalPrevious2 = null;
@@ -670,7 +670,6 @@ module.exports = (() => {
 			return;
 		}
 
-		const parent = group._parent;
 		const currency = group.currency;
 
 		const actual = group._dataActual;
@@ -761,38 +760,44 @@ module.exports = (() => {
 			return;
 		}
 
-		const parent = group._parent;
-		const excluded = group._excluded;
-
 		const actual = group._dataActual;
 		const format = group._dataFormat;
-		
-		let marketPercent;
-		
-		if (parent !== null && !excluded) {
-			const parentData = parent._dataActual;
+		const excluded = group._excluded;
 
-			if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsZero()) {
-				let numerator;
+		const portfolioParent = group._container.getParentGroupForPortfolio(group);
 
-				if (group.currency !== parent.currency) {
-					numerator = Rate.convert(actual.marketAbsolute, group.currency, parent.currency, ...rates);
+		const calculatePercent = (parent) => {
+			let marketPercent;
+
+			if (parent !== null && !excluded) {
+				const parentData = parent._dataActual;
+
+				if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsZero()) {
+					let numerator;
+
+					if (group.currency !== parent.currency) {
+						numerator = Rate.convert(actual.marketAbsolute, group.currency, parent.currency, ...rates);
+					} else {
+						numerator = actual.marketAbsolute;
+					}
+
+					marketPercent = numerator.divide(parentData.marketAbsolute);
 				} else {
-					numerator = actual.marketAbsolute;
+					marketPercent = null;
 				}
-
-				marketPercent = numerator.divide(parentData.marketAbsolute);
 			} else {
 				marketPercent = null;
 			}
-		} else {
-			marketPercent = null;
-		}
 
-		actual.marketPercent = marketPercent;
-		
+			return marketPercent;
+		};
+
+		actual.marketPercent = calculatePercent(group._container.getParentGroup(group));
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
-		
+
+		actual.marketPercentPortfolio = calculatePercent(group._container.getParentGroupForPortfolio(group));
+		format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
+
 		if (!silent) {
 			group._marketPercentChangeEvent.fire(group);
 		}
