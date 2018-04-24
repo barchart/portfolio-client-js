@@ -1321,7 +1321,7 @@ module.exports = (() => {
 		getParentGroup(group) {
 			assert.argumentIsRequired(group, 'group', PositionGroup, 'PositionGroup');
 
-			return findParentGroup.call(this, candidate => true);
+			return findParentGroup.call(this, group, candidate => true);
 		}
 
 		/**
@@ -1334,7 +1334,7 @@ module.exports = (() => {
 		getParentGroupForPortfolio(group) {
 			assert.argumentIsRequired(group, 'group', PositionGroup, 'PositionGroup');
 
-			return findParentGroup.call(this, candidate => candidate.definition.type === PositionLevelType.PORTFOLIO);
+			return findParentGroup.call(this, group, candidate => candidate.definition.type === PositionLevelType.PORTFOLIO);
 		}
 
 		/**
