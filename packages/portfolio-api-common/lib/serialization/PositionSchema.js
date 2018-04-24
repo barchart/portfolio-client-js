@@ -58,6 +58,17 @@ module.exports = (() => {
 			return client;
 		}
 
+		/**
+		 * Data required to update a position.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PositionSchema}
+		 */
+		static get UPDATE() {
+			return update;
+		}
+
 		toString() {
 			return '[PositionSchema]';
 		}
@@ -120,6 +131,12 @@ module.exports = (() => {
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
 		.withField('previous', DataType.NUMBER, true)
+		.schema
+	);
+
+	const update = new PositionSchema(SchemaBuilder.withName('update')
+		.withField('portfolio', DataType.STRING)
+		.withField('reinvest', DataType.BOOLEAN, true)
 		.schema
 	);
 
