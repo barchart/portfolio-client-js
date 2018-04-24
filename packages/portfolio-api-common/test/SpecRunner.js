@@ -482,7 +482,7 @@ module.exports = (() => {
 			this._income = income;
 			this._opening = opening;
 			this._closing = closing;
-			this._fee = fee
+			this._fee = fee;
 		}
 
 		/**
