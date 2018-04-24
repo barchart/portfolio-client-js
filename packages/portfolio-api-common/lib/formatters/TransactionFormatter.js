@@ -47,7 +47,6 @@ module.exports = (() => {
 
 			return transactions.reduce((list, transaction) => {
 				const position = transaction.position;
-				const position = transaction.position;
 
 				if (instruments.hasOwnProperty(position)) {
 					let instrument = instruments[position];
