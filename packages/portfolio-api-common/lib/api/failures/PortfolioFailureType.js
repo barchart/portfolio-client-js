@@ -120,6 +120,17 @@ module.exports = (() => {
 			return transactionDeleteFailedNoTransaction;
 		}
 
+		/**
+		 * Unable to delete, the position's direction would switch.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_DELETE_FAILED_DIRECTION_SWITCH_ON_REWRITE() {
+			return transactionDeleteFailedDirectionSwitchOnRewrite;
+		}
+
 		toString() {
 			return '[PortfolioFailureType]';
 		}
@@ -138,6 +149,7 @@ module.exports = (() => {
 
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
 	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.');
+	const transactionDeleteFailedDirectionSwitchOnRewrite = new FailureType('TRANSACTION_DELETE_FAILED_DIRECTION_SWITCH_ON_REWRITE', 'Deleting this transaction would cause your history to be re-written and the position to switch from long to short (i.e. positive to negative) or vice versa.');
 
 	return PortfolioFailureType;
 })();
