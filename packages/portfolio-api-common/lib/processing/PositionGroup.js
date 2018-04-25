@@ -598,7 +598,15 @@ module.exports = (() => {
 
 	function formatPercent(decimal, precision, plus) {
 		if (decimal !== null) {
-			return `${(is.boolean(plus) && plus) ? '+' : ''}${formatDecimal(decimal.multiply(100), precision)}%`;
+			let prefix;
+
+			if (is.boolean(plus) && plus && !Decimal.getIsNegative(decimal)) {
+				prefix = '+';
+			} else {
+				prefix = '';
+			}
+
+			return `${prefix}${formatDecimal(decimal.multiply(100), precision)}%`;
 		} else {
 			return '—';
 		}
