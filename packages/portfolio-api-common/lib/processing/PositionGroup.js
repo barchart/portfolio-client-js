@@ -730,7 +730,7 @@ module.exports = (() => {
 		actual.unrealized = updates.unrealized;
 		actual.unrealizedToday = updates.unrealizedToday;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
-		actual.total = updates.unrealizedToday.add(actual.realized).add(actual.income);
+		actual.total = updates.unrealized.add(actual.realized).add(actual.income);
 		
 		format.market = formatCurrency(actual.market, currency);
 		
