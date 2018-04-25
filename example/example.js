@@ -1205,7 +1205,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.51'
+		version: '1.1.52'
 	};
 }();
 
