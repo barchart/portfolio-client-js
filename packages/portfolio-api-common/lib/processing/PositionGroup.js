@@ -677,7 +677,7 @@ module.exports = (() => {
 		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
-		format.realized = formatCurrency(actual.basis, currency);
+		format.realized = formatCurrency(actual.realized, currency);
 		format.unrealized = formatCurrency(actual.unrealized, currency);
 		format.income = formatCurrency(actual.income, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
