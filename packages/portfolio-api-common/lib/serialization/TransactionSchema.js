@@ -233,7 +233,6 @@ module.exports = (() => {
 		.withField('dividend.effective', DataType.DAY, true)
 		.withField('dividend.price', DataType.DECIMAL, true)
 		.withField('dividend.amount', DataType.DECIMAL, true)
-		.withField('dividend.reference', DataType.STRING, true)
 		.withField('split.numerator', DataType.DECIMAL, true)
 		.withField('split.denominator', DataType.DECIMAL, true)
 		.withField('split.effective', DataType.DAY, true)
@@ -282,6 +281,7 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
