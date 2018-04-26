@@ -1,4 +1,4 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 const uuid = require('uuid');
 
 const assert = require('@barchart/common-js/lang/assert'),
@@ -2434,7 +2434,7 @@ module.exports = (() => {
 		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
-		format.realized = formatCurrency(actual.basis, currency);
+		format.realized = formatCurrency(actual.realized, currency);
 		format.unrealized = formatCurrency(actual.unrealized, currency);
 		format.income = formatCurrency(actual.income, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
@@ -3635,31 +3635,14 @@ module.exports = function () {
 		}
 
 		/**
-   * Gets the root node.
+   * Returns the parent node. If this is the root node, a null value is returned.
    *
    * @public
-   * @returns {Tree}
+   * @returns {Tree|null}
    */
 
 
 		_createClass(Tree, [{
-			key: 'getRoot',
-			value: function getRoot() {
-				if (this.getIsRoot()) {
-					return this;
-				} else {
-					return this._parent.getRoot();
-				}
-			}
-
-			/**
-    * Returns the parent node. If this is the root node, a null value is returned.
-    *
-    * @public
-    * @returns {Tree|null}
-    */
-
-		}, {
 			key: 'getParent',
 			value: function getParent() {
 				return this._parent;
@@ -3758,23 +3741,6 @@ module.exports = function () {
 						break;
 					}
 				}
-			}
-
-			/**
-    * Removes the current node from the parent tree. Use on a root node
-    * has no effect.
-    *
-    * @public
-    */
-
-		}, {
-			key: 'sever',
-			value: function sever() {
-				if (this.getIsRoot()) {
-					return;
-				}
-
-				this.getParent().removeChild(this);
 			}
 
 			/**
@@ -3879,33 +3845,6 @@ module.exports = function () {
 				if (this._parent !== null) {
 					this._parent.climb(climbAction, true);
 				}
-			}
-
-			/**
-    * Climbs the tree, evaluating each parent until a predicate is matched. Once matched,
-    * the {@link Tree} node is returned. Otherwise, if the predicate cannot be matched,
-    * a null value is returned.
-    *
-    * @public
-    * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
-    * @param {boolean=} includeCurrentNode - If true, the predicate will be applied to the current node.
-    * @returns {Tree|null}
-    */
-
-		}, {
-			key: 'findParent',
-			value: function findParent(predicate, includeCurrentNode) {
-				var returnRef = void 0;
-
-				if (is.boolean(includeCurrentNode) && includeCurrentNode && predicate(this.getValue(), this)) {
-					returnRef = this;
-				} else if (this._parent !== null) {
-					returnRef = this._parent.findParent(predicate, true);
-				} else {
-					returnRef = null;
-				}
-
-				return returnRef;
 			}
 
 			/**
@@ -5199,20 +5138,6 @@ module.exports = function () {
 			}
 
 			/**
-    * Returns true if the current instance is greater than or equal to the value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsGreaterThanOrEqual',
-			value: function getIsGreaterThanOrEqual(other) {
-				return this._big.gte(getBig(other));
-			}
-
-			/**
     * Returns true if the current instance is less than the value.
     *
     * @public
@@ -5224,20 +5149,6 @@ module.exports = function () {
 			key: 'getIsLessThan',
 			value: function getIsLessThan(other) {
 				return this._big.lt(getBig(other));
-			}
-
-			/**
-    * Returns true if the current instance is less than or equal to the value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsLessThanOrEqual',
-			value: function getIsLessThanOrEqual(other) {
-				return this._big.lte(getBig(other));
 			}
 
 			/**
@@ -5439,9 +5350,9 @@ module.exports = function () {
 				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
 				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
 
-				if (a._big.gt(b._big)) {
+				if (a._big.gt(b)) {
 					return 1;
-				} else if (a._big.lt(b._big)) {
+				} else if (a._big.lt(b)) {
 					return -1;
 				} else {
 					return 0;
@@ -5902,10 +5813,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var assert = require('./assert'),
+    is = require('./is'),
     memoize = require('./memoize');
 
 var Currency = require('./Currency'),
-    Decimal = require('./Decimal');
+    Decimal = require('./Decimal'),
+    Enum = require('./Enum');
 
 module.exports = function () {
 	'use strict';
@@ -6085,7 +5998,12 @@ module.exports = function () {
 				assert.argumentIsRequired(amount, 'amount', Decimal, 'Decimal');
 				assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
 				assert.argumentIsRequired(desiredCurrency, 'desiredCurrency', Currency, 'Currency');
-				//assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
+
+				for (var _len = arguments.length, rates = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+					rates[_key - 3] = arguments[_key];
+				}
+
+				assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
 
 				var converted = void 0;
 
@@ -6094,10 +6012,6 @@ module.exports = function () {
 				} else {
 					var numerator = desiredCurrency;
 					var denominator = currency;
-
-					for (var _len = arguments.length, rates = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-						rates[_key - 3] = arguments[_key];
-					}
 
 					var rate = rates.find(function (r) {
 						return r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator;
@@ -6149,7 +6063,7 @@ module.exports = function () {
 	return Rate;
 }();
 
-},{"./Currency":15,"./Decimal":17,"./assert":22,"./memoize":25}],21:[function(require,module,exports){
+},{"./Currency":15,"./Decimal":17,"./Enum":19,"./assert":22,"./is":24,"./memoize":25}],21:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -6526,26 +6440,6 @@ module.exports = function () {
 			});
 
 			return returnRef;
-		},
-
-
-		/**
-   * Removes the first item from an array which matches a predicate.
-   *
-   * @static
-   * @public
-   * @param {Array} a
-   * @param {Function} predicate
-   */
-		remove: function remove(a, predicate) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsRequired(predicate, 'predicate', Function);
-
-			var index = a.findIndex(predicate);
-
-			if (!(index < 0)) {
-				a.splice(index, 1);
-			}
 		}
 	};
 }();
