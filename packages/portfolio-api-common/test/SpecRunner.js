@@ -935,7 +935,7 @@ module.exports = (() => {
 
 			this._forexSymbols = forexCurrencyCodes.reduce((symbols, code) => {
 				if (code !== DEFAULT_CURRENCY.code) {
-					symbols.push(`^${DEFAULT_CURRENCY.code}${code}`);
+					symbols.push(`^${code}${DEFAULT_CURRENCY.code}`);
 				}
 
 				return symbols;
