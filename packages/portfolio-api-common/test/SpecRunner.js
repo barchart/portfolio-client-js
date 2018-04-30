@@ -185,7 +185,137 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/assert":22,"uuid":28}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":21,"@barchart/common-js/lang/assert":24,"uuid":30}],2:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Enum = require('@barchart/common-js/lang/Enum');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * Describes a position size -- positive values are long, negative values
+	 * are short and zero values are even.
+	 *
+	 * @public
+	 * @extends {Enum}
+	 * @param {String} code
+	 * @param {String} description
+	 * @param {sign} sign
+	 */
+	class PositionDirection extends Enum {
+		constructor(code, description, sign) {
+			super(code, description);
+
+			assert.argumentIsRequired(sign, 'sign', String);
+			
+			this._sign = sign;
+		}
+
+		/**
+		 * A description of the positiveness or negativeness of the size of the
+		 * position.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get sign() {
+			return this._sign;
+		}
+
+		/**
+		 * Indicates if the position size is positive (i.e. is {@link PositionDirection.LONG}).
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get positive() {
+			return this === long;
+		}
+
+		/**
+		 * Indicates if the position size is negative (i.e. is {@link PositionDirection.SHORT}).
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get negative() {
+			return this === short;
+		}
+
+		/**
+		 * Indicates if the position size is zero (i.e. is {@link PositionDirection.EVEN}).
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get closed() {
+			return this === even;
+		}
+
+		/**
+		 * A positive quantity position.
+		 * 
+		 * @public
+		 * @static
+		 * @returns {PositionDirection}
+		 */
+		static get LONG() {
+			return long;
+		}
+
+		/**
+		 * A positive quantity position.
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionDirection}
+		 */
+		static get SHORT() {
+			return short;
+		}
+
+		/**
+		 * A zero quantity position.
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionDirection}
+		 */
+		static get EVEN() {
+			return even;
+		}
+
+		/**
+		 * Given an open quantity, returns a {@link PositionDirection} that
+		 * describes the quantity.
+		 *
+		 * @public
+		 * @static
+		 * @param {Decimal} open
+		 * @returns {PositionDirection}
+		 */
+		static for(open) {
+			assert.argumentIsRequired(open, 'open', Decimal, 'Decimal');
+			
+			if (open.getIsPositive()) {
+				return long;
+			} else if (open.getIsNegative()) {
+				return short;
+			} else {
+				return even;
+			}
+		}
+	}
+
+	const long = new PositionDirection('LONG', 'Long', 'positive');
+	const short = new PositionDirection('SHORT', 'Short', 'negative');
+	const even = new PositionDirection('EVEN', 'Even', 'zero');
+
+	return PositionDirection;
+})();
+
+},{"@barchart/common-js/lang/Decimal":19,"@barchart/common-js/lang/Enum":21,"@barchart/common-js/lang/assert":24}],3:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -458,7 +588,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":16,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],3:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":18,"@barchart/common-js/lang/Decimal":19,"@barchart/common-js/lang/Enum":21,"@barchart/common-js/lang/array":23,"@barchart/common-js/lang/assert":24,"@barchart/common-js/lang/is":26}],4:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -825,7 +955,205 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/assert":22}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":21,"@barchart/common-js/lang/assert":24}],5:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+	array = require('@barchart/common-js/lang/array')
+
+const InstrumentType = require('./InstrumentType'),
+	PositionDirection = require('./PositionDirection'),
+	TransactionType = require('./TransactionType');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * Static utilities for validating transactions.
+	 *
+	 * @public
+	 */
+	class TransactionValidator {
+		constructor() {
+
+		}
+
+		/**
+		 * Given a set of transaction, ensures that sequence numbers and dates
+		 * are properly ordered.
+		 *
+		 * @public
+		 * @static
+		 * @param {Array.<Object>} transactions
+		 * @param {Boolean=} partial - If true, sequence validation starts with the array's first transaction.
+		 * @return {boolean}
+		 */
+		static validateOrder(transactions, partial) {
+			assert.argumentIsArray(transactions, 'transactions');
+			assert.argumentIsOptional(partial, 'partial', Boolean);
+
+			let startSequence;
+
+			if (partial && transactions.length !== 0) {
+				startSequence = array.first(transactions).sequence;
+			} else {
+				startSequence = 1;
+			}
+
+			return transactions.every((t, i) => t.sequence === (i + startSequence) && (i === 0 || !t.date.getIsBefore(transactions[i - 1].date)));
+		}
+
+		/**
+		 * Given an instrument type, returns all valid transaction types.
+		 *
+		 * @static
+		 * @public
+		 * @param {InstrumentType} instrumentType
+		 * @param {Boolean=} userInitiated
+		 * @pararm {PositionDirection=} currentDirection
+		 * @return {Array.<TransactionType>}
+		 */
+		static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
+			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
+			assert.argumentIsOptional(userInitiated, 'userInitiated', Boolean);
+
+			let valid = validTransactionTypes[instrumentType.code] || [ ];
+
+			if (userInitiated) {
+				valid = valid.filter(data => data.user === userInitiated);
+			}
+
+			if (currentDirection) {
+				valid = valid.filter(data => data.directions.some(d => d === currentDirection));
+			}
+
+			return valid.map(d => d.type);
+		}
+
+		/**
+		 * Checks to see if an transaction type is applicable to an instrument type.
+		 *
+		 * @static
+		 * @public
+		 * @param {InstrumentType} instrumentType
+		 * @param {TransactionType} transactionType
+		 * @param {Boolean=} userInitiated
+		 * @return {Boolean}
+		 */
+		static validateTransactionType(instrumentType, transactionType, userInitiated) {
+			assert.argumentIsRequired(transactionType, 'transactionType', TransactionType, 'TransactionType');
+
+			const transactionTypes = TransactionValidator.getTransactionTypesFor(instrumentType, userInitiated);
+
+			return transactionTypes.some(t => t === transactionType);
+		}
+
+		/**
+		 * Checks to see if a position for a given instrument type can exist in
+		 * the given direction.
+		 *
+		 * @static
+		 * @public
+		 * @param {InstrumentType} instrumentType
+		 * @param {PositionDirection} direction
+		 * @return {Boolean}
+		 */
+		static validateDirection(instrumentType, direction) {
+			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
+			assert.argumentIsRequired(direction, 'direction', PositionDirection, 'PositionDirection');
+
+			return validDirections[instrumentType.code].some(d => d === direction);
+		}
+
+		/**
+		 * Checks to see if the position switches direction and if the direction switch
+		 * is valid.
+		 *
+		 * @static
+		 * @public
+		 * @param {InstrumentType} instrumentType
+		 * @param {PositionDirection|null|undefined} currentDirection
+		 * @param {PositionDirection} proposedDirection
+		 * @return {Boolean}
+		 */
+		static validateDirectionSwitch(instrumentType, currentDirection, proposedDirection) {
+			return currentDirection === null || instrumentType.canSwitchDirection || (currentDirection.closed || proposedDirection.closed || currentDirection.positive === proposedDirection.positive);
+		}
+
+		toString() {
+			return '[TransactionValidator]';
+		}
+	}
+
+	const validTransactionTypes = { };
+
+	function associateTypes(instrumentType, transactionType, userInitiated, directions) {
+		const instrumentTypeCode = instrumentType.code;
+
+		if (!validTransactionTypes.hasOwnProperty(instrumentTypeCode)) {
+			validTransactionTypes[instrumentTypeCode] = [ ];
+		}
+
+		validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [ PositionDirection.LONG, PositionDirection.SHORT, PositionDirection.EVEN ]  });
+	}
+
+	associateTypes(InstrumentType.EQUITY, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.FEE, true, [ PositionDirection.LONG, PositionDirection.SHORT ]);
+	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_REINVEST, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_STOCK, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SPLIT, false);
+
+	associateTypes(InstrumentType.FUND, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.FUND, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.FUND, TransactionType.FEE, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.FUND, TransactionType.FEE_UNITS, false);
+	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_CASH, false);
+	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_FUND, false);
+
+	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.OTHER, TransactionType.INCOME, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.OTHER, TransactionType.FEE, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.OTHER, TransactionType.VALUATION, true, [ PositionDirection.LONG ]);
+
+	associateTypes(InstrumentType.CASH, TransactionType.DEPOSIT, true);
+	associateTypes(InstrumentType.CASH, TransactionType.WITHDRAWAL, true);
+	associateTypes(InstrumentType.CASH, TransactionType.FEE, true);
+	associateTypes(InstrumentType.CASH, TransactionType.DEBIT, false);
+	associateTypes(InstrumentType.CASH, TransactionType.CREDIT, false);
+
+	const validDirections = { };
+
+	function associateDirections(instrumentType, positionDirection) {
+		const instrumentTypeCode = instrumentType.code;
+
+		if (!validDirections.hasOwnProperty(instrumentTypeCode)) {
+			validDirections[instrumentTypeCode] = [ ];
+		}
+
+		validDirections[instrumentTypeCode].push(positionDirection);
+	}
+
+	associateDirections(InstrumentType.EQUITY, PositionDirection.EVEN);
+	associateDirections(InstrumentType.EQUITY, PositionDirection.LONG);
+	associateDirections(InstrumentType.EQUITY, PositionDirection.SHORT);
+
+	associateDirections(InstrumentType.FUND, PositionDirection.EVEN);
+	associateDirections(InstrumentType.FUND, PositionDirection.LONG);
+
+	associateDirections(InstrumentType.OTHER, PositionDirection.EVEN);
+	associateDirections(InstrumentType.OTHER, PositionDirection.LONG);
+
+	associateDirections(InstrumentType.CASH, PositionDirection.EVEN);
+	associateDirections(InstrumentType.CASH, PositionDirection.LONG);
+	associateDirections(InstrumentType.CASH, PositionDirection.SHORT);
+
+	return TransactionValidator;
+})();
+
+},{"./InstrumentType":1,"./PositionDirection":2,"./TransactionType":4,"@barchart/common-js/lang/array":23,"@barchart/common-js/lang/assert":24}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
@@ -1783,7 +2111,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":2,"./PositionGroup":5,"./PositionItem":6,"./definitions/PositionLevelDefinition":7,"./definitions/PositionLevelType":8,"./definitions/PositionTreeDefinition":9,"@barchart/common-js/collections/Tree":11,"@barchart/common-js/collections/sorting/ComparatorBuilder":12,"@barchart/common-js/collections/sorting/comparators":13,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],5:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":3,"./PositionGroup":7,"./PositionItem":8,"./definitions/PositionLevelDefinition":9,"./definitions/PositionLevelType":10,"./definitions/PositionTreeDefinition":11,"@barchart/common-js/collections/Tree":13,"@barchart/common-js/collections/sorting/ComparatorBuilder":14,"@barchart/common-js/collections/sorting/comparators":15,"@barchart/common-js/collections/specialized/DisposableStack":16,"@barchart/common-js/lang/Currency":17,"@barchart/common-js/lang/Decimal":19,"@barchart/common-js/lang/Rate":22,"@barchart/common-js/lang/array":23,"@barchart/common-js/lang/assert":24,"@barchart/common-js/lang/is":26,"@barchart/common-js/messaging/Event":28}],7:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -2658,7 +2986,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/InstrumentType":1,"./definitions/PositionLevelDefinition":7,"./definitions/PositionLevelType":8,"@barchart/common-js/collections/specialized/DisposableStack":14,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/Rate":20,"@barchart/common-js/lang/array":21,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/formatter":23,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],6:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"./definitions/PositionLevelDefinition":9,"./definitions/PositionLevelType":10,"@barchart/common-js/collections/specialized/DisposableStack":16,"@barchart/common-js/lang/Currency":17,"@barchart/common-js/lang/Decimal":19,"@barchart/common-js/lang/Disposable":20,"@barchart/common-js/lang/Rate":22,"@barchart/common-js/lang/array":23,"@barchart/common-js/lang/assert":24,"@barchart/common-js/lang/formatter":25,"@barchart/common-js/lang/is":26,"@barchart/common-js/messaging/Event":28}],8:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -3118,7 +3446,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24,"@barchart/common-js/messaging/Event":26}],7:[function(require,module,exports){
+},{"./../data/InstrumentType":1,"@barchart/common-js/lang/Currency":17,"@barchart/common-js/lang/Decimal":19,"@barchart/common-js/lang/Disposable":20,"@barchart/common-js/lang/assert":24,"@barchart/common-js/lang/is":26,"@barchart/common-js/messaging/Event":28}],9:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
@@ -3397,7 +3725,7 @@ module.exports = (() => {
 	return PositionLevelDefinition;
 })();
 
-},{"./../../data/InstrumentType":1,"./PositionLevelType":8,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],8:[function(require,module,exports){
+},{"./../../data/InstrumentType":1,"./PositionLevelType":10,"@barchart/common-js/lang/Currency":17,"@barchart/common-js/lang/assert":24,"@barchart/common-js/lang/is":26}],10:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -3428,7 +3756,7 @@ module.exports = (() => {
 	return PositionLevelType;
 })();
 
-},{"@barchart/common-js/lang/Enum":19}],9:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":21}],11:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert');
 
 const PositionLevelDefinition = require('./PositionLevelDefinition');
@@ -3499,7 +3827,7 @@ module.exports = (() => {
 	return PositionTreeDefinitions;
 })();
 
-},{"./PositionLevelDefinition":7,"@barchart/common-js/lang/assert":22}],10:[function(require,module,exports){
+},{"./PositionLevelDefinition":9,"@barchart/common-js/lang/assert":24}],12:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3631,7 +3959,7 @@ module.exports = function () {
 	return Stack;
 }();
 
-},{"./../lang/assert":22}],11:[function(require,module,exports){
+},{"./../lang/assert":24}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4001,7 +4329,7 @@ module.exports = function () {
 	return Tree;
 }();
 
-},{"./../lang/is":24}],12:[function(require,module,exports){
+},{"./../lang/is":26}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4145,7 +4473,7 @@ module.exports = function () {
 	return ComparatorBuilder;
 }();
 
-},{"./../../lang/assert":22,"./comparators":13}],13:[function(require,module,exports){
+},{"./../../lang/assert":24,"./comparators":15}],15:[function(require,module,exports){
 'use strict';
 
 var assert = require('./../../lang/assert');
@@ -4220,7 +4548,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./../../lang/assert":22}],14:[function(require,module,exports){
+},{"./../../lang/assert":24}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4328,7 +4656,7 @@ module.exports = function () {
 	return DisposableStack;
 }();
 
-},{"./../../lang/Disposable":18,"./../../lang/assert":22,"./../../lang/is":24,"./../Stack":10}],15:[function(require,module,exports){
+},{"./../../lang/Disposable":20,"./../../lang/assert":24,"./../../lang/is":26,"./../Stack":12}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4471,7 +4799,7 @@ module.exports = function () {
 	return Currency;
 }();
 
-},{"./Enum":19,"./assert":22,"./is":24}],16:[function(require,module,exports){
+},{"./Enum":21,"./assert":24,"./is":26}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5024,7 +5352,7 @@ module.exports = function () {
 	return Day;
 }();
 
-},{"./../collections/sorting/ComparatorBuilder":12,"./../collections/sorting/comparators":13,"./assert":22,"./is":24}],17:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":14,"./../collections/sorting/comparators":15,"./assert":24,"./is":26}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5632,7 +5960,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":19,"./assert":22,"./is":24,"big.js":27}],18:[function(require,module,exports){
+},{"./Enum":21,"./assert":24,"./is":26,"big.js":29}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5781,7 +6109,7 @@ module.exports = function () {
 	return Disposable;
 }();
 
-},{"./assert":22}],19:[function(require,module,exports){
+},{"./assert":24}],21:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5923,7 +6251,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":22}],20:[function(require,module,exports){
+},{"./assert":24}],22:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6178,7 +6506,7 @@ module.exports = function () {
 	return Rate;
 }();
 
-},{"./Currency":15,"./Decimal":17,"./assert":22,"./memoize":25}],21:[function(require,module,exports){
+},{"./Currency":17,"./Decimal":19,"./assert":24,"./memoize":27}],23:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -6579,7 +6907,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":22,"./is":24}],22:[function(require,module,exports){
+},{"./assert":24,"./is":26}],24:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -6727,7 +7055,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":24}],23:[function(require,module,exports){
+},{"./is":26}],25:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -6792,7 +7120,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -7015,7 +7343,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -7088,7 +7416,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":22,"./is":24}],26:[function(require,module,exports){
+},{"./assert":24,"./is":26}],28:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7260,7 +7588,7 @@ module.exports = function () {
 	return Event;
 }();
 
-},{"./../lang/Disposable":18,"./../lang/assert":22}],27:[function(require,module,exports){
+},{"./../lang/Disposable":20,"./../lang/assert":24}],29:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -8201,7 +8529,7 @@ module.exports = function () {
   }
 })(this);
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var v1 = require('./v1');
 var v4 = require('./v4');
 
@@ -8211,7 +8539,7 @@ uuid.v4 = v4;
 
 module.exports = uuid;
 
-},{"./v1":31,"./v4":32}],29:[function(require,module,exports){
+},{"./v1":33,"./v4":34}],31:[function(require,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -8236,7 +8564,7 @@ function bytesToUuid(buf, offset) {
 
 module.exports = bytesToUuid;
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 (function (global){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
@@ -8273,7 +8601,7 @@ if (!rng) {
 module.exports = rng;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -8375,7 +8703,7 @@ function v1(options, buf, offset) {
 
 module.exports = v1;
 
-},{"./lib/bytesToUuid":29,"./lib/rng":30}],32:[function(require,module,exports){
+},{"./lib/bytesToUuid":31,"./lib/rng":32}],34:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -8406,7 +8734,7 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
-},{"./lib/bytesToUuid":29,"./lib/rng":30}],33:[function(require,module,exports){
+},{"./lib/bytesToUuid":31,"./lib/rng":32}],35:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -8577,7 +8905,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and yearly position summary ranges are processed for a transaction set closed in 2016, but has after-the-face superfluous valuations in 2017 and 2018', () => {
+	describe('and yearly position summary ranges are processed for a transaction set closed in 2016, but has after-the-fact superfluous valuations in 2017 and 2018', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -8763,7 +9091,60 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":2,"./../../../lib/data/TransactionType":3,"@barchart/common-js/lang/Day":16,"@barchart/common-js/lang/Decimal":17}],34:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":3,"./../../../lib/data/TransactionType":4,"@barchart/common-js/lang/Day":18,"@barchart/common-js/lang/Decimal":19}],36:[function(require,module,exports){
+const Day = require('@barchart/common-js/lang/Day');
+
+const TransactionValidator = require('./../../../lib/data/TransactionValidator');
+
+describe('When validating transaction order', () => {
+	'use strict';
+
+	const build = (sequence, day) => {
+		return { sequence: sequence, date: Day.parse(day) };
+	};
+
+	it('An array of zero transactions should be valid', () => {
+		expect(TransactionValidator.validateOrder([])).toEqual(true);
+	});
+
+	it('An array of transactions with ordered sequences, on the same day should be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30'), build(3, '2018-04-30') ])).toEqual(true);
+	});
+
+	it('An array of transactions with ordered sequences, on the sequential days should be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-05-01'), build(3, '2018-05-02') ])).toEqual(true);
+	});
+
+	it('An array of transactions with ordered sequences (starting after one), on the same day should not be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(3, '2018-04-30'), build(4, '2018-04-30'), build(5, '2018-04-30') ])).toEqual(false);
+	});
+
+	it('An array of transactions with duplicate sequences, on the same day should not be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(1, '2018-04-30') ])).toEqual(false);
+	});
+
+	it('An array of transactions with with a gap in sequences, on the same day should not be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(3, '2018-04-30') ])).toEqual(false);
+	});
+
+	it('An array of transactions with with a reversed sequences, on the same subsequent days should not be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(2, '2018-04-30'), build(1, '2018-05-01') ])).toEqual(false);
+	});
+
+	it('An array of transactions with ordered sequences, on the reversed days should not be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-05-02'), build(2, '2018-05-01'), build(3, '2018-04-30') ])).toEqual(false);
+	});
+
+	it('A partial array of transactions with ordered sequences (starting after one), on the same day should be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(3, '2018-04-30'), build(4, '2018-04-30'), build(5, '2018-04-30') ], true)).toEqual(true);
+	});
+
+	it('A partial array of transactions with gap in sequences (starting after one), on the same day should be not valid', () => {
+		expect(TransactionValidator.validateOrder([ build(3, '2018-04-30'), build(5, '2018-04-30'), build(6, '2018-04-30') ], true)).toEqual(false);
+	});
+});
+
+},{"./../../../lib/data/TransactionValidator":5,"@barchart/common-js/lang/Day":18}],37:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -8873,4 +9254,4 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":1,"./../../../lib/processing/PositionContainer":4,"./../../../lib/processing/definitions/PositionLevelDefinition":7,"./../../../lib/processing/definitions/PositionLevelType":8,"./../../../lib/processing/definitions/PositionTreeDefinition":9,"@barchart/common-js/lang/Currency":15,"@barchart/common-js/lang/Decimal":17}]},{},[33,34]);
+},{"./../../../lib/data/InstrumentType":1,"./../../../lib/processing/PositionContainer":6,"./../../../lib/processing/definitions/PositionLevelDefinition":9,"./../../../lib/processing/definitions/PositionLevelType":10,"./../../../lib/processing/definitions/PositionTreeDefinition":11,"@barchart/common-js/lang/Currency":17,"@barchart/common-js/lang/Decimal":19}]},{},[35,36,37]);
