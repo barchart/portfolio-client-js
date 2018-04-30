@@ -1,4 +1,5 @@
-const assert = require('@barchart/common-js/lang/assert');
+const assert = require('@barchart/common-js/lang/assert'),
+	array = require('@barchart/common-js/lang/array');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
@@ -15,6 +16,18 @@ module.exports = (() => {
 	class TransactionValidator {
 		constructor() {
 
+		}
+
+		static validateOrder(transactions, partial) {
+			let startSequence;
+
+			if (partial && transactions.length !== 0) {
+				startSequence = array.first(transactions).sequence;
+			} else {
+				startSequence = 1;
+			}
+
+			return transactions.every((t, i) => t.sequence === (i + startSequence) && (i === 0 || !t.date.getIsBefore(transactions[i - 1].date)));
 		}
 
 		/**
