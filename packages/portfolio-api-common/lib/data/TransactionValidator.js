@@ -1,5 +1,5 @@
 const assert = require('@barchart/common-js/lang/assert'),
-	array = require('@barchart/common-js/lang/array');
+	array = require('@barchart/common-js/lang/array')
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
@@ -18,7 +18,20 @@ module.exports = (() => {
 
 		}
 
+		/**
+		 * Given a set of transaction, ensures that sequence numbers and dates
+		 * are properly ordered.
+		 *
+		 * @public
+		 * @static
+		 * @param {Array.<Object>} transactions
+		 * @param {Boolean=} partial - If true, sequence validation starts with the array's first transaction.
+		 * @return {boolean}
+		 */
 		static validateOrder(transactions, partial) {
+			assert.argumentIsArray(transactions, 'transactions');
+			assert.argumentIsOptional(partial, 'partial', Boolean);
+
 			let startSequence;
 
 			if (partial && transactions.length !== 0) {
