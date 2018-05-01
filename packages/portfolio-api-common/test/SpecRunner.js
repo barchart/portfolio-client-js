@@ -2921,6 +2921,8 @@ module.exports = (() => {
 	}
 
 	function calculateMarketPercent(group, rates, silent) {
+		return;
+
 		if (group.suspended) {
 			return;
 		}
