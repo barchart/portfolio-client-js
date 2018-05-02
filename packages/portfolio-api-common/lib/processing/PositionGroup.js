@@ -33,13 +33,17 @@ module.exports = (() => {
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, definition, items, currency, key, description, aggregateCash) {
+		constructor(definition, items, parentGroup, portfolioGroup, currency, key, description, aggregateCash) {
 			this._id = counter++;
 
 			this._definition = definition;
-			this._container = container;
 
 			this._items = items;
+			this._rates = [ ];
+
+			this._parentGroup = null;
+			this._portfolioGroup = null;
+
 			this._currency = currency || Currency.CAD;
 			this._bypassCurrencyTranslation = false;
 
@@ -53,7 +57,6 @@ module.exports = (() => {
 			this._suspended = false;
 			this._showClosedPositions = false;
 
-			this._marketPercentChangeEvent = new Event(this);
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
 
@@ -267,6 +270,40 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets the immediate parent group (allowing for calculation of relative
+		 * percentages).
+		 *
+		 * @public
+		 * @param {PortfolioGroup} group
+		 */
+		setParentGroup(group) {
+			assert.argumentIsRequired(group, 'group', PositionGroup, 'PositionGroup');
+
+			if (this._parentGroup !== null) {
+				throw new Error('The parent group has already been set.');
+			}
+
+			this._parentGroup = group;
+		}
+
+		/**
+		 * Sets the nearest parent group for a portfolio (allowing for calculation
+		 * of relative percentages).
+		 *
+		 * @public
+		 * @param {PortfolioGroup} group
+		 */
+		setPortfolioGroup(group) {
+			assert.argumentIsRequired(group, 'group', PositionGroup, 'PositionGroup');
+
+			if (this._portfolioGroup !== null) {
+				throw new Error('The portfolio group has already been set.');
+			}
+
+			this._portfolioGroup = group;
+		}
+
+		/**
 		 * Adds a new {@link PositionItem} to the group.
 		 *
 		 * @public
@@ -311,9 +348,11 @@ module.exports = (() => {
 		 * Causes aggregated data to be recalculated using a new exchange rate.
 		 *
 		 * @public
-		 * @param {Rate} rate
+		 * @param {Array.<Rate>} rate
 		 */
-		setForexRate(rate) {
+		setForexRates(rates) {
+			this._rates = rates;
+
 			if (!this._bypassCurrencyTranslation) {
 				this.refresh();
 			}
@@ -401,10 +440,8 @@ module.exports = (() => {
 				return;
 			}
 
-			const rates = this._container.getForexQuotes();
-
-			calculateStaticData(this, rates);
-			calculatePriceData(this, rates, null, true);
+			calculateStaticData(this, this._rates);
+			calculatePriceData(this, this._rates, null, true);
 		}
 
 		/**
@@ -414,7 +451,7 @@ module.exports = (() => {
 		 * @public
 		 */
 		refreshMarketPercent() {
-			calculateMarketPercent(this, this._container.getForexQuotes(), true);
+			calculateMarketPercent(this, this._rates);
 		}
 
 		/**
@@ -425,17 +462,6 @@ module.exports = (() => {
 		 */
 		getIsEmpty() {
 			return this._items.length === 0;
-		}
-
-		/**
-		 * Adds an observer for change in the market percentage of the group.
-		 *
-		 * @public
-		 * @param {Function} handler
-		 * @return {Disposable}
-		 */
-		registerMarketPercentChangeHandler(handler) {
-			return this._marketPercentChangeEvent.register(handler);
 		}
 
 		/**
@@ -492,10 +518,10 @@ module.exports = (() => {
 				this._dataFormat.currentPrice = null;
 			}
 
-			calculatePriceData(this, this._container.getForexQuotes(), sender, false);
+			calculatePriceData(this, this._rates, sender, false);
 		});
 
-		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data, sender) => {
+		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single) {
 				this._dataFormat.fundamental = data;
 			} else {
@@ -546,13 +572,13 @@ module.exports = (() => {
 		let newsBinding = Disposable.getEmpty();
 
 		if (this._single) {
-			newsBinding = item.registerNewsExistsChangeHandler((exists, sender) => {
+			newsBinding = item.registerNewsExistsChangeHandler((exists) => {
 				this._dataActual.newsExists = exists;
 				this._dataFormat.newsExists = exists;
 			});
 		}
 
-		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio, sender) => {
+		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio) => {
 			const descriptionSelector = this._definition.descriptionSelector;
 
 			this._description = descriptionSelector(this._items[0]);
@@ -801,14 +827,12 @@ module.exports = (() => {
 
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
-		
-		calculateMarketPercent(group, rates, false);
+
+		calculateMarketPercent(group, rates);
 		calculateUnrealizedPercent(group);
 	}
 
-	function calculateMarketPercent(group, rates, silent) {
-		return;
-
+	function calculateMarketPercent(group, rates) {
 		if (group.suspended) {
 			return;
 		}
@@ -817,12 +841,10 @@ module.exports = (() => {
 		const format = group._dataFormat;
 		const excluded = group._excluded;
 
-		const portfolioParent = group._container.getParentGroupForPortfolio(group);
-
 		const calculatePercent = (parent) => {
 			let marketPercent;
 
-			if (parent !== null && !excluded) {
+			if (parent && !excluded) {
 				const parentData = parent._dataActual;
 
 				if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsZero()) {
@@ -845,14 +867,15 @@ module.exports = (() => {
 			return marketPercent;
 		};
 
-		actual.marketPercent = calculatePercent(group._container.getParentGroup(group));
+		actual.marketPercent = calculatePercent(this._parentGroup);
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
 
-		actual.marketPercentPortfolio = calculatePercent(group._container.getParentGroupForPortfolio(group));
-		format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
-
-		if (!silent) {
-			group._marketPercentChangeEvent.fire(group);
+		if (this._parentGroup === this._portfolioGroup) {
+			actual.marketPercentPortfolio = actual.marketPercent;
+			format.marketPercentPortfolio = format.marketPercent;
+		} else {
+			actual.marketPercentPortfolio = calculatePercent(this._portfolioGroup);
+			format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
 		}
 	}
 

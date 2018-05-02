@@ -324,6 +324,8 @@ module.exports = (() => {
 					this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
 				}
 			});
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -337,6 +339,8 @@ module.exports = (() => {
 			assert.argumentIsRequired(position.position, 'position.position', String);
 
 			removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -384,6 +388,8 @@ module.exports = (() => {
 			if (this._symbols.hasOwnProperty(symbol)) {
 				this._symbols[symbol].forEach(item => item.setQuote(quote));
 			}
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -427,7 +433,9 @@ module.exports = (() => {
 				this._forexQuotes[index] = rate;
 			}
 
-			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRate(rate), true, false));
+			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false));
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -739,12 +747,6 @@ module.exports = (() => {
 				}
 			}
 		}));
-
-		addGroupBinding.call(this, group, group.registerMarketPercentChangeHandler(() => {
-			if (!groupTree.getIsRoot()) {
-				groupTree.getParent().walk((childGroup) => childGroup.refreshMarketPercent());
-			}
-		}));
 	}
 
 	function createGroups(parentTree, items, treeDefinition, levelDefinitions, overrideRequiredGroups) {
@@ -759,7 +761,7 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(this, levelDefinition, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
+			list.push(new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
 
 			return list;
 		}, [ ]);
@@ -772,7 +774,7 @@ module.exports = (() => {
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(this, levelDefinition, [ ], group.currency, group.key, group.description);
+			return new PositionGroup(levelDefinition, [ ], group.currency, group.key, group.description);
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
@@ -811,6 +813,9 @@ module.exports = (() => {
 			const childTree = parentTree.addChild(group);
 
 			this._nodes[group.id] = childTree;
+
+			group.setParentGroup(this.getParentGroup(group));
+			group.setPortfolioGroup(this.getParentGroupForPortfolio(group));
 
 			initializeGroupObservers.call(this, childTree, treeDefinition);
 
@@ -950,6 +955,12 @@ module.exports = (() => {
 	function severGroupNode(groupNodeToSever) {
 		groupNodeToSever.sever();
 		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
+	}
+
+	function recalculatePercentages() {
+		Object.keys(this._trees).forEach((key) => {
+			this._trees[key].walk(group => group.refreshMarketPercent(), false, false);
+		});
 	}
 
 	return PositionContainer;
