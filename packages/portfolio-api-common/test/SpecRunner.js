@@ -1380,11 +1380,9 @@ module.exports = (() => {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
 
-			this.startTransaction(() => {
-				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
+			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
 
-				updateEmptyPortfolioGroups.call(this, portfolio);
-			});
+			updateEmptyPortfolioGroups.call(this, portfolio);
 		}
 
 		/**
@@ -1399,19 +1397,19 @@ module.exports = (() => {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
 
-			this.startTransaction(() => {
-				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => removePositionItem.call(this, item));
+			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => removePositionItem.call(this, item));
 
-				delete this._portfolios[portfolio.portfolio];
+			delete this._portfolios[portfolio.portfolio];
 
-				Object.keys(this._trees).forEach((key) => {
-					this._trees[key].walk((group, groupNode) => {
-						if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
-							severGroupNode.call(this, groupNode);
-						}
-					}, true, false);
-				});
+			Object.keys(this._trees).forEach((key) => {
+				this._trees[key].walk((group, groupNode) => {
+					if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
+						severGroupNode.call(this, groupNode);
+					}
+				}, true, false);
 			});
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -1432,56 +1430,54 @@ module.exports = (() => {
 				return;
 			}
 
-			this.startTransaction(() => {
-				const existingBarchartSymbols = this.getPositionSymbols(false);
+			const existingBarchartSymbols = this.getPositionSymbols(false);
 
-				removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
+			removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
 
-				summaries.forEach((summary) => {
-					addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
-					addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
-				});
-
-				const item = createPositionItem.call(this, position);
-
-				addBarchartSymbol(this._symbols, item);
-				addDisplaySymbol(this._symbolsDisplay, item);
-
-				this._items.push(item);
-
-				const createGroupOrInjectItem = (parentTree, treeDefinition, levelDefinitions) => {
-					if (levelDefinitions.length === 0) {
-						return;
-					}
-
-					const levelDefinition = levelDefinitions[0];
-					const levelKey = levelDefinition.keySelector(item);
-
-					let groupTree;
-
-					if (parentTree.getChildren().length > 0) {
-						groupTree = parentTree.findChild(childGroup => childGroup.key === levelKey) || null;
-					} else {
-						groupTree = null;
-					}
-
-					if (groupTree !== null) {
-						groupTree.getValue().addItem(item);
-
-						createGroupOrInjectItem(groupTree, treeDefinition, array.dropLeft(levelDefinitions));
-					} else {
-						createGroups.call(this, parentTree, [ item ], treeDefinition, levelDefinitions, [ ]);
-					}
-				};
-
-				this._definitions.forEach(definition => createGroupOrInjectItem(this._trees[definition.name], definition, definition.definitions));
-
-				const addedBarchartSymbol = extractSymbolForBarchart(item.position);
-
-				if (addedBarchartSymbol !== null && !existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === addedBarchartSymbol)) {
-					this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
-				}
+			summaries.forEach((summary) => {
+				addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
+				addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
 			});
+
+			const item = createPositionItem.call(this, position);
+
+			addBarchartSymbol(this._symbols, item);
+			addDisplaySymbol(this._symbolsDisplay, item);
+
+			this._items.push(item);
+
+			const createGroupOrInjectItem = (parentTree, treeDefinition, levelDefinitions) => {
+				if (levelDefinitions.length === 0) {
+					return;
+				}
+
+				const levelDefinition = levelDefinitions[0];
+				const levelKey = levelDefinition.keySelector(item);
+
+				let groupTree;
+
+				if (parentTree.getChildren().length > 0) {
+					groupTree = parentTree.findChild(childGroup => childGroup.key === levelKey) || null;
+				} else {
+					groupTree = null;
+				}
+
+				if (groupTree !== null) {
+					groupTree.getValue().addItem(item);
+
+					createGroupOrInjectItem(groupTree, treeDefinition, array.dropLeft(levelDefinitions));
+				} else {
+					createGroups.call(this, parentTree, [ item ], treeDefinition, levelDefinitions, [ ]);
+				}
+			};
+
+			this._definitions.forEach(definition => createGroupOrInjectItem(this._trees[definition.name], definition, definition.definitions));
+
+			const addedBarchartSymbol = extractSymbolForBarchart(item.position);
+
+			if (addedBarchartSymbol !== null && !existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === addedBarchartSymbol)) {
+				this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
+			}
 
 			recalculatePercentages.call(this);
 		}
@@ -1532,49 +1528,55 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Updates the quote for a single symbol; causing updates to any grouping
-		 * level that contains the position(s) for the symbol.
+		 * Performs a batch update of both position quotes and forex quotes,
+		 * triggering updates to position(s) and data aggregation(s).
 		 *
 		 * @public
-		 * @param {Object} quote
+		 * @param {Array.<Object>} positionQuotes
+		 * @param {Array.<Object>} forexQuotes
 		 */
-		setPositionQuote(quote) {
-			assert.argumentIsRequired(quote, 'quote', Object);
+		setQuotes(positionQuotes, forexQuotes) {
+			assert.argumentIsArray(positionQuotes, 'positionQuotes');
+			assert.argumentIsArray(forexQuotes, 'forexQuotes');
 
-			const symbol = quote.symbol;
-
-			if (symbol) {
-				if (this._symbols.hasOwnProperty(symbol)) {
-					this._symbols[symbol].forEach(item => item.setQuote(quote));
-				}
-
-				recalculatePercentages.call(this);
-			}
-		}
-
-		/**
-		 * Performs a batch update of quotes; causing updates to any grouping
-		 * level that contains the position(s) for the symbol(s).
-		 *
-		 * @public
-		 * @param {Object} quote
-		 */
-		setPositionQuotes(quotes) {
-			assert.argumentIsArray(quotes, 'quotes');
-
-			this.startTransaction(() => {
-				quotes.forEach((quote) => {
+			if (positionQuotes.length !== 0) {
+				positionQuotes.forEach((quote) => {
 					const symbol = quote.symbol;
 
 					if (symbol) {
 						if (this._symbols.hasOwnProperty(symbol)) {
-							this._symbols[symbol].forEach(item => item.setQuote(quote));
+							this._symbols[ symbol ].forEach(item => item.setQuote(quote));
 						}
 					}
 				});
+			}
 
+			if (forexQuotes.length !== 0) {
+				forexQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					if (symbol) {
+						const rate = Rate.fromPair(quote.lastPrice, symbol);
+						const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
+
+						if (index < 0) {
+							this._forexQuotes.push(rate);
+						} else {
+							this._forexQuotes[index] = rate;
+						}
+
+						Object.keys(this._trees).forEach((key) => {
+							this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false)
+						});
+
+						recalculatePercentages.call(this);
+					}
+				});
+			}
+
+			if (positionQuotes.length !== 0 || forexQuotes.length !== 0) {
 				recalculatePercentages.call(this);
-			});
+			}
 		}
 
 		/**
@@ -1595,34 +1597,6 @@ module.exports = (() => {
 		 */
 		getForexQuotes() {
 			return this._forexQuotes;
-		}
-
-		/**
-		 * Updates the forex quote for a single currency pair; causing updates to
-		 * any grouping level that contains that requires translation.
-		 *
-		 * @public
-		 * @param {Object} quote
-		 */
-		setForexQuote(quote) {
-			assert.argumentIsRequired(quote, 'quote', Object);
-
-			const symbol = quote.symbol;
-
-			if (symbol) {
-				const rate = Rate.fromPair(quote.lastPrice, symbol);
-				const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
-
-				if (index < 0) {
-					this._forexQuotes.push(rate);
-				} else {
-					this._forexQuotes[ index ] = rate;
-				}
-
-				Object.keys(this._trees).forEach(key => this._trees[ key ].walk(group => group.setForexRates(this._forexQuotes), true, false));
-
-				recalculatePercentages.call(this);
-			}
 		}
 
 		/**
@@ -1771,39 +1745,6 @@ module.exports = (() => {
 			assert.argumentIsRequired(position, 'position', String);
 
 			return this.getPositions(portfolio).find(p => p.position === position) || null;
-		}
-
-		/**
-		 * Pauses aggregation calculations during the processing of an action.
-		 *
-		 * @public
-		 * @param {Function} executor
-		 * @param {String=|Array.<String>=} names
-		 */
-		startTransaction(executor, names) {
-			let namesToUse;
-
-			if (is.array(names)) {
-				assert.argumentIsArray(names, 'names', String);
-
-				namesToUse = names;
-			} else {
-				assert.argumentIsOptional(names, 'names', String);
-
-				if (names) {
-					namesToUse = [ names ];
-				} else {
-					namesToUse = Object.keys(this._trees);
-				}
-			}
-
-			assert.argumentIsRequired(executor, 'executor', Function);
-
-			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(true), false, false));
-
-			executor(this);
-
-			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(false), false, false));
 		}
 
 		/**
@@ -2212,7 +2153,6 @@ module.exports = (() => {
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
-			this._suspended = false;
 			this._showClosedPositions = false;
 
 			this._groupExcludedChangeEvent = new Event(this);
@@ -2413,10 +2353,6 @@ module.exports = (() => {
 			return this._single;
 		}
 
-		get suspended() {
-			return this._suspended;
-		}
-
 		/**
 		 * Indicates if the group should be excluded from higher-level aggregations.
 		 *
@@ -2540,24 +2476,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Stops (or starts) group-level aggregation calculations.
-		 *
-		 * @public
-		 * @param {Boolean} value
-		 */
-		setSuspended(value) {
-			assert.argumentIsRequired(value, 'value', Boolean);
-
-			if (this._suspended !== value) {
-				this._suspended = value;
-
-				if (!this._suspended) {
-					this.refresh();
-				}
-			}
-		}
-
-		/**
 		 * Updates the portfolio data. For example, a portfolio's name might change. This
 		 * function only affects {@link PositionLevelType.PORTFOLIO} groups.
 		 *
@@ -2588,16 +2506,11 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Causes all aggregated data to be recalculated (assuming the group has not
-		 * been suspended).
+		 * Causes all aggregated data to be recalculated.
 		 *
 		 * @public
 		 */
 		refresh() {
-			if (this._suspended) {
-				return;
-			}
-
 			calculateStaticData(this, this._rates);
 			calculatePriceData(this, this._rates, null, true);
 		}
@@ -2801,10 +2714,6 @@ module.exports = (() => {
 	}
 
 	function calculateStaticData(group, rates) {
-		if (group.suspended) {
-			return;
-		}
-
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
@@ -2901,10 +2810,6 @@ module.exports = (() => {
 	}
 
 	function calculatePriceData(group, rates, item, forceRefresh) {
-		if (group.suspended) {
-			return;
-		}
-
 		const currency = group.currency;
 
 		const actual = group._dataActual;
@@ -2990,10 +2895,6 @@ module.exports = (() => {
 	}
 
 	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
-		if (group.suspended) {
-			return;
-		}
-
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 		const excluded = group._excluded;
