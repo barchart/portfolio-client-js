@@ -54,7 +54,6 @@ module.exports = (() => {
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
-			this._suspended = false;
 			this._showClosedPositions = false;
 
 			this._groupExcludedChangeEvent = new Event(this);
@@ -255,10 +254,6 @@ module.exports = (() => {
 			return this._single;
 		}
 
-		get suspended() {
-			return this._suspended;
-		}
-
 		/**
 		 * Indicates if the group should be excluded from higher-level aggregations.
 		 *
@@ -382,24 +377,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Stops (or starts) group-level aggregation calculations.
-		 *
-		 * @public
-		 * @param {Boolean} value
-		 */
-		setSuspended(value) {
-			assert.argumentIsRequired(value, 'value', Boolean);
-
-			if (this._suspended !== value) {
-				this._suspended = value;
-
-				if (!this._suspended) {
-					this.refresh();
-				}
-			}
-		}
-
-		/**
 		 * Updates the portfolio data. For example, a portfolio's name might change. This
 		 * function only affects {@link PositionLevelType.PORTFOLIO} groups.
 		 *
@@ -430,16 +407,11 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Causes all aggregated data to be recalculated (assuming the group has not
-		 * been suspended).
+		 * Causes all aggregated data to be recalculated.
 		 *
 		 * @public
 		 */
 		refresh() {
-			if (this._suspended) {
-				return;
-			}
-
 			calculateStaticData(this, this._rates);
 			calculatePriceData(this, this._rates, null, true);
 		}
@@ -643,10 +615,6 @@ module.exports = (() => {
 	}
 
 	function calculateStaticData(group, rates) {
-		if (group.suspended) {
-			return;
-		}
-
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
@@ -743,10 +711,6 @@ module.exports = (() => {
 	}
 
 	function calculatePriceData(group, rates, item, forceRefresh) {
-		if (group.suspended) {
-			return;
-		}
-
 		const currency = group.currency;
 
 		const actual = group._dataActual;
@@ -832,10 +796,6 @@ module.exports = (() => {
 	}
 
 	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
-		if (group.suspended) {
-			return;
-		}
-
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 		const excluded = group._excluded;
