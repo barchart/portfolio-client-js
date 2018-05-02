@@ -33,7 +33,7 @@ module.exports = (() => {
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(definition, items, parentGroup, portfolioGroup, currency, key, description, aggregateCash) {
+		constructor(definition, items, currency, key, description, aggregateCash) {
 			this._id = counter++;
 
 			this._definition = definition;
