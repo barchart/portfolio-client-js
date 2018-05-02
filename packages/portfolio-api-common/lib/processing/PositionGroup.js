@@ -33,13 +33,13 @@ module.exports = (() => {
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(definition, items, currency, key, description, aggregateCash) {
+		constructor(definition, items, rates, currency, key, description, aggregateCash) {
 			this._id = counter++;
 
 			this._definition = definition;
 
 			this._items = items;
-			this._rates = [ ];
+			this._rates = rates;
 
 			this._parentGroup = null;
 			this._portfolioGroup = null;
@@ -277,7 +277,7 @@ module.exports = (() => {
 		 * @param {PortfolioGroup} group
 		 */
 		setParentGroup(group) {
-			assert.argumentIsRequired(group, 'group', PositionGroup, 'PositionGroup');
+			assert.argumentIsOptional(group, 'group', PositionGroup, 'PositionGroup');
 
 			if (this._parentGroup !== null) {
 				throw new Error('The parent group has already been set.');
@@ -294,7 +294,7 @@ module.exports = (() => {
 		 * @param {PortfolioGroup} group
 		 */
 		setPortfolioGroup(group) {
-			assert.argumentIsRequired(group, 'group', PositionGroup, 'PositionGroup');
+			assert.argumentIsOptional(group, 'group', PositionGroup, 'PositionGroup');
 
 			if (this._portfolioGroup !== null) {
 				throw new Error('The portfolio group has already been set.');
@@ -451,7 +451,7 @@ module.exports = (() => {
 		 * @public
 		 */
 		refreshMarketPercent() {
-			calculateMarketPercent(this, this._rates);
+			calculateMarketPercent(this, this._rates, this._parentGroup, this._portfolioGroup);
 		}
 
 		/**
@@ -828,11 +828,10 @@ module.exports = (() => {
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
 
-		calculateMarketPercent(group, rates);
 		calculateUnrealizedPercent(group);
 	}
 
-	function calculateMarketPercent(group, rates) {
+	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
 		if (group.suspended) {
 			return;
 		}
@@ -867,14 +866,14 @@ module.exports = (() => {
 			return marketPercent;
 		};
 
-		actual.marketPercent = calculatePercent(this._parentGroup);
+		actual.marketPercent = calculatePercent(parentGroup);
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
 
-		if (this._parentGroup === this._portfolioGroup) {
+		if (parentGroup === portfolioGroup) {
 			actual.marketPercentPortfolio = actual.marketPercent;
 			format.marketPercentPortfolio = format.marketPercent;
 		} else {
-			actual.marketPercentPortfolio = calculatePercent(this._portfolioGroup);
+			actual.marketPercentPortfolio = calculatePercent(portfolioGroup);
 			format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
 		}
 	}

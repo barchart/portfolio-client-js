@@ -754,6 +754,8 @@ module.exports = (() => {
 			return;
 		}
 
+		const rates = this._forexQuotes;
+
 		const levelDefinition = levelDefinitions[0];
 
 		const populatedObjects = array.groupBy(items, levelDefinition.keySelector);
@@ -761,7 +763,7 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
+			list.push(new PositionGroup(levelDefinition, items, rates, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
 
 			return list;
 		}, [ ]);
@@ -774,7 +776,7 @@ module.exports = (() => {
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(levelDefinition, [ ], group.currency, group.key, group.description);
+			return new PositionGroup(levelDefinition, [ ], rates, group.currency, group.key, group.description);
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
