@@ -1302,6 +1302,8 @@ module.exports = (() => {
 			}, { });
 
 			Object.keys(this._portfolios).forEach(key => updateEmptyPortfolioGroups.call(this, this._portfolios[key]));
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
