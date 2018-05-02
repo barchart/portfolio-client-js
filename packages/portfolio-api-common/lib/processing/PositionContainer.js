@@ -380,18 +380,45 @@ module.exports = (() => {
 		 * level that contains the position(s) for the symbol.
 		 *
 		 * @public
-		 * @param {String} symbol
 		 * @param {Object} quote
 		 */
-		setPositionQuote(symbol, quote) {
-			assert.argumentIsRequired(symbol, 'symbol', String);
+		setPositionQuote(quote) {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
-			if (this._symbols.hasOwnProperty(symbol)) {
-				this._symbols[symbol].forEach(item => item.setQuote(quote));
-			}
+			const symbol = quote.symbol;
 
-			recalculatePercentages.call(this);
+			if (symbol) {
+				if (this._symbols.hasOwnProperty(symbol)) {
+					this._symbols[symbol].forEach(item => item.setQuote(quote));
+				}
+
+				recalculatePercentages.call(this);
+			}
+		}
+
+		/**
+		 * Performs a batch update of quotes; causing updates to any grouping
+		 * level that contains the position(s) for the symbol(s).
+		 *
+		 * @public
+		 * @param {Object} quote
+		 */
+		setPositionQuotes(quotes) {
+			assert.argumentIsArray(quotes, 'quotes');
+
+			this.startTransaction(() => {
+				quotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					if (symbol) {
+						if (this._symbols.hasOwnProperty(symbol)) {
+							this._symbols[symbol].forEach(item => item.setQuote(quote));
+						}
+					}
+				});
+
+				recalculatePercentages.call(this);
+			});
 		}
 
 		/**
@@ -419,25 +446,27 @@ module.exports = (() => {
 		 * any grouping level that contains that requires translation.
 		 *
 		 * @public
-		 * @param {String} symbol
 		 * @param {Object} quote
 		 */
-		setForexQuote(symbol, quote) {
-			assert.argumentIsRequired(symbol, 'symbol', String);
+		setForexQuote(quote) {
 			assert.argumentIsRequired(quote, 'quote', Object);
 
-			const rate = Rate.fromPair(quote.lastPrice, symbol);
-			const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
+			const symbol = quote.symbol;
 
-			if (index < 0) {
-				this._forexQuotes.push(rate);
-			} else {
-				this._forexQuotes[index] = rate;
+			if (symbol) {
+				const rate = Rate.fromPair(quote.lastPrice, symbol);
+				const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
+
+				if (index < 0) {
+					this._forexQuotes.push(rate);
+				} else {
+					this._forexQuotes[ index ] = rate;
+				}
+
+				Object.keys(this._trees).forEach(key => this._trees[ key ].walk(group => group.setForexRates(this._forexQuotes), true, false));
+
+				recalculatePercentages.call(this);
 			}
-
-			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false));
-
-			recalculatePercentages.call(this);
 		}
 
 		/**
