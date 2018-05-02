@@ -1480,6 +1480,8 @@ module.exports = (() => {
 					this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
 				}
 			});
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -1493,6 +1495,8 @@ module.exports = (() => {
 			assert.argumentIsRequired(position.position, 'position.position', String);
 
 			removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -1540,6 +1544,8 @@ module.exports = (() => {
 			if (this._symbols.hasOwnProperty(symbol)) {
 				this._symbols[symbol].forEach(item => item.setQuote(quote));
 			}
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -1583,7 +1589,9 @@ module.exports = (() => {
 				this._forexQuotes[index] = rate;
 			}
 
-			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRate(rate), true, false));
+			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false));
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -1895,18 +1903,14 @@ module.exports = (() => {
 				}
 			}
 		}));
-
-		addGroupBinding.call(this, group, group.registerMarketPercentChangeHandler(() => {
-			if (!groupTree.getIsRoot()) {
-				groupTree.getParent().walk((childGroup) => childGroup.refreshMarketPercent());
-			}
-		}));
 	}
 
 	function createGroups(parentTree, items, treeDefinition, levelDefinitions, overrideRequiredGroups) {
 		if (levelDefinitions.length === 0) {
 			return;
 		}
+
+		const rates = this._forexQuotes;
 
 		const levelDefinition = levelDefinitions[0];
 
@@ -1915,7 +1919,7 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(this, levelDefinition, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
+			list.push(new PositionGroup(levelDefinition, items, rates, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
 
 			return list;
 		}, [ ]);
@@ -1928,7 +1932,7 @@ module.exports = (() => {
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(this, levelDefinition, [ ], group.currency, group.key, group.description);
+			return new PositionGroup(levelDefinition, [ ], rates, group.currency, group.key, group.description);
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
@@ -1967,6 +1971,9 @@ module.exports = (() => {
 			const childTree = parentTree.addChild(group);
 
 			this._nodes[group.id] = childTree;
+
+			group.setParentGroup(this.getParentGroup(group));
+			group.setPortfolioGroup(this.getParentGroupForPortfolio(group));
 
 			initializeGroupObservers.call(this, childTree, treeDefinition);
 
@@ -2108,6 +2115,12 @@ module.exports = (() => {
 		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
 	}
 
+	function recalculatePercentages() {
+		Object.keys(this._trees).forEach((key) => {
+			this._trees[key].walk(group => group.refreshMarketPercent(), false, false);
+		});
+	}
+
 	return PositionContainer;
 })();
 
@@ -2147,13 +2160,17 @@ module.exports = (() => {
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, definition, items, currency, key, description, aggregateCash) {
+		constructor(definition, items, rates, currency, key, description, aggregateCash) {
 			this._id = counter++;
 
 			this._definition = definition;
-			this._container = container;
 
 			this._items = items;
+			this._rates = rates;
+
+			this._parentGroup = null;
+			this._portfolioGroup = null;
+
 			this._currency = currency || Currency.CAD;
 			this._bypassCurrencyTranslation = false;
 
@@ -2167,7 +2184,6 @@ module.exports = (() => {
 			this._suspended = false;
 			this._showClosedPositions = false;
 
-			this._marketPercentChangeEvent = new Event(this);
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
 
@@ -2381,6 +2397,40 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets the immediate parent group (allowing for calculation of relative
+		 * percentages).
+		 *
+		 * @public
+		 * @param {PortfolioGroup} group
+		 */
+		setParentGroup(group) {
+			assert.argumentIsOptional(group, 'group', PositionGroup, 'PositionGroup');
+
+			if (this._parentGroup !== null) {
+				throw new Error('The parent group has already been set.');
+			}
+
+			this._parentGroup = group;
+		}
+
+		/**
+		 * Sets the nearest parent group for a portfolio (allowing for calculation
+		 * of relative percentages).
+		 *
+		 * @public
+		 * @param {PortfolioGroup} group
+		 */
+		setPortfolioGroup(group) {
+			assert.argumentIsOptional(group, 'group', PositionGroup, 'PositionGroup');
+
+			if (this._portfolioGroup !== null) {
+				throw new Error('The portfolio group has already been set.');
+			}
+
+			this._portfolioGroup = group;
+		}
+
+		/**
 		 * Adds a new {@link PositionItem} to the group.
 		 *
 		 * @public
@@ -2425,9 +2475,11 @@ module.exports = (() => {
 		 * Causes aggregated data to be recalculated using a new exchange rate.
 		 *
 		 * @public
-		 * @param {Rate} rate
+		 * @param {Array.<Rate>} rate
 		 */
-		setForexRate(rate) {
+		setForexRates(rates) {
+			this._rates = rates;
+
 			if (!this._bypassCurrencyTranslation) {
 				this.refresh();
 			}
@@ -2515,10 +2567,8 @@ module.exports = (() => {
 				return;
 			}
 
-			const rates = this._container.getForexQuotes();
-
-			calculateStaticData(this, rates);
-			calculatePriceData(this, rates, null, true);
+			calculateStaticData(this, this._rates);
+			calculatePriceData(this, this._rates, null, true);
 		}
 
 		/**
@@ -2528,7 +2578,7 @@ module.exports = (() => {
 		 * @public
 		 */
 		refreshMarketPercent() {
-			calculateMarketPercent(this, this._container.getForexQuotes(), true);
+			calculateMarketPercent(this, this._rates, this._parentGroup, this._portfolioGroup);
 		}
 
 		/**
@@ -2539,17 +2589,6 @@ module.exports = (() => {
 		 */
 		getIsEmpty() {
 			return this._items.length === 0;
-		}
-
-		/**
-		 * Adds an observer for change in the market percentage of the group.
-		 *
-		 * @public
-		 * @param {Function} handler
-		 * @return {Disposable}
-		 */
-		registerMarketPercentChangeHandler(handler) {
-			return this._marketPercentChangeEvent.register(handler);
 		}
 
 		/**
@@ -2606,10 +2645,10 @@ module.exports = (() => {
 				this._dataFormat.currentPrice = null;
 			}
 
-			calculatePriceData(this, this._container.getForexQuotes(), sender, false);
+			calculatePriceData(this, this._rates, sender, false);
 		});
 
-		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data, sender) => {
+		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single) {
 				this._dataFormat.fundamental = data;
 			} else {
@@ -2660,13 +2699,13 @@ module.exports = (() => {
 		let newsBinding = Disposable.getEmpty();
 
 		if (this._single) {
-			newsBinding = item.registerNewsExistsChangeHandler((exists, sender) => {
+			newsBinding = item.registerNewsExistsChangeHandler((exists) => {
 				this._dataActual.newsExists = exists;
 				this._dataFormat.newsExists = exists;
 			});
 		}
 
-		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio, sender) => {
+		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio) => {
 			const descriptionSelector = this._definition.descriptionSelector;
 
 			this._description = descriptionSelector(this._items[0]);
@@ -2915,14 +2954,11 @@ module.exports = (() => {
 
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
-		
-		calculateMarketPercent(group, rates, false);
+
 		calculateUnrealizedPercent(group);
 	}
 
-	function calculateMarketPercent(group, rates, silent) {
-		return;
-
+	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
 		if (group.suspended) {
 			return;
 		}
@@ -2931,12 +2967,10 @@ module.exports = (() => {
 		const format = group._dataFormat;
 		const excluded = group._excluded;
 
-		const portfolioParent = group._container.getParentGroupForPortfolio(group);
-
 		const calculatePercent = (parent) => {
 			let marketPercent;
 
-			if (parent !== null && !excluded) {
+			if (parent && !excluded) {
 				const parentData = parent._dataActual;
 
 				if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsZero()) {
@@ -2959,14 +2993,15 @@ module.exports = (() => {
 			return marketPercent;
 		};
 
-		actual.marketPercent = calculatePercent(group._container.getParentGroup(group));
+		actual.marketPercent = calculatePercent(parentGroup);
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
 
-		actual.marketPercentPortfolio = calculatePercent(group._container.getParentGroupForPortfolio(group));
-		format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
-
-		if (!silent) {
-			group._marketPercentChangeEvent.fire(group);
+		if (parentGroup === portfolioGroup) {
+			actual.marketPercentPortfolio = actual.marketPercent;
+			format.marketPercentPortfolio = format.marketPercent;
+		} else {
+			actual.marketPercentPortfolio = calculatePercent(portfolioGroup);
+			format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
 		}
 	}
 
