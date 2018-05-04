@@ -40,12 +40,4 @@ describe('When validating transaction order', () => {
 	it('An array of transactions with ordered sequences, on the reversed days should not be valid', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-05-02'), build(2, '2018-05-01'), build(3, '2018-04-30') ])).toEqual(false);
 	});
-
-	it('A partial array of transactions with ordered sequences (starting after one), on the same day should be valid', () => {
-		expect(TransactionValidator.validateOrder([ build(3, '2018-04-30'), build(4, '2018-04-30'), build(5, '2018-04-30') ], true)).toEqual(true);
-	});
-
-	it('A partial array of transactions with gap in sequences (starting after one), on the same day should be not valid', () => {
-		expect(TransactionValidator.validateOrder([ build(3, '2018-04-30'), build(5, '2018-04-30'), build(6, '2018-04-30') ], true)).toEqual(false);
-	});
 });
