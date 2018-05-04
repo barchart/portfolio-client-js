@@ -25,22 +25,12 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Array.<Object>} transactions
-		 * @param {Boolean=} partial - If true, sequence validation starts with the array's first transaction.
 		 * @return {boolean}
 		 */
-		static validateOrder(transactions, partial) {
+		static validateOrder(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
-			assert.argumentIsOptional(partial, 'partial', Boolean);
 
-			let startSequence;
-
-			if (partial && transactions.length !== 0) {
-				startSequence = array.first(transactions).sequence;
-			} else {
-				startSequence = 1;
-			}
-
-			return transactions.every((t, i) => t.sequence === (i + startSequence) && (i === 0 || !t.date.getIsBefore(transactions[i - 1].date)));
+			return transactions.every((t, i) => t.sequence === (i + 1) && (i === 0 || !t.date.getIsBefore(transactions[i - 1].date)));
 		}
 
 		/**
