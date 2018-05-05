@@ -1,5 +1,5 @@
 const assert = require('@barchart/common-js/lang/assert'),
-	array = require('@barchart/common-js/lang/array')
+	array = require('@barchart/common-js/lang/array');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),

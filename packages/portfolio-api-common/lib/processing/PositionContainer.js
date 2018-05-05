@@ -410,7 +410,7 @@ module.exports = (() => {
 						}
 
 						Object.keys(this._trees).forEach((key) => {
-							this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false)
+							this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false);
 						});
 
 						recalculatePercentages.call(this);
