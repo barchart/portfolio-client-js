@@ -30,6 +30,17 @@ module.exports = (() => {
 		 * @static
 		 * @returns {FailureType}
 		 */
+		static get PORTFOLIO_DELETE_FAILED_NO_PORTFOLIO() {
+			return portfolioDeleteFailedNoPortfolio;
+		}
+
+		/**
+		 * The portfolio does not exist.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
 		static get POSITION_CREATE_FAILED_NO_PORTFOLIO() {
 			return positionCreateFailedNoPortfolio;
 		}
@@ -136,7 +147,8 @@ module.exports = (() => {
 		}
 	}
 
-	const portfolioUpdateFailedNoPortfolio = new FailureType('PORTFOLIO_UPDATED_FAILED_NO_PORTFOLIO', 'Unable to update portfolio. The portfolio does not exist, has it been deleted?');
+	const portfolioUpdateFailedNoPortfolio = new FailureType('PORTFOLIO_UPDATE_FAILED_NO_PORTFOLIO', 'Unable to update portfolio. The portfolio does not exist, has it been deleted?');
+	const portfolioDeleteFailedNoPortfolio = new FailureType('PORTFOLIO_DELETE_FAILED_NO_PORTFOLIO', 'Unable to delete portfolio. The portfolio does not exist, has it already been deleted?');
 
 	const positionCreateFailedNoPortfolio = new FailureType('POSITION_CREATE_FAILED_NO_PORTFOLIO', 'Unable to create transaction. The portfolio does not exist, has it been deleted?');
 	const positionUpdateFailedNoPosition = new FailureType('POSITION_UPDATE_FAILED_NO_POSITION', 'Unable to update preferences for position. The position does not exist, has it been deleted?');
