@@ -957,7 +957,7 @@ module.exports = (() => {
 
 },{"@barchart/common-js/lang/Enum":21,"@barchart/common-js/lang/assert":24}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
-	array = require('@barchart/common-js/lang/array')
+	array = require('@barchart/common-js/lang/array');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
@@ -1556,7 +1556,7 @@ module.exports = (() => {
 						}
 
 						Object.keys(this._trees).forEach((key) => {
-							this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false)
+							this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false);
 						});
 
 						recalculatePercentages.call(this);
