@@ -983,22 +983,12 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Array.<Object>} transactions
-		 * @param {Boolean=} partial - If true, sequence validation starts with the array's first transaction.
 		 * @return {boolean}
 		 */
-		static validateOrder(transactions, partial) {
+		static validateOrder(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
-			assert.argumentIsOptional(partial, 'partial', Boolean);
 
-			let startSequence;
-
-			if (partial && transactions.length !== 0) {
-				startSequence = array.first(transactions).sequence;
-			} else {
-				startSequence = 1;
-			}
-
-			return transactions.every((t, i) => t.sequence === (i + startSequence) && (i === 0 || !t.date.getIsBefore(transactions[i - 1].date)));
+			return transactions.every((t, i) => t.sequence === (i + 1) && (i === 0 || !t.date.getIsBefore(transactions[i - 1].date)));
 		}
 
 		/**
@@ -9102,14 +9092,6 @@ describe('When validating transaction order', () => {
 
 	it('An array of transactions with ordered sequences, on the reversed days should not be valid', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-05-02'), build(2, '2018-05-01'), build(3, '2018-04-30') ])).toEqual(false);
-	});
-
-	it('A partial array of transactions with ordered sequences (starting after one), on the same day should be valid', () => {
-		expect(TransactionValidator.validateOrder([ build(3, '2018-04-30'), build(4, '2018-04-30'), build(5, '2018-04-30') ], true)).toEqual(true);
-	});
-
-	it('A partial array of transactions with gap in sequences (starting after one), on the same day should be not valid', () => {
-		expect(TransactionValidator.validateOrder([ build(3, '2018-04-30'), build(5, '2018-04-30'), build(6, '2018-04-30') ], true)).toEqual(false);
 	});
 });
 
