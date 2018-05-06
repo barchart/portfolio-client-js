@@ -802,7 +802,10 @@ module.exports = function () {
 
 	var responseInterceptorForTransactionMutateDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			var positions = response.data.positions.map(function (p) {
+			var saved = response.data.positions.saved.map(function (p) {
+				return JSON.parse(p, PositionSchema.CLIENT.schema.getReviver());
+			});
+			var deleted = response.data.positions.deleted.map(function (p) {
 				return JSON.parse(p, PositionSchema.CLIENT.schema.getReviver());
 			});
 			var summaries = response.data.summaries.map(function (s) {
@@ -810,9 +813,11 @@ module.exports = function () {
 			});
 
 			var returnRef = {
-				positions: positions,
-				summaries: summaries,
-				replaced: response.data.replaced
+				positions: {
+					saved: saved,
+					deleted: deleted
+				},
+				summaries: summaries
 			};
 
 			if (response.data.transactions) {
@@ -1205,7 +1210,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.1.53'
+		version: '1.2.1'
 	};
 }();
 
