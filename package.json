@@ -23,7 +23,7 @@
   "dependencies": {
     "@barchart/common-js": "~3.2.0",
     "@barchart/tgam-jwt-js": "~1.0.0",
-    "@barchart/portfolio-api-common": "~1.0.0"
+    "@barchart/portfolio-api-common": "~1.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
