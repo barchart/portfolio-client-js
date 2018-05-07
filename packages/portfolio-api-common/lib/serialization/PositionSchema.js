@@ -103,6 +103,7 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
+		.withField('root', DataType.STRING, true)
 		.schema
 	);
 
