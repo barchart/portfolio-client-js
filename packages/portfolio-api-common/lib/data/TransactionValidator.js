@@ -19,18 +19,31 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Given a set of transaction, ensures that sequence numbers and dates
+		 * Given a set of transaction, ensures that all sequence numbers and dates
 		 * are properly ordered.
 		 *
 		 * @public
 		 * @static
 		 * @param {Array.<Object>} transactions
-		 * @return {boolean}
+		 * @return {Boolean}
 		 */
 		static validateOrder(transactions) {
+			return TransactionValidator.getInvalidIndex(transactions) < 0;
+		}
+
+		/**
+		 * Given a set of transaction, returns the index of the first transaction that with an invalid
+		 * sequence number or date.
+		 *
+		 * @public
+		 * @static
+		 * @param {Array.<Object>} transactions
+		 * @return {Number}
+		 */
+		static getInvalidIndex(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
-			return transactions.every((t, i) => t.sequence === (i + 1) && (i === 0 || !t.date.getIsBefore(transactions[i - 1].date)));
+			return transactions.findIndex((t, i) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(transactions[i - 1].date)));
 		}
 
 		/**
