@@ -27,7 +27,11 @@ module.exports = (() => {
 
 			this._portfolio = portfolio;
 			this._position = position;
-			this._currency = position.instrument.currency || Currency.CAD;
+
+			const instrument = position.instrument;
+
+			this._currency = instrument.currency || Currency.CAD;
+			this._invalid = instrument.type.usesSymbols && (!is.object(instrument.symbol) || !is.string(instrument.symbol.barchart));
 
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];

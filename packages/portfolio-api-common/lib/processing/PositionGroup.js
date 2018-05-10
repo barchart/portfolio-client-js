@@ -458,6 +458,9 @@ module.exports = (() => {
 			if (this._single) {
 				const precision = sender.position.instrument.currency.precision;
 
+				this._dataActual.invalid = this._definition.type === PositionLevelType.POSITION && item.invalid;
+				this._dataFormat.invalid = this._dataActual.invalid;
+
 				this._dataActual.currentPrice = quote.lastPrice;
 				this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
 
