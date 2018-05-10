@@ -413,7 +413,7 @@ module.exports = (() => {
 		 * @public
 		 */
 		refresh() {
-			calculateStaticData(this, this._rates);
+			calculateStaticData(this, this._rates, this._definition);
 			calculatePriceData(this, this._rates, null, true);
 		}
 
@@ -615,7 +615,7 @@ module.exports = (() => {
 		return formatDecimal(decimal, currency.precision);
 	}
 
-	function calculateStaticData(group, rates) {
+	function calculateStaticData(group, rates, definition) {
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
@@ -693,7 +693,7 @@ module.exports = (() => {
 			format.quantity = formatDecimal(actual.quantity, 2);
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
 
-			format.invalid = this._definition.type === PositionLevelType.POSITION && item.invalid;
+			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 		}
 
 		const groupItems = group._items;
