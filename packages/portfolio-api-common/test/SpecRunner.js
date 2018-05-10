@@ -2560,6 +2560,9 @@ module.exports = (() => {
 			if (this._single) {
 				const precision = sender.position.instrument.currency.precision;
 
+				this._dataActual.invalid = this._definition.type === PositionLevelType.POSITION && item.invalid;
+				this._dataFormat.invalid = this._dataActual.invalid;
+
 				this._dataActual.currentPrice = quote.lastPrice;
 				this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
 
@@ -2988,7 +2991,11 @@ module.exports = (() => {
 
 			this._portfolio = portfolio;
 			this._position = position;
-			this._currency = position.instrument.currency || Currency.CAD;
+
+			const instrument = position.instrument;
+
+			this._currency = instrument.currency || Currency.CAD;
+			this._invalid = instrument.type.usesSymbols && (!is.object(instrument.symbol) || !is.string(instrument.symbol.barchart));
 
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];
