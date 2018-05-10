@@ -138,6 +138,11 @@ module.exports = (() => {
 	const update = new PositionSchema(SchemaBuilder.withName('update')
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('mapping.name', DataType.STRING, true)
+		.withField('mapping.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
+		.withField('mapping.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('mapping.symbol.barchart', DataType.STRING, true)
+		.withField('mapping.symbol.display', DataType.STRING, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
 		.schema
 	);
