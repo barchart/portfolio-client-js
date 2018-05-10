@@ -115,7 +115,7 @@ module.exports = (() => {
 		 * Indicates if the position's symbol is invalid.
 		 *
 		 * @public
-		 * @returns {Object}
+		 * @returns {Boolean}
 		 */
 		get invalid() {
 			return this._invalid;
