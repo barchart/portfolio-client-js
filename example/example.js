@@ -26,7 +26,7 @@ module.exports = function () {
 	window.Barchart.ValuationType = ValuationType;
 }();
 
-},{"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Timezones":35,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/data/ValuationType":55,"@barchart/tgam-jwt-js/lib/JwtGateway":60}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Timezones":35,"@barchart/portfolio-api-common/lib/data/TransactionType":53,"@barchart/portfolio-api-common/lib/data/ValuationType":54,"@barchart/tgam-jwt-js/lib/JwtGateway":59}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -219,7 +219,7 @@ module.exports = function () {
 
 			_this._deletePositionEndpoint = EndpointBuilder.for('delete-position', 'delete position').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
-			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readPositionSummariesEndpoint = EndpointBuilder.for('read-position-summaries', 'read position summaries').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withVariableParameter('position', 'position', 'position', false);
@@ -245,13 +245,13 @@ module.exports = function () {
 				qb.withVariableParameter('type', 'type', 'type', false, function (i) {
 					return i.code;
 				});
-			}).withBody('portfolio data').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForTransactionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deleteTransactionEndpoint = EndpointBuilder.for('delete-transaction', 'delete transaction').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('force', 'force', 'force', false).withVariableParameter('echo', 'echo', 'echo', false);
-			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForTransactionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readTransactionsReportEndpoint = EndpointBuilder.for('read-transaction-report', 'read transaction report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', true).withLiteralParameter('transactions', 'transactions').withLiteralParameter('formatted', 'formatted');
@@ -800,7 +800,7 @@ module.exports = function () {
 		}
 	});
 
-	var responseInterceptorForTransactionMutateDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
+	var responseInterceptorForPositionMutateDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
 			var saved = response.data.positions.saved.map(function (p) {
 				return JSON.parse(p, PositionSchema.CLIENT.schema.getReviver());
@@ -826,7 +826,7 @@ module.exports = function () {
 
 			return returnRef;
 		} catch (e) {
-			console.error('Error deserializing mutate transaction data', e);
+			console.error('Error deserializing position mutate data', e);
 		}
 	});
 
@@ -859,7 +859,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":53,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":57,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":58,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":59}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":52,"@barchart/portfolio-api-common/lib/data/TransactionType":53,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":55,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":57,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":58}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1210,7 +1210,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.2'
+		version: '1.2.3'
 	};
 }();
 
@@ -1947,7 +1947,7 @@ module.exports = function () {
 	return Gateway;
 }();
 
-},{"./../../lang/array":36,"./../../lang/assert":37,"./../../lang/attributes":38,"./../../lang/promise":42,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":62}],10:[function(require,module,exports){
+},{"./../../lang/array":36,"./../../lang/assert":37,"./../../lang/attributes":38,"./../../lang/promise":42,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":61}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5903,7 +5903,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":32,"./assert":37,"./is":40,"big.js":87}],31:[function(require,module,exports){
+},{"./Enum":32,"./assert":37,"./is":40,"big.js":86}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6440,7 +6440,7 @@ module.exports = function () {
 	return Timestamp;
 }();
 
-},{"./assert":37,"./is":40,"moment-timezone":92}],35:[function(require,module,exports){
+},{"./assert":37,"./is":40,"moment-timezone":91}],35:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7923,7 +7923,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":37,"moment-timezone/builds/moment-timezone-with-data-2010-2020":90}],44:[function(require,module,exports){
+},{"./assert":37,"moment-timezone/builds/moment-timezone-with-data-2010-2020":89}],44:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8399,7 +8399,7 @@ module.exports = function () {
 	return DataType;
 }();
 
-},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":37,"./../../lang/is":40,"moment":94}],46:[function(require,module,exports){
+},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":37,"./../../lang/is":40,"moment":93}],46:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9332,8 +9332,6 @@ module.exports = function () {
 }();
 
 },{"./../lang/Disposable":31,"./../lang/assert":37,"./../lang/is":40,"./../lang/object":41,"./../lang/promise":42}],51:[function(require,module,exports){
-const uuid = require('uuid');
-
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -9349,29 +9347,19 @@ module.exports = (() => {
 	 * @param {String} alternateDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
-	 * @param {Boolean} canShort
-	 * @param {Boolean} canSwitchDirection
 	 * @param {Boolean} usesSymbols
-	 * @param {Function} usesSymbols
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest, canShort, canSwitchDirection, usesSymbols, generator) {
+		constructor(code, description, alternateDescription, canReinvest, usesSymbols) {
 			super(code, description);
 
 			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
 			assert.argumentIsRequired(canReinvest, 'canReinvest', Boolean);
-			assert.argumentIsRequired(canShort, 'canShort', Boolean);
-			assert.argumentIsRequired(canSwitchDirection, 'canSwitchDirection', Boolean);
 			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
-			assert.argumentIsRequired(generator, 'generator', Function);
 
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
-			this._canShort = canShort;
-			this._canSwitchDirection = canSwitchDirection;
 			this._usesSymbols = usesSymbols;
-
-			this._generator = generator;
 		}
 
 		/**
@@ -9395,27 +9383,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if short-selling is possible for this instrument type.
-		 *
-		 * @public
-		 * @returns {Boolean}
-		 */
-		get canShort() {
-			return this._canShort;
-		}
-
-		/**
-		 * Indicates if one transaction is allowed to switch a position size from
-		 * positive to negative (or vice versa).
-		 *
-		 * @public
-		 * @returns {Boolean}
-		 */
-		get canSwitchDirection() {
-			return this._canSwitchDirection;
-		}
-
-		/**
 		 * Indicates if an instrument of this type can be represented by a symbol.
 		 *
 		 * @public
@@ -9423,23 +9390,6 @@ module.exports = (() => {
 		 */
 		get usesSymbols() {
 			return this._usesSymbols;
-		}
-
-		/**
-		 * Generates an identifier for the instrument.
-		 *
-		 * @public
-		 * @param {Object} instrument
-		 * @returns {String}
-		 */
-		generateIdentifier(instrument) {
-			assert.argumentIsRequired(instrument, 'instrument');
-
-			if (instrument.type !== this) {
-				throw new Error('Unable to generate instrument identifier for incompatible type.');
-			}
-
-			return this._generator(instrument);
 		}
 
 		/**
@@ -9486,169 +9436,20 @@ module.exports = (() => {
 			return other;
 		}
 
-		/**
-		 * Generates an identifier for the instrument.
-		 *
-		 * @static
-		 * @public
-		 * @param {Object} instrument
-		 * @returns {String}
-		 */
-		static generateIdentifier(instrument) {
-			return map[instrument.type.code].generateIdentifier(instrument);
-		}
-
 		toString() {
 			return '[InstrumentType]';
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false, true, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
-
-	const map = { };
-
-	map[cash.code] = cash;
-	map[equity.code] = equity;
-	map[fund.code] = fund;
-	map[other.code] = other;
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, true);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false);
 
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"uuid":95}],52:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
-	Decimal = require('@barchart/common-js/lang/Decimal'),
-	Enum = require('@barchart/common-js/lang/Enum');
-
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * Describes a position size -- positive values are long, negative values
-	 * are short and zero values are even.
-	 *
-	 * @public
-	 * @extends {Enum}
-	 * @param {String} code
-	 * @param {String} description
-	 * @param {sign} sign
-	 */
-	class PositionDirection extends Enum {
-		constructor(code, description, sign) {
-			super(code, description);
-
-			assert.argumentIsRequired(sign, 'sign', String);
-			
-			this._sign = sign;
-		}
-
-		/**
-		 * A description of the positiveness or negativeness of the size of the
-		 * position.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		get sign() {
-			return this._sign;
-		}
-
-		/**
-		 * Indicates if the position size is positive (i.e. is {@link PositionDirection.LONG}).
-		 *
-		 * @public
-		 * @returns {boolean}
-		 */
-		get positive() {
-			return this === long;
-		}
-
-		/**
-		 * Indicates if the position size is negative (i.e. is {@link PositionDirection.SHORT}).
-		 *
-		 * @public
-		 * @returns {boolean}
-		 */
-		get negative() {
-			return this === short;
-		}
-
-		/**
-		 * Indicates if the position size is zero (i.e. is {@link PositionDirection.EVEN}).
-		 *
-		 * @public
-		 * @returns {boolean}
-		 */
-		get closed() {
-			return this === even;
-		}
-
-		/**
-		 * A positive quantity position.
-		 * 
-		 * @public
-		 * @static
-		 * @returns {PositionDirection}
-		 */
-		static get LONG() {
-			return long;
-		}
-
-		/**
-		 * A positive quantity position.
-		 *
-		 * @public
-		 * @static
-		 * @returns {PositionDirection}
-		 */
-		static get SHORT() {
-			return short;
-		}
-
-		/**
-		 * A zero quantity position.
-		 *
-		 * @public
-		 * @static
-		 * @returns {PositionDirection}
-		 */
-		static get EVEN() {
-			return even;
-		}
-
-		/**
-		 * Given an open quantity, returns a {@link PositionDirection} that
-		 * describes the quantity.
-		 *
-		 * @public
-		 * @static
-		 * @param {Decimal} open
-		 * @returns {PositionDirection}
-		 */
-		static for(open) {
-			assert.argumentIsRequired(open, 'open', Decimal, 'Decimal');
-			
-			if (open.getIsPositive()) {
-				return long;
-			} else if (open.getIsNegative()) {
-				return short;
-			} else {
-				return even;
-			}
-		}
-	}
-
-	const long = new PositionDirection('LONG', 'Long', 'positive');
-	const short = new PositionDirection('SHORT', 'Short', 'negative');
-	const even = new PositionDirection('EVEN', 'Even', 'zero');
-
-	return PositionDirection;
-})();
-
-},{"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],53:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],52:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -9905,7 +9706,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40}],54:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40}],53:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -10245,7 +10046,7 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],55:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],54:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -10307,7 +10108,7 @@ module.exports = (() => {
 	return ValuationType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],56:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],55:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -10477,7 +10278,7 @@ module.exports = (() => {
 	return PortfolioSchema;
 })();
 
-},{"./../data/ValuationType":55,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/Timezones":35,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],57:[function(require,module,exports){
+},{"./../data/ValuationType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/Timezones":35,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],56:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -10487,7 +10288,6 @@ const assert = require('@barchart/common-js/lang/assert'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const InstrumentType = require('./../data/InstrumentType'),
-	PositionDirection = require('./../data/PositionDirection'),
 	ValuationType = require('./../data/ValuationType');
 
 module.exports = (() => {
@@ -10560,7 +10360,6 @@ module.exports = (() => {
 		.withField('reinvest', DataType.BOOLEAN)
 		.withField('snapshot.date', DataType.DAY)
 		.withField('snapshot.open', DataType.DECIMAL)
-		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -10592,7 +10391,6 @@ module.exports = (() => {
 		.withField('reinvest', DataType.BOOLEAN)
 		.withField('snapshot.date', DataType.DAY)
 		.withField('snapshot.open', DataType.DECIMAL)
-		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -10606,7 +10404,7 @@ module.exports = (() => {
 	return PositionSchema;
 })();
 
-},{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/ValuationType":55,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],58:[function(require,module,exports){
+},{"./../data/InstrumentType":51,"./../data/ValuationType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],57:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -10615,8 +10413,7 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const PositionDirection = require('./../data/PositionDirection'),
-	PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
 module.exports = (() => {
 	'use strict';
@@ -10686,13 +10483,11 @@ module.exports = (() => {
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
 		.withField('start.open', DataType.DECIMAL)
-		.withField('start.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('start.basis', DataType.DECIMAL)
 		.withField('start.value', DataType.DECIMAL)
 		.withField('end.date', DataType.DAY)
 		.withField('end.sequence', DataType.NUMBER)
 		.withField('end.open', DataType.DECIMAL)
-		.withField('end.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('end.basis', DataType.DECIMAL)
 		.withField('end.value', DataType.DECIMAL)
 		.withField('period.buys', DataType.DECIMAL)
@@ -10720,13 +10515,11 @@ module.exports = (() => {
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
 		.withField('start.open', DataType.DECIMAL)
-		.withField('start.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('start.basis', DataType.DECIMAL)
 		.withField('start.value', DataType.DECIMAL)
 		.withField('end.date', DataType.DAY)
 		.withField('end.sequence', DataType.NUMBER)
 		.withField('end.open', DataType.DECIMAL)
-		.withField('end.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('end.basis', DataType.DECIMAL)
 		.withField('end.value', DataType.DECIMAL)
 		.withField('period.buys', DataType.DECIMAL)
@@ -10740,7 +10533,7 @@ module.exports = (() => {
 	return PositionSummarySchema;
 })();
 
-},{"./../data/PositionDirection":52,"./../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":52,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],58:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -10750,7 +10543,6 @@ const assert = require('@barchart/common-js/lang/assert'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const InstrumentType = require('./../data/InstrumentType'),
-	PositionDirection = require('./../data/PositionDirection'),
 	TransactionType = require('./../data/TransactionType');
 
 module.exports = (() => {
@@ -10920,7 +10712,6 @@ module.exports = (() => {
 		.withField('reference.position', DataType.STRING, true)
 		.withField('reference.sequence', DataType.NUMBER, true)
 		.withField('snapshot.open', DataType.DECIMAL)
-		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -10964,7 +10755,6 @@ module.exports = (() => {
 		.withField('reference.position', DataType.STRING, true)
 		.withField('reference.sequence', DataType.NUMBER, true)
 		.withField('snapshot.open', DataType.DECIMAL)
-		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -11194,6 +10984,7 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('value', DataType.DECIMAL)
+		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -11233,7 +11024,7 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/TransactionType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],60:[function(require,module,exports){
+},{"./../data/InstrumentType":51,"./../data/TransactionType":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -11271,27 +11062,26 @@ module.exports = function () {
   * Web service gateway for obtaining JWT tokens from TGAM (The Globe and Mail).
   *
   * @public
-  * @param {Enpoint=} endpoint
+  * @param {Enpoint} endpoint
   * @param {Number=} refreshInterval - Interval, in milliseconds, which a token refresh should occur. If zero, the token does not need to be refreshed.
-  * @param {Function=} overrideDelegate - Bypasses the standard token lookup, instead calls a delegate, which returns the token.
   * @extends {Disposable}
   */
 
 	var JwtGateway = function (_Disposable) {
 		_inherits(JwtGateway, _Disposable);
 
-		function JwtGateway(tokenDelegate, refreshInterval) {
+		function JwtGateway(endpoint, refreshInterval) {
 			_classCallCheck(this, JwtGateway);
 
 			var _this = _possibleConstructorReturn(this, (JwtGateway.__proto__ || Object.getPrototypeOf(JwtGateway)).call(this));
 
-			assert.argumentIsRequired(tokenDelegate, 'tokenDelegate', Function);
+			assert.argumentIsRequired(endpoint, 'endpoint', Endpoint, 'Endpoint');
 			assert.argumentIsOptional(refreshInterval, 'refreshInterval', Number);
 
 			_this._started = false;
 			_this._startPromise = null;
 
-			_this._tokenDelegate = tokenDelegate;
+			_this._endpoint = endpoint;
 
 			_this._refreshInterval = refreshInterval || 0;
 			_this._refreshJitter = Math.floor(_this._refreshInterval / 10);
@@ -11344,7 +11134,7 @@ module.exports = function () {
 				return Promise.resolve().then(function () {
 					checkStart.call(_this3);
 
-					return _this3._tokenDelegate();
+					return Gateway.invoke(_this3._endpoint);
 				}).catch(function (e) {
 					var failure = FailureReason.forRequest({ endpoint: _this3._endpoint }).addItem(FailureType.REQUEST_IDENTITY_FAILURE).format();
 
@@ -11459,9 +11249,7 @@ module.exports = function () {
 			key: 'forDevelopment',
 			value: function forDevelopment(endpoint) {
 				return Promise.resolve(endpoint).then(function (e) {
-					return start(new JwtGateway(function () {
-						return Gateway.invoke(e);
-					}, 60000));
+					return start(new JwtGateway(e, 60000));
 				});
 			}
 
@@ -11470,7 +11258,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {Promise.<Endpoint>|Endpoint} endpoint - The endpoint which vends JWT tokens.
+    * @param {Promise.<Endpoint>|Endpoint}endpoint - The endpoint which vends JWT tokens.
     * @returns {Promise.<RequestInterceptor>}
     */
 
@@ -11541,40 +11329,6 @@ module.exports = function () {
 					return jwtGateway.toRequestInterceptor();
 				});
 			}
-
-			/**
-    * Creates and starts a new {@link JwtGateway} for use by the "tracker" system.
-    *
-    * @public
-    * @static
-    * @param {Function} tokenDelegate - A function which returns the JWT token.
-    * @returns {Promise.<JwtGateway>}
-    */
-
-		}, {
-			key: 'forTracker',
-			value: function forTracker(tokenDelegate) {
-				return Promise.resolve().then(function () {
-					return start(new JwtGateway(tokenDelegate, 0));
-				});
-			}
-
-			/**
-    * Creates and starts a new {@link RequestInterceptor} for use by "tracker" system.
-    *
-    * @public
-    * @static
-    * @param {Function} tokenDelegate - A function which returns the JWT token.
-    * @returns {Promise.<RequestInterceptor>}
-    */
-
-		}, {
-			key: 'forTrackerClient',
-			value: function forTrackerClient(tokenDelegate) {
-				return JwtGateway.forTracker(tokenDelegate).then(function (jwtGateway) {
-					return jwtGateway.toRequestInterceptor();
-				});
-			}
 		}]);
 
 		return JwtGateway;
@@ -11605,7 +11359,7 @@ module.exports = function () {
 	}
 
 	function forTgam(host, secret, environment) {
-		var endpoint = EndpointBuilder.for('read-jwt-token-for-' + environment, 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
+		return EndpointBuilder.for('read-jwt-token-for-' + environment, 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
 			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', 'X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', 'X-GAM-CLIENT-APP-SECRET', secret);
 		}).withHost(host).withRequestInterceptor(RequestInterceptor.fromDelegate(function (request) {
 			request.withCredentials = true;
@@ -11614,10 +11368,6 @@ module.exports = function () {
 		})).withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
 			return response.token;
 		})).endpoint;
-
-		return function () {
-			return Gateway.invoke(endpoint);
-		};
 	}
 
 	function getTime() {
@@ -11627,7 +11377,7 @@ module.exports = function () {
 	return JwtGateway;
 }();
 
-},{"./index":61,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/timing/Scheduler":50}],61:[function(require,module,exports){
+},{"./index":60,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/timing/Scheduler":50}],60:[function(require,module,exports){
 'use strict';
 
 var JwtGateway = require('./JwtGateway');
@@ -11637,13 +11387,13 @@ module.exports = function () {
 
 	return {
 		JwtGateway: JwtGateway,
-		version: '1.0.39'
+		version: '1.0.38'
 	};
 }();
 
-},{"./JwtGateway":60}],62:[function(require,module,exports){
+},{"./JwtGateway":59}],61:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":64}],63:[function(require,module,exports){
+},{"./lib/axios":63}],62:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -11827,7 +11577,7 @@ module.exports = function xhrAdapter(config) {
 };
 
 }).call(this,require('_process'))
-},{"../core/createError":70,"./../core/settle":73,"./../helpers/btoa":77,"./../helpers/buildURL":78,"./../helpers/cookies":80,"./../helpers/isURLSameOrigin":82,"./../helpers/parseHeaders":84,"./../utils":86,"_process":88}],64:[function(require,module,exports){
+},{"../core/createError":69,"./../core/settle":72,"./../helpers/btoa":76,"./../helpers/buildURL":77,"./../helpers/cookies":79,"./../helpers/isURLSameOrigin":81,"./../helpers/parseHeaders":83,"./../utils":85,"_process":87}],63:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -11881,7 +11631,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":65,"./cancel/CancelToken":66,"./cancel/isCancel":67,"./core/Axios":68,"./defaults":75,"./helpers/bind":76,"./helpers/spread":85,"./utils":86}],65:[function(require,module,exports){
+},{"./cancel/Cancel":64,"./cancel/CancelToken":65,"./cancel/isCancel":66,"./core/Axios":67,"./defaults":74,"./helpers/bind":75,"./helpers/spread":84,"./utils":85}],64:[function(require,module,exports){
 'use strict';
 
 /**
@@ -11902,7 +11652,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],66:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -11961,14 +11711,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":65}],67:[function(require,module,exports){
+},{"./Cancel":64}],66:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./../defaults');
@@ -12049,7 +11799,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"./../defaults":75,"./../utils":86,"./InterceptorManager":69,"./dispatchRequest":71}],69:[function(require,module,exports){
+},{"./../defaults":74,"./../utils":85,"./InterceptorManager":68,"./dispatchRequest":70}],68:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12103,7 +11853,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":86}],70:[function(require,module,exports){
+},{"./../utils":85}],69:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -12123,7 +11873,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":72}],71:[function(require,module,exports){
+},{"./enhanceError":71}],70:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12211,7 +11961,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":67,"../defaults":75,"./../helpers/combineURLs":79,"./../helpers/isAbsoluteURL":81,"./../utils":86,"./transformData":74}],72:[function(require,module,exports){
+},{"../cancel/isCancel":66,"../defaults":74,"./../helpers/combineURLs":78,"./../helpers/isAbsoluteURL":80,"./../utils":85,"./transformData":73}],71:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12234,7 +11984,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],73:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -12262,7 +12012,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":70}],74:[function(require,module,exports){
+},{"./createError":69}],73:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12284,7 +12034,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":86}],75:[function(require,module,exports){
+},{"./../utils":85}],74:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -12380,7 +12130,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":63,"./adapters/xhr":63,"./helpers/normalizeHeaderName":83,"./utils":86,"_process":88}],76:[function(require,module,exports){
+},{"./adapters/http":62,"./adapters/xhr":62,"./helpers/normalizeHeaderName":82,"./utils":85,"_process":87}],75:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -12393,7 +12143,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],77:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 'use strict';
 
 // btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
@@ -12431,7 +12181,7 @@ function btoa(input) {
 
 module.exports = btoa;
 
-},{}],78:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12501,7 +12251,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":86}],79:[function(require,module,exports){
+},{"./../utils":85}],78:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12517,7 +12267,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],80:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12572,7 +12322,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":86}],81:[function(require,module,exports){
+},{"./../utils":85}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12588,7 +12338,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],82:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12658,7 +12408,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":86}],83:[function(require,module,exports){
+},{"./../utils":85}],82:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -12672,7 +12422,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":86}],84:[function(require,module,exports){
+},{"../utils":85}],83:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12727,7 +12477,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":86}],85:[function(require,module,exports){
+},{"./../utils":85}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12756,7 +12506,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],86:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -13061,7 +12811,7 @@ module.exports = {
   trim: trim
 };
 
-},{"./helpers/bind":76,"is-buffer":89}],87:[function(require,module,exports){
+},{"./helpers/bind":75,"is-buffer":88}],86:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -14002,7 +13752,7 @@ module.exports = {
   }
 })(this);
 
-},{}],88:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -14188,7 +13938,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],89:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -14211,7 +13961,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],90:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -15413,7 +15163,7 @@ function isSlowBuffer (obj) {
 	return moment;
 }));
 
-},{"moment":94}],91:[function(require,module,exports){
+},{"moment":93}],90:[function(require,module,exports){
 module.exports={
 	"version": "2016j",
 	"zones": [
@@ -16013,11 +15763,11 @@ module.exports={
 		"Pacific/Pohnpei|Pacific/Ponape"
 	]
 }
-},{}],92:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":91,"./moment-timezone":93}],93:[function(require,module,exports){
+},{"./data/packed/latest.json":90,"./moment-timezone":92}],92:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -16620,7 +16370,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":94}],94:[function(require,module,exports){
+},{"moment":93}],93:[function(require,module,exports){
 //! moment.js
 
 ;(function (global, factory) {
@@ -20282,7 +20032,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
     addUnitAlias('date', 'D');
 
-    // PRIORITY
+    // PRIOROITY
     addUnitPriority('date', 9);
 
     // PARSING
@@ -21079,7 +20829,7 @@ moment.tz.load(require('./data/packed/latest.json'));
     // Side effect imports
 
 
-    hooks.version = '2.22.1';
+    hooks.version = '2.22.0';
 
     setHookCallback(createLocal);
 
@@ -21128,210 +20878,5 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],95:[function(require,module,exports){
-var v1 = require('./v1');
-var v4 = require('./v4');
-
-var uuid = v4;
-uuid.v1 = v1;
-uuid.v4 = v4;
-
-module.exports = uuid;
-
-},{"./v1":98,"./v4":99}],96:[function(require,module,exports){
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  return bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]];
-}
-
-module.exports = bytesToUuid;
-
-},{}],97:[function(require,module,exports){
-(function (global){
-// Unique ID creation requires a high quality random # generator.  In the
-// browser this is a little complicated due to unknown quality of Math.random()
-// and inconsistent support for the `crypto` API.  We do the best we can via
-// feature-detection
-var rng;
-
-var crypto = global.crypto || global.msCrypto; // for IE 11
-if (crypto && crypto.getRandomValues) {
-  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
-  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
-  rng = function whatwgRNG() {
-    crypto.getRandomValues(rnds8);
-    return rnds8;
-  };
-}
-
-if (!rng) {
-  // Math.random()-based (RNG)
-  //
-  // If all else fails, use Math.random().  It's fast, but is of unspecified
-  // quality.
-  var rnds = new Array(16);
-  rng = function() {
-    for (var i = 0, r; i < 16; i++) {
-      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
-      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
-    }
-
-    return rnds;
-  };
-}
-
-module.exports = rng;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],98:[function(require,module,exports){
-var rng = require('./lib/rng');
-var bytesToUuid = require('./lib/bytesToUuid');
-
-// **`v1()` - Generate time-based UUID**
-//
-// Inspired by https://github.com/LiosK/UUID.js
-// and http://docs.python.org/library/uuid.html
-
-// random #'s we need to init node and clockseq
-var _seedBytes = rng();
-
-// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
-var _nodeId = [
-  _seedBytes[0] | 0x01,
-  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
-];
-
-// Per 4.2.2, randomize (14 bit) clockseq
-var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
-
-// Previous uuid creation time
-var _lastMSecs = 0, _lastNSecs = 0;
-
-// See https://github.com/broofa/node-uuid for API details
-function v1(options, buf, offset) {
-  var i = buf && offset || 0;
-  var b = buf || [];
-
-  options = options || {};
-
-  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
-
-  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
-  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
-  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
-  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
-  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
-
-  // Per 4.2.1.2, use count of uuid's generated during the current clock
-  // cycle to simulate higher resolution clock
-  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
-
-  // Time since last uuid creation (in msecs)
-  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
-
-  // Per 4.2.1.2, Bump clockseq on clock regression
-  if (dt < 0 && options.clockseq === undefined) {
-    clockseq = clockseq + 1 & 0x3fff;
-  }
-
-  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
-  // time interval
-  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
-    nsecs = 0;
-  }
-
-  // Per 4.2.1.2 Throw error if too many uuids are requested
-  if (nsecs >= 10000) {
-    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
-  }
-
-  _lastMSecs = msecs;
-  _lastNSecs = nsecs;
-  _clockseq = clockseq;
-
-  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
-  msecs += 12219292800000;
-
-  // `time_low`
-  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
-  b[i++] = tl >>> 24 & 0xff;
-  b[i++] = tl >>> 16 & 0xff;
-  b[i++] = tl >>> 8 & 0xff;
-  b[i++] = tl & 0xff;
-
-  // `time_mid`
-  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
-  b[i++] = tmh >>> 8 & 0xff;
-  b[i++] = tmh & 0xff;
-
-  // `time_high_and_version`
-  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
-  b[i++] = tmh >>> 16 & 0xff;
-
-  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
-  b[i++] = clockseq >>> 8 | 0x80;
-
-  // `clock_seq_low`
-  b[i++] = clockseq & 0xff;
-
-  // `node`
-  var node = options.node || _nodeId;
-  for (var n = 0; n < 6; ++n) {
-    b[i + n] = node[n];
-  }
-
-  return buf ? buf : bytesToUuid(b);
-}
-
-module.exports = v1;
-
-},{"./lib/bytesToUuid":96,"./lib/rng":97}],99:[function(require,module,exports){
-var rng = require('./lib/rng');
-var bytesToUuid = require('./lib/bytesToUuid');
-
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options == 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid(rnds);
-}
-
-module.exports = v4;
-
-},{"./lib/bytesToUuid":96,"./lib/rng":97}]},{},[1,5])(5)
+},{}]},{},[1,5])(5)
 });
