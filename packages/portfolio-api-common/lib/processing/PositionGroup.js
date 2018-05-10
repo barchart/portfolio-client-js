@@ -71,6 +71,7 @@ module.exports = (() => {
 			this._dataFormat.key = this._key;
 			this._dataFormat.description = this._description;
 			this._dataFormat.hide = false;
+			this._dataFormat.invalid = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
 			this._dataFormat.basisPrice = null;
@@ -458,9 +459,6 @@ module.exports = (() => {
 			if (this._single) {
 				const precision = sender.position.instrument.currency.precision;
 
-				this._dataActual.invalid = this._definition.type === PositionLevelType.POSITION && item.invalid;
-				this._dataFormat.invalid = this._dataActual.invalid;
-
 				this._dataActual.currentPrice = quote.lastPrice;
 				this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
 
@@ -694,6 +692,8 @@ module.exports = (() => {
 
 			format.quantity = formatDecimal(actual.quantity, 2);
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
+
+			format.invalid = this._definition.type === PositionLevelType.POSITION && item.invalid;
 		}
 
 		const groupItems = group._items;
