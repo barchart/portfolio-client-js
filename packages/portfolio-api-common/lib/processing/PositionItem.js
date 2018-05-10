@@ -112,6 +112,16 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if the position's symbol is invalid.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
+		get invalid() {
+			return this._invalid;
+		}
+
+		/**
 		 * The year-to-date position summary of the encapsulated position.
 		 *
 		 * @public
