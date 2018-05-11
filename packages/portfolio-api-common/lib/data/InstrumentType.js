@@ -155,13 +155,32 @@ module.exports = (() => {
 		/**
 		 * Generates an identifier for the instrument.
 		 *
-		 * @static
 		 * @public
+		 * @static
 		 * @param {Object} instrument
 		 * @returns {String}
 		 */
 		static generateIdentifier(instrument) {
 			return map[instrument.type.code].generateIdentifier(instrument);
+		}
+
+		/**
+		 *
+		 * @public
+		 * @static
+		 * @param code
+		 * @return {InstrumentType}
+		 */
+		static fromSymbolType(code) {
+			assert.argumentIsRequired(code, 'code', Number);
+
+			if (code === 1 || code === 6) {
+				return InstrumentType.EQUITY;
+			} else if (code === 5 || code == 15) {
+				return InstrumentType.FUND;
+			} else {
+				throw new Error('Unable to determine InstrumentType for [', code, ']');
+			}
 		}
 
 		toString() {
