@@ -174,7 +174,7 @@ module.exports = (() => {
 		static fromSymbolType(code) {
 			assert.argumentIsRequired(code, 'code', Number);
 
-			if (code === 1 || code === 6) {
+			if (code === 1 || code === 6 || code === 7) {
 				return InstrumentType.EQUITY;
 			} else if (code === 5 || code == 15) {
 				return InstrumentType.FUND;
