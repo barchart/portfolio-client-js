@@ -215,7 +215,7 @@ module.exports = function () {
 
 			_this._updatePositionEndpoint = EndpointBuilder.for('update-position', 'update position').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
-			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(RequestInterceptor.fromDelegate(updatePositionRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(updatePositionRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deletePositionEndpoint = EndpointBuilder.for('delete-position', 'delete position').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
@@ -581,7 +581,7 @@ module.exports = function () {
     * @public
     * @param {String} portfolio
     * @param {String} position
-    * @param {Number} transaction
+    * @param {Number} sequence
     * @param {Boolean=} force
     * @param {Boolean=} echo
     * @returns {Promise.<TransactionMutateResult>}
@@ -1210,7 +1210,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.3'
+		version: '1.2.4'
 	};
 }();
 
