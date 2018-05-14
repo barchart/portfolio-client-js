@@ -93,6 +93,7 @@ module.exports = (() => {
 		return {
 			date: t.date,
 			type: t.type.display,
+			code: t.type.code,
 			sequence: t.sequence,
 			instrument: i,
 			position: t.position
