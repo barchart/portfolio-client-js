@@ -3424,32 +3424,57 @@ module.exports = (() => {
 
 		const summary = item.currentSummary;
 
-		if (summary && price) {
-			const period = summary.period;
+		let priceToUse;
 
-			let unrealized = summary.end.open.multiply(price).add(summary.end.basis);
-			let unrealizedChange;
+		if (price) {
+			priceToUse = price;
+		} else {
 
-			if (data.unrealizedToday !== null) {
-				unrealizedChange = unrealized.subtract(data.unrealized);
+		}
+
+		if (summary) {
+			let priceToUse;
+
+			if (price) {
+				priceToUse = price;
+			} else if (!summary.end.open.getIsZero()) {
+				priceToUse = summary.end.value.divide(summary.end.open);
 			} else {
-				unrealizedChange = Decimal.ZERO;
+				priceToUse = null;
 			}
 
-			let summaryTotalCurrent = period.realized.add(period.income).add(unrealized);
-			let summaryTotalCurrentChange;
+			if (priceToUse !== null) {
+				const period = summary.period;
 
-			if (data.summaryTotalCurrent !== null) {
-				summaryTotalCurrentChange = summaryTotalCurrent.subtract(data.summaryTotalCurrent);
-			}  else {
-				summaryTotalCurrentChange = Decimal.ZERO;
+				let unrealized = summary.end.open.multiply(priceToUse).add(summary.end.basis);
+				let unrealizedChange;
+
+				if (data.unrealizedToday !== null) {
+					unrealizedChange = unrealized.subtract(data.unrealized);
+				} else {
+					unrealizedChange = Decimal.ZERO;
+				}
+
+				let summaryTotalCurrent = period.realized.add(period.income).add(unrealized);
+				let summaryTotalCurrentChange;
+
+				if (data.summaryTotalCurrent !== null) {
+					summaryTotalCurrentChange = summaryTotalCurrent.subtract(data.summaryTotalCurrent);
+				} else {
+					summaryTotalCurrentChange = Decimal.ZERO;
+				}
+
+				data.summaryTotalCurrent = summaryTotalCurrent;
+				data.summaryTotalCurrentChange = summaryTotalCurrentChange;
+
+				data.unrealized = unrealized;
+				data.unrealizedChange = unrealizedChange;
+			} else {
+				data.summaryTotalCurrentChange = Decimal.ZERO;
+
+				data.unrealized = Decimal.ZERO;
+				data.unrealizedChange = Decimal.ZERO;
 			}
-
-			data.summaryTotalCurrent = summaryTotalCurrent;
-			data.summaryTotalCurrentChange = summaryTotalCurrentChange;
-
-			data.unrealized = unrealized;
-			data.unrealizedChange = unrealizedChange;
 		} else {
 			data.summaryTotalCurrentChange = Decimal.ZERO;
 
