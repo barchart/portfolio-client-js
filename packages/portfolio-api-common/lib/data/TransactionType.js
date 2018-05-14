@@ -236,6 +236,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * A mutual fund distribution in cash, reinvested.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DISTRIBUTION_REINVEST() {
+			return distributionReinvest;
+		}
+
+		/**
 		 * A split.
 		 *
 		 * @public
@@ -351,6 +362,7 @@ module.exports = (() => {
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', false, false, false, false, true, false, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', false, false, true, false, false, false, true);
+	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', false, false, false, true, false, false, true);
 	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', false, false, false, true, false, false, true);
 
 	const deposit = new TransactionType('D', 'Deposit', 'Deposit', false, false, false, false, false, false, false);
