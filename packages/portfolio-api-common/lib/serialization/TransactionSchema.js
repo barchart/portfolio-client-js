@@ -201,6 +201,7 @@ module.exports = (() => {
 		.withField('split.reference', DataType.STRING, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
+		.withField('valuation.rate', DataType.DECIMAL, true)
 		.withField('valuation.value', DataType.DECIMAL, true)
 		.withField('system.sequence', DataType.NUMBER)
 		.withField('system.version', DataType.STRING)
@@ -239,6 +240,7 @@ module.exports = (() => {
 		.withField('split.reference', DataType.STRING, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
+		.withField('valuation.rate', DataType.DECIMAL, true)
 		.withField('valuation.value', DataType.DECIMAL, true)
 		.schema
 	);
