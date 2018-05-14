@@ -197,8 +197,18 @@ module.exports = (() => {
 	});
 
 	formatters.set(TransactionType.VALUATION, (t) => {
+		let rate;
+
+		if (t.valuation.rate) {
+			rate = t.valuation.rate;
+		} else if (t.snapshot.open.getIsZero()) {
+			rate = null;
+		} else {
+			rate = t.valuation.value.divide(t.snapshot.open)
+		}
+
 		return {
-			price: t.valuation.value
+			price: rate
 		};
 	});
 
