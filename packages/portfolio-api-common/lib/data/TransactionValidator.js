@@ -74,6 +74,28 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns transaction types which can be initiated by the user, regardless
+		 * of instrument type.
+		 *
+		 * @public
+		 * @static
+		 * @return {Array.<TransactionType>}
+		 */
+		static getUserInitiatedTransactionTypes() {
+			return array.unique(Object.keys(validTransactionTypes).reduce((types, key) => {
+				const instrumentTypes = validTransactionTypes[key];
+
+				instrumentTypes.forEach((data) => {
+					if (data.user) {
+						types.push(data.type);
+					}
+				});
+
+				return types;
+			}, [ ]));
+		}
+
+		/**
 		 * Checks to see if an transaction type is applicable to an instrument type.
 		 *
 		 * @static
