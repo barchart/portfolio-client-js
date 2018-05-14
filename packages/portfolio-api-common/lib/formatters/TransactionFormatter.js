@@ -208,7 +208,7 @@ module.exports = (() => {
 		}
 
 		return {
-			rate: rate
+			price: rate
 		};
 	});
 
