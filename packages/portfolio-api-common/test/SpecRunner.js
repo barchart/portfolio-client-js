@@ -3437,6 +3437,8 @@ module.exports = (() => {
 
 			if (price) {
 				priceToUse = price;
+			} else if (data.previousPrice) {
+				priceToUse = new Decimal(data.previousPrice);
 			} else if (!summary.end.open.getIsZero()) {
 				priceToUse = summary.end.value.divide(summary.end.open);
 			} else {
