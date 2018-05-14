@@ -1063,6 +1063,28 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns transaction types which can be initiated by the user, regardless
+		 * of instrument type.
+		 *
+		 * @public
+		 * @static
+		 * @return {Array.<TransactionType>}
+		 */
+		static getUserInitiatedTransactionTypes() {
+			return array.unique(Object.keys(validTransactionTypes).reduce((types, key) => {
+				const instrumentTypes = validTransactionTypes[key];
+
+				instrumentTypes.forEach((data) => {
+					if (data.user) {
+						types.push(data.type);
+					}
+				});
+
+				return types;
+			}, [ ]));
+		}
+
+		/**
 		 * Checks to see if an transaction type is applicable to an instrument type.
 		 *
 		 * @static
@@ -9223,6 +9245,20 @@ describe('When validating transaction order', () => {
 
 	it('An array of transactions with ordered sequences, on the reversed days should not be valid', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-05-02'), build(2, '2018-05-01'), build(3, '2018-04-30') ])).toEqual(false);
+	});
+});
+
+describe('When requesting all the user-initiated transaction types', () => {
+	'use strict';
+
+	let userInitiated;
+
+	beforeEach(() => {
+		userInitiated = TransactionValidator.getUserInitiatedTransactionTypes();
+	});
+
+	it('Only nine types should be returned', () => {
+		expect(userInitiated.length).toEqual(9);
 	});
 });
 
