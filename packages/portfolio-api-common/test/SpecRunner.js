@@ -1122,7 +1122,7 @@ module.exports = (() => {
 		 * @param {TransactionType} transactionType
 		 */
 		static validateInitialTransactionType(transactionType) {
-			return transactionType.inital;
+			return transactionType.initial;
 		}
 		
 		/**
