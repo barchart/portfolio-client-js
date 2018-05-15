@@ -55,3 +55,9 @@ describe('When requesting all the user-initiated transaction types', () => {
 		expect(userInitiated.length).toEqual(9);
 	});
 });
+
+describe('When validating direction', () => {
+	'use strict';
+
+
+});

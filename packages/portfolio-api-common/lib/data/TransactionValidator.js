@@ -96,7 +96,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Checks to see if an transaction type is applicable to an instrument type.
+		 * Determines if a transaction type is applicable to an instrument type.
 		 *
 		 * @static
 		 * @public
@@ -114,7 +114,17 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Checks to see if a position for a given instrument type can exist in
+		 * Determines if a transaction type is valid as the first transaction of
+		 * a position.
+		 *
+		 * @param {TransactionType} transactionType
+		 */
+		static validateInitialTransactionType(transactionType) {
+			return transactionType.inital;
+		}
+		
+		/**
+		 * Determines if a position for a given instrument type can exist in
 		 * the given direction.
 		 *
 		 * @static
@@ -131,7 +141,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Checks to see if the position switches direction and if the direction switch
+		 * Determines if the position switches direction and if the direction switch
 		 * is valid.
 		 *
 		 * @static

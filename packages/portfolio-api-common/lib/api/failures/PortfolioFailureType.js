@@ -109,6 +109,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The initial transaction type (first in sequence) would be invalid.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_INVALID_INITIAL_TYPE() {
+			return transactionCreateFailedInvalidInitialType;
+		}
+
+		/**
 		 * Deleting any transaction except for the most recent requires
 		 * re-writing transaction history.
 		 *
@@ -158,6 +169,7 @@ module.exports = (() => {
 	const transactionCreateFailedTypeInvalidForInstrument = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_INSTRUMENT', 'Unable to process transaction, {L|transactionType.description} transactions cannot be used with {L|instrumentType.description} positions.');
 	const transactionCreateFailedTypeInvalidForDirection = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_DIRECTION', 'Unable to process transaction, a {L|positionDirection.description} position would be created (i.e. you would have {L|positionDirection.sign} shares/units). {u|instrumentType.description} positions cannot have {L|positionDirection.description} positions.');
 	const transactionCreateFailedInvalidDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DIRECTION_SWITCH', 'Unable to process transaction, the transaction would switch the position from {L|currentDirection.description} to {L|proposedDirection.description} (i.e. {L|currentDirection.sign} to {L|proposedDirection.sign} shares/units). This is not allowed. Please close the current position (i.e. zero it out) and then enter a second transaction.');
+	const transactionCreateFailedInvalidInitialType = new FailureType('TRANSACTION_CREATE_FAILED_INITIAL_TYPE', 'Unable to process initial transaction, the first transaction would be a {L|transactionType.description}. This is not allowed.');
 
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
 	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.');
