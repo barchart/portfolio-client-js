@@ -19,10 +19,11 @@ module.exports = (() => {
 	 * @param {Boolean} canShort
 	 * @param {Boolean} canSwitchDirection
 	 * @param {Boolean} usesSymbols
-	 * @param {Function} usesSymbols
+	 * @param {Boolean} hasCorporateActions
+	 * @param {Function} generator
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest, canShort, canSwitchDirection, usesSymbols, generator) {
+		constructor(code, description, alternateDescription, canReinvest, canShort, canSwitchDirection, usesSymbols, hasCorporateActions, generator) {
 			super(code, description);
 
 			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
@@ -30,6 +31,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(canShort, 'canShort', Boolean);
 			assert.argumentIsRequired(canSwitchDirection, 'canSwitchDirection', Boolean);
 			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
+			assert.argumentIsRequired(hasCorporateActions, 'hasCorporateActions', Boolean);
 			assert.argumentIsRequired(generator, 'generator', Function);
 
 			this._alternateDescription = alternateDescription;
@@ -37,6 +39,7 @@ module.exports = (() => {
 			this._canShort = canShort;
 			this._canSwitchDirection = canSwitchDirection;
 			this._usesSymbols = usesSymbols;
+			this._hasCorporateActions = hasCorporateActions;
 
 			this._generator = generator;
 		}
@@ -90,6 +93,16 @@ module.exports = (() => {
 		 */
 		get usesSymbols() {
 			return this._usesSymbols;
+		}
+
+		/**
+		 * Indicates if corporate actions are possible for this type of instrument.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get hasCorporateActions() {
+			return this._hasCorporateActions;
 		}
 
 		/**
@@ -189,10 +202,10 @@ module.exports = (() => {
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false, true, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false, true, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, false, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
 
 	const map = { };
 
