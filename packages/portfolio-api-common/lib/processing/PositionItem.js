@@ -406,15 +406,7 @@ module.exports = (() => {
 
 		const summary = item.currentSummary;
 
-		let priceToUse;
-
-		if (price) {
-			priceToUse = price;
-		} else {
-
-		}
-
-		if (summary) {
+		if (summary && position.instrument.type !== InstrumentType.CASH) {
 			let priceToUse;
 
 			if (price) {
