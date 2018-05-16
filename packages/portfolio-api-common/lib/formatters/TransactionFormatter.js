@@ -204,7 +204,7 @@ module.exports = (() => {
 		} else if (t.snapshot.open.getIsZero()) {
 			rate = null;
 		} else {
-			rate = t.valuation.value.divide(t.snapshot.open)
+			rate = t.valuation.value.divide(t.snapshot.open);
 		}
 
 		return {
