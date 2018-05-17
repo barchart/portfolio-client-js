@@ -420,6 +420,8 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
