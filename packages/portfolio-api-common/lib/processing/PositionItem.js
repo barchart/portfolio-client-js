@@ -189,6 +189,10 @@ module.exports = (() => {
 			}
 
 			if (this._currentPricePrevious !== quote.lastPrice) {
+				if (this._data.previousPrice === null && quote.previousPrice) {
+					this._data.previousPrice = quote.previousPrice;
+				}
+
 				calculatePriceData(this, quote.lastPrice);
 
 				this._currentPricePrevious = this._currentPrice;

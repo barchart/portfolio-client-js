@@ -117,7 +117,6 @@ module.exports = (() => {
 			this._dataFormat.quoteChangeNegative = false;
 
 			this._dataActual.currentPrice = null;
-			this._dataActual.previousPrice = null;
 			this._dataActual.basis = null;
 			this._dataActual.realized = null;
 			this._dataActual.income = null;
@@ -133,7 +132,6 @@ module.exports = (() => {
 			this._dataActual.cashTotal = null;
 
 			this._dataFormat.currentPrice = null;
-			this._dataFormat.previousPrice = null;
 			this._dataFormat.basis = null;
 			this._dataFormat.realized = null;
 			this._dataFormat.income = null;
