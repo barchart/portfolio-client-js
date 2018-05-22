@@ -425,7 +425,7 @@ module.exports = (() => {
 				let unrealized = summary.end.open.multiply(priceToUse).add(summary.end.basis);
 				let unrealizedChange;
 
-				if (data.unrealizedToday !== null) {
+				if (data.unrealized !== null) {
 					unrealizedChange = unrealized.subtract(data.unrealized);
 				} else {
 					unrealizedChange = Decimal.ZERO;
