@@ -47,7 +47,7 @@ module.exports = (() => {
 		 * A human-readable description.
 		 *
 		 * @public
-		 * @return {String}
+		 * @returns {String}
 		 */
 		get alternateDescription() {
 			return this._alternateDescription;
@@ -182,7 +182,7 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param code
-		 * @return {InstrumentType}
+		 * @returns {InstrumentType}
 		 */
 		static fromSymbolType(code) {
 			assert.argumentIsRequired(code, 'code', Number);

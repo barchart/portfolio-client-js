@@ -441,7 +441,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Function} handler
-		 * @return {Disposable}
+		 * @returns {Disposable}
 		 */
 		registerGroupExcludedChangeHandler(handler) {
 			return this._groupExcludedChangeEvent.register(handler);

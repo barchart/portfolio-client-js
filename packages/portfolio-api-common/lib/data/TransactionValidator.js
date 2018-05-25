@@ -25,7 +25,7 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Array.<Object>} transactions
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		static validateOrder(transactions) {
 			return TransactionValidator.getInvalidIndex(transactions) < 0;
@@ -38,7 +38,7 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Array.<Object>} transactions
-		 * @return {Number}
+		 * @returns {Number}
 		 */
 		static getInvalidIndex(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
@@ -54,7 +54,7 @@ module.exports = (() => {
 		 * @param {InstrumentType} instrumentType
 		 * @param {Boolean=} userInitiated
 		 * @pararm {PositionDirection=} currentDirection
-		 * @return {Array.<TransactionType>}
+		 * @returns {Array.<TransactionType>}
 		 */
 		static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
 			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
@@ -79,7 +79,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @return {Array.<TransactionType>}
+		 * @returns {Array.<TransactionType>}
 		 */
 		static getUserInitiatedTransactionTypes() {
 			return array.unique(Object.keys(validTransactionTypes).reduce((types, key) => {
@@ -103,7 +103,7 @@ module.exports = (() => {
 		 * @param {InstrumentType} instrumentType
 		 * @param {TransactionType} transactionType
 		 * @param {Boolean=} userInitiated
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		static validateTransactionType(instrumentType, transactionType, userInitiated) {
 			assert.argumentIsRequired(transactionType, 'transactionType', TransactionType, 'TransactionType');
@@ -131,7 +131,7 @@ module.exports = (() => {
 		 * @public
 		 * @param {InstrumentType} instrumentType
 		 * @param {PositionDirection} direction
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		static validateDirection(instrumentType, direction) {
 			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
@@ -149,7 +149,7 @@ module.exports = (() => {
 		 * @param {InstrumentType} instrumentType
 		 * @param {PositionDirection|null|undefined} currentDirection
 		 * @param {PositionDirection} proposedDirection
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		static validateDirectionSwitch(instrumentType, currentDirection, proposedDirection) {
 			return currentDirection === null || instrumentType.canSwitchDirection || (currentDirection.closed || proposedDirection.closed || currentDirection.positive === proposedDirection.positive);

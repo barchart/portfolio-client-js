@@ -42,7 +42,7 @@ module.exports = (() => {
 		 * exist for a position.
 		 *
 		 * @public
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		get unique() {
 			return this._unique;
@@ -53,8 +53,8 @@ module.exports = (() => {
 		 * start and end dates.
 		 *
 		 * @public
-		 * @return {PositionSummaryRange} range
-		 * @return {String}
+		 * @returns {PositionSummaryRange} range
+		 * @returns {String}
 		 */
 		describeRange(range) {
 			return this._descriptionCalculator(range.start, range.end);

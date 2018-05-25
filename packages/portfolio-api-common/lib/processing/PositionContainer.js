@@ -555,7 +555,7 @@ module.exports = (() => {
 		 * Returns all portfolios in the container.
 		 *
 		 * @public
-		 * @return {Array.<Object>}
+		 * @returns {Array.<Object>}
 		 */
 		getPortfolios() {
 			return Object.keys(this._portfolios).map(id => this._portfolios[id]);
@@ -566,7 +566,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} portfolio
-		 * @return {Array.<Object>}
+		 * @returns {Array.<Object>}
 		 */
 		getPositions(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', String);
@@ -583,7 +583,7 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} portfolio
 		 * @param {String} position
-		 * @return {Object|null}
+		 * @returns {Object|null}
 		 */
 		getPosition(portfolio, position) {
 			assert.argumentIsRequired(position, 'position', String);
