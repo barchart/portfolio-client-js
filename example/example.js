@@ -602,7 +602,7 @@ module.exports = function () {
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
 					assert.argumentIsRequired(transaction.position, 'transaction.position', String);
-					assert.argumentIsRequired(transaction.sequence, 'transaction.sequence', String);
+					assert.argumentIsRequired(transaction.sequence, 'transaction.sequence', Number);
 
 					var code = void 0;
 
@@ -1257,7 +1257,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.5'
+		version: '1.2.6'
 	};
 }();
 
