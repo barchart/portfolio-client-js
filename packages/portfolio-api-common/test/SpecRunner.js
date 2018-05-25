@@ -48,7 +48,7 @@ module.exports = (() => {
 		 * A human-readable description.
 		 *
 		 * @public
-		 * @return {String}
+		 * @returns {String}
 		 */
 		get alternateDescription() {
 			return this._alternateDescription;
@@ -183,7 +183,7 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param code
-		 * @return {InstrumentType}
+		 * @returns {InstrumentType}
 		 */
 		static fromSymbolType(code) {
 			assert.argumentIsRequired(code, 'code', Number);
@@ -392,7 +392,7 @@ module.exports = (() => {
 		 * exist for a position.
 		 *
 		 * @public
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		get unique() {
 			return this._unique;
@@ -403,8 +403,8 @@ module.exports = (() => {
 		 * start and end dates.
 		 *
 		 * @public
-		 * @return {PositionSummaryRange} range
-		 * @return {String}
+		 * @returns {PositionSummaryRange} range
+		 * @returns {String}
 		 */
 		describeRange(range) {
 			return this._descriptionCalculator(range.start, range.end);
@@ -1053,7 +1053,7 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Array.<Object>} transactions
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		static validateOrder(transactions) {
 			return TransactionValidator.getInvalidIndex(transactions) < 0;
@@ -1066,7 +1066,7 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Array.<Object>} transactions
-		 * @return {Number}
+		 * @returns {Number}
 		 */
 		static getInvalidIndex(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
@@ -1082,7 +1082,7 @@ module.exports = (() => {
 		 * @param {InstrumentType} instrumentType
 		 * @param {Boolean=} userInitiated
 		 * @pararm {PositionDirection=} currentDirection
-		 * @return {Array.<TransactionType>}
+		 * @returns {Array.<TransactionType>}
 		 */
 		static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
 			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
@@ -1107,7 +1107,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @return {Array.<TransactionType>}
+		 * @returns {Array.<TransactionType>}
 		 */
 		static getUserInitiatedTransactionTypes() {
 			return array.unique(Object.keys(validTransactionTypes).reduce((types, key) => {
@@ -1131,7 +1131,7 @@ module.exports = (() => {
 		 * @param {InstrumentType} instrumentType
 		 * @param {TransactionType} transactionType
 		 * @param {Boolean=} userInitiated
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		static validateTransactionType(instrumentType, transactionType, userInitiated) {
 			assert.argumentIsRequired(transactionType, 'transactionType', TransactionType, 'TransactionType');
@@ -1159,7 +1159,7 @@ module.exports = (() => {
 		 * @public
 		 * @param {InstrumentType} instrumentType
 		 * @param {PositionDirection} direction
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		static validateDirection(instrumentType, direction) {
 			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
@@ -1177,7 +1177,7 @@ module.exports = (() => {
 		 * @param {InstrumentType} instrumentType
 		 * @param {PositionDirection|null|undefined} currentDirection
 		 * @param {PositionDirection} proposedDirection
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		static validateDirectionSwitch(instrumentType, currentDirection, proposedDirection) {
 			return currentDirection === null || instrumentType.canSwitchDirection || (currentDirection.closed || proposedDirection.closed || currentDirection.positive === proposedDirection.positive);
@@ -1817,7 +1817,7 @@ module.exports = (() => {
 		 * Returns all portfolios in the container.
 		 *
 		 * @public
-		 * @return {Array.<Object>}
+		 * @returns {Array.<Object>}
 		 */
 		getPortfolios() {
 			return Object.keys(this._portfolios).map(id => this._portfolios[id]);
@@ -1828,7 +1828,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} portfolio
-		 * @return {Array.<Object>}
+		 * @returns {Array.<Object>}
 		 */
 		getPositions(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', String);
@@ -1845,7 +1845,7 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} portfolio
 		 * @param {String} position
-		 * @return {Object|null}
+		 * @returns {Object|null}
 		 */
 		getPosition(portfolio, position) {
 			assert.argumentIsRequired(position, 'position', String);
@@ -2646,7 +2646,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Function} handler
-		 * @return {Disposable}
+		 * @returns {Disposable}
 		 */
 		registerGroupExcludedChangeHandler(handler) {
 			return this._groupExcludedChangeEvent.register(handler);
@@ -3629,7 +3629,7 @@ module.exports = (() => {
 		 * A general description of the type of items grouped together.
 		 *
 		 * @public
-		 * @return {PositionLevelType}
+		 * @returns {PositionLevelType}
 		 */
 		get type() {
 			return this._type;
@@ -3722,7 +3722,7 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Object} portfolio
-		 * @return {PositionLevelDefinition~RequiredGroup}
+		 * @returns {PositionLevelDefinition~RequiredGroup}
 		 */
 		static buildRequiredGroupForPortfolio(portfolio) {
 			return {
@@ -3765,7 +3765,7 @@ module.exports = (() => {
 		 * @static
 		 * @param {InstrumentType} type
 		 * @param {Currency} currency
-		 * @return {PositionLevelDefinition~RequiredGroup}
+		 * @returns {PositionLevelDefinition~RequiredGroup}
 		 */
 		static buildRequiredGroupForAssetClass(type, currency) {
 			return {
@@ -3926,7 +3926,7 @@ module.exports = (() => {
 		 * group (from the current tree) is excluded.
 		 *
 		 * @public
-		 * @return {Array.<String>}
+		 * @returns {Array.<String>}
 		 */
 		get exclusionDependencies() {
 			return this._exclusionDependencies;
