@@ -273,7 +273,7 @@ module.exports = (() => {
 	}).thenBy((a, b) => {
 		return comparators.compareStrings(a.instrument.id, b.instrument.id);
 	}).thenBy((a, b) => {
-		return comparators.compareNumbers(a.sequence, b.sequence);
+		return comparators.compareNumbers(b.sequence, a.sequence);
 	}).toComparator();
 
 	return TransactionFormatter;
