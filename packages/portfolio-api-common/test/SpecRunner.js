@@ -3187,7 +3187,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The year-to-date position summary of the encapsulated position.
+		 * The year-to-date summary of the encapsulated position.
 		 *
 		 * @public
 		 * @returns {Object}
