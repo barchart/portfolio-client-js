@@ -1,9 +1,12 @@
 const assert = require('@barchart/common-js/lang/assert'),
+	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
+	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is'),
 	formatter = require('@barchart/common-js/lang/formatter');
 
-const TransactionType = require('./../data/TransactionType');
+const InstrumentType = require('./../data/InstrumentType'),
+	TransactionType = require('./../data/TransactionType');
 
 module.exports = (() => {
 	'use strict';
@@ -19,33 +22,30 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Maps transaction objects into new objects whose properties are human-readable or,
-		 * optionally returns the original objects with a "formatted" property appended to
-		 * each transaction.
+		 * Maps transaction objects into new objects whose properties are human-readable (or
+		 * mutates the original objects, adding a "formatted" property to each transaction).
 		 *
 		 * @public
 		 * @static
-		 * @param {Array<Object>} transactions
-		 * @param {Array<Object>} positions
-		 * @param {Boolean=} append - Warning, if true, the transaction array will be mutated.
+		 * @param {Array.<Object>} transactions
+		 * @param {Array.<Object>} positions
+		 * @param {Boolean=} mutate
 		 * @returns {Array}
 		 */
-		static format(transactions, positions, append) {
+		static format(transactions, positions, mutate) {
 			assert.argumentIsArray(transactions, 'transactions');
 			assert.argumentIsArray(positions, 'positions');
-			assert.argumentIsOptional(append, 'append', Boolean);
+			assert.argumentIsOptional(mutate, 'mutate', Boolean);
 
 			const instruments = positions.reduce((map, p) => {
 				const instrument = Object.assign({ }, p.instrument || { });
-
-				delete instrument.id;
 
 				map[p.position] = instrument;
 
 				return map;
 			}, { });
 
-			return transactions.reduce((list, transaction) => {
+			const a = transactions.reduce((list, transaction) => {
 				const position = transaction.position;
 
 				if (instruments.hasOwnProperty(position)) {
@@ -69,7 +69,7 @@ module.exports = (() => {
 
 					let transactionToInsert;
 
-					if (append) {
+					if (mutate) {
 						transaction.formatted = formatted;
 
 						transactionToInsert = transaction;
@@ -82,6 +82,26 @@ module.exports = (() => {
 
 				return list;
 			}, [ ]);
+
+			a.sort(comparator);
+
+			a.forEach((t) => {
+				delete t.instrument.id;
+			});
+
+			return a;
+		}
+
+		/**
+		 * Sorts an array of formatted transaction objects.
+		 *
+		 * @public
+		 * @static
+		 * @param {Array.<Object>} transactions
+		 * @returns {Array}
+		 */
+		sort(transactions) {
+			return transactions.sort(comparator);
 		}
 
 		toString() {
@@ -236,6 +256,24 @@ module.exports = (() => {
 
 		return formatted;
 	});
+
+	function getInstrumentTypePriority(type) {
+		if (type === InstrumentType.CASH) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	const comparator = ComparatorBuilder.startWith((a, b) => {
+		return Day.compareDays(b.date, a.date);
+	}).thenBy((a, b) => {
+		return comparators.compareNumbers(getInstrumentTypePriority(a.instrument.type), getInstrumentTypePriority(b.instrument.type));
+	}).thenBy((a, b) => {
+		return comparators.compareStrings(a.instrument.id, b.instrument.id);
+	}).thenBy((a, b) => {
+		return comparators.compareStrings(a.sequence, b.sequence);
+	}).toComparator();
 
 	return TransactionFormatter;
 })();
