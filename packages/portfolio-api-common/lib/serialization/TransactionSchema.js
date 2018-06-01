@@ -103,52 +103,12 @@ module.exports = (() => {
 			return sellShort;
 		}
 
-		static get DIVIDEND() {
-			return dividend;
-		}
-
-		static get DIVIDEND_REINVEST() {
-			return dividendReinvest;
-		}
-
-		static get DIVIDEND_STOCK() {
-			return dividendStock;
-		}
-
-		static get DISTRIBUTION_CASH() {
-			return distributionCash;
-		}
-
-		static get DISTRIBUTION_FUND() {
-			return distributionFund;
-		}
-
-		static get SPLIT() {
-			return split;
-		}
-
-		static get FEE() {
-			return fee;
-		}
-
-		static get FEE_UNITS() {
-			return feeUnits;
-		}
-
 		static get DEPOSIT() {
 			return deposit;
 		}
 
 		static get WITHDRAWAL() {
 			return withdrawal;
-		}
-
-		static get DEBIT() {
-			return debit;
-		}
-
-		static get CREDIT() {
-			return credit;
 		}
 
 		static get VALUATION() {
@@ -259,8 +219,9 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
+		.withField('cash', DataType.BOOLEAN, true)
+		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -287,7 +248,6 @@ module.exports = (() => {
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
-		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -305,83 +265,8 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const dividend = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const dividendReinvest = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND_REINVEST.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('price', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const dividendStock = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND_STOCK.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('price', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const distributionCash = new TransactionSchema(SchemaBuilder.withName(TransactionType.DISTRIBUTION_CASH.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const distributionFund = new TransactionSchema(SchemaBuilder.withName(TransactionType.DISTRIBUTION_FUND.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('price', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const split = new TransactionSchema(SchemaBuilder.withName(TransactionType.SPLIT.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('numerator', DataType.DECIMAL)
-		.withField('denominator', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
+		.withField('cash', DataType.BOOLEAN, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -397,18 +282,6 @@ module.exports = (() => {
 		.schema
 	);
 
-	const feeUnits = new TransactionSchema(SchemaBuilder.withName(TransactionType.FEE_UNITS.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('sequence', DataType.NUMBER, true)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('fee', DataType.DECIMAL)
-		.withField('price', DataType.DECIMAL)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
 	const deposit = new TransactionSchema(SchemaBuilder.withName(TransactionType.DEPOSIT.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
@@ -420,6 +293,7 @@ module.exports = (() => {
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
+		.withField('cash', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -430,28 +304,6 @@ module.exports = (() => {
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
-		.withField('date', DataType.DAY)
-		.withField('amount', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const debit = new TransactionSchema(SchemaBuilder.withName(TransactionType.DEBIT.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('amount', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const credit = new TransactionSchema(SchemaBuilder.withName(TransactionType.CREDIT.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
@@ -492,12 +344,7 @@ module.exports = (() => {
 	addSchemaToMap(TransactionType.SELL, sell);
 	addSchemaToMap(TransactionType.BUY_SHORT, buyShort);
 	addSchemaToMap(TransactionType.SELL_SHORT, sellShort);
-	addSchemaToMap(TransactionType.DIVIDEND, dividend);
-	addSchemaToMap(TransactionType.DIVIDEND_STOCK, dividendStock);
-	addSchemaToMap(TransactionType.DIVIDEND_REINVEST, dividendReinvest);
-	addSchemaToMap(TransactionType.SPLIT, split);
 	addSchemaToMap(TransactionType.FEE, fee);
-	addSchemaToMap(TransactionType.FEE_UNITS, feeUnits);
 	addSchemaToMap(TransactionType.DEPOSIT, deposit);
 	addSchemaToMap(TransactionType.WITHDRAWAL, withdrawal);
 	addSchemaToMap(TransactionType.VALUATION, valuation);
