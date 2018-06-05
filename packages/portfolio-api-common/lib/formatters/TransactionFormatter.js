@@ -267,13 +267,13 @@ module.exports = (() => {
 	}
 
 	const comparator = ComparatorBuilder.startWith((a, b) => {
-		return Day.compareDays(b.date, a.date);
+		return Day.compareDays(a.date, b.date);
 	}).thenBy((a, b) => {
 		return comparators.compareNumbers(getInstrumentTypePriority(a.instrument.type), getInstrumentTypePriority(b.instrument.type));
 	}).thenBy((a, b) => {
 		return comparators.compareStrings(a.instrument.id, b.instrument.id);
 	}).thenBy((a, b) => {
-		return comparators.compareNumbers(b.sequence, a.sequence);
+		return comparators.compareNumbers(a.sequence, b.sequence);
 	}).toComparator();
 
 	return TransactionFormatter;
