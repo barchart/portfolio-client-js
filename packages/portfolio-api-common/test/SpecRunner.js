@@ -1226,7 +1226,6 @@ module.exports = (() => {
 
 	associateTypes(InstrumentType.CASH, TransactionType.DEPOSIT, true);
 	associateTypes(InstrumentType.CASH, TransactionType.WITHDRAWAL, true);
-	associateTypes(InstrumentType.CASH, TransactionType.FEE, true);
 	associateTypes(InstrumentType.CASH, TransactionType.DEBIT, false);
 	associateTypes(InstrumentType.CASH, TransactionType.CREDIT, false);
 
