@@ -291,7 +291,6 @@ module.exports = (() => {
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -305,7 +304,6 @@ module.exports = (() => {
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
