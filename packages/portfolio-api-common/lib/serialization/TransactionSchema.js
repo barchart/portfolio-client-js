@@ -293,7 +293,6 @@ module.exports = (() => {
 		.withField('amount', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
-		.withField('cash', DataType.BOOLEAN, true)
 		.schema
 	);
 
