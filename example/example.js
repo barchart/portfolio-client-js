@@ -616,7 +616,13 @@ module.exports = function () {
 					assert.argumentIsRequired(portfolio, 'portfolio', Object);
 					assert.argumentIsArray(transactions, 'transactions', Object);
 
-					var batchData = transactions.reduce(function (data, transaction) {
+					var batchData = {};
+
+					batchData.portfolio = portfolio;
+					batchData.transactionTypes = [];
+					batchData.transactionItems = [];
+
+					transactions.forEach(function (transaction) {
 						transaction.portfolio = portfolio.portfolio;
 
 						if (!transaction.position) {
@@ -626,13 +632,8 @@ module.exports = function () {
 						var code = getTransactionTypeCode(transaction);
 						var schema = getTransactionSchema(transaction);
 
-						data.types.push(code);
-						data.transactions.push(JSON.stringify(schema.schema.format(transaction)));
-
-						return data;
-					}, {
-						types: [],
-						transactions: []
+						batchData.transactionTypes.push(code);
+						batchData.transactionItems.push(JSON.stringify(schema.schema.format(transaction)));
 					});
 
 					return Gateway.invoke(_this13._batchTransactionEndpoint, batchData);
@@ -1321,7 +1322,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.7'
+		version: '1.2.9'
 	};
 }();
 
