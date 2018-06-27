@@ -242,16 +242,20 @@ module.exports = function () {
 			_this._createTransactionEndpoint = EndpointBuilder.for('create-transaction', 'create transaction').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
 			}).withQueryBuilder(function (qb) {
-				qb.withVariableParameter('type', 'type', 'type', false, function (i) {
-					return i.code;
+				qb.withVariableParameter('type', 'type', 'type', false, function (t) {
+					return getTransactionTypeCode(t);
 				});
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
+			_this._batchTransactionEndpoint = EndpointBuilder.for('batch-transactions', 'batch transactions').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withLiteralParameter('multiple', 'multiple').withLiteralParameter('transactions', 'transactions');
+			}).withBody('transactions').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._editTransactionEndpoint = EndpointBuilder.for('edit-transaction', 'edit transaction').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
 			}).withQueryBuilder(function (qb) {
-				qb.withVariableParameter('type', 'type', 'type', false, function (i) {
-					return i.code;
+				qb.withVariableParameter('type', 'type', 'type', false, function (t) {
+					return getTransactionTypeCode(t);
 				});
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
@@ -351,6 +355,28 @@ module.exports = function () {
 			}
 
 			/**
+    * Creates a new portfolio and immediately populates it with transactions.
+    *
+    * @public
+    * @param {Object} portfolio
+    * @return {Promise.<Portfolio>}
+    */
+
+		}, {
+			key: 'importPortfolio',
+			value: function importPortfolio(portfolio, transactions) {
+				var _this5 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this5);
+
+					return _this5.createPortfolio(portfolio).then(function (portfolio) {
+						return _this5.batchTransactions(portfolio, transactions);
+					});
+				});
+			}
+
+			/**
     * Updates a portfolio
     *
     * @public
@@ -361,14 +387,14 @@ module.exports = function () {
 		}, {
 			key: 'updatePortfolio',
 			value: function updatePortfolio(portfolio) {
-				var _this5 = this;
+				var _this6 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this5);
+					checkStart.call(_this6);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', Object);
 
-					return Gateway.invoke(_this5._updatePortfolioEndpoint, PortfolioSchema.UPDATE.schema.format(portfolio));
+					return Gateway.invoke(_this6._updatePortfolioEndpoint, PortfolioSchema.UPDATE.schema.format(portfolio));
 				});
 			}
 
@@ -383,14 +409,14 @@ module.exports = function () {
 		}, {
 			key: 'deletePortfolio',
 			value: function deletePortfolio(portfolio) {
-				var _this6 = this;
+				var _this7 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this6);
+					checkStart.call(_this7);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 
-					return Gateway.invoke(_this6._deletePortfolioEndpoint, { portfolio: portfolio });
+					return Gateway.invoke(_this7._deletePortfolioEndpoint, { portfolio: portfolio });
 				});
 			}
 
@@ -407,16 +433,16 @@ module.exports = function () {
 		}, {
 			key: 'readPositions',
 			value: function readPositions(portfolio, position, includePreviousPrice) {
-				var _this7 = this;
+				var _this8 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this7);
+					checkStart.call(_this8);
 
 					assert.argumentIsOptional(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 					assert.argumentIsOptional(includePreviousPrice, 'includePreviousPrice', Boolean);
 
-					return Gateway.invoke(_this7._readPositionsEndpoint, { portfolio: portfolio || '*', position: position || '*', includePreviousPrice: includePreviousPrice });
+					return Gateway.invoke(_this8._readPositionsEndpoint, { portfolio: portfolio || '*', position: position || '*', includePreviousPrice: includePreviousPrice });
 				});
 			}
 
@@ -431,14 +457,14 @@ module.exports = function () {
 		}, {
 			key: 'updatePosition',
 			value: function updatePosition(position) {
-				var _this8 = this;
+				var _this9 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this8);
+					checkStart.call(_this9);
 
 					assert.argumentIsRequired(position, 'position', Object);
 
-					return Gateway.invoke(_this8._updatePositionEndpoint, PositionSchema.UPDATE.schema.format(position));
+					return Gateway.invoke(_this9._updatePositionEndpoint, PositionSchema.UPDATE.schema.format(position));
 				});
 			}
 
@@ -457,10 +483,10 @@ module.exports = function () {
 		}, {
 			key: 'readPositionSummaries',
 			value: function readPositionSummaries(portfolio, position, frames, periods, start) {
-				var _this9 = this;
+				var _this10 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this9);
+					checkStart.call(_this10);
 
 					assert.argumentIsOptional(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
@@ -513,7 +539,7 @@ module.exports = function () {
 						query.start = s;
 					}
 
-					return Gateway.invoke(_this9._readPositionSummariesEndpoint, query);
+					return Gateway.invoke(_this10._readPositionSummariesEndpoint, query);
 				});
 			}
 
@@ -529,20 +555,20 @@ module.exports = function () {
 		}, {
 			key: 'deletePosition',
 			value: function deletePosition(portfolio, position) {
-				var _this10 = this;
+				var _this11 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this10);
+					checkStart.call(_this11);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
 
-					return Gateway.invoke(_this10._deletePositionEndpoint, { portfolio: portfolio, position: position });
+					return Gateway.invoke(_this11._deletePositionEndpoint, { portfolio: portfolio, position: position });
 				});
 			}
 
 			/**
-    * Retrieves transactions for a portfolio, or a single position.
+    * Creates a new transaction.
     *
     * @public
     * @param {Object} transaction
@@ -552,34 +578,64 @@ module.exports = function () {
 		}, {
 			key: 'createTransaction',
 			value: function createTransaction(transaction) {
-				var _this11 = this;
+				var _this12 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this11);
+					checkStart.call(_this12);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
 					assert.argumentIsOptional(transaction.position, 'transaction.position', String);
 
-					var code = void 0;
-
-					if (is.string(transaction.type)) {
-						assert.argumentIsRequired(transaction.type.code, 'transaction.type.code', String);
-
-						code = transaction.type;
-					} else {
-						assert.argumentIsRequired(transaction.type, 'transaction.type', TransactionType, 'TransactionType');
-
-						code = transaction.type.code;
-					}
-
 					if (!transaction.position) {
 						transaction.position = 'new';
 					}
 
-					var schema = TransactionSchema.forCreate(Enum.fromCode(TransactionType, code));
+					var schema = getTransactionSchema(transaction);
 
-					return Gateway.invoke(_this11._createTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this12._createTransactionEndpoint, schema.schema.format(transaction));
+				});
+			}
+
+			/**
+    * Creates one or more new transactions.
+    *
+    * @public
+    * @param {Object} transaction
+    * @returns {Promise}
+    */
+
+		}, {
+			key: 'batchTransactions',
+			value: function batchTransactions(portfolio, transactions) {
+				var _this13 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this13);
+
+					assert.argumentIsRequired(portfolio, 'portfolio', Object);
+					assert.argumentIsArray(transactions, 'transactions', Object);
+
+					var batchData = transactions.reduce(function (data, transaction) {
+						transaction.portfolio = portfolio.portfolio;
+
+						if (!transaction.position) {
+							transaction.position = 'new';
+						}
+
+						var code = getTransactionTypeCode(transaction);
+						var schema = getTransactionSchema(transaction);
+
+						data.types.push(code);
+						data.transactions.push(JSON.stringify(schema.schema.format(transaction)));
+
+						return data;
+					}, {
+						types: [],
+						transactions: []
+					});
+
+					return Gateway.invoke(_this13._batchTransactionEndpoint, batchData);
 				});
 			}
 
@@ -594,31 +650,19 @@ module.exports = function () {
 		}, {
 			key: 'editTransaction',
 			value: function editTransaction(transaction) {
-				var _this12 = this;
+				var _this14 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this12);
+					checkStart.call(_this14);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
 					assert.argumentIsRequired(transaction.position, 'transaction.position', String);
 					assert.argumentIsRequired(transaction.sequence, 'transaction.sequence', Number);
 
-					var code = void 0;
+					var schema = getTransactionSchema(transaction);
 
-					if (is.string(transaction.type)) {
-						assert.argumentIsRequired(transaction.type.code, 'transaction.type.code', String);
-
-						code = transaction.type;
-					} else {
-						assert.argumentIsRequired(transaction.type, 'transaction.type', TransactionType, 'TransactionType');
-
-						code = transaction.type.code;
-					}
-
-					var schema = TransactionSchema.forCreate(Enum.fromCode(TransactionType, code));
-
-					return Gateway.invoke(_this12._editTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this14._editTransactionEndpoint, schema.schema.format(transaction));
 				});
 			}
 
@@ -637,10 +681,10 @@ module.exports = function () {
 		}, {
 			key: 'deleteTransaction',
 			value: function deleteTransaction(portfolio, position, sequence, force, echo) {
-				var _this13 = this;
+				var _this15 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this13);
+					checkStart.call(_this15);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
@@ -648,7 +692,7 @@ module.exports = function () {
 					assert.argumentIsOptional(force, 'force', Boolean);
 					assert.argumentIsOptional(echo, 'echo', Boolean);
 
-					return Gateway.invoke(_this13._deleteTransactionEndpoint, { portfolio: portfolio, position: position, sequence: sequence, force: is.boolean(force) && force, echo: is.boolean(echo) && echo });
+					return Gateway.invoke(_this15._deleteTransactionEndpoint, { portfolio: portfolio, position: position, sequence: sequence, force: is.boolean(force) && force, echo: is.boolean(echo) && echo });
 				});
 			}
 
@@ -664,29 +708,29 @@ module.exports = function () {
 		}, {
 			key: 'readTransactions',
 			value: function readTransactions(portfolio, position) {
-				var _this14 = this;
+				var _this16 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this14);
+					checkStart.call(_this16);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					return Gateway.invoke(_this14._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
+					return Gateway.invoke(_this16._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
 				});
 			}
 		}, {
 			key: 'readTransactionsFormatted',
 			value: function readTransactionsFormatted(portfolio, position) {
-				var _this15 = this;
+				var _this17 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this15);
+					checkStart.call(_this17);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					return Gateway.invoke(_this15._readTransactionsReportEndpoint, { portfolio: portfolio, position: position || '*' });
+					return Gateway.invoke(_this17._readTransactionsReportEndpoint, { portfolio: portfolio, position: position || '*' });
 				});
 			}
 
@@ -784,6 +828,26 @@ module.exports = function () {
 
 		return PortfolioGateway;
 	}(Disposable);
+
+	function getTransactionTypeCode(transaction) {
+		var code = void 0;
+
+		if (is.string(transaction.type)) {
+			assert.argumentIsRequired(transaction.type, 'transaction.type', String);
+
+			code = transaction.type;
+		} else {
+			assert.argumentIsRequired(transaction.type, 'transaction.type', TransactionType, 'TransactionType');
+
+			code = transaction.type.code;
+		}
+
+		return code;
+	}
+
+	function getTransactionSchema(transaction) {
+		return TransactionSchema.forCreate(Enum.fromCode(TransactionType, getTransactionTypeCode(transaction)));
+	}
 
 	var createPortfolioRequestInterceptor = function createPortfolioRequestInterceptor(request) {
 		return FailureReason.validateSchema(PortfolioSchema.CREATE, request.data).then(function () {
@@ -1257,7 +1321,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.6'
+		version: '1.2.7'
 	};
 }();
 
