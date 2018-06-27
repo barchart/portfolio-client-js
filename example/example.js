@@ -243,7 +243,7 @@ module.exports = function () {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('type', 'type', 'type', false, function (t) {
-					return getTransactionTypeCode(t);
+					return t.code;
 				});
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
@@ -255,7 +255,7 @@ module.exports = function () {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('type', 'type', 'type', false, function (t) {
-					return getTransactionTypeCode(t);
+					return t.code;
 				});
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
@@ -1322,7 +1322,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.10'
+		version: '1.2.11'
 	};
 }();
 
