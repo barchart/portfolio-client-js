@@ -618,7 +618,7 @@ module.exports = function () {
 
 					var batchData = {};
 
-					batchData.portfolio = portfolio;
+					batchData.portfolio = portfolio.portfolio;
 					batchData.transactionTypes = [];
 					batchData.transactionItems = [];
 
@@ -1322,7 +1322,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.9'
+		version: '1.2.10'
 	};
 }();
 
