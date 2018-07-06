@@ -42,6 +42,30 @@ describe('When validating transaction order', () => {
 	});
 });
 
+describe('When validating transaction references', () => {
+	'use strict';
+
+	const build = (root, sequence) => {
+		return { reference: { root: root, sequence: sequence } };
+	};
+
+	it('An array of zero transactions should be valid', () => {
+		expect(TransactionValidator.validateReferences([])).toEqual(true);
+	});
+
+	it('An array with no references should be valid', () => {
+		expect(TransactionValidator.validateReferences([ { }, { } ])).toEqual(true);
+	});
+
+	it('An array with distinct references should be valid', () => {
+		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1) ])).toEqual(true);
+	});
+
+	it('An array with non-distinct references should be not valid', () => {
+		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1), build('a', 2) ])).toEqual(false);
+	});
+});
+
 describe('When requesting all the user-initiated transaction types', () => {
 	'use strict';
 
@@ -54,10 +78,4 @@ describe('When requesting all the user-initiated transaction types', () => {
 	it('Only nine types should be returned', () => {
 		expect(userInitiated.length).toEqual(9);
 	});
-});
-
-describe('When validating direction', () => {
-	'use strict';
-
-
 });

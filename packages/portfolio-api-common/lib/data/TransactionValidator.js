@@ -1,5 +1,6 @@
 const assert = require('@barchart/common-js/lang/assert'),
-	array = require('@barchart/common-js/lang/array');
+	array = require('@barchart/common-js/lang/array'),
+	is = require('@barchart/common-js/lang/is');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
@@ -29,6 +30,44 @@ module.exports = (() => {
 		 */
 		static validateOrder(transactions) {
 			return TransactionValidator.getInvalidIndex(transactions) < 0;
+		}
+
+		/**
+		 * Given a set of transaction, when transaction references are present, ensures
+		 * that no transactions within the set reference the same transaction.
+		 *
+		 * @public
+		 * @static
+		 * @param {Array.<Object>} transactions
+		 * @returns {Boolean}
+		 */
+		static validateReferences(transactions) {
+			assert.argumentIsArray(transactions, 'transactions');
+
+			const references = { };
+
+			return transactions.every((t) => {
+				let valid = true;
+
+				if (is.object(t.reference) && is.string(t.reference.root) && is.number(t.reference.sequence)) {
+					const root = t.reference.root;
+					const sequence = t.reference.sequence;
+
+					if (!references.hasOwnProperty(root)) {
+						references[root] = [ ];
+					}
+
+					const sequences = references[root];
+
+					if (sequences.some(s => s === sequence)) {
+						valid = false;
+					} else {
+						sequences.push(sequence);
+					}
+				}
+
+				return valid;
+			});
 		}
 
 		/**
