@@ -1027,7 +1027,8 @@ module.exports = (() => {
 
 },{"@barchart/common-js/lang/Enum":21,"@barchart/common-js/lang/assert":24}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
-	array = require('@barchart/common-js/lang/array');
+	array = require('@barchart/common-js/lang/array'),
+	is = require('@barchart/common-js/lang/is');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
@@ -1057,6 +1058,44 @@ module.exports = (() => {
 		 */
 		static validateOrder(transactions) {
 			return TransactionValidator.getInvalidIndex(transactions) < 0;
+		}
+
+		/**
+		 * Given a set of transaction, when transaction references are present, ensures
+		 * that no transactions within the set reference the same transaction.
+		 *
+		 * @public
+		 * @static
+		 * @param {Array.<Object>} transactions
+		 * @returns {Boolean}
+		 */
+		static validateReferences(transactions) {
+			assert.argumentIsArray(transactions, 'transactions');
+
+			const references = { };
+
+			return transactions.every((t) => {
+				let valid = true;
+
+				if (is.object(t.reference) && is.string(t.reference.root) && is.number(t.reference.sequence)) {
+					const root = t.reference.root;
+					const sequence = t.reference.sequence;
+
+					if (!references.hasOwnProperty(root)) {
+						references[root] = [ ];
+					}
+
+					const sequences = references[root];
+
+					if (sequences.some(s => s === sequence)) {
+						valid = false;
+					} else {
+						sequences.push(sequence);
+					}
+				}
+
+				return valid;
+			});
 		}
 
 		/**
@@ -1258,7 +1297,7 @@ module.exports = (() => {
 	return TransactionValidator;
 })();
 
-},{"./InstrumentType":1,"./PositionDirection":2,"./TransactionType":4,"@barchart/common-js/lang/array":23,"@barchart/common-js/lang/assert":24}],6:[function(require,module,exports){
+},{"./InstrumentType":1,"./PositionDirection":2,"./TransactionType":4,"@barchart/common-js/lang/array":23,"@barchart/common-js/lang/assert":24,"@barchart/common-js/lang/is":26}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
@@ -9317,6 +9356,30 @@ describe('When validating transaction order', () => {
 	});
 });
 
+describe('When validating transaction references', () => {
+	'use strict';
+
+	const build = (root, sequence) => {
+		return { reference: { root: root, sequence: sequence } };
+	};
+
+	it('An array of zero transactions should be valid', () => {
+		expect(TransactionValidator.validateReferences([])).toEqual(true);
+	});
+
+	it('An array with no references should be valid', () => {
+		expect(TransactionValidator.validateReferences([ { }, { } ])).toEqual(true);
+	});
+
+	it('An array with distinct references should be valid', () => {
+		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1) ])).toEqual(true);
+	});
+
+	it('An array with non-distinct references should be not valid', () => {
+		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1), build('a', 2) ])).toEqual(false);
+	});
+});
+
 describe('When requesting all the user-initiated transaction types', () => {
 	'use strict';
 
@@ -9330,13 +9393,6 @@ describe('When requesting all the user-initiated transaction types', () => {
 		expect(userInitiated.length).toEqual(9);
 	});
 });
-
-describe('When validating direction', () => {
-	'use strict';
-
-
-});
-
 },{"./../../../lib/data/TransactionValidator":5,"@barchart/common-js/lang/Day":18}],37:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
