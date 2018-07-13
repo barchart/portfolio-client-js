@@ -1048,7 +1048,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Given a set of transaction, ensures that all sequence numbers and dates
+		 * Given an array of transactions, ensures that all sequence numbers and dates
 		 * are properly ordered.
 		 *
 		 * @public
@@ -1061,7 +1061,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Given a set of transaction, when transaction references are present, ensures
+		 * Given an array of transactions, when transaction references are present, ensures
 		 * that no transactions within the set reference the same transaction.
 		 *
 		 * @public
@@ -1099,7 +1099,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Given a set of transaction, returns the index of the first transaction that with an invalid
+		 * Given an array of transactions, returns the index of the first transaction that with an invalid
 		 * sequence number or date.
 		 *
 		 * @public
