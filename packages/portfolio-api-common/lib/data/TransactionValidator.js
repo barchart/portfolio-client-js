@@ -92,7 +92,7 @@ module.exports = (() => {
 		 * @public
 		 * @param {InstrumentType} instrumentType
 		 * @param {Boolean=} userInitiated
-		 * @pararm {PositionDirection=} currentDirection
+		 * @param {PositionDirection=} currentDirection
 		 * @returns {Array.<TransactionType>}
 		 */
 		static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
@@ -156,7 +156,9 @@ module.exports = (() => {
 		 * Determines if a transaction type is valid as the first transaction of
 		 * a position.
 		 *
+		 * @public
 		 * @param {TransactionType} transactionType
+		 * @returns {Boolean}
 		 */
 		static validateInitialTransactionType(transactionType) {
 			return transactionType.initial;
