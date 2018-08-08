@@ -217,7 +217,6 @@ module.exports = (() => {
 
 	formatters.set(TransactionType.FEE_UNITS, (t) => {
 		return {
-			total: t.charge.amount,
 			boughtSold: t.quantity
 		};
 	});
