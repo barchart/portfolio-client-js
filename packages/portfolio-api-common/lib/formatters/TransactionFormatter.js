@@ -154,7 +154,7 @@ module.exports = (() => {
 
 	formatters.set(TransactionType.DISTRIBUTION_FUND, (t) => {
 		return {
-			shares: t.snapshot.open.subtract(t.quantity),
+			shares: t.quantity,
 			fee: t.fee
 		};
 	});
