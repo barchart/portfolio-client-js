@@ -146,13 +146,18 @@ module.exports = (() => {
 	});
 
 	formatters.set(TransactionType.DIVIDEND_STOCK, (t) => {
-		const rate = (is.object(t.dividend) && is.string(t.dividend.rate)) || '';
-
-		return {
+		const data = {
 			boughtSold: t.quantity,
-			shares: t.snapshot.open.subtract(t.quantity),
-			rate: rate
+			fee: t.fee
 		};
+
+		if (t.dividend && t.dividend.rate && t.dividend.price) {
+			data.shares = t.snapshot.open.subtract(t.quantity);
+			data.price = t.dividend.price;
+			data.rate = t.dividend.rate;
+		}
+
+		return data;
 	});
 
 	formatters.set(TransactionType.DIVIDEND_REINVEST, (t) => {
@@ -174,22 +179,18 @@ module.exports = (() => {
 	});
 
 	formatters.set(TransactionType.DISTRIBUTION_FUND, (t) => {
-		let rate;
-		let price;
-
-		if (t.rate && t.price) {
-			rate = t.rate;
-			price = t.price;
-		} else {
-			rate = null;
-			price = null;
-		}
-
-		return {
+		const data = {
 			boughtSold: t.quantity,
-			shares: t.snapshot.open.subtract(t.quantity),
 			fee: t.fee
 		};
+
+		if (t.dividend && t.dividend.rate && t.dividend.price) {
+			data.shares = t.snapshot.open.subtract(t.quantity);
+			data.price = t.dividend.price;
+			data.rate = t.dividend.rate;
+		}
+
+		return data;
 	});
 
 	formatters.set(TransactionType.DISTRIBUTION_REINVEST, (t) => {
