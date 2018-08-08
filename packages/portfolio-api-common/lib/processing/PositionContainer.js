@@ -123,7 +123,7 @@ module.exports = (() => {
 
 			this._forexSymbols = forexCurrencyCodes.reduce((symbols, code) => {
 				if (code !== DEFAULT_CURRENCY.code) {
-					symbols.push(`^${DEFAULT_CURRENCY.code}${code}`);
+					symbols.push(`^${code}${DEFAULT_CURRENCY.code}`);
 				}
 
 				return symbols;
@@ -146,6 +146,8 @@ module.exports = (() => {
 			}, { });
 
 			Object.keys(this._portfolios).forEach(key => updateEmptyPortfolioGroups.call(this, this._portfolios[key]));
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -222,11 +224,9 @@ module.exports = (() => {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
 
-			this.startTransaction(() => {
-				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
+			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
 
-				updateEmptyPortfolioGroups.call(this, portfolio);
-			});
+			updateEmptyPortfolioGroups.call(this, portfolio);
 		}
 
 		/**
@@ -241,19 +241,19 @@ module.exports = (() => {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
 
-			this.startTransaction(() => {
-				getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => removePositionItem.call(this, item));
+			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => removePositionItem.call(this, item));
 
-				delete this._portfolios[portfolio.portfolio];
+			delete this._portfolios[portfolio.portfolio];
 
-				Object.keys(this._trees).forEach((key) => {
-					this._trees[key].walk((group, groupNode) => {
-						if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
-							severGroupNode.call(this, groupNode);
-						}
-					}, true, false);
-				});
+			Object.keys(this._trees).forEach((key) => {
+				this._trees[key].walk((group, groupNode) => {
+					if (group.definition.type === PositionLevelType.PORTFOLIO && group.key === PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
+						severGroupNode.call(this, groupNode);
+					}
+				}, true, false);
 			});
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -274,56 +274,56 @@ module.exports = (() => {
 				return;
 			}
 
-			this.startTransaction(() => {
-				const existingBarchartSymbols = this.getPositionSymbols(false);
+			const existingBarchartSymbols = this.getPositionSymbols(false);
 
-				removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
+			removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
 
-				summaries.forEach((summary) => {
-					addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
-					addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
-				});
-
-				const item = createPositionItem.call(this, position);
-
-				addBarchartSymbol(this._symbols, item);
-				addDisplaySymbol(this._symbolsDisplay, item);
-
-				this._items.push(item);
-
-				const createGroupOrInjectItem = (parentTree, treeDefinition, levelDefinitions) => {
-					if (levelDefinitions.length === 0) {
-						return;
-					}
-
-					const levelDefinition = levelDefinitions[0];
-					const levelKey = levelDefinition.keySelector(item);
-
-					let groupTree;
-
-					if (parentTree.getChildren().length > 0) {
-						groupTree = parentTree.findChild(childGroup => childGroup.key === levelKey) || null;
-					} else {
-						groupTree = null;
-					}
-
-					if (groupTree !== null) {
-						groupTree.getValue().addItem(item);
-
-						createGroupOrInjectItem(groupTree, treeDefinition, array.dropLeft(levelDefinitions));
-					} else {
-						createGroups.call(this, parentTree, [ item ], treeDefinition, levelDefinitions, [ ]);
-					}
-				};
-
-				this._definitions.forEach(definition => createGroupOrInjectItem(this._trees[definition.name], definition, definition.definitions));
-
-				const addedBarchartSymbol = extractSymbolForBarchart(item.position);
-
-				if (addedBarchartSymbol !== null && !existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === addedBarchartSymbol)) {
-					this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
-				}
+			summaries.forEach((summary) => {
+				addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
+				addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
 			});
+
+			const item = createPositionItem.call(this, position);
+
+			addBarchartSymbol(this._symbols, item);
+			addDisplaySymbol(this._symbolsDisplay, item);
+
+			this._items.push(item);
+
+			const createGroupOrInjectItem = (parentTree, treeDefinition, levelDefinitions) => {
+				if (levelDefinitions.length === 0) {
+					return;
+				}
+
+				const levelDefinition = levelDefinitions[0];
+				const levelKey = levelDefinition.keySelector(item);
+
+				let groupTree;
+
+				if (parentTree.getChildren().length > 0) {
+					groupTree = parentTree.findChild(childGroup => childGroup.key === levelKey) || null;
+				} else {
+					groupTree = null;
+				}
+
+				if (groupTree !== null) {
+					groupTree.getValue().addItem(item);
+
+					createGroupOrInjectItem(groupTree, treeDefinition, array.dropLeft(levelDefinitions));
+				} else {
+					createGroups.call(this, parentTree, [ item ], treeDefinition, levelDefinitions, [ ]);
+				}
+			};
+
+			this._definitions.forEach(definition => createGroupOrInjectItem(this._trees[definition.name], definition, definition.definitions));
+
+			const addedBarchartSymbol = extractSymbolForBarchart(item.position);
+
+			if (addedBarchartSymbol !== null && !existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === addedBarchartSymbol)) {
+				this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
+			}
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -337,6 +337,8 @@ module.exports = (() => {
 			assert.argumentIsRequired(position.position, 'position.position', String);
 
 			removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
+
+			recalculatePercentages.call(this);
 		}
 
 		/**
@@ -370,19 +372,54 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Updates the quote for a single symbol; causing updates to any grouping
-		 * level that contains the position(s) for the symbol.
+		 * Performs a batch update of both position quotes and forex quotes,
+		 * triggering updates to position(s) and data aggregation(s).
 		 *
 		 * @public
-		 * @param {String} symbol
-		 * @param {Object} quote
+		 * @param {Array.<Object>} positionQuotes
+		 * @param {Array.<Object>} forexQuotes
 		 */
-		setPositionQuote(symbol, quote) {
-			assert.argumentIsRequired(symbol, 'symbol', String);
-			assert.argumentIsRequired(quote, 'quote', Object);
+		setQuotes(positionQuotes, forexQuotes) {
+			assert.argumentIsArray(positionQuotes, 'positionQuotes');
+			assert.argumentIsArray(forexQuotes, 'forexQuotes');
 
-			if (this._symbols.hasOwnProperty(symbol)) {
-				this._symbols[symbol].forEach(item => item.setQuote(quote));
+			if (positionQuotes.length !== 0) {
+				positionQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					if (symbol) {
+						if (this._symbols.hasOwnProperty(symbol)) {
+							this._symbols[ symbol ].forEach(item => item.setQuote(quote));
+						}
+					}
+				});
+			}
+
+			if (forexQuotes.length !== 0) {
+				forexQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					if (symbol) {
+						const rate = Rate.fromPair(quote.lastPrice, symbol);
+						const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
+
+						if (index < 0) {
+							this._forexQuotes.push(rate);
+						} else {
+							this._forexQuotes[index] = rate;
+						}
+
+						Object.keys(this._trees).forEach((key) => {
+							this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false);
+						});
+
+						recalculatePercentages.call(this);
+					}
+				});
+			}
+
+			if (positionQuotes.length !== 0 || forexQuotes.length !== 0) {
+				recalculatePercentages.call(this);
 			}
 		}
 
@@ -404,30 +441,6 @@ module.exports = (() => {
 		 */
 		getForexQuotes() {
 			return this._forexQuotes;
-		}
-
-		/**
-		 * Updates the forex quote for a single currency pair; causing updates to
-		 * any grouping level that contains that requires translation.
-		 *
-		 * @public
-		 * @param {String} symbol
-		 * @param {Object} quote
-		 */
-		setForexQuote(symbol, quote) {
-			assert.argumentIsRequired(symbol, 'symbol', String);
-			assert.argumentIsRequired(quote, 'quote', Object);
-
-			const rate = Rate.fromPair(quote.lastPrice, symbol);
-			const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
-
-			if (index < 0) {
-				this._forexQuotes.push(rate);
-			} else {
-				this._forexQuotes[index] = rate;
-			}
-
-			Object.keys(this._trees).forEach(key => this._trees[key].walk(group => group.setForexRate(rate), true, false));
 		}
 
 		/**
@@ -542,7 +555,7 @@ module.exports = (() => {
 		 * Returns all portfolios in the container.
 		 *
 		 * @public
-		 * @return {Array.<Object>}
+		 * @returns {Array.<Object>}
 		 */
 		getPortfolios() {
 			return Object.keys(this._portfolios).map(id => this._portfolios[id]);
@@ -553,7 +566,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} portfolio
-		 * @return {Array.<Object>}
+		 * @returns {Array.<Object>}
 		 */
 		getPositions(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', String);
@@ -570,45 +583,12 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} portfolio
 		 * @param {String} position
-		 * @return {Object|null}
+		 * @returns {Object|null}
 		 */
 		getPosition(portfolio, position) {
 			assert.argumentIsRequired(position, 'position', String);
 
 			return this.getPositions(portfolio).find(p => p.position === position) || null;
-		}
-
-		/**
-		 * Pauses aggregation calculations during the processing of an action.
-		 *
-		 * @public
-		 * @param {Function} executor
-		 * @param {String=|Array.<String>=} names
-		 */
-		startTransaction(executor, names) {
-			let namesToUse;
-
-			if (is.array(names)) {
-				assert.argumentIsArray(names, 'names', String);
-
-				namesToUse = names;
-			} else {
-				assert.argumentIsOptional(names, 'names', String);
-
-				if (names) {
-					namesToUse = [ names ];
-				} else {
-					namesToUse = Object.keys(this._trees);
-				}
-			}
-
-			assert.argumentIsRequired(executor, 'executor', Function);
-
-			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(true), false, false));
-
-			executor(this);
-
-			namesToUse.forEach((name) => this._trees[name].walk(group => group.setSuspended(false), false, false));
 		}
 
 		/**
@@ -739,18 +719,14 @@ module.exports = (() => {
 				}
 			}
 		}));
-
-		addGroupBinding.call(this, group, group.registerMarketPercentChangeHandler(() => {
-			if (!groupTree.getIsRoot()) {
-				groupTree.getParent().walk((childGroup) => childGroup.refreshMarketPercent());
-			}
-		}));
 	}
 
 	function createGroups(parentTree, items, treeDefinition, levelDefinitions, overrideRequiredGroups) {
 		if (levelDefinitions.length === 0) {
 			return;
 		}
+
+		const rates = this._forexQuotes;
 
 		const levelDefinition = levelDefinitions[0];
 
@@ -759,7 +735,7 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(this, levelDefinition, items, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
+			list.push(new PositionGroup(levelDefinition, items, rates, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
 
 			return list;
 		}, [ ]);
@@ -772,7 +748,7 @@ module.exports = (() => {
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(this, levelDefinition, [ ], group.currency, group.key, group.description);
+			return new PositionGroup(levelDefinition, [ ], rates, group.currency, group.key, group.description);
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
@@ -811,6 +787,9 @@ module.exports = (() => {
 			const childTree = parentTree.addChild(group);
 
 			this._nodes[group.id] = childTree;
+
+			group.setParentGroup(this.getParentGroup(group));
+			group.setPortfolioGroup(this.getParentGroupForPortfolio(group));
 
 			initializeGroupObservers.call(this, childTree, treeDefinition);
 
@@ -950,6 +929,12 @@ module.exports = (() => {
 	function severGroupNode(groupNodeToSever) {
 		groupNodeToSever.sever();
 		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
+	}
+
+	function recalculatePercentages() {
+		Object.keys(this._trees).forEach((key) => {
+			this._trees[key].walk(group => group.refreshMarketPercent(), false, false);
+		});
 	}
 
 	return PositionContainer;

@@ -1,9 +1,13 @@
 const assert = require('@barchart/common-js/lang/assert'),
+	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
+	comparators = require('@barchart/common-js/collections/sorting/comparators'),
+	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is'),
 	formatter = require('@barchart/common-js/lang/formatter');
 
-const TransactionType = require('./../data/TransactionType');
+const InstrumentType = require('./../data/InstrumentType'),
+	TransactionType = require('./../data/TransactionType');
 
 module.exports = (() => {
 	'use strict';
@@ -19,33 +23,30 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Maps transaction objects into new objects whose properties are human-readable or,
-		 * optionally returns the original objects with a "formatted" property appended to
-		 * each transaction.
+		 * Maps transaction objects into new objects whose properties are human-readable (or
+		 * mutates the original objects, adding a "formatted" property to each transaction).
 		 *
 		 * @public
 		 * @static
-		 * @param {Array<Object>} transactions
-		 * @param {Array<Object>} positions
-		 * @param {Boolean=} append - Warning, if true, the transaction array will be mutated.
+		 * @param {Array.<Object>} transactions
+		 * @param {Array.<Object>} positions
+		 * @param {Boolean=} mutate
 		 * @returns {Array}
 		 */
-		static format(transactions, positions, append) {
+		static format(transactions, positions, mutate) {
 			assert.argumentIsArray(transactions, 'transactions');
 			assert.argumentIsArray(positions, 'positions');
-			assert.argumentIsOptional(append, 'append', Boolean);
+			assert.argumentIsOptional(mutate, 'mutate', Boolean);
 
 			const instruments = positions.reduce((map, p) => {
 				const instrument = Object.assign({ }, p.instrument || { });
-
-				delete instrument.id;
 
 				map[p.position] = instrument;
 
 				return map;
 			}, { });
 
-			return transactions.reduce((list, transaction) => {
+			const a = transactions.reduce((list, transaction) => {
 				const position = transaction.position;
 
 				if (instruments.hasOwnProperty(position)) {
@@ -69,7 +70,7 @@ module.exports = (() => {
 
 					let transactionToInsert;
 
-					if (append) {
+					if (mutate) {
 						transaction.formatted = formatted;
 
 						transactionToInsert = transaction;
@@ -82,6 +83,26 @@ module.exports = (() => {
 
 				return list;
 			}, [ ]);
+
+			a.sort(comparator);
+
+			a.forEach((t) => {
+				delete t.instrument.id;
+			});
+
+			return a;
+		}
+
+		/**
+		 * Sorts an array of formatted transaction objects.
+		 *
+		 * @public
+		 * @static
+		 * @param {Array.<Object>} transactions
+		 * @returns {Array}
+		 */
+		sort(transactions) {
+			return transactions.sort(comparator);
 		}
 
 		toString() {
@@ -93,6 +114,7 @@ module.exports = (() => {
 		return {
 			date: t.date,
 			type: t.type.display,
+			code: t.type.code,
 			sequence: t.sequence,
 			instrument: i,
 			position: t.position
@@ -124,13 +146,22 @@ module.exports = (() => {
 	});
 
 	formatters.set(TransactionType.DIVIDEND_STOCK, (t) => {
-		const shares = t.snapshot.open.subtract(t.quantity);
 		const rate = (is.object(t.dividend) && is.string(t.dividend.rate)) || '';
 
 		return {
 			boughtSold: t.quantity,
-			shares: shares,
+			shares: t.snapshot.open.subtract(t.quantity),
 			rate: rate
+		};
+	});
+
+	formatters.set(TransactionType.DIVIDEND_REINVEST, (t) => {
+		return {
+			boughtSold: t.quantity,
+			shares: t.snapshot.open.subtract(t.quantity),
+			price: t.dividend.price,
+			fee: t.fee,
+			rate: t.dividend.rate
 		};
 	});
 
@@ -142,20 +173,25 @@ module.exports = (() => {
 		};
 	});
 
-	formatters.set(TransactionType.DIVIDEND_REINVEST, (t) => {
+	formatters.set(TransactionType.DISTRIBUTION_FUND, (t) => {
 		return {
 			shares: t.snapshot.open.subtract(t.quantity),
-			price: t.dividend.price,
-			fee: t.fee,
-			total: t.quantity,
-			rate: t.dividend.rate
+			fee: t.fee
 		};
 	});
 
-	formatters.set(TransactionType.DISTRIBUTION_FUND, (t) => {
+	formatters.set(TransactionType.DISTRIBUTION_REINVEST, (t) => {
 		return {
+<<<<<<< HEAD
 			shares: t.quantity,
 			fee: t.fee
+=======
+			boughtSold: t.quantity,
+			shares: t.snapshot.open.subtract(t.quantity),
+			price: t.dividend.price,
+			fee: t.fee,
+			rate: t.dividend.rate
+>>>>>>> ec3861f5eeab5fdbfa9275d5ef3f5b988b90999b
 		};
 	});
 
@@ -187,8 +223,18 @@ module.exports = (() => {
 	});
 
 	formatters.set(TransactionType.VALUATION, (t) => {
+		let rate;
+
+		if (t.valuation.rate) {
+			rate = t.valuation.rate;
+		} else if (t.snapshot.open.getIsZero()) {
+			rate = null;
+		} else {
+			rate = t.valuation.value.divide(t.snapshot.open);
+		}
+
 		return {
-			price: t.valuation.value
+			price: rate
 		};
 	});
 
@@ -216,6 +262,24 @@ module.exports = (() => {
 
 		return formatted;
 	});
+
+	function getInstrumentTypePriority(type) {
+		if (type === InstrumentType.CASH) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	const comparator = ComparatorBuilder.startWith((a, b) => {
+		return Day.compareDays(a.date, b.date);
+	}).thenBy((a, b) => {
+		return comparators.compareNumbers(getInstrumentTypePriority(a.instrument.type), getInstrumentTypePriority(b.instrument.type));
+	}).thenBy((a, b) => {
+		return comparators.compareStrings(a.instrument.id, b.instrument.id);
+	}).thenBy((a, b) => {
+		return comparators.compareNumbers(a.sequence, b.sequence);
+	}).toComparator();
 
 	return TransactionFormatter;
 })();

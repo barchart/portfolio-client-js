@@ -20,12 +20,16 @@ module.exports = (() => {
 	 * @param {Function} descriptionCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator, startDateCalculator, descriptionCalculator) {
+		constructor(code, description, unique, rangeCalculator, startDateCalculator, descriptionCalculator) {
 			super(code, description);
+
+			assert.argumentIsRequired(unique, 'unique', Boolean);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
 			assert.argumentIsRequired(startDateCalculator, 'startDateCalculator', Function);
 			assert.argumentIsRequired(descriptionCalculator, 'descriptionCalculator', Function);
+
+			this._unique = unique;
 
 			this._rangeCalculator = rangeCalculator;
 			this._startDateCalculator = startDateCalculator;
@@ -33,12 +37,24 @@ module.exports = (() => {
 		}
 
 		/**
+		 * If true, only one summary, of the given type, can exist for a
+		 * position. If false, multiple summaries, of the given type, can
+		 * exist for a position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get unique() {
+			return this._unique;
+		}
+
+		/**
 		 * Returns a human-readable description of the frame, given
 		 * start and end dates.
 		 *
 		 * @public
-		 * @return {PositionSummaryRange} range
-		 * @return {String}
+		 * @returns {PositionSummaryRange} range
+		 * @returns {String}
 		 */
 		describeRange(range) {
 			return this._descriptionCalculator(range.start, range.end);
@@ -129,10 +145,10 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', false, getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
 
 	/**
 	 * The start and and date for a {@link PositionSummaryFrame}

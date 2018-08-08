@@ -33,13 +33,17 @@ module.exports = (() => {
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(container, definition, items, currency, key, description, aggregateCash) {
+		constructor(definition, items, rates, currency, key, description, aggregateCash) {
 			this._id = counter++;
 
 			this._definition = definition;
-			this._container = container;
 
 			this._items = items;
+			this._rates = rates;
+
+			this._parentGroup = null;
+			this._portfolioGroup = null;
+
 			this._currency = currency || Currency.CAD;
 			this._bypassCurrencyTranslation = false;
 
@@ -50,10 +54,8 @@ module.exports = (() => {
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
-			this._suspended = false;
 			this._showClosedPositions = false;
 
-			this._marketPercentChangeEvent = new Event(this);
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
 
@@ -69,6 +71,7 @@ module.exports = (() => {
 			this._dataFormat.key = this._key;
 			this._dataFormat.description = this._description;
 			this._dataFormat.hide = false;
+			this._dataFormat.invalid = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
 			this._dataFormat.basisPrice = null;
@@ -114,7 +117,6 @@ module.exports = (() => {
 			this._dataFormat.quoteChangeNegative = false;
 
 			this._dataActual.currentPrice = null;
-			this._dataActual.previousPrice = null;
 			this._dataActual.basis = null;
 			this._dataActual.realized = null;
 			this._dataActual.income = null;
@@ -130,7 +132,6 @@ module.exports = (() => {
 			this._dataActual.cashTotal = null;
 
 			this._dataFormat.currentPrice = null;
-			this._dataFormat.previousPrice = null;
 			this._dataFormat.basis = null;
 			this._dataFormat.realized = null;
 			this._dataFormat.income = null;
@@ -252,10 +253,6 @@ module.exports = (() => {
 			return this._single;
 		}
 
-		get suspended() {
-			return this._suspended;
-		}
-
 		/**
 		 * Indicates if the group should be excluded from higher-level aggregations.
 		 *
@@ -264,6 +261,40 @@ module.exports = (() => {
 		 */
 		get excluded() {
 			return this._excluded;
+		}
+
+		/**
+		 * Sets the immediate parent group (allowing for calculation of relative
+		 * percentages).
+		 *
+		 * @public
+		 * @param {PortfolioGroup} group
+		 */
+		setParentGroup(group) {
+			assert.argumentIsOptional(group, 'group', PositionGroup, 'PositionGroup');
+
+			if (this._parentGroup !== null) {
+				throw new Error('The parent group has already been set.');
+			}
+
+			this._parentGroup = group;
+		}
+
+		/**
+		 * Sets the nearest parent group for a portfolio (allowing for calculation
+		 * of relative percentages).
+		 *
+		 * @public
+		 * @param {PortfolioGroup} group
+		 */
+		setPortfolioGroup(group) {
+			assert.argumentIsOptional(group, 'group', PositionGroup, 'PositionGroup');
+
+			if (this._portfolioGroup !== null) {
+				throw new Error('The portfolio group has already been set.');
+			}
+
+			this._portfolioGroup = group;
 		}
 
 		/**
@@ -311,9 +342,11 @@ module.exports = (() => {
 		 * Causes aggregated data to be recalculated using a new exchange rate.
 		 *
 		 * @public
-		 * @param {Rate} rate
+		 * @param {Array.<Rate>} rate
 		 */
-		setForexRate(rate) {
+		setForexRates(rates) {
+			this._rates = rates;
+
 			if (!this._bypassCurrencyTranslation) {
 				this.refresh();
 			}
@@ -339,24 +372,6 @@ module.exports = (() => {
 
 			if (this._showClosedPositions !== value) {
 				this._showClosedPositionsChangeEvent.fire(this._showClosedPositions = value);
-			}
-		}
-
-		/**
-		 * Stops (or starts) group-level aggregation calculations.
-		 *
-		 * @public
-		 * @param {Boolean} value
-		 */
-		setSuspended(value) {
-			assert.argumentIsRequired(value, 'value', Boolean);
-
-			if (this._suspended !== value) {
-				this._suspended = value;
-
-				if (!this._suspended) {
-					this.refresh();
-				}
 			}
 		}
 
@@ -391,20 +406,13 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Causes all aggregated data to be recalculated (assuming the group has not
-		 * been suspended).
+		 * Causes all aggregated data to be recalculated.
 		 *
 		 * @public
 		 */
 		refresh() {
-			if (this._suspended) {
-				return;
-			}
-
-			const rates = this._container.getForexQuotes();
-
-			calculateStaticData(this, rates);
-			calculatePriceData(this, rates, null, true);
+			calculateStaticData(this, this._rates, this._definition);
+			calculatePriceData(this, this._rates, null, true);
 		}
 
 		/**
@@ -414,7 +422,7 @@ module.exports = (() => {
 		 * @public
 		 */
 		refreshMarketPercent() {
-			calculateMarketPercent(this, this._container.getForexQuotes(), true);
+			calculateMarketPercent(this, this._rates, this._parentGroup, this._portfolioGroup);
 		}
 
 		/**
@@ -428,23 +436,12 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Adds an observer for change in the market percentage of the group.
-		 *
-		 * @public
-		 * @param {Function} handler
-		 * @return {Disposable}
-		 */
-		registerMarketPercentChangeHandler(handler) {
-			return this._marketPercentChangeEvent.register(handler);
-		}
-
-		/**
 		 * Adds an observer for changes to the exclusion of the group
 		 * from higher level aggregations.
 		 *
 		 * @public
 		 * @param {Function} handler
-		 * @return {Disposable}
+		 * @returns {Disposable}
 		 */
 		registerGroupExcludedChangeHandler(handler) {
 			return this._groupExcludedChangeEvent.register(handler);
@@ -492,24 +489,67 @@ module.exports = (() => {
 				this._dataFormat.currentPrice = null;
 			}
 
-			calculatePriceData(this, this._container.getForexQuotes(), sender, false);
+			calculatePriceData(this, this._rates, sender, false);
+		});
+
+		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
+			if (this._single) {
+				this._dataFormat.fundamental = data;
+			} else {
+				const fundamentalFields = [ 'percentChange1m', 'percentChange1y', 'percentChange3m', 'percentChangeYtd' ];
+
+				const fundamentalData = this.items.reduce((sums, item, i) => {
+					if (item.data && item.data.fundamental && item.data.fundamental.raw) {
+						const fundamental = item.data.fundamental.raw;
+
+						fundamentalFields.forEach((fieldName) => {
+							const summary = sums[fieldName];
+							const value = fundamental[fieldName];
+
+							if (is.number(value)) {
+								summary.total = sums[fieldName].total + value;
+								summary.count = sums[fieldName].count + 1;
+							}
+
+							if ((i + 1) == this.items.length) {
+								let averageFormat;
+
+								if (summary.count > 0) {
+									averageFormat = formatPercent(new Decimal(summary.total / summary.count), 2, true);
+								} else {
+									averageFormat = '--';
+								}
+
+								summary.averageFormat = averageFormat;
+							}
+						});
+					}
+
+					return sums;
+				}, fundamentalFields.reduce((sums, fieldName) => {
+					sums[fieldName] = { total: 0, count: 0, averageFormat: '--' };
+
+					return sums;
+				}, { }));
+
+				this._dataFormat.fundamental = fundamentalFields.reduce((sums, fieldName) => {
+					sums[fieldName] = fundamentalData[fieldName].averageFormat;
+
+					return sums;
+				}, { });
+			}
 		});
 
 		let newsBinding = Disposable.getEmpty();
-		let fundamentalBinding = Disposable.getEmpty();
 
 		if (this._single) {
-			newsBinding = item.registerNewsExistsChangeHandler((exists, sender) => {
+			newsBinding = item.registerNewsExistsChangeHandler((exists) => {
 				this._dataActual.newsExists = exists;
 				this._dataFormat.newsExists = exists;
 			});
-
-			fundamentalBinding = item.registerFundamentalDataChangeHandler((data, sender) => {
-				this._dataFormat.fundamental = data;
-			});
 		}
 
-		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio, sender) => {
+		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio) => {
 			const descriptionSelector = this._definition.descriptionSelector;
 
 			this._description = descriptionSelector(this._items[0]);
@@ -553,9 +593,17 @@ module.exports = (() => {
 		}
 	}
 
-	function formatPercent(decimal, precision) {
+	function formatPercent(decimal, precision, plus) {
 		if (decimal !== null) {
-			return formatDecimal(decimal.multiply(100), precision) + '%';
+			let prefix;
+
+			if (is.boolean(plus) && plus && !Decimal.getIsNegative(decimal)) {
+				prefix = '+';
+			} else {
+				prefix = '';
+			}
+
+			return `${prefix}${formatDecimal(decimal.multiply(100), precision)}%`;
 		} else {
 			return '—';
 		}
@@ -565,11 +613,7 @@ module.exports = (() => {
 		return formatDecimal(decimal, currency.precision);
 	}
 
-	function calculateStaticData(group, rates) {
-		if (group.suspended) {
-			return;
-		}
-
+	function calculateStaticData(group, rates, definition) {
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
@@ -626,7 +670,7 @@ module.exports = (() => {
 		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
-		format.realized = formatCurrency(actual.basis, currency);
+		format.realized = formatCurrency(actual.realized, currency);
 		format.unrealized = formatCurrency(actual.unrealized, currency);
 		format.income = formatCurrency(actual.income, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
@@ -646,6 +690,8 @@ module.exports = (() => {
 
 			format.quantity = formatDecimal(actual.quantity, 2);
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
+
+			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 		}
 
 		const groupItems = group._items;
@@ -666,10 +712,6 @@ module.exports = (() => {
 	}
 
 	function calculatePriceData(group, rates, item, forceRefresh) {
-		if (group.suspended) {
-			return;
-		}
-
 		const currency = group.currency;
 
 		const actual = group._dataActual;
@@ -730,7 +772,7 @@ module.exports = (() => {
 		actual.unrealized = updates.unrealized;
 		actual.unrealizedToday = updates.unrealizedToday;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
-		actual.total = updates.unrealizedToday.add(actual.realized).add(actual.income);
+		actual.total = updates.unrealized.add(actual.realized).add(actual.income);
 		
 		format.market = formatCurrency(actual.market, currency);
 		
@@ -750,26 +792,19 @@ module.exports = (() => {
 
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
-		
-		calculateMarketPercent(group, rates, false);
+
 		calculateUnrealizedPercent(group);
 	}
 
-	function calculateMarketPercent(group, rates, silent) {
-		if (group.suspended) {
-			return;
-		}
-
+	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 		const excluded = group._excluded;
 
-		const portfolioParent = group._container.getParentGroupForPortfolio(group);
-
 		const calculatePercent = (parent) => {
 			let marketPercent;
 
-			if (parent !== null && !excluded) {
+			if (parent && !excluded) {
 				const parentData = parent._dataActual;
 
 				if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsZero()) {
@@ -792,14 +827,15 @@ module.exports = (() => {
 			return marketPercent;
 		};
 
-		actual.marketPercent = calculatePercent(group._container.getParentGroup(group));
+		actual.marketPercent = calculatePercent(parentGroup);
 		format.marketPercent = formatPercent(actual.marketPercent, 2);
 
-		actual.marketPercentPortfolio = calculatePercent(group._container.getParentGroupForPortfolio(group));
-		format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
-
-		if (!silent) {
-			group._marketPercentChangeEvent.fire(group);
+		if (parentGroup === portfolioGroup) {
+			actual.marketPercentPortfolio = actual.marketPercent;
+			format.marketPercentPortfolio = format.marketPercent;
+		} else {
+			actual.marketPercentPortfolio = calculatePercent(portfolioGroup);
+			format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
 		}
 	}
 

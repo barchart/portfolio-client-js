@@ -54,7 +54,7 @@ module.exports = (() => {
 		 * group (from the current tree) is excluded.
 		 *
 		 * @public
-		 * @return {Array.<String>}
+		 * @returns {Array.<String>}
 		 */
 		get exclusionDependencies() {
 			return this._exclusionDependencies;

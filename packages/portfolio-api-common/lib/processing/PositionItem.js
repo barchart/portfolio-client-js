@@ -27,7 +27,11 @@ module.exports = (() => {
 
 			this._portfolio = portfolio;
 			this._position = position;
-			this._currency = position.instrument.currency || Currency.CAD;
+
+			const instrument = position.instrument;
+
+			this._currency = instrument.currency || Currency.CAD;
+			this._invalid = instrument.type.usesSymbols && (!is.object(instrument.symbol) || !is.string(instrument.symbol.barchart));
 
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];
@@ -108,7 +112,17 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The year-to-date position summary of the encapsulated position.
+		 * Indicates if the position's symbol is invalid.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get invalid() {
+			return this._invalid;
+		}
+
+		/**
+		 * The year-to-date summary of the encapsulated position.
 		 *
 		 * @public
 		 * @returns {Object}
@@ -175,6 +189,10 @@ module.exports = (() => {
 			}
 
 			if (this._currentPricePrevious !== quote.lastPrice) {
+				if (quote.previousPrice) {
+					this._data.previousPrice = quote.previousPrice;
+				}
+
 				calculatePriceData(this, quote.lastPrice);
 
 				this._currentPricePrevious = this._currentPrice;
@@ -392,32 +410,51 @@ module.exports = (() => {
 
 		const summary = item.currentSummary;
 
-		if (summary && price) {
-			const period = summary.period;
+		if (summary && position.instrument.type !== InstrumentType.CASH) {
+			let priceToUse;
 
-			let unrealized = summary.end.open.multiply(price).add(summary.end.basis);
-			let unrealizedChange;
-
-			if (data.unrealizedToday !== null) {
-				unrealizedChange = unrealized.subtract(data.unrealized);
+			if (price) {
+				priceToUse = price;
+			} else if (data.previousPrice) {
+				priceToUse = new Decimal(data.previousPrice);
+			} else if (!summary.end.open.getIsZero()) {
+				priceToUse = summary.end.value.divide(summary.end.open);
 			} else {
-				unrealizedChange = Decimal.ZERO;
+				priceToUse = null;
 			}
 
-			let summaryTotalCurrent = period.realized.add(period.income).add(unrealized);
-			let summaryTotalCurrentChange;
+			if (priceToUse !== null) {
+				const period = summary.period;
 
-			if (data.summaryTotalCurrent !== null) {
-				summaryTotalCurrentChange = summaryTotalCurrent.subtract(data.summaryTotalCurrent);
-			}  else {
-				summaryTotalCurrentChange = Decimal.ZERO;
+				let unrealized = summary.end.open.multiply(priceToUse).add(summary.end.basis);
+				let unrealizedChange;
+
+				if (data.unrealized !== null) {
+					unrealizedChange = unrealized.subtract(data.unrealized);
+				} else {
+					unrealizedChange = Decimal.ZERO;
+				}
+
+				let summaryTotalCurrent = period.realized.add(period.income).add(unrealized);
+				let summaryTotalCurrentChange;
+
+				if (data.summaryTotalCurrent !== null) {
+					summaryTotalCurrentChange = summaryTotalCurrent.subtract(data.summaryTotalCurrent);
+				} else {
+					summaryTotalCurrentChange = Decimal.ZERO;
+				}
+
+				data.summaryTotalCurrent = summaryTotalCurrent;
+				data.summaryTotalCurrentChange = summaryTotalCurrentChange;
+
+				data.unrealized = unrealized;
+				data.unrealizedChange = unrealizedChange;
+			} else {
+				data.summaryTotalCurrentChange = Decimal.ZERO;
+
+				data.unrealized = Decimal.ZERO;
+				data.unrealizedChange = Decimal.ZERO;
 			}
-
-			data.summaryTotalCurrent = summaryTotalCurrent;
-			data.summaryTotalCurrentChange = summaryTotalCurrentChange;
-
-			data.unrealized = unrealized;
-			data.unrealizedChange = unrealizedChange;
 		} else {
 			data.summaryTotalCurrentChange = Decimal.ZERO;
 

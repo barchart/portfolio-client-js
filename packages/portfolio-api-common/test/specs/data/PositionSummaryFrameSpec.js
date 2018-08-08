@@ -168,7 +168,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and yearly position summary ranges are processed for a transaction set closed in 2016, but has after-the-face superfluous valuations in 2017 and 2018', () => {
+	describe('and yearly position summary ranges are processed for a transaction set closed in 2016, but has after-the-fact superfluous valuations in 2017 and 2018', () => {
 		let ranges;
 
 		beforeEach(() => {

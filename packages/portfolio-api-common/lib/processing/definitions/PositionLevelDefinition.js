@@ -67,7 +67,7 @@ module.exports = (() => {
 		 * A general description of the type of items grouped together.
 		 *
 		 * @public
-		 * @return {PositionLevelType}
+		 * @returns {PositionLevelType}
 		 */
 		get type() {
 			return this._type;
@@ -160,7 +160,7 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Object} portfolio
-		 * @return {PositionLevelDefinition~RequiredGroup}
+		 * @returns {PositionLevelDefinition~RequiredGroup}
 		 */
 		static buildRequiredGroupForPortfolio(portfolio) {
 			return {
@@ -203,7 +203,7 @@ module.exports = (() => {
 		 * @static
 		 * @param {InstrumentType} type
 		 * @param {Currency} currency
-		 * @return {PositionLevelDefinition~RequiredGroup}
+		 * @returns {PositionLevelDefinition~RequiredGroup}
 		 */
 		static buildRequiredGroupForAssetClass(type, currency) {
 			return {

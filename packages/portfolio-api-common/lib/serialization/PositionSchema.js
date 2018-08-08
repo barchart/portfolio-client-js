@@ -87,8 +87,9 @@ module.exports = (() => {
 		.withField('position', DataType.STRING)
 		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
-		.withField('valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('cash', DataType.BOOLEAN, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
+		.withField('valuation', DataType.forEnum(ValuationType, 'ValuationType'))
 		.withField('snapshot.date', DataType.DAY)
 		.withField('snapshot.open', DataType.DECIMAL)
 		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
@@ -103,6 +104,7 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
+		.withField('root', DataType.STRING, true)
 		.schema
 	);
 
@@ -119,8 +121,9 @@ module.exports = (() => {
 		.withField('position', DataType.STRING)
 		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
-		.withField('valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('cash', DataType.BOOLEAN, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
+		.withField('valuation', DataType.forEnum(ValuationType, 'ValuationType'))
 		.withField('snapshot.date', DataType.DAY)
 		.withField('snapshot.open', DataType.DECIMAL)
 		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
@@ -137,6 +140,12 @@ module.exports = (() => {
 	const update = new PositionSchema(SchemaBuilder.withName('update')
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('mapping.name', DataType.STRING, true)
+		.withField('mapping.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
+		.withField('mapping.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('mapping.symbol.barchart', DataType.STRING, true)
+		.withField('mapping.symbol.display', DataType.STRING, true)
+		.withField('cash', DataType.BOOLEAN, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
 		.schema
 	);
