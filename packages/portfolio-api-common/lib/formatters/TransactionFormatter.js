@@ -175,23 +175,17 @@ module.exports = (() => {
 
 	formatters.set(TransactionType.DISTRIBUTION_FUND, (t) => {
 		return {
-			shares: t.snapshot.open.subtract(t.quantity),
+			shares: t.quantity,
 			fee: t.fee
 		};
 	});
 
 	formatters.set(TransactionType.DISTRIBUTION_REINVEST, (t) => {
 		return {
-<<<<<<< HEAD
-			shares: t.quantity,
-			fee: t.fee
-=======
-			boughtSold: t.quantity,
 			shares: t.snapshot.open.subtract(t.quantity),
 			price: t.dividend.price,
 			fee: t.fee,
 			rate: t.dividend.rate
->>>>>>> ec3861f5eeab5fdbfa9275d5ef3f5b988b90999b
 		};
 	});
 
