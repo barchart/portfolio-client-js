@@ -174,8 +174,20 @@ module.exports = (() => {
 	});
 
 	formatters.set(TransactionType.DISTRIBUTION_FUND, (t) => {
+		let rate;
+		let price;
+
+		if (t.rate && t.price) {
+			rate = t.rate;
+			price = t.price;
+		} else {
+			rate = null;
+			price = null;
+		}
+
 		return {
-			shares: t.quantity,
+			boughtSold: t.quantity,
+			shares: t.snapshot.open.subtract(t.quantity),
 			fee: t.fee
 		};
 	});
