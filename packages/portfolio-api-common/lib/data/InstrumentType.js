@@ -192,7 +192,7 @@ module.exports = (() => {
 			} else if (code === 5 || code == 15) {
 				return InstrumentType.FUND;
 			} else {
-				throw new Error('Unable to determine InstrumentType for [', code, ']');
+				throw new Error(`Unable to determine InstrumentType for [ ${code} ]`);
 			}
 		}
 
