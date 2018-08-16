@@ -12,6 +12,7 @@ module.exports = (() => {
 	 * @param {String} code
 	 * @param {String} description
 	 * @param {String} display
+	 * @param {Number} sequence
 	 * @param {Boolean} purchase
 	 * @param {Boolean} sale
 	 * @param {Boolean} income
@@ -24,10 +25,11 @@ module.exports = (() => {
 	 * @param {Boolean} eod
  	 */
 	class TransactionType extends Enum {
-		constructor(code, description, display, purchase, sale, income, opening, closing, fee, corporateAction, initial, significant, eod) {
+		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, significant) {
 			super(code, description);
 
 			assert.argumentIsRequired(display, 'display', String);
+			assert.argumentIsRequired(sequence, 'sequence', Number);
 			assert.argumentIsRequired(purchase, 'purchase', Boolean);
 			assert.argumentIsRequired(sale, 'sale', Boolean);
 			assert.argumentIsRequired(income, 'income', Boolean);
@@ -37,9 +39,9 @@ module.exports = (() => {
 			assert.argumentIsRequired(corporateAction, 'corporateAction', Boolean);
 			assert.argumentIsRequired(initial, 'initial', Boolean);
 			assert.argumentIsRequired(significant, 'significant', Boolean);
-			assert.argumentIsRequired(eod, 'eod', Boolean);
 
 			this._display = display;
+			this._sequence = sequence;
 			this._purchase = purchase;
 			this._sale = sale;
 			this._income = income;
@@ -49,7 +51,6 @@ module.exports = (() => {
 			this._corporateAction = corporateAction;
 			this._initial = initial;
 			this._significant = significant;
-			this._eod = eod;
 		}
 
 		/**
@@ -60,6 +61,17 @@ module.exports = (() => {
 		 */
 		get display() {
 			return this._display;
+		}
+
+		/**
+		 * Specifies ordering when multiple transactions occur on the same day, for
+		 * the same position.
+		 *
+		 * @public
+		 * @returns {Number}
+		 */
+		get sequence() {
+			return this._sequence;
 		}
 
 		/**
@@ -163,16 +175,6 @@ module.exports = (() => {
 		 */
 		get significant() {
 			return this._significant;
-		}
-
-		/**
-		 * Indicates if the transaction type should occur at the end of the day.
-		 *
-		 * @public
-		 * @returns {Boolean}
-		 */
-		get eod() {
-			return this._eod;
 		}
 
 		/**
@@ -389,28 +391,28 @@ module.exports = (() => {
 		}
 	}
 
-	const buy = new TransactionType('B', 'Buy', 'Buy', true, false, false, true, false, false, false, true, true, false);
-	const sell = new TransactionType('S', 'Sell', 'Sell', false, true, false, false, true, false, false, false, true, false);
-	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', true, false, false, false, true, false, false, false, true, false);
-	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', false, true, false, true, false, false, false, true, true, false);
-	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', false, false, true, false, false, false, true, false, false, true);
-	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', false, false, false, true, false, false, true, false, false, true);
-	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', false, false, false, true, false, false, true, false, false, true);
-	const split = new TransactionType('SP', 'Split', 'Split', false, false, false, true, false, false, true, false, false, true);
-	const fee = new TransactionType('F', 'Fee', 'Fee', false, false, false, false, false, true, false, false, false, false);
-	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', false, false, false, false, true, false, false, false, false, true);
+	const buy = new TransactionType('B', 'Buy', 'Buy', 0, true, false, false, true, false, false, false, true, true);
+	const sell = new TransactionType('S', 'Sell', 'Sell', 0, false, true, false, false, true, false, false, false, true);
+	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', 0, true, false, false, false, true, false, false, false, true);
+	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', 0, false, true, false, true, false, false, false, true, true);
+	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 0, false, false, true, false, false, false, true, false, false);
+	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false);
+	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false);
+	const split = new TransactionType('SP', 'Split', 'Split', 2, false, false, false, true, false, false, true, false, false);
+	const fee = new TransactionType('F', 'Fee', 'Fee', false, 0, false, false, false, false, true, false, false, false);
+	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
 
-	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', false, false, true, false, false, false, true, false, false, true);
-	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', false, false, false, true, false, false, true, false, false, true);
-	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', false, false, false, true, false, false, true, false, false, true);
+	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
+	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
+	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', 1, false, false, false, true, false, false, true, false, false);
 
-	const deposit = new TransactionType('D', 'Deposit', 'Deposit', false, false, false, false, false, false, false, true, true, false);
-	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', false, false, false, false, false, false, false, true, true, false);
-	const debit = new TransactionType('DR', 'Debit', 'Debit', false, false, false, false, false, false, false, true, true, false);
-	const credit = new TransactionType('CR', 'Credit', 'Credit', false, false, false, false, false, false, false, true, true, false);
+	const deposit = new TransactionType('D', 'Deposit', 'Deposit', 0, false, false, false, false, false, false, false, true, true);
+	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', 0, false, false, false, false, false, false, false, true, true);
+	const debit = new TransactionType('DR', 'Debit', 'Debit', 0, false, false, false, false, false, false, false, true, true);
+	const credit = new TransactionType('CR', 'Credit', 'Credit', 0, false, false, false, false, false, false, false, true, true);
 
-	const valuation = new TransactionType('V', 'Valuation', 'Valuation', false, false, false, false, false, false, false, false, false, false);
-	const income = new TransactionType('I', 'Income', 'Income', false, false, true, false, false, false, false, false, false, false);
+	const valuation = new TransactionType('V', 'Valuation', 'Valuation', 0, false, false, false, false, false, false, false, false, false);
+	const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
 
 	return TransactionType;
 })();
