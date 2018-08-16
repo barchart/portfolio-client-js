@@ -109,7 +109,7 @@ module.exports = (() => {
 
 		/**
 		 * Indicates if fractional shares should be closed when the position
-		 * size is less than one.
+		 * size is less than one (or some of the fractional shares are closed).
 		 *
 		 * @public
 		 * @returns {Boolean}
@@ -117,7 +117,6 @@ module.exports = (() => {
 		get closeFractional() {
 			return this._closeFractional;
 		}
-
 
 		/**
 		 * Generates an identifier for the instrument.
