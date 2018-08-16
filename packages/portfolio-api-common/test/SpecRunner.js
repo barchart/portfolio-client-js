@@ -1018,7 +1018,7 @@ module.exports = (() => {
 	const sell = new TransactionType('S', 'Sell', 'Sell', 0, false, true, false, false, true, false, false, false, true);
 	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', 0, true, false, false, false, true, false, false, false, true);
 	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', 0, false, true, false, true, false, false, false, true, true);
-	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 0, false, false, true, false, false, false, true, false, false);
+	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 1, false, false, true, false, false, false, true, false, false);
 	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false);
 	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false);
 	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
@@ -1125,7 +1125,7 @@ module.exports = (() => {
 		static getInvalidIndex(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
-			return transactions.findIndex((t, i) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(transactions[i - 1].date)));
+			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
 		}
 
 		/**
@@ -17212,13 +17212,14 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 },{"./../../../lib/data/PositionSummaryFrame":3,"./../../../lib/data/TransactionType":4,"@barchart/common-js/lang/Day":21,"@barchart/common-js/lang/Decimal":22}],53:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day');
 
-const TransactionValidator = require('./../../../lib/data/TransactionValidator');
+const TransactionType = require('./../../../lib/data/TransactionType'),
+	TransactionValidator = require('./../../../lib/data/TransactionValidator');
 
 describe('When validating transaction order', () => {
 	'use strict';
 
-	const build = (sequence, day) => {
-		return { sequence: sequence, date: Day.parse(day) };
+	const build = (sequence, day, type) => {
+		return { sequence: sequence, date: Day.parse(day), type: (type || TransactionType.BUY ) };
 	};
 
 	it('An array of zero transactions should be valid', () => {
@@ -17229,8 +17230,16 @@ describe('When validating transaction order', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30'), build(3, '2018-04-30') ])).toEqual(true);
 	});
 
+	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs last, should be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30', TransactionType.DIVIDEND) ])).toEqual(true);
+	});
+
+	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs first, should not be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30', TransactionType.DIVIDEND), build(2, '2018-04-30') ])).toEqual(false);
+	});
+
 	it('An array of transactions with ordered sequences, on the sequential days should be valid', () => {
-		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-05-01'), build(3, '2018-05-02') ])).toEqual(true);
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-05-01'), build(3, '2018-05-02', TransactionType.DIVIDEND) ])).toEqual(true);
 	});
 
 	it('An array of transactions with ordered sequences (starting after one), on the same day should not be valid', () => {
@@ -17291,7 +17300,7 @@ describe('When requesting all the user-initiated transaction types', () => {
 		expect(userInitiated.length).toEqual(9);
 	});
 });
-},{"./../../../lib/data/TransactionValidator":5,"@barchart/common-js/lang/Day":21}],54:[function(require,module,exports){
+},{"./../../../lib/data/TransactionType":4,"./../../../lib/data/TransactionValidator":5,"@barchart/common-js/lang/Day":21}],54:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
