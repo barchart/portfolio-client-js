@@ -1,12 +1,13 @@
 const Day = require('@barchart/common-js/lang/Day');
 
-const TransactionValidator = require('./../../../lib/data/TransactionValidator');
+const TransactionType = require('./../../../lib/data/TransactionType'),
+	TransactionValidator = require('./../../../lib/data/TransactionValidator');
 
 describe('When validating transaction order', () => {
 	'use strict';
 
-	const build = (sequence, day) => {
-		return { sequence: sequence, date: Day.parse(day) };
+	const build = (sequence, day, type) => {
+		return { sequence: sequence, date: Day.parse(day), type: (type || TransactionType.BUY ) };
 	};
 
 	it('An array of zero transactions should be valid', () => {
@@ -17,8 +18,16 @@ describe('When validating transaction order', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30'), build(3, '2018-04-30') ])).toEqual(true);
 	});
 
+	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs last, should be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30', TransactionType.DIVIDEND) ])).toEqual(true);
+	});
+
+	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs first, should not be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30', TransactionType.DIVIDEND), build(2, '2018-04-30') ])).toEqual(false);
+	});
+
 	it('An array of transactions with ordered sequences, on the sequential days should be valid', () => {
-		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-05-01'), build(3, '2018-05-02') ])).toEqual(true);
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-05-01'), build(3, '2018-05-02', TransactionType.DIVIDEND) ])).toEqual(true);
 	});
 
 	it('An array of transactions with ordered sequences (starting after one), on the same day should not be valid', () => {

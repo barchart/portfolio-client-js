@@ -82,7 +82,7 @@ module.exports = (() => {
 		static getInvalidIndex(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
-			return transactions.findIndex((t, i) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(transactions[i - 1].date)));
+			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
 		}
 
 		/**
