@@ -398,7 +398,7 @@ module.exports = (() => {
 	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 0, false, false, true, false, false, false, true, false, false);
 	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false);
 	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false);
-	const split = new TransactionType('SP', 'Split', 'Split', 2, false, false, false, true, false, false, true, false, false);
+	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
 	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
 
