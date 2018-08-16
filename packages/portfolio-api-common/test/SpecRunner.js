@@ -110,7 +110,7 @@ module.exports = (() => {
 
 		/**
 		 * Indicates if fractional shares should be closed when the position
-		 * size is less than one.
+		 * size is less than one (or some of the fractional shares are closed).
 		 *
 		 * @public
 		 * @returns {Boolean}
@@ -118,7 +118,6 @@ module.exports = (() => {
 		get closeFractional() {
 			return this._closeFractional;
 		}
-
 
 		/**
 		 * Generates an identifier for the instrument.
@@ -1140,7 +1139,9 @@ module.exports = (() => {
 		static getInvalidIndex(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
-			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
+			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)));
+
+			//return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
 		}
 
 		/**
@@ -17245,6 +17246,7 @@ describe('When validating transaction order', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30'), build(3, '2018-04-30') ])).toEqual(true);
 	});
 
+/*
 	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs last, should be valid', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30', TransactionType.DIVIDEND) ])).toEqual(true);
 	});
@@ -17252,6 +17254,7 @@ describe('When validating transaction order', () => {
 	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs first, should not be valid', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30', TransactionType.DIVIDEND), build(2, '2018-04-30') ])).toEqual(false);
 	});
+*/
 
 	it('An array of transactions with ordered sequences, on the sequential days should be valid', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-05-01'), build(3, '2018-05-02', TransactionType.DIVIDEND) ])).toEqual(true);
