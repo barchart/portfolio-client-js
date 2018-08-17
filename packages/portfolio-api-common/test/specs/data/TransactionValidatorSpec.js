@@ -18,15 +18,17 @@ describe('When validating transaction order', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30'), build(3, '2018-04-30') ])).toEqual(true);
 	});
 
-/*
 	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs last, should be valid', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-04-30', TransactionType.DIVIDEND) ])).toEqual(true);
 	});
 
-	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs first, should not be valid', () => {
-		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30', TransactionType.DIVIDEND), build(2, '2018-04-30') ])).toEqual(false);
+	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs first, in strict mode, should not be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30', TransactionType.DIVIDEND), build(2, '2018-04-30') ], true)).toEqual(false);
 	});
-*/
+
+	it('An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs first, in non-strict mode, should be valid', () => {
+		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30', TransactionType.DIVIDEND), build(2, '2018-04-30') ], false)).toEqual(true);
+	});
 
 	it('An array of transactions with ordered sequences, on the sequential days should be valid', () => {
 		expect(TransactionValidator.validateOrder([ build(1, '2018-04-30'), build(2, '2018-05-01'), build(3, '2018-05-02', TransactionType.DIVIDEND) ])).toEqual(true);
