@@ -1139,8 +1139,9 @@ module.exports = (() => {
 		static getInvalidIndex(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
 
-			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)));
+			return transactions.findIndex((t, i) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(transactions[i - 1].date)))
 
+			//return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)));
 			//return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
 		}
 
@@ -5165,8 +5166,8 @@ module.exports = function () {
    * Compares two strings (in ascending order), using {@link String#localeCompare}.
    *
    * @static
-   * @param {Number} a
-   * @param {Number} b
+   * @param {String} a
+   * @param {String} b
    * @returns {Number}
    */
 		compareStrings: function compareStrings(a, b) {
@@ -5856,7 +5857,7 @@ module.exports = function () {
     * @returns {String}
     */
 			value: function format() {
-				return this._year + '-' + leftPad(this._month) + '-' + leftPad(this._day);
+				return leftPad(this._year, 4, '0') + '-' + leftPad(this._month, 2, '0') + '-' + leftPad(this._day, 2, '0');
 			}
 
 			/**
@@ -5973,7 +5974,7 @@ module.exports = function () {
     *
     * @static
     * @public
-    * @return {Day}
+    * @returns {Day}
     */
 
 		}, {
@@ -6065,8 +6066,11 @@ module.exports = function () {
 
 	var dayRegex = /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/;
 
-	function leftPad(value) {
-		return value < 10 ? '0' + value : '' + value;
+	function leftPad(value, digits, character) {
+		var string = value.toString();
+		var padding = digits - string.length;
+
+		return '' + character.repeat(padding) + string;
 	}
 
 	var comparator = ComparatorBuilder.startWith(function (a, b) {
@@ -6421,7 +6425,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 			value: function getIsZero(instance) {
 				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
@@ -6434,7 +6438,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -6450,7 +6454,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -6466,7 +6470,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -6482,7 +6486,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -6498,7 +6502,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -6888,6 +6892,7 @@ module.exports = function () {
 		/**
    * The unique code.
    *
+   * @public
    * @returns {String}
    */
 
@@ -6900,6 +6905,7 @@ module.exports = function () {
     * Returns true if the provided {@link Enum} argument is equal
     * to the instance.
     *
+    * @public
     * @param {Enum} other
     * @returns {boolean}
     */
@@ -6924,6 +6930,7 @@ module.exports = function () {
     * Looks up a enumeration item; given the enumeration type and the enumeration
     * item's value. If no matching item can be found, a null value is returned.
     *
+    * @public
     * @param {Function} type - The enumeration type.
     * @param {String} code - The enumeration item's code.
     * @returns {*|null}
@@ -6943,6 +6950,7 @@ module.exports = function () {
 			/**
     * The description.
     *
+    * @public
     * @returns {String}
     */
 
@@ -6962,6 +6970,7 @@ module.exports = function () {
 			/**
     * Returns all of the enumeration's items (given an enumeration type).
     *
+    * @public
     * @param {Function} type - The enumeration to list.
     * @returns {Array}
     */
@@ -7419,7 +7428,7 @@ module.exports = function () {
     * Parses the value emitted by {@link Timestamp#toJSON}.
     *
     * @public
-    * @param {String} value
+    * @param {Number} value
     * @returns {Timestamp}
     */
 
@@ -8055,7 +8064,7 @@ module.exports = function () {
 
 				if (typeof itemConstraint === 'function' && itemConstraint !== Function) {
 					itemValidator = function itemValidator(value, index) {
-						return value instanceof itemConstraint || itemConstraint(value, variableName + '[' + index + ']');
+						return itemConstraint.prototype !== undefined && value instanceof itemConstraint || itemConstraint(value, variableName + '[' + index + ']');
 					};
 				} else {
 					itemValidator = function itemValidator(value, index) {
@@ -8165,7 +8174,7 @@ module.exports = function () {
    *
    * @static
    * @param {Object} target - The object to check for existence of the property.
-   * @param {String|Array<String>} propertyNames - The property to check -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|Array.<String>} propertyNames - The property to check -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    * @returns {boolean}
    */
@@ -8191,7 +8200,7 @@ module.exports = function () {
    *
    * @static
    * @param {Object} target - The object to read from.
-   * @param {String|Array<String>} propertyNames - The property to read -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|Array.<String>} propertyNames - The property to read -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    * @returns {*}
    */
@@ -8226,7 +8235,8 @@ module.exports = function () {
    *
    * @static
    * @param {Object} target - The object to write to.
-   * @param {String|Array<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|Array.<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+   * @param {*} value - The value to assign.
    * @param {String=} separator - The separator (defaults to a period character).
    */
 		write: function write(target, propertyNames, value, separator) {
@@ -8252,7 +8262,7 @@ module.exports = function () {
    *
    * @static
    * @param {Object} target - The object to erase a property from.
-   * @param {String|Array<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|Array.<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    */
 		erase: function erase(target, propertyNames, separator) {
@@ -9505,7 +9515,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Generates a function suitable for use by JSON.parse.
+    * Generates a function suitable for use by {@link JSON.parse}.
     *
     * @public
     * @returns {Function}
@@ -13630,9 +13640,9 @@ moment.tz.load(require('./data/packed/latest.json'));
 
             mom = createUTC([2000, 1]).day(i);
             if (strict && !this._fullWeekdaysParse[i]) {
-                this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\.?') + '$', 'i');
-                this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\.?') + '$', 'i');
-                this._minWeekdaysParse[i] = new RegExp('^' + this.weekdaysMin(mom, '').replace('.', '\.?') + '$', 'i');
+                this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\\.?') + '$', 'i');
+                this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\\.?') + '$', 'i');
+                this._minWeekdaysParse[i] = new RegExp('^' + this.weekdaysMin(mom, '').replace('.', '\\.?') + '$', 'i');
             }
             if (!this._weekdaysParse[i]) {
                 regex = '^' + this.weekdays(mom, '') + '|^' + this.weekdaysShort(mom, '') + '|^' + this.weekdaysMin(mom, '');
@@ -14435,7 +14445,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
     function preprocessRFC2822(s) {
         // Remove comments and folding whitespace and replace multiple-spaces with a single space
-        return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').trim();
+        return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').replace(/^\s\s*/, '').replace(/\s\s*$/, '');
     }
 
     function checkWeekday(weekdayStr, parsedInput, config) {
@@ -16614,7 +16624,7 @@ moment.tz.load(require('./data/packed/latest.json'));
     // Side effect imports
 
 
-    hooks.version = '2.22.1';
+    hooks.version = '2.22.2';
 
     setHookCallback(createLocal);
 
