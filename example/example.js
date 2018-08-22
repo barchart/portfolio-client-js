@@ -193,6 +193,8 @@ module.exports = function () {
 
 			_this._readPortfoliosEndpoint = EndpointBuilder.for('read-portfolios', 'read portfolios').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
+			}).withHeadersBuilder(function (hb) {
+				hb.withLiteralParameter('Accept-Encoding', 'gzip');
 			}).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._createPortfolioEndpoint = EndpointBuilder.for('create-portfolio', 'create portfolio').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
@@ -1322,7 +1324,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.11'
+		version: '1.2.12'
 	};
 }();
 
