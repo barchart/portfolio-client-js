@@ -420,7 +420,7 @@ module.exports = (() => {
 			} else if (data.previousPrice) {
 				priceToUse = new Decimal(data.previousPrice);
 			} else if (!currentSummary.end.open.getIsZero()) {
-				priceToUse = currentSummary.end.value.divide(summary.end.open);
+				priceToUse = currentSummary.end.value.divide(currentSummary.end.open);
 			} else {
 				priceToUse = null;
 			}
