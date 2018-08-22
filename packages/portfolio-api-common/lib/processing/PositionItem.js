@@ -334,9 +334,9 @@ module.exports = (() => {
 
 		data.income = snapshot.income;
 
-		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
-		data.summaryTotalPrevious = calculateSummaryTotal(getPreviousSummary(previousSummaries, 1));
-		data.summaryTotalPrevious2 = calculateSummaryTotal(getPreviousSummary(previousSummaries, 2));
+		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary, getPreviousSummary(previousSummaries, 1));
+		data.summaryTotalPrevious = calculateSummaryTotal(getPreviousSummary(previousSummaries, 1), getPreviousSummary(previousSummaries, 2));
+		data.summaryTotalPrevious2 = calculateSummaryTotal(getPreviousSummary(previousSummaries, 2), getPreviousSummary(previousSummaries, 3));
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -348,6 +348,7 @@ module.exports = (() => {
 	function calculatePriceData(item, price) {
 		const position = item.position;
 		const snapshot = item.position.snapshot;
+		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
 
@@ -407,25 +408,27 @@ module.exports = (() => {
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
 
-		const summary = item.currentSummary;
+		const currentSummary = item.currentSummary;
 
-		if (summary && position.instrument.type !== InstrumentType.CASH) {
+		if (currentSummary && position.instrument.type !== InstrumentType.CASH) {
+			const previousSummary = getPreviousSummary(previousSummaries, 1);
+
 			let priceToUse;
 
 			if (price) {
 				priceToUse = price;
 			} else if (data.previousPrice) {
 				priceToUse = new Decimal(data.previousPrice);
-			} else if (!summary.end.open.getIsZero()) {
-				priceToUse = summary.end.value.divide(summary.end.open);
+			} else if (!currentSummary.end.open.getIsZero()) {
+				priceToUse = currentSummary.end.value.divide(summary.end.open);
 			} else {
 				priceToUse = null;
 			}
 
 			if (priceToUse !== null) {
-				const period = summary.period;
+				const period = currentSummary.period;
 
-				let unrealized = summary.end.open.multiply(priceToUse).add(summary.end.basis);
+				let unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
 				let unrealizedChange;
 
 				if (data.unrealized !== null) {
@@ -434,7 +437,7 @@ module.exports = (() => {
 					unrealizedChange = Decimal.ZERO;
 				}
 
-				let summaryTotalCurrent = period.realized.add(period.income).add(unrealized);
+				let summaryTotalCurrent = period.realized.add(period.income).add(unrealized).subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
 				let summaryTotalCurrentChange;
 
 				if (data.summaryTotalCurrent !== null) {
@@ -462,13 +465,13 @@ module.exports = (() => {
 		}
 	}
 
-	function calculateSummaryTotal(summary) {
+	function calculateSummaryTotal(currentSummary, previousSummary) {
 		let returnRef;
 
-		if (summary) {
-			const period = summary.period;
+		if (currentSummary) {
+			const period = currentSummary.period;
 
-			returnRef = period.realized.add(period.income).add(period.unrealized);
+			returnRef = period.realized.add(period.income).add(period.unrealized).subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
