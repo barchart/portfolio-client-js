@@ -6,7 +6,6 @@ const array = require('@barchart/common-js/lang/array'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
-	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate'),
 	Tree = require('@barchart/common-js/collections/Tree');
 

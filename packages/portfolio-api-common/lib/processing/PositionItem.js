@@ -311,7 +311,6 @@ module.exports = (() => {
 	}
 
 	function calculateStaticData(item) {
-		const portfolio = item.portfolio;
 		const position = item.position;
 		const snapshot = item.position.snapshot;
 		const previousSummaries = item.previousSummaries;
