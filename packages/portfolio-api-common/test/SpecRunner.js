@@ -1340,7 +1340,6 @@ const array = require('@barchart/common-js/lang/array'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
-	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
@@ -2274,7 +2273,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":3,"./PositionGroup":7,"./PositionItem":8,"./definitions/PositionLevelDefinition":9,"./definitions/PositionLevelType":10,"./definitions/PositionTreeDefinition":11,"@barchart/common-js/collections/Tree":15,"@barchart/common-js/collections/sorting/ComparatorBuilder":16,"@barchart/common-js/collections/sorting/comparators":17,"@barchart/common-js/collections/specialized/DisposableStack":18,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Decimal":22,"@barchart/common-js/lang/Rate":26,"@barchart/common-js/lang/array":28,"@barchart/common-js/lang/assert":29,"@barchart/common-js/lang/is":33,"@barchart/common-js/messaging/Event":35}],7:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":3,"./PositionGroup":7,"./PositionItem":8,"./definitions/PositionLevelDefinition":9,"./definitions/PositionLevelType":10,"./definitions/PositionTreeDefinition":11,"@barchart/common-js/collections/Tree":15,"@barchart/common-js/collections/sorting/ComparatorBuilder":16,"@barchart/common-js/collections/sorting/comparators":17,"@barchart/common-js/collections/specialized/DisposableStack":18,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Decimal":22,"@barchart/common-js/lang/Rate":26,"@barchart/common-js/lang/array":28,"@barchart/common-js/lang/assert":29,"@barchart/common-js/messaging/Event":35}],7:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -3448,7 +3447,6 @@ module.exports = (() => {
 	}
 
 	function calculateStaticData(item) {
-		const portfolio = item.portfolio;
 		const position = item.position;
 		const snapshot = item.position.snapshot;
 		const previousSummaries = item.previousSummaries;
@@ -3472,9 +3470,9 @@ module.exports = (() => {
 
 		data.income = snapshot.income;
 
-		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary);
-		data.summaryTotalPrevious = calculateSummaryTotal(getPreviousSummary(previousSummaries, 1));
-		data.summaryTotalPrevious2 = calculateSummaryTotal(getPreviousSummary(previousSummaries, 2));
+		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary, getPreviousSummary(previousSummaries, 1));
+		data.summaryTotalPrevious = calculateSummaryTotal(getPreviousSummary(previousSummaries, 1), getPreviousSummary(previousSummaries, 2));
+		data.summaryTotalPrevious2 = calculateSummaryTotal(getPreviousSummary(previousSummaries, 2), getPreviousSummary(previousSummaries, 3));
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -3486,6 +3484,7 @@ module.exports = (() => {
 	function calculatePriceData(item, price) {
 		const position = item.position;
 		const snapshot = item.position.snapshot;
+		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
 
@@ -3545,25 +3544,27 @@ module.exports = (() => {
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
 
-		const summary = item.currentSummary;
+		const currentSummary = item.currentSummary;
 
-		if (summary && position.instrument.type !== InstrumentType.CASH) {
+		if (currentSummary && position.instrument.type !== InstrumentType.CASH) {
+			const previousSummary = getPreviousSummary(previousSummaries, 1);
+
 			let priceToUse;
 
 			if (price) {
 				priceToUse = price;
 			} else if (data.previousPrice) {
 				priceToUse = new Decimal(data.previousPrice);
-			} else if (!summary.end.open.getIsZero()) {
-				priceToUse = summary.end.value.divide(summary.end.open);
+			} else if (!currentSummary.end.open.getIsZero()) {
+				priceToUse = currentSummary.end.value.divide(summary.end.open);
 			} else {
 				priceToUse = null;
 			}
 
 			if (priceToUse !== null) {
-				const period = summary.period;
+				const period = currentSummary.period;
 
-				let unrealized = summary.end.open.multiply(priceToUse).add(summary.end.basis);
+				let unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
 				let unrealizedChange;
 
 				if (data.unrealized !== null) {
@@ -3572,7 +3573,7 @@ module.exports = (() => {
 					unrealizedChange = Decimal.ZERO;
 				}
 
-				let summaryTotalCurrent = period.realized.add(period.income).add(unrealized);
+				let summaryTotalCurrent = period.realized.add(period.income).add(unrealized).subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
 				let summaryTotalCurrentChange;
 
 				if (data.summaryTotalCurrent !== null) {
@@ -3600,13 +3601,13 @@ module.exports = (() => {
 		}
 	}
 
-	function calculateSummaryTotal(summary) {
+	function calculateSummaryTotal(currentSummary, previousSummary) {
 		let returnRef;
 
-		if (summary) {
-			const period = summary.period;
+		if (currentSummary) {
+			const period = currentSummary.period;
 
-			returnRef = period.realized.add(period.income).add(period.unrealized);
+			returnRef = period.realized.add(period.income).add(period.unrealized).subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
