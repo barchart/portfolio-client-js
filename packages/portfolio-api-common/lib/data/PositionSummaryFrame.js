@@ -2,8 +2,7 @@ const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
-	Enum = require('@barchart/common-js/lang/Enum'),
-	is = require('@barchart/common-js/lang/is');
+	Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
 	'use strict';
