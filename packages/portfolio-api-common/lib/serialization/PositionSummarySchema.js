@@ -1,5 +1,4 @@
-const Currency = require('@barchart/common-js/lang/Currency'),
-	DataType = require('@barchart/common-js/serialization/json/DataType'),
+const DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
@@ -64,13 +63,6 @@ module.exports = (() => {
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
-		.withField('instrument.id', DataType.STRING)
-		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.STRING)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
-		.withField('instrument.delist', DataType.DAY, true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
@@ -98,13 +90,6 @@ module.exports = (() => {
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
-		.withField('instrument.id', DataType.STRING)
-		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.STRING)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
-		.withField('instrument.delist', DataType.DAY, true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
