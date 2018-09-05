@@ -1,4 +1,5 @@
-const DataType = require('@barchart/common-js/serialization/json/DataType'),
+const Currency = require('@barchart/common-js/lang/Currency'),
+	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
