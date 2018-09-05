@@ -63,6 +63,15 @@ module.exports = (() => {
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+
+		.withField('instrument.id', DataType.STRING, true)
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.delist', DataType.DAY, true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
+
 		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
@@ -90,6 +99,15 @@ module.exports = (() => {
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+
+		.withField('instrument.id', DataType.STRING, true)
+		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.type', DataType.STRING, true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.delist', DataType.DAY, true)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
+
 		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
