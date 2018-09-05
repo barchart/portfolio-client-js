@@ -4,7 +4,6 @@ const array = require('@barchart/common-js/lang/array'),
 	formatter = require('@barchart/common-js/lang/formatter');
 
 module.exports = (() => {
-
 	/**
 	 * Static utilities for formatting position summary records (into groups based on
 	 * instrument type)
