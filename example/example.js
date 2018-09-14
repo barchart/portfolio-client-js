@@ -754,11 +754,11 @@ module.exports = function () {
 					payload.position = position || '*';
 
 					if (startDay) {
-						payload.startDay = startDay;
+						payload.start = startDay;
 					}
 
 					if (endDay) {
-						payload.endDay = endDay;
+						payload.end = endDay;
 					}
 
 					return Gateway.invoke(_this17._readTransactionsReportEndpoint, payload);
@@ -1352,7 +1352,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.15'
+		version: '1.2.16'
 	};
 }();
 
