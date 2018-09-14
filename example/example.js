@@ -267,6 +267,8 @@ module.exports = function () {
 
 			_this._readTransactionsReportEndpoint = EndpointBuilder.for('read-transaction-report', 'read transaction report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', true).withLiteralParameter('transactions', 'transactions').withLiteralParameter('formatted', 'formatted');
+			}).withQueryBuilder(function (qb) {
+				qb.withVariableParameter('start', 'start', 'start', true).withVariableParameter('end', 'end', 'end', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 			return _this;
 		}
@@ -720,9 +722,22 @@ module.exports = function () {
 					return Gateway.invoke(_this16._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
 				});
 			}
+
+			/**
+    * Retrieves transactions, where the property values are suitable for display,
+    * for a portfolio, or a single position.
+    *
+    * @public
+    * @param {String} portfolio
+    * @param {String=} position
+    * @param {Day=} startDay
+    * @param {Day=} endDay
+    * @returns {Promise.<Object[]>}
+    */
+
 		}, {
 			key: 'readTransactionsFormatted',
-			value: function readTransactionsFormatted(portfolio, position) {
+			value: function readTransactionsFormatted(portfolio, position, startDay, endDay) {
 				var _this17 = this;
 
 				return Promise.resolve().then(function () {
@@ -730,8 +745,23 @@ module.exports = function () {
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
+					assert.argumentIsOptional(startDay, 'startDay', Day, 'Day');
+					assert.argumentIsOptional(endDay, 'endDay', Day, 'Day');
 
-					return Gateway.invoke(_this17._readTransactionsReportEndpoint, { portfolio: portfolio, position: position || '*' });
+					var payload = {};
+
+					payload.portfolio = portfolio;
+					payload.position = position || '*';
+
+					if (startDay) {
+						payload.startDay = startDay;
+					}
+
+					if (endDay) {
+						payload.endDay = endDay;
+					}
+
+					return Gateway.invoke(_this17._readTransactionsReportEndpoint, payload);
 				});
 			}
 
@@ -1322,7 +1352,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.14'
+		version: '1.2.15'
 	};
 }();
 
