@@ -46,7 +46,6 @@ module.exports = (() => {
 			this._usesSymbols = usesSymbols;
 			this._hasCorporateActions = hasCorporateActions;
 			this._closeFractional = closeFractional;
-			this._closeFractional = strictOrdering;
 			this._roundQuantity = roundQuantity;
 			this._strictOrdering = strictOrdering;
 
