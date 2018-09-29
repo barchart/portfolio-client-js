@@ -144,6 +144,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The transaction failed because the position has been locked.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_POSITION_LOCKED() {
+			return transactionCreateFailedPositionLocked;
+		}
+
+		/**
 		 * Deleting any transaction except for the most recent requires
 		 * re-writing transaction history.
 		 *
@@ -219,6 +230,7 @@ module.exports = (() => {
 	const transactionCreateFailedInvalidInitialType = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_INITIAL_TYPE', 'Unable to process operation because the first transaction would to be a {U|transactionType.description}, which is not allowed -- since {U|transactionType.description} transactions cannot open a position.');
 	const transactionCreateFailedTypeReserved = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_RESERVED', 'Unable to create {U|type.description} transaction, this type of transaction is managed by the system.');
 	const transactionCreateFailedReinvestPriceUnavailable = new FailureType('TRANSACTION_CREATE_FAILED_REINVEST_PRICE_UNAVAILABLE', 'Unable to create transaction, a dividend was paid on {L|day}; however no historical price is available for this day. To successfully create this transaction, please turn off dividend reinvestment for this position.');
+	const transactionCreateFailedPositionLocked = new FailureType('TRANSACTION_CREATE_FAILED_POSITION_LOCKED', 'Unable to create transaction, are being recalculated for this position (or the linked cash position). Please re-enter the transaction in a minute or two.');
 
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
 	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.');
