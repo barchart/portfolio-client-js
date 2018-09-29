@@ -47,7 +47,6 @@ module.exports = (() => {
 			this._usesSymbols = usesSymbols;
 			this._hasCorporateActions = hasCorporateActions;
 			this._closeFractional = closeFractional;
-			this._closeFractional = strictOrdering;
 			this._roundQuantity = roundQuantity;
 			this._strictOrdering = strictOrdering;
 
@@ -1104,6 +1103,25 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Determines the desired sequence number for a transaction.
+		 *
+		 * @public
+		 * @param {Object} transaction
+		 * @return {Number}
+		 */
+		static getSortSequence(transaction) {
+			let effective;
+
+			if (is.number(transaction.resequence)) {
+				effective = transaction.resequence;
+			} else {
+				effective = transaction.sequence;
+			}
+
+			return effective;
+		}
+
+		/**
 		 * Given an array of transactions, ensures that all sequence numbers and dates
 		 * are properly ordered.
 		 *
@@ -1169,7 +1187,7 @@ module.exports = (() => {
 			assert.argumentIsArray(transactions, 'transactions');
 			assert.argumentIsOptional(strict, 'strict', Boolean);
 
-			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && is.boolean(strict) && strict && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
+			return transactions.findIndex((t, i, a) => TransactionValidator.getSortSequence(t) !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && is.boolean(strict) && strict && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
 		}
 
 		/**
