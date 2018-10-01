@@ -33,10 +33,9 @@ module.exports = (() => {
 		 * @param {Boolean=} descending
 		 * @returns {Array}
 		 */
-		static format(transactions, positions, mutate, descending) {
+		static format(transactions, positions, descending) {
 			assert.argumentIsArray(transactions, 'transactions');
 			assert.argumentIsArray(positions, 'positions');
-			assert.argumentIsOptional(mutate, 'mutate', Boolean);
 			assert.argumentIsOptional(descending, 'descending', Boolean);
 
 			const instruments = positions.reduce((map, p) => {
