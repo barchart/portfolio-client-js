@@ -30,7 +30,6 @@ module.exports = (() => {
 		 * @static
 		 * @param {Array.<Object>} transactions
 		 * @param {Array.<Object>} positions
-		 * @param {Boolean=} mutate
 		 * @param {Boolean=} descending
 		 * @returns {Array}
 		 */
@@ -70,17 +69,7 @@ module.exports = (() => {
 						formatted = Object.assign({}, formatted, formattedTransaction);
 					}
 
-					let transactionToInsert;
-
-					if (mutate) {
-						transaction.formatted = formatted;
-
-						transactionToInsert = transaction;
-					} else {
-						transactionToInsert = formatted;
-					}
-
-					list.push(transactionToInsert);
+					list.push(formatted);
 				}
 
 				return list;
