@@ -31,12 +31,14 @@ module.exports = (() => {
 		 * @param {Array.<Object>} transactions
 		 * @param {Array.<Object>} positions
 		 * @param {Boolean=} mutate
+		 * @param {Boolean=} descending
 		 * @returns {Array}
 		 */
-		static format(transactions, positions, mutate) {
+		static format(transactions, positions, mutate, descending) {
 			assert.argumentIsArray(transactions, 'transactions');
 			assert.argumentIsArray(positions, 'positions');
 			assert.argumentIsOptional(mutate, 'mutate', Boolean);
+			assert.argumentIsOptional(descending, 'descending', Boolean);
 
 			const instruments = positions.reduce((map, p) => {
 				const instrument = Object.assign({ }, p.instrument || { });
@@ -84,6 +86,14 @@ module.exports = (() => {
 				return list;
 			}, [ ]);
 
+			let comparator;
+
+			if (is.boolean(descending) && descending) {
+				comparator = comparatorDescending;
+			} else {
+				comparator = comparatorAscending;
+			}
+
 			a.sort(comparator);
 
 			a.forEach((t) => {
@@ -99,9 +109,21 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Array.<Object>} transactions
+		 * @param {Boolean=} descending
 		 * @returns {Array}
 		 */
-		sort(transactions) {
+		sort(transactions, descending) {
+			assert.argumentIsArray(transactions, 'transactions');
+			assert.argumentIsOptional(descending, 'descending', Boolean);
+
+			let comparator;
+
+			if (is.boolean(descending) && descending) {
+				comparator = comparatorDescending;
+			} else {
+				comparator = comparatorAscending;
+			}
+
 			return transactions.sort(comparator);
 		}
 
@@ -277,15 +299,14 @@ module.exports = (() => {
 		}
 	}
 
-	const comparator = ComparatorBuilder.startWith((a, b) => {
-		return Day.compareDays(a.date, b.date);
-	}).thenBy((a, b) => {
-		return comparators.compareNumbers(getInstrumentTypePriority(a.instrument.type), getInstrumentTypePriority(b.instrument.type));
-	}).thenBy((a, b) => {
-		return comparators.compareStrings(a.instrument.id, b.instrument.id);
-	}).thenBy((a, b) => {
-		return comparators.compareNumbers(a.sequence, b.sequence);
-	}).toComparator();
+	const comparatorAscending = ComparatorBuilder.startWith((a, b) => Day.compareDays(a.date, b.date))
+		.thenBy((a, b) => comparators.compareNumbers(getInstrumentTypePriority(a.instrument.type), getInstrumentTypePriority(b.instrument.type))
+		.thenBy((a, b) => comparators.compareStrings(a.instrument.id, b.instrument.id))
+		.thenBy((a, b) => comparators.compareNumbers(a.sequence, b.sequence))
+		.toComparator();
+
+	const comparatorDescending = ComparatorBuilder.startWith((a, b) => comparatorAscending(b, a))
+		.toComparator();
 
 	return TransactionFormatter;
 })();
