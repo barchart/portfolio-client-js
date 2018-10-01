@@ -768,6 +768,11 @@ module.exports = function () {
 					return Gateway.invoke(_this17._readTransactionsReportEndpoint, payload);
 				});
 			}
+		}, {
+			key: 'readTransactionsFormattedPage',
+			value: function readTransactionsFormattedPage(portfolio, position, start, count) {
+				return Promise.resolve([]);
+			}
 
 			/**
     * Creates and starts a new {@link PortfolioGateway} for use in the development environment.
@@ -1356,7 +1361,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.17'
+		version: '1.2.18'
 	};
 }();
 
