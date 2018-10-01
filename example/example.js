@@ -26,7 +26,7 @@ module.exports = function () {
 	window.Barchart.ValuationType = ValuationType;
 }();
 
-},{"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Timezones":35,"@barchart/portfolio-api-common/lib/data/TransactionType":53,"@barchart/portfolio-api-common/lib/data/ValuationType":54,"@barchart/tgam-jwt-js/lib/JwtGateway":59}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Timezones":35,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/data/ValuationType":55,"@barchart/tgam-jwt-js/lib/JwtGateway":60}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -272,7 +272,7 @@ module.exports = function () {
 					return x.format();
 				}).withVariableParameter('end', 'end', 'end', true, function (x) {
 					return x.format();
-				});
+				}).withVariableParameter('page', 'page', 'page', true).withVariableParameter('sequence', 'sequence', 'sequence', true).withVariableParameter('count', 'count', 'count', true).withVariableParameter('descending', 'descending', 'descending', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 			return _this;
 		}
@@ -770,8 +770,37 @@ module.exports = function () {
 			}
 		}, {
 			key: 'readTransactionsFormattedPage',
-			value: function readTransactionsFormattedPage(portfolio, position, start, count) {
-				return Promise.resolve([]);
+			value: function readTransactionsFormattedPage(portfolio, position, sequence, count, descending) {
+				var _this18 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this18);
+
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+					assert.argumentIsRequired(position, 'position', String);
+					assert.argumentIsOptional(sequence, 'sequence', Number);
+					assert.argumentIsOptional(count, 'count', Number);
+					assert.argumentIsOptional(descending, 'descending', Boolean);
+
+					var payload = {};
+
+					payload.portfolio = portfolio;
+					payload.position = position;
+
+					payload.page = true;
+
+					if (sequence) {
+						payload.sequence = sequence;
+					}
+
+					if (count) {
+						payload.count = count;
+					}
+
+					payload.descending = is.boolean(descending) && descending;
+
+					return Gateway.invoke(_this18._readTransactionsReportEndpoint, payload);
+				});
 			}
 
 			/**
@@ -1010,7 +1039,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":52,"@barchart/portfolio-api-common/lib/data/TransactionType":53,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":55,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":57,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":58}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":53,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":57,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":58,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":59}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1361,7 +1390,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.18'
+		version: '1.2.19'
 	};
 }();
 
@@ -1464,10 +1493,29 @@ module.exports = function () {
 
 				return reasons.children;
 			}
+
+			/**
+    * Indicates if the tree of {@link FailureReasonItem} instances contains
+    * at least one item with a matching {@link FailureType}.
+    *
+    * @public
+    * @param {FailureType} type
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'hasFailureType',
+			value: function hasFailureType(type) {
+				assert.argumentIsRequired(type, 'type', FailureType, 'FailureType');
+
+				return this._head.search(function (item) {
+					return item.type === type;
+				}, false, false) !== null;
+			}
 		}, {
 			key: 'toJSON',
 			value: function toJSON() {
-				return JSON.stringify(this.format());
+				return this.format();
 			}
 
 			/**
@@ -1866,7 +1914,7 @@ module.exports = function () {
 	var requestIdentifyFailure = new FailureType('REQUEST_IDENTITY_FAILURE', 'An attempt to {L|root.endpoint.description} failed because your identity could not be determined.');
 	var requestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed. You are not authorized to perform this action.');
 	var requestInputMalformed = new FailureType('REQUEST_INPUT_MALFORMED', 'An attempt to {L|root.endpoint.description} failed, the data structure is invalid.');
-	var schemaValidationFailure = new FailureType('SCHEMA_VALIDATION_FAILURE', 'An attempt serialize JSON string failed found "{L|key}" when expecting "{L|name}"');
+	var schemaValidationFailure = new FailureType('SCHEMA_VALIDATION_FAILURE', 'An attempt to read {U|schema} data failed (found "{L|key}" when expecting "{L|name}")');
 	var requestGeneralFailure = new FailureType('REQUEST_GENERAL_FAILURE', 'An attempt to {L|root.endpoint.description} failed for unspecified reason(s).');
 
 	return FailureType;
@@ -2098,7 +2146,7 @@ module.exports = function () {
 	return Gateway;
 }();
 
-},{"./../../lang/array":36,"./../../lang/assert":37,"./../../lang/attributes":38,"./../../lang/promise":42,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":61}],10:[function(require,module,exports){
+},{"./../../lang/array":36,"./../../lang/assert":37,"./../../lang/attributes":38,"./../../lang/promise":42,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":62}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3122,6 +3170,15 @@ module.exports = function () {
 			get: function get() {
 				return this._parameters;
 			}
+		}], [{
+			key: 'merge',
+			value: function merge(a, b) {
+				return new Parameters(a.parameters.slice(0).concat(b.parameters.filter(function (candidate) {
+					return !a.parameters.some(function (existing) {
+						return existing.key === candidate.key;
+					});
+				})));
+			}
 		}]);
 
 		return Parameters;
@@ -3793,7 +3850,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @return {DelegateRequestInterceptor}
+    * @returns {DelegateRequestInterceptor}
     */
 
 		}, {
@@ -4382,6 +4439,33 @@ module.exports = function () {
 			}
 
 			/**
+    * Climbs the tree, evaluating each parent until a predicate is matched. Once matched,
+    * the {@link Tree} node is returned. Otherwise, if the predicate cannot be matched,
+    * a null value is returned.
+    *
+    * @public
+    * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
+    * @param {boolean=} includeCurrentNode - If true, the predicate will be applied to the current node.
+    * @returns {Tree|null}
+    */
+
+		}, {
+			key: 'findParent',
+			value: function findParent(predicate, includeCurrentNode) {
+				var returnRef = void 0;
+
+				if (is.boolean(includeCurrentNode) && includeCurrentNode && predicate(this.getValue(), this)) {
+					returnRef = this;
+				} else if (this._parent !== null) {
+					returnRef = this._parent.findParent(predicate, true);
+				} else {
+					returnRef = null;
+				}
+
+				return returnRef;
+			}
+
+			/**
     * Creates a representation of the tree using JavaScript objects and arrays.
     *
     * @public
@@ -4639,8 +4723,8 @@ module.exports = function () {
    * Compares two strings (in ascending order), using {@link String#localeCompare}.
    *
    * @static
-   * @param {Number} a
-   * @param {Number} b
+   * @param {String} a
+   * @param {String} b
    * @returns {Number}
    */
 		compareStrings: function compareStrings(a, b) {
@@ -5222,7 +5306,7 @@ module.exports = function () {
     * @returns {String}
     */
 			value: function format() {
-				return this._year + '-' + leftPad(this._month) + '-' + leftPad(this._day);
+				return leftPad(this._year, 4, '0') + '-' + leftPad(this._month, 2, '0') + '-' + leftPad(this._day, 2, '0');
 			}
 
 			/**
@@ -5239,12 +5323,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Converts a string (which matches the output of {@link Day#format} into
-    * a {@link Day} instance.
+    * Clones a {@link Day} instance.
     *
     * @public
     * @static
-    * @param {String} value
+    * @param {Day} value
     * @returns {Day}
     */
 
@@ -5285,6 +5368,24 @@ module.exports = function () {
 				return this._day;
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Day, 'Day');
+
+				return new Day(value.year, value.month, value.day);
+			}
+
+			/**
+    * Converts a string (which matches the output of {@link Day#format} into
+    * a {@link Day} instance.
+    *
+    * @public
+    * @static
+    * @param {String} value
+    * @returns {Day}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				assert.argumentIsRequired(value, 'value', String);
@@ -5339,7 +5440,7 @@ module.exports = function () {
     *
     * @static
     * @public
-    * @return {Day}
+    * @returns {Day}
     */
 
 		}, {
@@ -5431,8 +5532,11 @@ module.exports = function () {
 
 	var dayRegex = /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/;
 
-	function leftPad(value) {
-		return value < 10 ? '0' + value : '' + value;
+	function leftPad(value, digits, character) {
+		var string = value.toString();
+		var padding = digits - string.length;
+
+		return '' + character.repeat(padding) + string;
 	}
 
 	var comparator = ComparatorBuilder.startWith(function (a, b) {
@@ -5598,15 +5702,17 @@ module.exports = function () {
     *
     * @public
     * @param {Boolean=} approximate
+    * @param {Number=} places
     * @returns {Boolean}
     */
 
 		}, {
 			key: 'getIsZero',
-			value: function getIsZero(approximate) {
+			value: function getIsZero(approximate, places) {
 				assert.argumentIsOptional(approximate, 'approximate', Boolean);
+				assert.argumentIsOptional(places, 'places', Number);
 
-				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(20, RoundingMode.NORMAL).getIsZero();
+				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(places || Big.DP, RoundingMode.NORMAL).getIsZero();
 			}
 
 			/**
@@ -5706,6 +5812,43 @@ module.exports = function () {
 			}
 
 			/**
+    * Returns true if the current instance is an integer (i.e. has no decimal
+    * component).
+    *
+    * @public
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsInteger',
+			value: function getIsInteger() {
+				return this.getIsEqual(this.round(0));
+			}
+
+			/**
+    * Returns the number of decimal places used.
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'getDecimalPlaces',
+			value: function getDecimalPlaces() {
+				var matches = this.toFixed().match(/-?\d*\.(\d*)/);
+
+				var returnVal = void 0;
+
+				if (matches === null) {
+					returnVal = 0;
+				} else {
+					returnVal = matches[1].length;
+				}
+
+				return returnVal;
+			}
+
+			/**
     * Emits a floating point value that approximates the value of the current
     * instance.
     *
@@ -5753,10 +5896,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Parses the value emitted by {@link Decimal#toJSON}.
+    * Clones a {@link Decimal} instance.
     *
     * @public
-    * @param {String} value
+    * @static
+    * @param {Decimal} value
     * @returns {Decimal}
     */
 
@@ -5766,6 +5910,22 @@ module.exports = function () {
 				return '[Decimal]';
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Decimal, 'Decimal');
+
+				return new Decimal(value._big);
+			}
+
+			/**
+    * Parses the value emitted by {@link Decimal#toJSON}.
+    *
+    * @public
+    * @param {String} value
+    * @returns {Decimal}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Decimal(value);
@@ -5787,7 +5947,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 			value: function getIsZero(instance) {
 				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
@@ -5800,7 +5960,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -5816,7 +5976,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -5832,7 +5992,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -5848,7 +6008,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -5864,7 +6024,7 @@ module.exports = function () {
     *
     * @public
     * @param {Decimal} instance
-    * @return {Boolean}
+    * @returns {Boolean}
     */
 
 		}, {
@@ -6054,7 +6214,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":32,"./assert":37,"./is":40,"big.js":86}],31:[function(require,module,exports){
+},{"./Enum":32,"./assert":37,"./is":40,"big.js":87}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6254,6 +6414,7 @@ module.exports = function () {
 		/**
    * The unique code.
    *
+   * @public
    * @returns {String}
    */
 
@@ -6266,6 +6427,7 @@ module.exports = function () {
     * Returns true if the provided {@link Enum} argument is equal
     * to the instance.
     *
+    * @public
     * @param {Enum} other
     * @returns {boolean}
     */
@@ -6290,6 +6452,7 @@ module.exports = function () {
     * Looks up a enumeration item; given the enumeration type and the enumeration
     * item's value. If no matching item can be found, a null value is returned.
     *
+    * @public
     * @param {Function} type - The enumeration type.
     * @param {String} code - The enumeration item's code.
     * @returns {*|null}
@@ -6309,6 +6472,7 @@ module.exports = function () {
 			/**
     * The description.
     *
+    * @public
     * @returns {String}
     */
 
@@ -6328,6 +6492,7 @@ module.exports = function () {
 			/**
     * Returns all of the enumeration's items (given an enumeration type).
     *
+    * @public
     * @param {Function} type - The enumeration to list.
     * @returns {Array}
     */
@@ -6527,10 +6692,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Parses the value emitted by {@link Timestamp#toJSON}.
+    * Clones a {@link Timestamp} instance.
     *
     * @public
-    * @param {String} value
+    * @static
+    * @param {Timestamp} value
     * @returns {Timestamp}
     */
 
@@ -6566,6 +6732,22 @@ module.exports = function () {
 				return this._moment;
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
+
+				return new Timestamp(value._timestamp, value._timezone);
+			}
+
+			/**
+    * Parses the value emitted by {@link Timestamp#toJSON}.
+    *
+    * @public
+    * @param {Number} value
+    * @returns {Timestamp}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Timestamp(value);
@@ -6591,7 +6773,7 @@ module.exports = function () {
 	return Timestamp;
 }();
 
-},{"./assert":37,"./is":40,"moment-timezone":91}],35:[function(require,module,exports){
+},{"./assert":37,"./is":40,"moment-timezone":92}],35:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6717,8 +6899,8 @@ module.exports = function () {
 		unique: function unique(a) {
 			assert.argumentIsArray(a, 'a');
 
-			return a.filter(function (item, index, array) {
-				return array.indexOf(item) === index;
+			return this.uniqueBy(a, function (item) {
+				return item;
 			});
 		},
 
@@ -6729,7 +6911,7 @@ module.exports = function () {
    *
    * @static
    * @param {Array} a
-   * @param {Function} keySelector - The function, when applied to an item yields a unique key.
+   * @param {Function} keySelector - A function that returns a unique key for an item.
    * @returns {Array}
    */
 		uniqueBy: function uniqueBy(a, keySelector) {
@@ -6747,12 +6929,12 @@ module.exports = function () {
 
 		/**
    * Splits array into groups and returns an object (where the properties have
-   * arrays). Unlike the indexBy function, there can be many items
-   * which share the same key.
+   * arrays). Unlike the indexBy function, there can be many items which share
+   * the same key.
    *
    * @static
    * @param {Array} a
-   * @param {Function} keySelector - The function, when applied to an item yields a key.
+   * @param {Function} keySelector - A function that returns a unique key for an item.
    * @returns {Object}
    */
 		groupBy: function groupBy(a, keySelector) {
@@ -6779,7 +6961,7 @@ module.exports = function () {
    *
    * @static
    * @param {Array} a
-   * @param {Function} keySelector - The function, when applied to an item yields a key.
+   * @param {Function} keySelector - A function that returns a unique key for an item.
    * @returns {Array}
    */
 		batchBy: function batchBy(a, keySelector) {
@@ -6808,12 +6990,11 @@ module.exports = function () {
 
 		/**
    * Splits array into groups and returns an object (where the properties are items from the
-   * original array). Unlike the groupBy, Only one item can have a given key
-   * value.
+   * original array). Unlike the groupBy, only one item can have a given key value.
    *
    * @static
    * @param {Array} a
-   * @param {Function} keySelector - The function, when applied to an item yields a unique key.
+   * @param {Function} keySelector - A function that returns a unique key for an item.
    * @returns {Object}
    */
 		indexBy: function indexBy(a, keySelector) {
@@ -6979,14 +7160,31 @@ module.exports = function () {
    * @returns {Array}
    */
 		difference: function difference(a, b) {
+			return this.differenceBy(a, b, function (item) {
+				return item;
+			});
+		},
+
+
+		/**
+   * Set difference operation, where the uniqueness is determined by a delegate.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Array} b
+   * @param {Function} keySelector - A function that returns a unique key for an item.
+   * @returns {Array}
+   */
+		differenceBy: function differenceBy(a, b, keySelector) {
 			assert.argumentIsArray(a, 'a');
 			assert.argumentIsArray(b, 'b');
+			assert.argumentIsRequired(keySelector, 'keySelector', Function);
 
 			var returnRef = [];
 
 			a.forEach(function (candidate) {
 				var exclude = b.some(function (comparison) {
-					return candidate === comparison;
+					return keySelector(candidate) === keySelector(comparison);
 				});
 
 				if (!exclude) {
@@ -7009,7 +7207,23 @@ module.exports = function () {
    * @returns {Array}
    */
 		differenceSymmetric: function differenceSymmetric(a, b) {
-			return this.union(this.difference(a, b), this.difference(b, a));
+			return this.differenceSymmetricBy(a, b, function (item) {
+				return item;
+			});
+		},
+
+
+		/**
+   * Set symmetric difference operation, where the uniqueness is determined by a delegate.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Array} b
+   * @param {Function} keySelector - A function that returns a unique key for an item.
+   * @returns {Array}
+   */
+		differenceSymmetricBy: function differenceSymmetricBy(a, b, keySelector) {
+			return this.unionBy(this.differenceBy(a, b, keySelector), this.differenceBy(b, a, keySelector), keySelector);
 		},
 
 
@@ -7022,14 +7236,31 @@ module.exports = function () {
    * @returns {Array}
    */
 		union: function union(a, b) {
+			return this.unionBy(a, b, function (item) {
+				return item;
+			});
+		},
+
+
+		/**
+   * Set union operation, where the uniqueness is determined by a delegate.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Array} b
+   * @param {Function} keySelector - A function that returns a unique key for an item.
+   * @returns {Array}
+   */
+		unionBy: function unionBy(a, b, keySelector) {
 			assert.argumentIsArray(a, 'a');
 			assert.argumentIsArray(b, 'b');
+			assert.argumentIsRequired(keySelector, 'keySelector', Function);
 
 			var returnRef = a.slice();
 
 			b.forEach(function (candidate) {
 				var exclude = returnRef.some(function (comparison) {
-					return candidate === comparison;
+					return keySelector(candidate) === keySelector(comparison);
 				});
 
 				if (!exclude) {
@@ -7050,6 +7281,22 @@ module.exports = function () {
    * @returns {Array}
    */
 		intersection: function intersection(a, b) {
+			return this.intersectionBy(a, b, function (item) {
+				return item;
+			});
+		},
+
+
+		/**
+   * Set intersection operation, where the uniqueness is determined by a delegate.
+   *
+   * @static
+   * @param {Array} a
+   * @param {Array} b
+   * @param {Function} keySelector - A function that returns a unique key for an item.
+   * @returns {Array}
+   */
+		intersectionBy: function intersectionBy(a, b, keySelector) {
 			assert.argumentIsArray(a, 'a');
 			assert.argumentIsArray(b, 'b');
 
@@ -7057,7 +7304,7 @@ module.exports = function () {
 
 			a.forEach(function (candidate) {
 				var include = b.some(function (comparison) {
-					return candidate === comparison;
+					return keySelector(candidate) === comparison;
 				});
 
 				if (include) {
@@ -7076,16 +7323,20 @@ module.exports = function () {
    * @public
    * @param {Array} a
    * @param {Function} predicate
+   * @returns {Boolean}
    */
 		remove: function remove(a, predicate) {
 			assert.argumentIsArray(a, 'a');
 			assert.argumentIsRequired(predicate, 'predicate', Function);
 
 			var index = a.findIndex(predicate);
+			var found = !(index < 0);
 
-			if (!(index < 0)) {
+			if (found) {
 				a.splice(index, 1);
 			}
+
+			return found;
 		}
 	};
 }();
@@ -7195,7 +7446,7 @@ module.exports = function () {
 
 				if (typeof itemConstraint === 'function' && itemConstraint !== Function) {
 					itemValidator = function itemValidator(value, index) {
-						return value instanceof itemConstraint || itemConstraint(value, variableName + '[' + index + ']');
+						return itemConstraint.prototype !== undefined && value instanceof itemConstraint || itemConstraint(value, variableName + '[' + index + ']');
 					};
 				} else {
 					itemValidator = function itemValidator(value, index) {
@@ -7305,7 +7556,7 @@ module.exports = function () {
    *
    * @static
    * @param {Object} target - The object to check for existence of the property.
-   * @param {String|Array<String>} propertyNames - The property to check -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|Array.<String>} propertyNames - The property to check -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    * @returns {boolean}
    */
@@ -7331,7 +7582,7 @@ module.exports = function () {
    *
    * @static
    * @param {Object} target - The object to read from.
-   * @param {String|Array<String>} propertyNames - The property to read -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|Array.<String>} propertyNames - The property to read -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    * @returns {*}
    */
@@ -7366,7 +7617,8 @@ module.exports = function () {
    *
    * @static
    * @param {Object} target - The object to write to.
-   * @param {String|Array<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|Array.<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+   * @param {*} value - The value to assign.
    * @param {String=} separator - The separator (defaults to a period character).
    */
 		write: function write(target, propertyNames, value, separator) {
@@ -7392,7 +7644,7 @@ module.exports = function () {
    *
    * @static
    * @param {Object} target - The object to erase a property from.
-   * @param {String|Array<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|Array.<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    */
 		erase: function erase(target, propertyNames, separator) {
@@ -7745,18 +7997,22 @@ module.exports = function () {
    *
    * @static
    * @param {Object} source - The object to copy.
+   * @param {Function=} canExtract - An optional function which indicates if the "extractor" can be used.
+   * @param {Function=} extractor - An optional function which returns a cloned value for a property for assignment to the cloned object.
    * @returns {Object}
    */
-		clone: function clone(source) {
+		clone: function clone(source, canExtract, extractor) {
 			var c = void 0;
 
-			if (is.array(source)) {
+			if (is.fn(canExtract) && canExtract(source)) {
+				c = extractor(source);
+			} else if (is.array(source)) {
 				c = source.map(function (sourceItem) {
-					return object.clone(sourceItem);
+					return object.clone(sourceItem, canExtract, extractor);
 				});
 			} else if (is.object(source)) {
 				c = object.keys(source).reduce(function (accumulator, key) {
-					accumulator[key] = object.clone(source[key]);
+					accumulator[key] = object.clone(source[key], canExtract, extractor);
 
 					return accumulator;
 				}, {});
@@ -8074,7 +8330,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":37,"moment-timezone/builds/moment-timezone-with-data-2010-2020":89}],44:[function(require,module,exports){
+},{"./assert":37,"moment-timezone/builds/moment-timezone-with-data-2010-2020":90}],44:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8550,7 +8806,7 @@ module.exports = function () {
 	return DataType;
 }();
 
-},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":37,"./../../lang/is":40,"moment":93}],46:[function(require,module,exports){
+},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":37,"./../../lang/is":40,"moment":94}],46:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8732,7 +8988,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Generates a function suitable for use by JSON.parse.
+    * Generates a function suitable for use by {@link JSON.parse}.
     *
     * @public
     * @returns {Function}
@@ -9483,6 +9739,8 @@ module.exports = function () {
 }();
 
 },{"./../lang/Disposable":31,"./../lang/assert":37,"./../lang/is":40,"./../lang/object":41,"./../lang/promise":42}],51:[function(require,module,exports){
+const uuid = require('uuid');
+
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -9498,26 +9756,48 @@ module.exports = (() => {
 	 * @param {String} alternateDescription
 	 * @param {String} code
 	 * @param {Boolean} canReinvest
+	 * @param {Boolean} canShort
+	 * @param {Boolean} canSwitchDirection
 	 * @param {Boolean} usesSymbols
+	 * @param {Boolean} hasCorporateActions
+	 * @param {Boolean} closeFractional
+	 * @param {Boolean} roundQuantity
+	 * @param {Boolean} strictOrdering
+	 * @param {Function} generator
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canReinvest, usesSymbols) {
+		constructor(code, description, alternateDescription, canReinvest, canShort, canSwitchDirection, usesSymbols, hasCorporateActions, closeFractional, roundQuantity, strictOrdering, generator) {
 			super(code, description);
 
 			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
 			assert.argumentIsRequired(canReinvest, 'canReinvest', Boolean);
+			assert.argumentIsRequired(canShort, 'canShort', Boolean);
+			assert.argumentIsRequired(canSwitchDirection, 'canSwitchDirection', Boolean);
 			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
+			assert.argumentIsRequired(hasCorporateActions, 'hasCorporateActions', Boolean);
+			assert.argumentIsRequired(closeFractional, 'closeFractional', Boolean);
+			assert.argumentIsRequired(roundQuantity, 'roundQuantity', Boolean);
+			assert.argumentIsRequired(roundQuantity, 'strictOrdering', Boolean);
+			assert.argumentIsRequired(generator, 'generator', Function);
 
 			this._alternateDescription = alternateDescription;
 			this._canReinvest = canReinvest;
+			this._canShort = canShort;
+			this._canSwitchDirection = canSwitchDirection;
 			this._usesSymbols = usesSymbols;
+			this._hasCorporateActions = hasCorporateActions;
+			this._closeFractional = closeFractional;
+			this._roundQuantity = roundQuantity;
+			this._strictOrdering = strictOrdering;
+
+			this._generator = generator;
 		}
 
 		/**
 		 * A human-readable description.
 		 *
 		 * @public
-		 * @return {String}
+		 * @returns {String}
 		 */
 		get alternateDescription() {
 			return this._alternateDescription;
@@ -9534,6 +9814,27 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if short-selling is possible for this instrument type.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get canShort() {
+			return this._canShort;
+		}
+
+		/**
+		 * Indicates if one transaction is allowed to switch a position size from
+		 * positive to negative (or vice versa).
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get canSwitchDirection() {
+			return this._canSwitchDirection;
+		}
+
+		/**
 		 * Indicates if an instrument of this type can be represented by a symbol.
 		 *
 		 * @public
@@ -9541,6 +9842,65 @@ module.exports = (() => {
 		 */
 		get usesSymbols() {
 			return this._usesSymbols;
+		}
+
+		/**
+		 * Indicates if corporate actions are possible for this type of instrument.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get hasCorporateActions() {
+			return this._hasCorporateActions;
+		}
+
+		/**
+		 * Indicates if fractional shares should be closed when the position
+		 * size is less than one (or some of the fractional shares are closed).
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get closeFractional() {
+			return this._closeFractional;
+		}
+
+		/**
+		 * Indicates if transaction sequences must be honored before calculating position
+		 * totals.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get strictOrdering() {
+			return this._strictOrdering;
+		}
+
+		/**
+		 * Indicates transaction quantities should be rounded.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get roundQuantity() {
+			return this._roundQuantity;
+		}
+
+		/**
+		 * Generates an identifier for the instrument.
+		 *
+		 * @public
+		 * @param {Object} instrument
+		 * @returns {String}
+		 */
+		generateIdentifier(instrument) {
+			assert.argumentIsRequired(instrument, 'instrument');
+
+			if (instrument.type !== this) {
+				throw new Error('Unable to generate instrument identifier for incompatible type.');
+			}
+
+			return this._generator(instrument);
 		}
 
 		/**
@@ -9587,26 +9947,193 @@ module.exports = (() => {
 			return other;
 		}
 
+		/**
+		 * Generates an identifier for the instrument.
+		 *
+		 * @public
+		 * @static
+		 * @param {Object} instrument
+		 * @returns {String}
+		 */
+		static generateIdentifier(instrument) {
+			return map[instrument.type.code].generateIdentifier(instrument);
+		}
+
+		/**
+		 *
+		 * @public
+		 * @static
+		 * @param code
+		 * @returns {InstrumentType}
+		 */
+		static fromSymbolType(code) {
+			assert.argumentIsRequired(code, 'code', Number);
+
+			if (code === 1 || code === 6 || code === 7 || code === 11) {
+				return InstrumentType.EQUITY;
+			} else if (code === 5 || code == 15) {
+				return InstrumentType.FUND;
+			} else {
+				throw new Error(`Unable to determine InstrumentType for [ ${code} ]`);
+			}
+		}
+
 		toString() {
 			return '[InstrumentType]';
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, true);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false, false);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false, true, false, false, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true, false, true, true, true, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, false, false, true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, false, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
+
+	const map = { };
+
+	map[cash.code] = cash;
+	map[equity.code] = equity;
+	map[fund.code] = fund;
+	map[other.code] = other;
 
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],52:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"uuid":95}],52:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Enum = require('@barchart/common-js/lang/Enum');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * Describes a position size -- positive values are long, negative values
+	 * are short and zero values are even.
+	 *
+	 * @public
+	 * @extends {Enum}
+	 * @param {String} code
+	 * @param {String} description
+	 * @param {sign} sign
+	 */
+	class PositionDirection extends Enum {
+		constructor(code, description, sign) {
+			super(code, description);
+
+			assert.argumentIsRequired(sign, 'sign', String);
+			
+			this._sign = sign;
+		}
+
+		/**
+		 * A description of the positiveness or negativeness of the size of the
+		 * position.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get sign() {
+			return this._sign;
+		}
+
+		/**
+		 * Indicates if the position size is positive (i.e. is {@link PositionDirection.LONG}).
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get positive() {
+			return this === long;
+		}
+
+		/**
+		 * Indicates if the position size is negative (i.e. is {@link PositionDirection.SHORT}).
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get negative() {
+			return this === short;
+		}
+
+		/**
+		 * Indicates if the position size is zero (i.e. is {@link PositionDirection.EVEN}).
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get closed() {
+			return this === even;
+		}
+
+		/**
+		 * A positive quantity position.
+		 * 
+		 * @public
+		 * @static
+		 * @returns {PositionDirection}
+		 */
+		static get LONG() {
+			return long;
+		}
+
+		/**
+		 * A positive quantity position.
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionDirection}
+		 */
+		static get SHORT() {
+			return short;
+		}
+
+		/**
+		 * A zero quantity position.
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionDirection}
+		 */
+		static get EVEN() {
+			return even;
+		}
+
+		/**
+		 * Given an open quantity, returns a {@link PositionDirection} that
+		 * describes the quantity.
+		 *
+		 * @public
+		 * @static
+		 * @param {Decimal} open
+		 * @returns {PositionDirection}
+		 */
+		static for(open) {
+			assert.argumentIsRequired(open, 'open', Decimal, 'Decimal');
+			
+			if (open.getIsPositive()) {
+				return long;
+			} else if (open.getIsNegative()) {
+				return short;
+			} else {
+				return even;
+			}
+		}
+	}
+
+	const long = new PositionDirection('LONG', 'Long', 'positive');
+	const short = new PositionDirection('SHORT', 'Short', 'negative');
+	const even = new PositionDirection('EVEN', 'Even', 'zero');
+
+	return PositionDirection;
+})();
+
+},{"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],53:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
-	Enum = require('@barchart/common-js/lang/Enum'),
-	is = require('@barchart/common-js/lang/is');
+	Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
 	'use strict';
@@ -9623,12 +10150,16 @@ module.exports = (() => {
 	 * @param {Function} descriptionCalculator
 	 */
 	class PositionSummaryFrame extends Enum {
-		constructor(code, description, rangeCalculator, startDateCalculator, descriptionCalculator) {
+		constructor(code, description, unique, rangeCalculator, startDateCalculator, descriptionCalculator) {
 			super(code, description);
+
+			assert.argumentIsRequired(unique, 'unique', Boolean);
 
 			assert.argumentIsRequired(rangeCalculator, 'rangeCalculator', Function);
 			assert.argumentIsRequired(startDateCalculator, 'startDateCalculator', Function);
 			assert.argumentIsRequired(descriptionCalculator, 'descriptionCalculator', Function);
+
+			this._unique = unique;
 
 			this._rangeCalculator = rangeCalculator;
 			this._startDateCalculator = startDateCalculator;
@@ -9636,12 +10167,24 @@ module.exports = (() => {
 		}
 
 		/**
+		 * If true, only one summary, of the given type, can exist for a
+		 * position. If false, multiple summaries, of the given type, can
+		 * exist for a position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get unique() {
+			return this._unique;
+		}
+
+		/**
 		 * Returns a human-readable description of the frame, given
 		 * start and end dates.
 		 *
 		 * @public
-		 * @return {PositionSummaryRange} range
-		 * @return {String}
+		 * @returns {PositionSummaryRange} range
+		 * @returns {String}
 		 */
 		describeRange(range) {
 			return this._descriptionCalculator(range.start, range.end);
@@ -9732,10 +10275,10 @@ module.exports = (() => {
 		}
 	}
 
-	const yearly = new PositionSummaryFrame('YEARLY', 'year', getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
-	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
+	const yearly = new PositionSummaryFrame('YEARLY', 'year', false, getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
 
 	/**
 	 * The start and and date for a {@link PositionSummaryFrame}
@@ -9857,7 +10400,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40}],53:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37}],54:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -9872,29 +10415,45 @@ module.exports = (() => {
 	 * @param {String} code
 	 * @param {String} description
 	 * @param {String} display
+	 * @param {Number} sequence
 	 * @param {Boolean} purchase
 	 * @param {Boolean} sale
 	 * @param {Boolean} income
 	 * @param {Boolean} opening
 	 * @param {Boolean} closing
-	 */
+	 * @param {Boolean} fee
+	 * @param {Boolean} corporateAction
+	 * @param {Boolean} initial
+	 * @param {Boolean} significant
+	 * @param {Boolean} eod
+ 	 */
 	class TransactionType extends Enum {
-		constructor(code, description, display, purchase, sale, income, opening, closing) {
+		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, significant) {
 			super(code, description);
 
 			assert.argumentIsRequired(display, 'display', String);
+			assert.argumentIsRequired(sequence, 'sequence', Number);
 			assert.argumentIsRequired(purchase, 'purchase', Boolean);
 			assert.argumentIsRequired(sale, 'sale', Boolean);
 			assert.argumentIsRequired(income, 'income', Boolean);
 			assert.argumentIsRequired(opening, 'opening', Boolean);
 			assert.argumentIsRequired(closing, 'closing', Boolean);
+			assert.argumentIsRequired(fee, 'fee', Boolean);
+			assert.argumentIsRequired(corporateAction, 'corporateAction', Boolean);
+			assert.argumentIsRequired(initial, 'initial', Boolean);
+			assert.argumentIsRequired(significant, 'significant', Boolean);
 
 			this._display = display;
+			this._sequence = sequence;
 			this._purchase = purchase;
 			this._sale = sale;
 			this._income = income;
 			this._opening = opening;
 			this._closing = closing;
+			this._fee = fee;
+			this._corporateAction = corporateAction;
+			this._initial = initial;
+			this._significant = significant;
 		}
 
 		/**
@@ -9908,6 +10467,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Specifies ordering when multiple transactions occur on the same day, for
+		 * the same position.
+		 *
+		 * @public
+		 * @returns {Number}
+		 */
+		get sequence() {
+			return this._sequence;
+		}
+
+		/**
 		 * Indicates if the transaction was a trade.
 		 *
 		 * @public
@@ -9918,7 +10488,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the trade was a purchase.
+		 * Indicates if the transaction was a purchase.
 		 *
 		 * @public
 		 * @returns {Boolean}
@@ -9928,7 +10498,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the trade was a sale.
+		 * Indicates if the transaction was a sale.
 		 *
 		 * @public
 		 * @returns {Boolean}
@@ -9948,7 +10518,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the transactions opens the position (i.e. increases its
+		 * Indicates if the transaction opens the position (i.e. increases its
 		 * magnitude).
 		 *
 		 * @public
@@ -9959,7 +10529,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the transactions closes the position (i.e. decreases its
+		 * Indicates if the transaction closes the position (i.e. decreases its
 		 * magnitude).
 		 *
 		 * @public
@@ -9967,6 +10537,47 @@ module.exports = (() => {
 		 */
 		get closing() {
 			return this._closing;
+		}
+
+		/**
+		 * Indicates if the transaction is a chart that neither opens nor
+		 * closes the position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get fee() {
+			return this._fee;
+		}
+
+		/**
+		 * Indicates if the transaction is a corporate action.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get corporateAction() {
+			return this._corporateAction;
+		}
+
+		/**
+		 * Indicates if the transaction can be the first transaction for a position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get initial() {
+			return this._initial;
+		}
+
+		/**
+		 * Significant transactions cannot be discarded during transaction re-write.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get significant() {
+			return this._significant;
 		}
 
 		/**
@@ -10066,6 +10677,17 @@ module.exports = (() => {
 		 */
 		static get DISTRIBUTION_FUND() {
 			return distributionFund;
+		}
+
+		/**
+		 * A mutual fund distribution in cash, reinvested.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DISTRIBUTION_REINVEST() {
+			return distributionReinvest;
 		}
 
 		/**
@@ -10172,34 +10794,34 @@ module.exports = (() => {
 		}
 	}
 
-	const buy = new TransactionType('B', 'Buy', 'Buy', true, false, false, true,  false);
-	const sell = new TransactionType('S', 'Sell', 'Sell', false, true, false, false, true);
-	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', true, false, false, false, true);
-	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', false, true, false, true, false);
-	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', false, false, true, false, false);
-	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', false, false, false, true, false);
-	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', false, false, false, true, false);
-	const split = new TransactionType('SP', 'Split', 'Split', false, false, false, true, false);
-	const fee = new TransactionType('F', 'Fee', 'Fee', false, false, false, true, false);
-	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', false, false, false, false, false);
+	const buy = new TransactionType('B', 'Buy', 'Buy', 0, true, false, false, true, false, false, false, true, true);
+	const sell = new TransactionType('S', 'Sell', 'Sell', 0, false, true, false, false, true, false, false, false, true);
+	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', 0, true, false, false, false, true, false, false, false, true);
+	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', 0, false, true, false, true, false, false, false, true, true);
+	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 1, false, false, true, false, false, false, true, false, false);
+	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false);
+	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false);
+	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
+	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
+	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
 
-	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', false, false, true, false, false);
-	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', false, false, false, true, false);
+	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
+	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
+	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', 1, false, false, false, true, false, false, true, false, false);
 
-	const deposit = new TransactionType('D', 'Deposit', 'Deposit', false, false, false, false, false);
-	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', false, false, false, false, false);
-	const debit = new TransactionType('DR', 'Debit', 'Debit', false, false, false, false, false);
-	const credit = new TransactionType('CR', 'Credit', 'Credit', false, false, false, false, false);
+	const deposit = new TransactionType('D', 'Deposit', 'Deposit', 0, false, false, false, false, false, false, false, true, true);
+	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', 0, false, false, false, false, false, false, false, true, true);
+	const debit = new TransactionType('DR', 'Debit', 'Debit', 0, false, false, false, false, false, false, false, true, true);
+	const credit = new TransactionType('CR', 'Credit', 'Credit', 0, false, false, false, false, false, false, false, true, true);
 
-	const valuation = new TransactionType('V', 'Valuation', 'Valuation', false, false, false, false, false);
-	const income = new TransactionType('I', 'Income', 'Income', false, false, true, false, false);
+	const valuation = new TransactionType('V', 'Valuation', 'Valuation', 0, false, false, false, false, false, false, false, false, false);
+	const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
 
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],54:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
-	Enum = require('@barchart/common-js/lang/Enum');
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],55:[function(require,module,exports){
+const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
 	'use strict';
@@ -10259,12 +10881,10 @@ module.exports = (() => {
 	return ValuationType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],55:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
-	Currency = require('@barchart/common-js/lang/Currency'),
+},{"@barchart/common-js/lang/Enum":32}],56:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
-	is = require('@barchart/common-js/lang/is'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder'),
 	Timezones = require('@barchart/common-js/lang/Timezones');
@@ -10363,7 +10983,7 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.create', DataType.DAY)
-		.withField('dates.cash', DataType.DAY, true)
+		.withField('defaults.cash', DataType.BOOLEAN, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
@@ -10385,7 +11005,7 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.create', DataType.DAY)
-		.withField('dates.cash', DataType.DAY, true)
+		.withField('defaults.cash', DataType.BOOLEAN, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
@@ -10408,7 +11028,7 @@ module.exports = (() => {
 	const create = new PortfolioSchema(SchemaBuilder.withName('create')
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
-		.withField('dates.cash', DataType.DAY, true)
+		.withField('defaults.cash', DataType.BOOLEAN, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'), true)
@@ -10420,6 +11040,7 @@ module.exports = (() => {
 		.withField('portfolio', DataType.STRING)
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'), true)
+		.withField('defaults.cash', DataType.BOOLEAN, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('miscellany', DataType.AD_HOC, true)
@@ -10429,16 +11050,15 @@ module.exports = (() => {
 	return PortfolioSchema;
 })();
 
-},{"./../data/ValuationType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/Timezones":35,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],56:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
-	Currency = require('@barchart/common-js/lang/Currency'),
+},{"./../data/ValuationType":55,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/Timezones":35,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],57:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
-	is = require('@barchart/common-js/lang/is'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const InstrumentType = require('./../data/InstrumentType'),
+	PositionDirection = require('./../data/PositionDirection'),
 	ValuationType = require('./../data/ValuationType');
 
 module.exports = (() => {
@@ -10489,6 +11109,17 @@ module.exports = (() => {
 			return client;
 		}
 
+		/**
+		 * Data required to update a position.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PositionSchema}
+		 */
+		static get UPDATE() {
+			return update;
+		}
+
 		toString() {
 			return '[PositionSchema]';
 		}
@@ -10507,10 +11138,12 @@ module.exports = (() => {
 		.withField('position', DataType.STRING)
 		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
+		.withField('cash', DataType.BOOLEAN, true)
+		.withField('reinvest', DataType.BOOLEAN, true)
 		.withField('valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('reinvest', DataType.BOOLEAN)
 		.withField('snapshot.date', DataType.DAY)
 		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -10522,6 +11155,7 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
+		.withField('root', DataType.STRING, true)
 		.schema
 	);
 
@@ -10538,10 +11172,12 @@ module.exports = (() => {
 		.withField('position', DataType.STRING)
 		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
+		.withField('cash', DataType.BOOLEAN, true)
+		.withField('reinvest', DataType.BOOLEAN, true)
 		.withField('valuation', DataType.forEnum(ValuationType, 'ValuationType'))
-		.withField('reinvest', DataType.BOOLEAN)
 		.withField('snapshot.date', DataType.DAY)
 		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -10552,19 +11188,31 @@ module.exports = (() => {
 		.schema
 	);
 
+	const update = new PositionSchema(SchemaBuilder.withName('update')
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
+		.withField('mapping.name', DataType.STRING, true)
+		.withField('mapping.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
+		.withField('mapping.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('mapping.symbol.barchart', DataType.STRING, true)
+		.withField('mapping.symbol.display', DataType.STRING, true)
+		.withField('cash', DataType.BOOLEAN, true)
+		.withField('reinvest', DataType.BOOLEAN, true)
+		.schema
+	);
+
 	return PositionSchema;
 })();
 
-},{"./../data/InstrumentType":51,"./../data/ValuationType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],57:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
-	Currency = require('@barchart/common-js/lang/Currency'),
+},{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/ValuationType":55,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],58:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
-	is = require('@barchart/common-js/lang/is'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+const PositionDirection = require('./../data/PositionDirection'),
+	PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
 module.exports = (() => {
 	'use strict';
@@ -10623,22 +11271,17 @@ module.exports = (() => {
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
-		.withField('instrument.id', DataType.STRING)
-		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.STRING)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
-		.withField('instrument.delist', DataType.DAY, true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
 		.withField('start.open', DataType.DECIMAL)
+		.withField('start.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('start.basis', DataType.DECIMAL)
 		.withField('start.value', DataType.DECIMAL)
 		.withField('end.date', DataType.DAY)
 		.withField('end.sequence', DataType.NUMBER)
 		.withField('end.open', DataType.DECIMAL)
+		.withField('end.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('end.basis', DataType.DECIMAL)
 		.withField('end.value', DataType.DECIMAL)
 		.withField('period.buys', DataType.DECIMAL)
@@ -10655,22 +11298,17 @@ module.exports = (() => {
 		.withField('user', DataType.STRING)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
-		.withField('instrument.id', DataType.STRING)
-		.withField('instrument.name', DataType.STRING)
-		.withField('instrument.type', DataType.STRING)
-		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
-		.withField('instrument.delist', DataType.DAY, true)
-		.withField('instrument.symbol.barchart', DataType.STRING, true)
-		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
 		.withField('start.date', DataType.DAY)
 		.withField('start.sequence', DataType.NUMBER)
 		.withField('start.open', DataType.DECIMAL)
+		.withField('start.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('start.basis', DataType.DECIMAL)
 		.withField('start.value', DataType.DECIMAL)
 		.withField('end.date', DataType.DAY)
 		.withField('end.sequence', DataType.NUMBER)
 		.withField('end.open', DataType.DECIMAL)
+		.withField('end.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('end.basis', DataType.DECIMAL)
 		.withField('end.value', DataType.DECIMAL)
 		.withField('period.buys', DataType.DECIMAL)
@@ -10684,9 +11322,8 @@ module.exports = (() => {
 	return PositionSummarySchema;
 })();
 
-},{"./../data/PositionSummaryFrame":52,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],58:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
-	is = require('@barchart/common-js/lang/is'),
+},{"./../data/PositionDirection":52,"./../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
+const is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
@@ -10694,6 +11331,7 @@ const assert = require('@barchart/common-js/lang/assert'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const InstrumentType = require('./../data/InstrumentType'),
+	PositionDirection = require('./../data/PositionDirection'),
 	TransactionType = require('./../data/TransactionType');
 
 module.exports = (() => {
@@ -10789,52 +11427,12 @@ module.exports = (() => {
 			return sellShort;
 		}
 
-		static get DIVIDEND() {
-			return dividend;
-		}
-
-		static get DIVIDEND_REINVEST() {
-			return dividendReinvest;
-		}
-
-		static get DIVIDEND_STOCK() {
-			return dividendStock;
-		}
-
-		static get DISTRIBUTION_CASH() {
-			return distributionCash;
-		}
-
-		static get DISTRIBUTION_FUND() {
-			return distributionFund;
-		}
-
-		static get SPLIT() {
-			return split;
-		}
-
-		static get FEE() {
-			return fee;
-		}
-
-		static get FEE_UNITS() {
-			return feeUnits;
-		}
-
 		static get DEPOSIT() {
 			return deposit;
 		}
 
 		static get WITHDRAWAL() {
 			return withdrawal;
-		}
-
-		static get DEBIT() {
-			return debit;
-		}
-
-		static get CREDIT() {
-			return credit;
 		}
 
 		static get VALUATION() {
@@ -10863,6 +11461,7 @@ module.exports = (() => {
 		.withField('reference.position', DataType.STRING, true)
 		.withField('reference.sequence', DataType.NUMBER, true)
 		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -10886,6 +11485,7 @@ module.exports = (() => {
 		.withField('split.reference', DataType.STRING, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
+		.withField('valuation.rate', DataType.DECIMAL, true)
 		.withField('valuation.value', DataType.DECIMAL, true)
 		.withField('system.sequence', DataType.NUMBER)
 		.withField('system.version', DataType.STRING)
@@ -10906,6 +11506,7 @@ module.exports = (() => {
 		.withField('reference.position', DataType.STRING, true)
 		.withField('reference.sequence', DataType.NUMBER, true)
 		.withField('snapshot.open', DataType.DECIMAL)
+		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
 		.withField('snapshot.sells', DataType.DECIMAL)
 		.withField('snapshot.gain', DataType.DECIMAL)
@@ -10917,13 +11518,13 @@ module.exports = (() => {
 		.withField('dividend.effective', DataType.DAY, true)
 		.withField('dividend.price', DataType.DECIMAL, true)
 		.withField('dividend.amount', DataType.DECIMAL, true)
-		.withField('dividend.reference', DataType.STRING, true)
 		.withField('split.numerator', DataType.DECIMAL, true)
 		.withField('split.denominator', DataType.DECIMAL, true)
 		.withField('split.effective', DataType.DAY, true)
 		.withField('split.reference', DataType.STRING, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
+		.withField('valuation.rate', DataType.DECIMAL, true)
 		.withField('valuation.value', DataType.DECIMAL, true)
 		.schema
 	);
@@ -10931,16 +11532,21 @@ module.exports = (() => {
 	const buy = new TransactionSchema(SchemaBuilder.withName(TransactionType.BUY.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.exchange', DataType.STRING, true)
+		.withField('instrument.code', DataType.NUMBER, true)
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
-		.withField('price', DataType.DECIMAL)
+		.withField('price', DataType.DECIMAL, true)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('reinvest', DataType.BOOLEAN, true)
+		.withField('cash', DataType.BOOLEAN, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -10948,9 +11554,10 @@ module.exports = (() => {
 	const sell = new TransactionSchema(SchemaBuilder.withName(TransactionType.SELL.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
-		.withField('price', DataType.DECIMAL)
+		.withField('price', DataType.DECIMAL, true)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
@@ -10960,6 +11567,7 @@ module.exports = (() => {
 	const buyShort = new TransactionSchema(SchemaBuilder.withName(TransactionType.BUY_SHORT.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('price', DataType.DECIMAL)
@@ -10972,8 +11580,11 @@ module.exports = (() => {
 	const sellShort = new TransactionSchema(SchemaBuilder.withName(TransactionType.SELL_SHORT.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('instrument.name', DataType.STRING, true)
+		.withField('instrument.exchange', DataType.STRING, true)
+		.withField('instrument.code', DataType.NUMBER, true)
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
@@ -10982,82 +11593,8 @@ module.exports = (() => {
 		.withField('price', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const dividend = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const dividendReinvest = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND_REINVEST.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('price', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const dividendStock = new TransactionSchema(SchemaBuilder.withName(TransactionType.DIVIDEND_STOCK.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('price', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const distributionCash = new TransactionSchema(SchemaBuilder.withName(TransactionType.DISTRIBUTION_CASH.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const distributionFund = new TransactionSchema(SchemaBuilder.withName(TransactionType.DISTRIBUTION_FUND.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('price', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const split = new TransactionSchema(SchemaBuilder.withName(TransactionType.SPLIT.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('numerator', DataType.DECIMAL)
-		.withField('denominator', DataType.DECIMAL)
-		.withField('effective', DataType.DAY)
-		.withField('fee', DataType.DECIMAL, true)
+		.withField('reinvest', DataType.BOOLEAN, true)
+		.withField('cash', DataType.BOOLEAN, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -11065,20 +11602,10 @@ module.exports = (() => {
 	const fee = new TransactionSchema(SchemaBuilder.withName(TransactionType.FEE.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('fee', DataType.DECIMAL)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const feeUnits = new TransactionSchema(SchemaBuilder.withName(TransactionType.FEE_UNITS.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('fee', DataType.DECIMAL)
-		.withField('price', DataType.DECIMAL)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -11086,12 +11613,12 @@ module.exports = (() => {
 	const deposit = new TransactionSchema(SchemaBuilder.withName(TransactionType.DEPOSIT.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -11099,32 +11626,12 @@ module.exports = (() => {
 	const withdrawal = new TransactionSchema(SchemaBuilder.withName(TransactionType.WITHDRAWAL.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
+		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
 		.withField('date', DataType.DAY)
 		.withField('amount', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const debit = new TransactionSchema(SchemaBuilder.withName(TransactionType.DEBIT.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('amount', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-
-	const credit = new TransactionSchema(SchemaBuilder.withName(TransactionType.CREDIT.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('amount', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -11132,10 +11639,10 @@ module.exports = (() => {
 	const valuation = new TransactionSchema(SchemaBuilder.withName(TransactionType.VALUATION.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('value', DataType.DECIMAL)
-		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
@@ -11143,6 +11650,7 @@ module.exports = (() => {
 	const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
 		.withField('income', DataType.DECIMAL)
@@ -11161,12 +11669,7 @@ module.exports = (() => {
 	addSchemaToMap(TransactionType.SELL, sell);
 	addSchemaToMap(TransactionType.BUY_SHORT, buyShort);
 	addSchemaToMap(TransactionType.SELL_SHORT, sellShort);
-	addSchemaToMap(TransactionType.DIVIDEND, dividend);
-	addSchemaToMap(TransactionType.DIVIDEND_STOCK, dividendStock);
-	addSchemaToMap(TransactionType.DIVIDEND_REINVEST, dividendReinvest);
-	addSchemaToMap(TransactionType.SPLIT, split);
 	addSchemaToMap(TransactionType.FEE, fee);
-	addSchemaToMap(TransactionType.FEE_UNITS, feeUnits);
 	addSchemaToMap(TransactionType.DEPOSIT, deposit);
 	addSchemaToMap(TransactionType.WITHDRAWAL, withdrawal);
 	addSchemaToMap(TransactionType.VALUATION, valuation);
@@ -11175,7 +11678,7 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":51,"./../data/TransactionType":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
+},{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/TransactionType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],60:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -11188,8 +11691,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var assert = require('@barchart/common-js/lang/assert'),
     Disposable = require('@barchart/common-js/lang/Disposable'),
-    Enum = require('@barchart/common-js/lang/Enum'),
-    is = require('@barchart/common-js/lang/is'),
     Scheduler = require('@barchart/common-js/timing/Scheduler');
 
 var EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBuilder'),
@@ -11213,7 +11714,7 @@ module.exports = function () {
   * Web service gateway for obtaining JWT tokens from TGAM (The Globe and Mail).
   *
   * @public
-  * @param {Enpoint} endpoint
+  * @param {JwtGateway~tokenGenerator} tokenGenerator
   * @param {Number=} refreshInterval - Interval, in milliseconds, which a token refresh should occur. If zero, the token does not need to be refreshed.
   * @extends {Disposable}
   */
@@ -11221,18 +11722,18 @@ module.exports = function () {
 	var JwtGateway = function (_Disposable) {
 		_inherits(JwtGateway, _Disposable);
 
-		function JwtGateway(endpoint, refreshInterval) {
+		function JwtGateway(tokenGenerator, refreshInterval) {
 			_classCallCheck(this, JwtGateway);
 
 			var _this = _possibleConstructorReturn(this, (JwtGateway.__proto__ || Object.getPrototypeOf(JwtGateway)).call(this));
 
-			assert.argumentIsRequired(endpoint, 'endpoint', Endpoint, 'Endpoint');
+			assert.argumentIsRequired(tokenGenerator, 'tokenGenerator', Function);
 			assert.argumentIsOptional(refreshInterval, 'refreshInterval', Number);
 
 			_this._started = false;
 			_this._startPromise = null;
 
-			_this._endpoint = endpoint;
+			_this._tokenGenerator = tokenGenerator;
 
 			_this._refreshInterval = refreshInterval || 0;
 			_this._refreshJitter = Math.floor(_this._refreshInterval / 10);
@@ -11285,7 +11786,7 @@ module.exports = function () {
 				return Promise.resolve().then(function () {
 					checkStart.call(_this3);
 
-					return Gateway.invoke(_this3._endpoint);
+					return _this3._tokenGenerator();
 				}).catch(function (e) {
 					var failure = FailureReason.forRequest({ endpoint: _this3._endpoint }).addItem(FailureType.REQUEST_IDENTITY_FAILURE).format();
 
@@ -11400,7 +11901,9 @@ module.exports = function () {
 			key: 'forDevelopment',
 			value: function forDevelopment(endpoint) {
 				return Promise.resolve(endpoint).then(function (e) {
-					return start(new JwtGateway(e, 60000));
+					return start(new JwtGateway(function () {
+						return Gateway.invoke(e);
+					}, 60000));
 				});
 			}
 
@@ -11409,7 +11912,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {Promise.<Endpoint>|Endpoint}endpoint - The endpoint which vends JWT tokens.
+    * @param {Promise.<Endpoint>|Endpoint} endpoint - The endpoint which vends JWT tokens.
     * @returns {Promise.<RequestInterceptor>}
     */
 
@@ -11480,6 +11983,40 @@ module.exports = function () {
 					return jwtGateway.toRequestInterceptor();
 				});
 			}
+
+			/**
+    * Creates and starts a new {@link JwtGateway} for use by the "tracker" system.
+    *
+    * @public
+    * @static
+    * @param {Function} tokenGenerator - A function which returns the JWT token.
+    * @returns {Promise.<JwtGateway>}
+    */
+
+		}, {
+			key: 'forTracker',
+			value: function forTracker(tokenGenerator) {
+				return Promise.resolve().then(function () {
+					return start(new JwtGateway(tokenGenerator, 0));
+				});
+			}
+
+			/**
+    * Creates and starts a new {@link RequestInterceptor} for use by "tracker" system.
+    *
+    * @public
+    * @static
+    * @param {JwtGateway~tokenGenerator} tokenGenerator - A function which returns the JWT token.
+    * @returns {Promise.<RequestInterceptor>}
+    */
+
+		}, {
+			key: 'forTrackerClient',
+			value: function forTrackerClient(tokenGenerator) {
+				return JwtGateway.forTracker(tokenGenerator).then(function (jwtGateway) {
+					return jwtGateway.toRequestInterceptor();
+				});
+			}
 		}]);
 
 		return JwtGateway;
@@ -11510,7 +12047,7 @@ module.exports = function () {
 	}
 
 	function forTgam(host, secret, environment) {
-		return EndpointBuilder.for('read-jwt-token-for-' + environment, 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
+		var endpoint = EndpointBuilder.for('read-jwt-token-for-' + environment, 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
 			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', 'X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', 'X-GAM-CLIENT-APP-SECRET', secret);
 		}).withHost(host).withRequestInterceptor(RequestInterceptor.fromDelegate(function (request) {
 			request.withCredentials = true;
@@ -11519,32 +12056,40 @@ module.exports = function () {
 		})).withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
 			return response.token;
 		})).endpoint;
+
+		return function () {
+			return Gateway.invoke(endpoint);
+		};
 	}
 
 	function getTime() {
 		return new Date().getTime();
 	}
 
+	/**
+  * A function returns a JWT token (or a promise for a JWT token).
+  *
+  * @callback JwtGateway~tokenGenerator
+  * @returns {String|Promise.<String>}
+  */
+
 	return JwtGateway;
 }();
 
-},{"./index":60,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/timing/Scheduler":50}],60:[function(require,module,exports){
+},{"./index":61,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/assert":37,"@barchart/common-js/timing/Scheduler":50}],61:[function(require,module,exports){
 'use strict';
-
-var JwtGateway = require('./JwtGateway');
 
 module.exports = function () {
 	'use strict';
 
 	return {
-		JwtGateway: JwtGateway,
-		version: '1.0.38'
+		version: '1.0.42'
 	};
 }();
 
-},{"./JwtGateway":59}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":63}],62:[function(require,module,exports){
+},{"./lib/axios":64}],63:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -11728,7 +12273,7 @@ module.exports = function xhrAdapter(config) {
 };
 
 }).call(this,require('_process'))
-},{"../core/createError":69,"./../core/settle":72,"./../helpers/btoa":76,"./../helpers/buildURL":77,"./../helpers/cookies":79,"./../helpers/isURLSameOrigin":81,"./../helpers/parseHeaders":83,"./../utils":85,"_process":87}],63:[function(require,module,exports){
+},{"../core/createError":70,"./../core/settle":73,"./../helpers/btoa":77,"./../helpers/buildURL":78,"./../helpers/cookies":80,"./../helpers/isURLSameOrigin":82,"./../helpers/parseHeaders":84,"./../utils":86,"_process":88}],64:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -11782,7 +12327,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":64,"./cancel/CancelToken":65,"./cancel/isCancel":66,"./core/Axios":67,"./defaults":74,"./helpers/bind":75,"./helpers/spread":84,"./utils":85}],64:[function(require,module,exports){
+},{"./cancel/Cancel":65,"./cancel/CancelToken":66,"./cancel/isCancel":67,"./core/Axios":68,"./defaults":75,"./helpers/bind":76,"./helpers/spread":85,"./utils":86}],65:[function(require,module,exports){
 'use strict';
 
 /**
@@ -11803,7 +12348,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -11862,14 +12407,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":64}],66:[function(require,module,exports){
+},{"./Cancel":65}],67:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./../defaults');
@@ -11950,7 +12495,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"./../defaults":74,"./../utils":85,"./InterceptorManager":68,"./dispatchRequest":70}],68:[function(require,module,exports){
+},{"./../defaults":75,"./../utils":86,"./InterceptorManager":69,"./dispatchRequest":71}],69:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12004,7 +12549,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":85}],69:[function(require,module,exports){
+},{"./../utils":86}],70:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -12024,7 +12569,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":71}],70:[function(require,module,exports){
+},{"./enhanceError":72}],71:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12112,7 +12657,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":66,"../defaults":74,"./../helpers/combineURLs":78,"./../helpers/isAbsoluteURL":80,"./../utils":85,"./transformData":73}],71:[function(require,module,exports){
+},{"../cancel/isCancel":67,"../defaults":75,"./../helpers/combineURLs":79,"./../helpers/isAbsoluteURL":81,"./../utils":86,"./transformData":74}],72:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12135,7 +12680,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -12163,7 +12708,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":69}],73:[function(require,module,exports){
+},{"./createError":70}],74:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12185,7 +12730,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":85}],74:[function(require,module,exports){
+},{"./../utils":86}],75:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -12281,7 +12826,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":62,"./adapters/xhr":62,"./helpers/normalizeHeaderName":82,"./utils":85,"_process":87}],75:[function(require,module,exports){
+},{"./adapters/http":63,"./adapters/xhr":63,"./helpers/normalizeHeaderName":83,"./utils":86,"_process":88}],76:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -12294,7 +12839,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 'use strict';
 
 // btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
@@ -12332,7 +12877,7 @@ function btoa(input) {
 
 module.exports = btoa;
 
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12402,7 +12947,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":85}],78:[function(require,module,exports){
+},{"./../utils":86}],79:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12418,7 +12963,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12473,7 +13018,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":85}],80:[function(require,module,exports){
+},{"./../utils":86}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12489,7 +13034,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12559,7 +13104,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":85}],82:[function(require,module,exports){
+},{"./../utils":86}],83:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -12573,7 +13118,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":85}],83:[function(require,module,exports){
+},{"../utils":86}],84:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12628,7 +13173,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":85}],84:[function(require,module,exports){
+},{"./../utils":86}],85:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12657,7 +13202,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -12962,7 +13507,7 @@ module.exports = {
   trim: trim
 };
 
-},{"./helpers/bind":75,"is-buffer":88}],86:[function(require,module,exports){
+},{"./helpers/bind":76,"is-buffer":89}],87:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -13903,7 +14448,7 @@ module.exports = {
   }
 })(this);
 
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -14089,7 +14634,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -14112,7 +14657,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -15314,7 +15859,7 @@ function isSlowBuffer (obj) {
 	return moment;
 }));
 
-},{"moment":93}],90:[function(require,module,exports){
+},{"moment":94}],91:[function(require,module,exports){
 module.exports={
 	"version": "2016j",
 	"zones": [
@@ -15914,11 +16459,11 @@ module.exports={
 		"Pacific/Pohnpei|Pacific/Ponape"
 	]
 }
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":90,"./moment-timezone":92}],92:[function(require,module,exports){
+},{"./data/packed/latest.json":91,"./moment-timezone":93}],93:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -16521,7 +17066,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":93}],93:[function(require,module,exports){
+},{"moment":94}],94:[function(require,module,exports){
 //! moment.js
 
 ;(function (global, factory) {
@@ -17996,9 +18541,9 @@ moment.tz.load(require('./data/packed/latest.json'));
 
             mom = createUTC([2000, 1]).day(i);
             if (strict && !this._fullWeekdaysParse[i]) {
-                this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\.?') + '$', 'i');
-                this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\.?') + '$', 'i');
-                this._minWeekdaysParse[i] = new RegExp('^' + this.weekdaysMin(mom, '').replace('.', '\.?') + '$', 'i');
+                this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\\.?') + '$', 'i');
+                this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\\.?') + '$', 'i');
+                this._minWeekdaysParse[i] = new RegExp('^' + this.weekdaysMin(mom, '').replace('.', '\\.?') + '$', 'i');
             }
             if (!this._weekdaysParse[i]) {
                 regex = '^' + this.weekdays(mom, '') + '|^' + this.weekdaysShort(mom, '') + '|^' + this.weekdaysMin(mom, '');
@@ -18801,7 +19346,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
     function preprocessRFC2822(s) {
         // Remove comments and folding whitespace and replace multiple-spaces with a single space
-        return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').trim();
+        return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').replace(/^\s\s*/, '').replace(/\s\s*$/, '');
     }
 
     function checkWeekday(weekdayStr, parsedInput, config) {
@@ -20183,7 +20728,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
     addUnitAlias('date', 'D');
 
-    // PRIOROITY
+    // PRIORITY
     addUnitPriority('date', 9);
 
     // PARSING
@@ -20980,7 +21525,7 @@ moment.tz.load(require('./data/packed/latest.json'));
     // Side effect imports
 
 
-    hooks.version = '2.22.0';
+    hooks.version = '2.22.2';
 
     setHookCallback(createLocal);
 
@@ -21029,5 +21574,210 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}]},{},[1,5])(5)
+},{}],95:[function(require,module,exports){
+var v1 = require('./v1');
+var v4 = require('./v4');
+
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
+
+},{"./v1":98,"./v4":99}],96:[function(require,module,exports){
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+module.exports = bytesToUuid;
+
+},{}],97:[function(require,module,exports){
+(function (global){
+// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+var rng;
+
+var crypto = global.crypto || global.msCrypto; // for IE 11
+if (crypto && crypto.getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+  rng = function whatwgRNG() {
+    crypto.getRandomValues(rnds8);
+    return rnds8;
+  };
+}
+
+if (!rng) {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+  rng = function() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return rnds;
+  };
+}
+
+module.exports = rng;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],98:[function(require,module,exports){
+var rng = require('./lib/rng');
+var bytesToUuid = require('./lib/bytesToUuid');
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+// random #'s we need to init node and clockseq
+var _seedBytes = rng();
+
+// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+var _nodeId = [
+  _seedBytes[0] | 0x01,
+  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
+];
+
+// Per 4.2.2, randomize (14 bit) clockseq
+var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
+
+// Previous uuid creation time
+var _lastMSecs = 0, _lastNSecs = 0;
+
+// See https://github.com/broofa/node-uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  var node = options.node || _nodeId;
+  for (var n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : bytesToUuid(b);
+}
+
+module.exports = v1;
+
+},{"./lib/bytesToUuid":96,"./lib/rng":97}],99:[function(require,module,exports){
+var rng = require('./lib/rng');
+var bytesToUuid = require('./lib/bytesToUuid');
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options == 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+},{"./lib/bytesToUuid":96,"./lib/rng":97}]},{},[1,5])(5)
 });
