@@ -300,7 +300,7 @@ module.exports = (() => {
 	}
 
 	const comparatorAscending = ComparatorBuilder.startWith((a, b) => Day.compareDays(a.date, b.date))
-		.thenBy((a, b) => comparators.compareNumbers(getInstrumentTypePriority(a.instrument.type), getInstrumentTypePriority(b.instrument.type))
+		.thenBy((a, b) => comparators.compareNumbers(getInstrumentTypePriority(a.instrument.type), getInstrumentTypePriority(b.instrument.type)))
 		.thenBy((a, b) => comparators.compareStrings(a.instrument.id, b.instrument.id))
 		.thenBy((a, b) => comparators.compareNumbers(a.sequence, b.sequence))
 		.toComparator();
