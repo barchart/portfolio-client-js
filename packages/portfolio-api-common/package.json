@@ -1,6 +1,6 @@
 {
   "name": "@barchart/portfolio-api-common",
-  "version": "1.2.72",
+  "version": "1.2.73",
   "description": "Common classes used by the Portfolio system",
   "author": {
     "name": "Bryan Ingle",
