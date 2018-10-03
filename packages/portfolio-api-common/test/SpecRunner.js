@@ -6282,15 +6282,17 @@ module.exports = function () {
     *
     * @public
     * @param {Boolean=} approximate
+    * @param {Number=} places
     * @returns {Boolean}
     */
 
 		}, {
 			key: 'getIsZero',
-			value: function getIsZero(approximate) {
+			value: function getIsZero(approximate, places) {
 				assert.argumentIsOptional(approximate, 'approximate', Boolean);
+				assert.argumentIsOptional(places, 'places', Number);
 
-				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(20, RoundingMode.NORMAL).getIsZero();
+				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(places || Big.DP, RoundingMode.NORMAL).getIsZero();
 			}
 
 			/**
@@ -6387,6 +6389,43 @@ module.exports = function () {
 			key: 'getIsEqual',
 			value: function getIsEqual(other) {
 				return this._big.eq(getBig(other));
+			}
+
+			/**
+    * Returns true if the current instance is an integer (i.e. has no decimal
+    * component).
+    *
+    * @public
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsInteger',
+			value: function getIsInteger() {
+				return this.getIsEqual(this.round(0));
+			}
+
+			/**
+    * Returns the number of decimal places used.
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'getDecimalPlaces',
+			value: function getDecimalPlaces() {
+				var matches = this.toFixed().match(/-?\d*\.(\d*)/);
+
+				var returnVal = void 0;
+
+				if (matches === null) {
+					returnVal = 0;
+				} else {
+					returnVal = matches[1].length;
+				}
+
+				return returnVal;
 			}
 
 			/**
