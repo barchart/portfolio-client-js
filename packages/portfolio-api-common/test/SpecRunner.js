@@ -1749,6 +1749,19 @@ module.exports = (() => {
 			return array.unique(symbols);
 		}
 
+		setPositionLock(position) {
+			assert.argumentIsRequired(position, 'position', Object);
+			assert.argumentIsRequired(position.position, 'position.position', String);
+
+			const item = this._items.find((i) => i.position.position === position.position);
+
+			if (item) {
+				const locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
+
+				item.setPositionLock(locked);
+			}
+		}
+
 		/**
 		 * Performs a batch update of both position quotes and forex quotes,
 		 * triggering updates to position(s) and data aggregation(s).
@@ -2393,6 +2406,7 @@ module.exports = (() => {
 			this._dataFormat.description = this._description;
 			this._dataFormat.hide = false;
 			this._dataFormat.invalid = false;
+			this._dataFormat.locked = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
 			this._dataFormat.basisPrice = null;
@@ -2862,11 +2876,16 @@ module.exports = (() => {
 		});
 
 		let newsBinding = Disposable.getEmpty();
+		let lockedBinding = Disposable.getEmpty();
 
 		if (this._single) {
 			newsBinding = item.registerNewsExistsChangeHandler((exists) => {
 				this._dataActual.newsExists = exists;
 				this._dataFormat.newsExists = exists;
+			});
+
+			lockedBinding = item.registerLockChangeHandler((locked) => {
+				this._dataFormat.locked = locked;
 			});
 		}
 
@@ -2879,14 +2898,16 @@ module.exports = (() => {
 			this._dataFormat.description = this._description;
 		}));
 
-		this._disposeStack.push(quoteBinding);
-		this._disposeStack.push(newsBinding);
 		this._disposeStack.push(fundamentalBinding);
+		this._disposeStack.push(quoteBinding);
+		this._disposeStack.push(lockedBinding);
+		this._disposeStack.push(newsBinding);
 
 		this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
+			fundamentalBinding.dispose();
 			quoteBinding.dispose();
 			newsBinding.dispose();
-			fundamentalBinding.dispose();
+			lockedBinding.dispose();
 
 			array.remove(this._items, i => i === item);
 			array.remove(this._excludedItems, i => i === item);
@@ -3013,6 +3034,7 @@ module.exports = (() => {
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
+			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
 		}
 
 		const groupItems = group._items;
@@ -3251,13 +3273,15 @@ module.exports = (() => {
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
+			this._data.locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
 
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
-			this._fundamentalDataChangeEvent = new Event(this);
+			this._fundamentalDataChangedEvent = new Event(this);
+			this._lockChangedEvent = new Event(this);
 			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 		}
@@ -3386,22 +3410,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Sets fundamental data for the position.
-		 *
-		 * @public
-		 * @param {Object} data
-		 */
-		setPositionFundamentalData(data) {
-			assert.argumentIsRequired(data, 'data', Object);
-
-			if (this.getIsDisposed()) {
-				return;
-			}
-
-			this._fundamentalDataChangeEvent.fire(this._data.fundamental = data);
-		}
-
-		/**
 		 * Sets a flag which indicates if news article(s) exist for the encapsulated position's
 		 * symbol.
 		 *
@@ -3421,6 +3429,40 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets fundamental data for the position.
+		 *
+		 * @public
+		 * @param {Object} data
+		 */
+		setPositionFundamentalData(data) {
+			assert.argumentIsRequired(data, 'data', Object);
+
+			if (this.getIsDisposed()) {
+				return;
+			}
+
+			this._fundamentalDataChangedEvent.fire(this._data.fundamental = data);
+		}
+
+		/**
+		 * Sets position lock status.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
+		setPositionLock(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this.getIsDisposed()) {
+				return;
+			}
+
+			if (this._data.locked !== value) {
+				this._lockChangedEvent.fire(this._data.locked = value);
+			}
+		}
+
+		/**
 		 * Registers an observer for quote changes, which is fired after internal recalculations
 		 * of position data are complete.
 		 *
@@ -3433,17 +3475,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Registers an observer for fundamental data changes.
-		 *
-		 * @public
-		 * @param {Function} handler
-		 * @returns {Disposable}
-		 */
-		registerFundamentalDataChangeHandler(handler) {
-			return this._fundamentalDataChangeEvent.register(handler);
-		}
-
-		/**
 		 * Registers an observer changes to the status of news existence.
 		 *
 		 * @public
@@ -3452,6 +3483,28 @@ module.exports = (() => {
 		 */
 		registerNewsExistsChangeHandler(handler) {
 			return this._newsExistsChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for fundamental data changes.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerFundamentalDataChangeHandler(handler) {
+			return this._fundamentalDataChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for position lock changes.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerLockChangeHandler(handler) {
+			return this._lockChangedEvent.register(handler);
 		}
 
 		/**
@@ -3481,7 +3534,8 @@ module.exports = (() => {
 
 			this._quoteChangedEvent.clear();
 			this._newsExistsChangedEvent.clear();
-			this._fundamentalDataChangeEvent.clear();
+			this._fundamentalDataChangedEvent.clear();
+			this._lockChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
 		}
@@ -5920,12 +5974,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Converts a string (which matches the output of {@link Day#format} into
-    * a {@link Day} instance.
+    * Clones a {@link Day} instance.
     *
     * @public
     * @static
-    * @param {String} value
+    * @param {Day} value
     * @returns {Day}
     */
 
@@ -5966,6 +6019,24 @@ module.exports = function () {
 				return this._day;
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Day, 'Day');
+
+				return new Day(value.year, value.month, value.day);
+			}
+
+			/**
+    * Converts a string (which matches the output of {@link Day#format} into
+    * a {@link Day} instance.
+    *
+    * @public
+    * @static
+    * @param {String} value
+    * @returns {Day}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				assert.argumentIsRequired(value, 'value', String);
@@ -6476,10 +6547,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Parses the value emitted by {@link Decimal#toJSON}.
+    * Clones a {@link Decimal} instance.
     *
     * @public
-    * @param {String} value
+    * @static
+    * @param {Decimal} value
     * @returns {Decimal}
     */
 
@@ -6489,6 +6561,22 @@ module.exports = function () {
 				return '[Decimal]';
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Decimal, 'Decimal');
+
+				return new Decimal(value._big);
+			}
+
+			/**
+    * Parses the value emitted by {@link Decimal#toJSON}.
+    *
+    * @public
+    * @param {String} value
+    * @returns {Decimal}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Decimal(value);
@@ -7510,10 +7598,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Parses the value emitted by {@link Timestamp#toJSON}.
+    * Clones a {@link Timestamp} instance.
     *
     * @public
-    * @param {Number} value
+    * @static
+    * @param {Timestamp} value
     * @returns {Timestamp}
     */
 
@@ -7549,6 +7638,22 @@ module.exports = function () {
 				return this._moment;
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
+
+				return new Timestamp(value._timestamp, value._timezone);
+			}
+
+			/**
+    * Parses the value emitted by {@link Timestamp#toJSON}.
+    *
+    * @public
+    * @param {Number} value
+    * @returns {Timestamp}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Timestamp(value);
