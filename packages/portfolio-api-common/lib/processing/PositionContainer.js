@@ -730,6 +730,8 @@ module.exports = (() => {
 					});
 				}
 			}
+
+			recalculatePercentages.call(this);
 		}));
 	}
 
