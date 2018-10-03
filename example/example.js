@@ -505,9 +505,9 @@ module.exports = function () {
 
 								if (is.object(p)) {
 									if (is.object(p.system) && is.object(p.system) && is.boolean(p.system.locked) && p.system.locked) {
-										resolveCallback(p);
-									} else {
 										scheduleCheck(5000);
+									} else {
+										resolveCallback(p);
 									}
 								} else {
 									resolveCallback(null);
@@ -1438,7 +1438,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.22'
+		version: '1.2.23'
 	};
 }();
 
