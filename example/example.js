@@ -131,7 +131,8 @@ var assert = require('@barchart/common-js/lang/assert'),
     Day = require('@barchart/common-js/lang/Day'),
     Disposable = require('@barchart/common-js/lang/Disposable'),
     Enum = require('@barchart/common-js/lang/Enum'),
-    is = require('@barchart/common-js/lang/is');
+    is = require('@barchart/common-js/lang/is'),
+    promise = require('@barchart/common-js/lang/promise');
 
 var TransactionType = require('@barchart/portfolio-api-common/lib/data/TransactionType');
 
@@ -190,6 +191,8 @@ module.exports = function () {
 			} else {
 				requestInterceptorToUse = RequestInterceptor.EMPTY;
 			}
+
+			_this._positionObservers = {};
 
 			_this._readPortfoliosEndpoint = EndpointBuilder.for('read-portfolios', 'read portfolios').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
@@ -281,7 +284,7 @@ module.exports = function () {
    * Returns a description of the environment (e.g. development or production).
    *
    * @public
-   * @return {*}
+   * @returns {*}
    */
 
 
@@ -321,7 +324,7 @@ module.exports = function () {
     *
     * @public
     * @param {String=} portfolio
-    * @return {Promise.<Portfolio[]>}
+    * @returns {Promise.<Portfolio[]>}
     */
 
 		}, {
@@ -343,7 +346,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} portfolio
-    * @return {Promise.<Portfolio>}
+    * @returns {Promise.<Portfolio>}
     */
 
 		}, {
@@ -365,7 +368,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} portfolio
-    * @return {Promise.<Portfolio>}
+    * @returns {Promise.<Portfolio>}
     */
 
 		}, {
@@ -387,7 +390,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} portfolio
-    * @return {Promise.<Portfolio>}
+    * @returns {Promise.<Portfolio>}
     */
 
 		}, {
@@ -409,7 +412,7 @@ module.exports = function () {
     *
     * @public
     * @param {String} portfolio - ID of the portfolio to update
-    * @return {Promise.<Portfolio>}
+    * @returns {Promise.<Portfolio>}
     */
 
 		}, {
@@ -457,7 +460,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} position
-    * @return {Promise.<Position>}
+    * @returns {Promise.<Position>}
     */
 
 		}, {
@@ -471,6 +474,51 @@ module.exports = function () {
 					assert.argumentIsRequired(position, 'position', Object);
 
 					return Gateway.invoke(_this9._updatePositionEndpoint, PositionSchema.UPDATE.schema.format(position));
+				});
+			}
+
+			/**
+    * Returns a promise which resolves as soon as the position's lock status
+    * changes to false.
+    * 
+    * @public
+    * @param {String} portfolio
+    * @param {String} position
+    * @returns {Promise}
+    */
+
+		}, {
+			key: 'observePosition',
+			value: function observePosition(portfolio, position) {
+				var _this10 = this;
+
+				return promise.build(function (resolveCallback) {
+					assert.argumentIsOptional(portfolio, 'portfolio', String);
+					assert.argumentIsOptional(position, 'position', String);
+
+					var scheduleCheck = function scheduleCheck(delay) {
+						setTimeout(function () {
+							Gateway.invoke(_this10._readPositionsEndpoint, { portfolio: portfolio, position: position, includePreviousPrice: false }).then(function (positions) {
+								var p = positions.find(function (p) {
+									return p.position === position;
+								});
+
+								if (is.object(p)) {
+									if (is.object(p.system) && is.object(p.system) && is.boolean(p.system.locked)) {
+										scheduleCheck(5000);
+									} else {
+										resolveCallback(p);
+									}
+								} else {
+									resolveCallback(null);
+								}
+							}).catch(function (e) {
+								scheduleCheck(delay + 5000);
+							});
+						}, delay);
+					};
+
+					scheduleCheck(2500);
 				});
 			}
 
@@ -489,10 +537,10 @@ module.exports = function () {
 		}, {
 			key: 'readPositionSummaries',
 			value: function readPositionSummaries(portfolio, position, frames, periods, start) {
-				var _this10 = this;
+				var _this11 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this10);
+					checkStart.call(_this11);
 
 					assert.argumentIsOptional(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
@@ -545,7 +593,7 @@ module.exports = function () {
 						query.start = s;
 					}
 
-					return Gateway.invoke(_this10._readPositionSummariesEndpoint, query);
+					return Gateway.invoke(_this11._readPositionSummariesEndpoint, query);
 				});
 			}
 
@@ -561,15 +609,15 @@ module.exports = function () {
 		}, {
 			key: 'deletePosition',
 			value: function deletePosition(portfolio, position) {
-				var _this11 = this;
+				var _this12 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this11);
+					checkStart.call(_this12);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
 
-					return Gateway.invoke(_this11._deletePositionEndpoint, { portfolio: portfolio, position: position });
+					return Gateway.invoke(_this12._deletePositionEndpoint, { portfolio: portfolio, position: position });
 				});
 			}
 
@@ -584,10 +632,10 @@ module.exports = function () {
 		}, {
 			key: 'createTransaction',
 			value: function createTransaction(transaction) {
-				var _this12 = this;
+				var _this13 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this12);
+					checkStart.call(_this13);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
@@ -599,7 +647,7 @@ module.exports = function () {
 
 					var schema = getTransactionSchema(transaction);
 
-					return Gateway.invoke(_this12._createTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this13._createTransactionEndpoint, schema.schema.format(transaction));
 				});
 			}
 
@@ -614,10 +662,10 @@ module.exports = function () {
 		}, {
 			key: 'batchTransactions',
 			value: function batchTransactions(portfolio, transactions) {
-				var _this13 = this;
+				var _this14 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this13);
+					checkStart.call(_this14);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', Object);
 					assert.argumentIsArray(transactions, 'transactions', Object);
@@ -642,7 +690,7 @@ module.exports = function () {
 						batchData.transactionItems.push(JSON.stringify(schema.schema.format(transaction)));
 					});
 
-					return Gateway.invoke(_this13._batchTransactionEndpoint, batchData);
+					return Gateway.invoke(_this14._batchTransactionEndpoint, batchData);
 				});
 			}
 
@@ -657,10 +705,10 @@ module.exports = function () {
 		}, {
 			key: 'editTransaction',
 			value: function editTransaction(transaction) {
-				var _this14 = this;
+				var _this15 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this14);
+					checkStart.call(_this15);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
@@ -669,7 +717,7 @@ module.exports = function () {
 
 					var schema = getTransactionSchema(transaction);
 
-					return Gateway.invoke(_this14._editTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this15._editTransactionEndpoint, schema.schema.format(transaction));
 				});
 			}
 
@@ -688,10 +736,10 @@ module.exports = function () {
 		}, {
 			key: 'deleteTransaction',
 			value: function deleteTransaction(portfolio, position, sequence, force, echo) {
-				var _this15 = this;
+				var _this16 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this15);
+					checkStart.call(_this16);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
@@ -699,7 +747,7 @@ module.exports = function () {
 					assert.argumentIsOptional(force, 'force', Boolean);
 					assert.argumentIsOptional(echo, 'echo', Boolean);
 
-					return Gateway.invoke(_this15._deleteTransactionEndpoint, { portfolio: portfolio, position: position, sequence: sequence, force: is.boolean(force) && force, echo: is.boolean(echo) && echo });
+					return Gateway.invoke(_this16._deleteTransactionEndpoint, { portfolio: portfolio, position: position, sequence: sequence, force: is.boolean(force) && force, echo: is.boolean(echo) && echo });
 				});
 			}
 
@@ -715,15 +763,15 @@ module.exports = function () {
 		}, {
 			key: 'readTransactions',
 			value: function readTransactions(portfolio, position) {
-				var _this16 = this;
+				var _this17 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this16);
+					checkStart.call(_this17);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					return Gateway.invoke(_this16._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
+					return Gateway.invoke(_this17._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
 				});
 			}
 
@@ -742,10 +790,10 @@ module.exports = function () {
 		}, {
 			key: 'readTransactionsFormatted',
 			value: function readTransactionsFormatted(portfolio, position, startDay, endDay) {
-				var _this17 = this;
+				var _this18 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this17);
+					checkStart.call(_this18);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
@@ -765,16 +813,16 @@ module.exports = function () {
 						payload.end = endDay;
 					}
 
-					return Gateway.invoke(_this17._readTransactionsReportEndpoint, payload);
+					return Gateway.invoke(_this18._readTransactionsReportEndpoint, payload);
 				});
 			}
 		}, {
 			key: 'readTransactionsFormattedPage',
 			value: function readTransactionsFormattedPage(portfolio, position, sequence, count, descending) {
-				var _this18 = this;
+				var _this19 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this18);
+					checkStart.call(_this19);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
@@ -799,7 +847,7 @@ module.exports = function () {
 
 					payload.descending = is.boolean(descending) && descending;
 
-					return Gateway.invoke(_this18._readTransactionsReportEndpoint, payload);
+					return Gateway.invoke(_this19._readTransactionsReportEndpoint, payload);
 				});
 			}
 
@@ -1039,7 +1087,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":53,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":57,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":58,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":59}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/lang/promise":42,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":53,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":57,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":58,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":59}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1390,7 +1438,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.19'
+		version: '1.2.20'
 	};
 }();
 
