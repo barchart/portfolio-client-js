@@ -192,8 +192,6 @@ module.exports = function () {
 				requestInterceptorToUse = RequestInterceptor.EMPTY;
 			}
 
-			_this._positionObservers = {};
-
 			_this._readPortfoliosEndpoint = EndpointBuilder.for('read-portfolios', 'read portfolios').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
 			}).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
@@ -493,8 +491,8 @@ module.exports = function () {
 				var _this10 = this;
 
 				return promise.build(function (resolveCallback) {
-					assert.argumentIsOptional(portfolio, 'portfolio', String);
-					assert.argumentIsOptional(position, 'position', String);
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+					assert.argumentIsRequired(position, 'position', String);
 
 					var scheduleCheck = function scheduleCheck(delay) {
 						setTimeout(function () {
@@ -505,7 +503,7 @@ module.exports = function () {
 
 								if (is.object(p)) {
 									if (is.object(p.system) && is.object(p.system) && is.boolean(p.system.locked) && p.system.locked) {
-										scheduleCheck(5000);
+										scheduleCheck(delay + 1000);
 									} else {
 										resolveCallback(p);
 									}
@@ -1438,7 +1436,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.23'
+		version: '1.2.24'
 	};
 }();
 
