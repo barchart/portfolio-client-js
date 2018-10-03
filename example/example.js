@@ -488,8 +488,8 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'observePosition',
-			value: function observePosition(portfolio, position) {
+			key: 'observePositionLock',
+			value: function observePositionLock(portfolio, position) {
 				var _this10 = this;
 
 				return promise.build(function (resolveCallback) {
@@ -1438,7 +1438,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.20'
+		version: '1.2.21'
 	};
 }();
 
