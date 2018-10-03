@@ -1750,15 +1750,17 @@ module.exports = (() => {
 		}
 
 		setPositionLock(position) {
-			assert.argumentIsRequired(position, 'position', Object);
-			assert.argumentIsRequired(position.position, 'position.position', String);
+			if (position) {
+				assert.argumentIsRequired(position, 'position', Object);
+				assert.argumentIsRequired(position.position, 'position.position', String);
 
-			const item = this._items.find((i) => i.position.position === position.position);
+				const item = this._items.find((i) => i.position.position === position.position);
 
-			if (item) {
-				const locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
+				if (item) {
+					const locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
 
-				item.setPositionLock(locked);
+					item.setPositionLock(locked);
+				}
 			}
 		}
 
