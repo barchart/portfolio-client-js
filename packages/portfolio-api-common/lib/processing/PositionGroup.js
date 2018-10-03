@@ -72,6 +72,7 @@ module.exports = (() => {
 			this._dataFormat.description = this._description;
 			this._dataFormat.hide = false;
 			this._dataFormat.invalid = false;
+			this._dataFormat.locked = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
 			this._dataFormat.basisPrice = null;
@@ -541,11 +542,16 @@ module.exports = (() => {
 		});
 
 		let newsBinding = Disposable.getEmpty();
+		let lockedBinding = Disposable.getEmpty();
 
 		if (this._single) {
 			newsBinding = item.registerNewsExistsChangeHandler((exists) => {
 				this._dataActual.newsExists = exists;
 				this._dataFormat.newsExists = exists;
+			});
+
+			lockedBinding = item.registerLockChangeHandler((locked) => {
+				this._dataFormat.locked = locked;
 			});
 		}
 
@@ -558,14 +564,16 @@ module.exports = (() => {
 			this._dataFormat.description = this._description;
 		}));
 
-		this._disposeStack.push(quoteBinding);
-		this._disposeStack.push(newsBinding);
 		this._disposeStack.push(fundamentalBinding);
+		this._disposeStack.push(quoteBinding);
+		this._disposeStack.push(lockedBinding);
+		this._disposeStack.push(newsBinding);
 
 		this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
+			fundamentalBinding.dispose();
 			quoteBinding.dispose();
 			newsBinding.dispose();
-			fundamentalBinding.dispose();
+			lockedBinding.dispose();
 
 			array.remove(this._items, i => i === item);
 			array.remove(this._excludedItems, i => i === item);
@@ -692,6 +700,7 @@ module.exports = (() => {
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
+			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
 		}
 
 		const groupItems = group._items;

@@ -70,13 +70,15 @@ module.exports = (() => {
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
+			this._data.locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
 
 			calculateStaticData(this);
 			calculatePriceData(this, null);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
-			this._fundamentalDataChangeEvent = new Event(this);
+			this._fundamentalDataChangedEvent = new Event(this);
+			this._lockChangedEvent = new Event(this);
 			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 		}
@@ -205,22 +207,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Sets fundamental data for the position.
-		 *
-		 * @public
-		 * @param {Object} data
-		 */
-		setPositionFundamentalData(data) {
-			assert.argumentIsRequired(data, 'data', Object);
-
-			if (this.getIsDisposed()) {
-				return;
-			}
-
-			this._fundamentalDataChangeEvent.fire(this._data.fundamental = data);
-		}
-
-		/**
 		 * Sets a flag which indicates if news article(s) exist for the encapsulated position's
 		 * symbol.
 		 *
@@ -240,6 +226,40 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets fundamental data for the position.
+		 *
+		 * @public
+		 * @param {Object} data
+		 */
+		setPositionFundamentalData(data) {
+			assert.argumentIsRequired(data, 'data', Object);
+
+			if (this.getIsDisposed()) {
+				return;
+			}
+
+			this._fundamentalDataChangedEvent.fire(this._data.fundamental = data);
+		}
+
+		/**
+		 * Sets position lock status.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
+		setPositionLock(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this.getIsDisposed()) {
+				return;
+			}
+
+			if (this._data.locked !== value) {
+				this._lockChangedEvent.fire(this._data.locked = value);
+			}
+		}
+
+		/**
 		 * Registers an observer for quote changes, which is fired after internal recalculations
 		 * of position data are complete.
 		 *
@@ -252,17 +272,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Registers an observer for fundamental data changes.
-		 *
-		 * @public
-		 * @param {Function} handler
-		 * @returns {Disposable}
-		 */
-		registerFundamentalDataChangeHandler(handler) {
-			return this._fundamentalDataChangeEvent.register(handler);
-		}
-
-		/**
 		 * Registers an observer changes to the status of news existence.
 		 *
 		 * @public
@@ -271,6 +280,28 @@ module.exports = (() => {
 		 */
 		registerNewsExistsChangeHandler(handler) {
 			return this._newsExistsChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for fundamental data changes.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerFundamentalDataChangeHandler(handler) {
+			return this._fundamentalDataChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for position lock changes.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerLockChangeHandler(handler) {
+			return this._lockChangedEvent.register(handler);
 		}
 
 		/**
@@ -300,7 +331,8 @@ module.exports = (() => {
 
 			this._quoteChangedEvent.clear();
 			this._newsExistsChangedEvent.clear();
-			this._fundamentalDataChangeEvent.clear();
+			this._fundamentalDataChangedEvent.clear();
+			this._lockChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
 		}
