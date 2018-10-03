@@ -1385,7 +1385,7 @@ const array = require('@barchart/common-js/lang/array'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
-	is = require('@barchart/common-js/lang/array'),
+	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate'),
 	Tree = require('@barchart/common-js/collections/Tree');
 
@@ -2336,7 +2336,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":3,"./PositionGroup":7,"./PositionItem":8,"./definitions/PositionLevelDefinition":9,"./definitions/PositionLevelType":10,"./definitions/PositionTreeDefinition":11,"@barchart/common-js/collections/Tree":15,"@barchart/common-js/collections/sorting/ComparatorBuilder":16,"@barchart/common-js/collections/sorting/comparators":17,"@barchart/common-js/collections/specialized/DisposableStack":18,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Decimal":22,"@barchart/common-js/lang/Rate":26,"@barchart/common-js/lang/array":28,"@barchart/common-js/lang/assert":29,"@barchart/common-js/messaging/Event":35}],7:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":3,"./PositionGroup":7,"./PositionItem":8,"./definitions/PositionLevelDefinition":9,"./definitions/PositionLevelType":10,"./definitions/PositionTreeDefinition":11,"@barchart/common-js/collections/Tree":15,"@barchart/common-js/collections/sorting/ComparatorBuilder":16,"@barchart/common-js/collections/sorting/comparators":17,"@barchart/common-js/collections/specialized/DisposableStack":18,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Decimal":22,"@barchart/common-js/lang/Rate":26,"@barchart/common-js/lang/array":28,"@barchart/common-js/lang/assert":29,"@barchart/common-js/lang/is":33,"@barchart/common-js/messaging/Event":35}],7:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
