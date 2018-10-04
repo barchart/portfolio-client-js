@@ -803,12 +803,13 @@ module.exports = function () {
     * @param {String=} position
     * @param {Day=} startDay
     * @param {Day=} endDay
+    * @oaram {Boolean=} descending
     * @returns {Promise.<Object[]>}
     */
 
 		}, {
 			key: 'readTransactionsFormatted',
-			value: function readTransactionsFormatted(portfolio, position, startDay, endDay) {
+			value: function readTransactionsFormatted(portfolio, position, startDay, endDay, descending) {
 				var _this18 = this;
 
 				return Promise.resolve().then(function () {
@@ -818,6 +819,7 @@ module.exports = function () {
 					assert.argumentIsOptional(position, 'position', String);
 					assert.argumentIsOptional(startDay, 'startDay', Day, 'Day');
 					assert.argumentIsOptional(endDay, 'endDay', Day, 'Day');
+					assert.argumentIsOptional(descending, 'descending', Boolean);
 
 					var payload = {};
 
@@ -831,6 +833,8 @@ module.exports = function () {
 					if (endDay) {
 						payload.end = endDay;
 					}
+
+					payload.descending = is.boolean(descending) && descending;
 
 					return Gateway.invoke(_this18._readTransactionsReportEndpoint, payload);
 				});
@@ -1457,7 +1461,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.25'
+		version: '1.2.26'
 	};
 }();
 
