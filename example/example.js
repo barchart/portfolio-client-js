@@ -229,8 +229,8 @@ module.exports = function () {
 					return frames.map(function (f) {
 						return f.code;
 					}).join();
-				}).withVariableParameter('periods', 'periods', 'periods', true).withVariableParameter('start', 'start', 'start', true, function (s) {
-					return s.format();
+				}).withVariableParameter('periods', 'periods', 'periods', true).withVariableParameter('start', 'start', 'start', true, function (x) {
+					return x.format();
 				});
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
@@ -243,8 +243,8 @@ module.exports = function () {
 			_this._createTransactionEndpoint = EndpointBuilder.for('create-transaction', 'create transaction').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
 			}).withQueryBuilder(function (qb) {
-				qb.withVariableParameter('type', 'type', 'type', false, function (t) {
-					return t.code;
+				qb.withVariableParameter('type', 'type', 'type', false, function (x) {
+					return x.code;
 				});
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
@@ -255,15 +255,19 @@ module.exports = function () {
 			_this._editTransactionEndpoint = EndpointBuilder.for('edit-transaction', 'edit transaction').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
 			}).withQueryBuilder(function (qb) {
-				qb.withVariableParameter('type', 'type', 'type', false, function (t) {
-					return t.code;
+				qb.withVariableParameter('type', 'type', 'type', false, function (x) {
+					return x.code;
 				});
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deleteTransactionEndpoint = EndpointBuilder.for('delete-transaction', 'delete transaction').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
 			}).withQueryBuilder(function (qb) {
-				qb.withVariableParameter('force', 'force', 'force', false).withVariableParameter('echo', 'echo', 'echo', false);
+				qb.withVariableParameter('force', 'force', 'force', false).withVariableParameter('echoStart', 'echoStart', 'echoStart', true, function (x) {
+					return x.format();
+				}).withVariableParameter('echoEnd', 'echoEnd', 'echoEnd', true, function (x) {
+					return x.format();
+				});
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readTransactionsReportEndpoint = EndpointBuilder.for('read-transaction-report', 'read transaction report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
@@ -727,13 +731,14 @@ module.exports = function () {
     * @param {String} position
     * @param {Number} sequence
     * @param {Boolean=} force
-    * @param {Boolean=} echo
+    * @param {Day=} echoStart
+    * @param {Day=} echoEnd
     * @returns {Promise.<TransactionMutateResult>}
     */
 
 		}, {
 			key: 'deleteTransaction',
-			value: function deleteTransaction(portfolio, position, sequence, force, echo) {
+			value: function deleteTransaction(portfolio, position, sequence, force, echoStart, echoEnd) {
 				var _this16 = this;
 
 				return Promise.resolve().then(function () {
@@ -743,9 +748,25 @@ module.exports = function () {
 					assert.argumentIsRequired(position, 'position', String);
 					assert.argumentIsRequired(sequence, 'sequence', Number);
 					assert.argumentIsOptional(force, 'force', Boolean);
-					assert.argumentIsOptional(echo, 'echo', Boolean);
+					assert.argumentIsOptional(echoStart, 'echoStart', Day, 'Day');
+					assert.argumentIsOptional(echoEnd, 'echoEnd', Day, 'Day');
 
-					return Gateway.invoke(_this16._deleteTransactionEndpoint, { portfolio: portfolio, position: position, sequence: sequence, force: is.boolean(force) && force, echo: is.boolean(echo) && echo });
+					var payload = {};
+
+					payload.portfolio = portfolio;
+					payload.position = position;
+					payload.sequence = sequence;
+					payload.force = is.boolean(force) && force;
+
+					if (echoStart) {
+						payload.echoStart = echoStart;
+					}
+
+					if (echoEnd) {
+						payload.echoEnd = echoEnd;
+					}
+
+					return Gateway.invoke(_this16._deleteTransactionEndpoint, payload);
 				});
 			}
 
@@ -1436,7 +1457,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.24'
+		version: '1.2.25'
 	};
 }();
 
