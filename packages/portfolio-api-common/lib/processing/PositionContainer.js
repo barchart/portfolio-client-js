@@ -397,7 +397,7 @@ module.exports = (() => {
 		 * @param {Object} position
 		 * @return {Boolean}
 		 */
-		getPositionLock(portfolio, position) {
+		getPositionLock(position) {
 			assert.argumentIsRequired(position, 'position', Object);
 			assert.argumentIsRequired(position.position, 'position.position', String);
 
