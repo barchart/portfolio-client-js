@@ -385,9 +385,7 @@ module.exports = (() => {
 				const item = this._items.find((i) => i.position.position === position.position);
 
 				if (item) {
-					const locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
-
-					item.setPositionLock(locked);
+					item.setPositionLock(PositionItem.getIsLocked(position));
 				}
 			}
 		}

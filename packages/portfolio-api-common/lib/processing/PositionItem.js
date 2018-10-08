@@ -70,7 +70,7 @@ module.exports = (() => {
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
-			this._data.locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
+			this._data.locked = PositionItem.getIsLocked(position);
 
 			calculateStaticData(this);
 			calculatePriceData(this, null);
@@ -335,6 +335,19 @@ module.exports = (() => {
 			this._lockChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
+		}
+
+		/**
+		 * Given a position object, returns its lock (for editing) status.
+		 *
+		 * @public
+		 * @param {Object{}} position
+		 * @returns {Boolean}
+		 */
+		static getIsLocked(position) {
+			assert.argumentIsRequired(position, 'position');
+
+			return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked
 		}
 
 		toString() {
