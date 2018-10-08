@@ -1761,12 +1761,26 @@ module.exports = (() => {
 				assert.argumentIsRequired(position, 'position', Object);
 				assert.argumentIsRequired(position.position, 'position.position', String);
 
-				const item = this._items.find((i) => i.position.position === position.position);
+				const item = this._items.find(i => i.position.position === position.position);
 
 				if (item) {
-					item.setPositionLock(PositionItem.getIsLocked(position));
+					item.setPositionLock(position);
 				}
 			}
+		}
+
+		/**
+		 * Returns all positions which are currently locked (for editing).
+		 *
+		 * @public
+		 * @returns {Array.<Object>}
+		 */
+		getLockedPositions() {
+			return this._items.filter((i) => {
+				return i.data.locked;
+			}).map((i) => {
+				return i.position;
+			});
 		}
 
 		/**
@@ -3282,7 +3296,7 @@ module.exports = (() => {
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
-			this._data.locked = PositionItem.getIsLocked(position);
+			this._data.locked = getIsLocked(position);
 
 			calculateStaticData(this);
 			calculatePriceData(this, null);
@@ -3454,17 +3468,19 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Sets position lock status.
+		 * Sets a position's lock status.
 		 *
 		 * @public
-		 * @param {Boolean} value
+		 * @param {Object} position
 		 */
-		setPositionLock(value) {
-			assert.argumentIsRequired(value, 'value', Boolean);
+		setPositionLock(position) {
+			assert.argumentIsRequired(position, 'position');
 
 			if (this.getIsDisposed()) {
 				return;
 			}
+
+			const value = getIsLocked(position);
 
 			if (this._data.locked !== value) {
 				this._lockChangedEvent.fire(this._data.locked = value);
@@ -3547,19 +3563,6 @@ module.exports = (() => {
 			this._lockChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
-		}
-
-		/**
-		 * Given a position object, returns its lock (for editing) status.
-		 *
-		 * @public
-		 * @param {Object{}} position
-		 * @returns {Boolean}
-		 */
-		static getIsLocked(position) {
-			assert.argumentIsRequired(position, 'position');
-
-			return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
 		}
 
 		toString() {
@@ -3748,6 +3751,12 @@ module.exports = (() => {
 		}
 
 		return summary;
+	}
+
+	function getIsLocked(position) {
+		assert.argumentIsRequired(position, 'position');
+
+		return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
 	}
 
 	return PositionItem;
