@@ -341,7 +341,7 @@ module.exports = (() => {
 		 * Given a position object, returns its lock (for editing) status.
 		 *
 		 * @public
-		 * @param {Object{}} position
+		 * @param {Object} position
 		 * @returns {Boolean}
 		 */
 		static getIsLocked(position) {
