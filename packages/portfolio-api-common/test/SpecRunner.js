@@ -1750,6 +1750,12 @@ module.exports = (() => {
 			return array.unique(symbols);
 		}
 
+		/**
+		 * Causes a position to be flagged as locked (for editing).
+		 *
+		 * @public
+		 * @param {Object} position
+		 */
 		setPositionLock(position) {
 			if (position) {
 				assert.argumentIsRequired(position, 'position', Object);
@@ -1758,9 +1764,7 @@ module.exports = (() => {
 				const item = this._items.find((i) => i.position.position === position.position);
 
 				if (item) {
-					const locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
-
-					item.setPositionLock(locked);
+					item.setPositionLock(PositionItem.getIsLocked(position));
 				}
 			}
 		}
@@ -3278,7 +3282,7 @@ module.exports = (() => {
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
-			this._data.locked = is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
+			this._data.locked = PositionItem.getIsLocked(position);
 
 			calculateStaticData(this);
 			calculatePriceData(this, null);
@@ -3543,6 +3547,19 @@ module.exports = (() => {
 			this._lockChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
+		}
+
+		/**
+		 * Given a position object, returns its lock (for editing) status.
+		 *
+		 * @public
+		 * @param {Object{}} position
+		 * @returns {Boolean}
+		 */
+		static getIsLocked(position) {
+			assert.argumentIsRequired(position, 'position');
+
+			return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked
 		}
 
 		toString() {
