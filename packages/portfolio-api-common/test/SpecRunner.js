@@ -1782,7 +1782,7 @@ module.exports = (() => {
 
 			const item = this._items.find(i => i.position.position === position.position);
 
-			return is.object(item) && item.locked;
+			return is.object(item) && item.data.locked;
 		}
 
 		/**
