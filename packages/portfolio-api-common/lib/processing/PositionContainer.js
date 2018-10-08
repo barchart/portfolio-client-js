@@ -371,6 +371,12 @@ module.exports = (() => {
 			return array.unique(symbols);
 		}
 
+		/**
+		 * Causes a position to be flagged as locked (for editing).
+		 *
+		 * @public
+		 * @param {Object} position
+		 */
 		setPositionLock(position) {
 			if (position) {
 				assert.argumentIsRequired(position, 'position', Object);
