@@ -382,12 +382,26 @@ module.exports = (() => {
 				assert.argumentIsRequired(position, 'position', Object);
 				assert.argumentIsRequired(position.position, 'position.position', String);
 
-				const item = this._items.find((i) => i.position.position === position.position);
+				const item = this._items.find(i => i.position.position === position.position);
 
 				if (item) {
-					item.setPositionLock(PositionItem.getIsLocked(position));
+					item.setPositionLock(position);
 				}
 			}
+		}
+
+		/**
+		 * Returns all positions which are currently locked (for editing).
+		 *
+		 * @public
+		 * @returns {Array.<Object>}
+		 */
+		getLockedPositions() {
+			return this._items.filter((i) => {
+				return i.data.locked;
+			}).map((i) => {
+				return i.position;
+			});
 		}
 
 		/**
