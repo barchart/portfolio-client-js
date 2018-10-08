@@ -1655,7 +1655,7 @@ module.exports = (() => {
 
 			const existingBarchartSymbols = this.getPositionSymbols(false);
 
-			removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
+			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
 
 			summaries.forEach((summary) => {
 				addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
@@ -1715,7 +1715,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(position, 'position', Object);
 			assert.argumentIsRequired(position.position, 'position.position', String);
 
-			removePositionItem.call(this, this._items.find((item) => item.position.position === position.position));
+			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
 
 			recalculatePercentages.call(this);
 		}
@@ -1770,17 +1770,19 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Returns all positions which are currently locked (for editing).
+		 * Returns a position's lock status.
 		 *
 		 * @public
-		 * @returns {Array.<Object>}
+		 * @param {Object} position
+		 * @return {Boolean}
 		 */
-		getLockedPositions() {
-			return this._items.filter((i) => {
-				return i.data.locked;
-			}).map((i) => {
-				return i.position;
-			});
+		getPositionLock(portfolio, position) {
+			assert.argumentIsRequired(position, 'position', Object);
+			assert.argumentIsRequired(position.position, 'position.position', String);
+
+			const item = this._items.find(i => i.position.position === position.position);
+
+			return is.object(item) && item.locked;
 		}
 
 		/**
