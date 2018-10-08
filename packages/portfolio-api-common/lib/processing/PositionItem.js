@@ -347,7 +347,7 @@ module.exports = (() => {
 		static getIsLocked(position) {
 			assert.argumentIsRequired(position, 'position');
 
-			return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked
+			return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
 		}
 
 		toString() {
