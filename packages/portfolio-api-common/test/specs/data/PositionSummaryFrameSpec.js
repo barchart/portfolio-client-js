@@ -352,4 +352,74 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			});
 		});
 	});
+
+	describe('and recent ranges are calculated', () => {
+		let todayYear;
+		let todayMonth;
+		let todayDay;
+
+		beforeEach(() => {
+			const today = new Date();
+
+			todayYear = today.getFullYear();
+			todayMonth = today.getMonth() + 1;
+			todayDay = today.getDate();
+		});
+
+		describe('the most recent YTD frame', () => {
+			let ranges;
+
+			beforeEach(() => {
+				ranges = PositionSummaryFrame.YTD.getRecentRanges(0);
+			});
+
+			it('should contain one range', () => {
+				expect(ranges.length).toEqual(1);
+			});
+
+			it('the range should begin at the end of last year', () => {
+				expect(ranges[0].start.format()).toEqual(`${todayYear - 1}-12-31`);
+			});
+
+			it('the range should end at the end of this year', () => {
+				expect(ranges[0].end.format()).toEqual(`${todayYear}-12-31`);
+			});
+		});
+
+		describe('the three most recent YEARLY frames', () => {
+			let ranges;
+
+			beforeEach(() => {
+				ranges = PositionSummaryFrame.YEARLY.getRecentRanges(2);
+			});
+
+			it('should contain three range', () => {
+				expect(ranges.length).toEqual(3);
+			});
+
+			it('the first range should begin at the end of this year (minus three years)', () => {
+				expect(ranges[0].start.format()).toEqual(`${todayYear - 4}-12-31`);
+			});
+
+			it('the first range should end at the end of this year (minus two years)', () => {
+				expect(ranges[0].end.format()).toEqual(`${todayYear - 3}-12-31`);
+			});
+
+			it('the second range should begin at the end of this year (minus two years)', () => {
+				expect(ranges[1].start.format()).toEqual(`${todayYear - 3}-12-31`);
+			});
+
+			it('the second range should end at the end of this year (minus one years)', () => {
+				expect(ranges[1].end.format()).toEqual(`${todayYear - 2}-12-31`);
+			});
+
+			it('the third range should begin at the end of the year before last', () => {
+				expect(ranges[2].start.format()).toEqual(`${todayYear - 2}-12-31`);
+			});
+
+			it('the third range should end at the end of last year', () => {
+				expect(ranges[2].end.format()).toEqual(`${todayYear - 1}-12-31`);
+			});
+		});
+	});
 });
