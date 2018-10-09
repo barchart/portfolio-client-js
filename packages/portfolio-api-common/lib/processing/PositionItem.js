@@ -41,6 +41,7 @@ module.exports = (() => {
 			this._data.basis = null;
 
 			this._currentQuote = null;
+			this._previousQuote = null;
 			this._currentPrice = null;
 
 			this._data.currentPrice = null;
@@ -154,13 +155,23 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The current quote for the symbol of the encapsulated position.
+		 * The most recent quote for the symbol of the encapsulated position.
 		 *
 		 * @public
 		 * @returns {null|Object}
 		 */
 		get quote() {
 			return this._currentQuote;
+		}
+
+		/**
+		 * The second most recent quote for the symbol of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {null|Object}
+		 */
+		get previousQuote() {
+			return this._previousQuote;
 		}
 
 		updatePortfolio(portfolio) {
@@ -200,6 +211,7 @@ module.exports = (() => {
 				this._currentPricePrevious = this._currentPrice;
 				this._currentPrice = quote.lastPrice;
 
+				this._previousQuote = this._currentQuote;
 				this._currentQuote = quote;
 
 				this._quoteChangedEvent.fire(this._currentQuote);

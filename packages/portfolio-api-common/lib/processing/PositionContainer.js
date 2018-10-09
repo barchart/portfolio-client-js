@@ -283,8 +283,17 @@ module.exports = (() => {
 			}
 
 			const existingBarchartSymbols = this.getPositionSymbols(false);
+			const existingPositionItem = this._items.find(item => item.position.position === position.position);
 
-			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
+			let currentQuote = null;
+			let previousQuote = null;
+
+			if (existingPositionItem) {
+				currentQuote = existingPositionItem.quote || null;
+				previousQuote = existingPositionItem.previousQuote || null;
+			}
+
+			removePositionItem.call(this, existingPositionItem);
 
 			summaries.forEach((summary) => {
 				addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
@@ -295,6 +304,14 @@ module.exports = (() => {
 
 			addBarchartSymbol(this._symbols, item);
 			addDisplaySymbol(this._symbolsDisplay, item);
+
+			if (previousQuote !== null) {
+				item.setQuote(previousQuote);
+			}
+
+			if (currentQuote !== null) {
+				item.setQuote(currentQuote);
+			}
 
 			this._items.push(item);
 
@@ -915,7 +932,7 @@ module.exports = (() => {
 		}
 	}
 
-	function createPositionItem(position) {
+	function createPositionItem(position, currentQuote, previousQuote) {
 		const portfolio = this._portfolios[position.portfolio];
 
 		let returnRef;
