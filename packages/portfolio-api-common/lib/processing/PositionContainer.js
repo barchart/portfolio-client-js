@@ -283,17 +283,16 @@ module.exports = (() => {
 			}
 
 			const existingBarchartSymbols = this.getPositionSymbols(false);
-			const existingPositionItem = this._items.find(item => item.position.position === position.position);
 
-			let currentQuote = null;
-			let previousQuote = null;
+			let similiarPositionItem;
 
-			if (existingPositionItem) {
-				currentQuote = existingPositionItem.quote || null;
-				previousQuote = existingPositionItem.previousQuote || null;
+			if (is.object(position.instrument.symbol) && is.string(position.instrument.symbol.barchart)) {
+				similiarPositionItem = this._items.find(item => is.object(item.position.instrument.symbol) && item.position.instrument.symbol.barchart === position.instrument.symbol.barchart) || null;
+			} else {
+				similiarPositionItem = null;
 			}
 
-			removePositionItem.call(this, existingPositionItem);
+			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
 
 			summaries.forEach((summary) => {
 				addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
@@ -304,14 +303,6 @@ module.exports = (() => {
 
 			addBarchartSymbol(this._symbols, item);
 			addDisplaySymbol(this._symbolsDisplay, item);
-
-			if (previousQuote !== null) {
-				item.setQuote(previousQuote);
-			}
-
-			if (currentQuote !== null) {
-				item.setQuote(currentQuote);
-			}
 
 			this._items.push(item);
 
@@ -346,6 +337,16 @@ module.exports = (() => {
 
 			if (addedBarchartSymbol !== null && !existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === addedBarchartSymbol)) {
 				this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
+			}
+
+			if (similiarPositionItem !== null) {
+				if (similiarPositionItem.previousQuote) {
+					item.setQuote(similiarPositionItem.previousQuote);
+				}
+
+				if (similiarPositionItem.quote) {
+					item.setQuote(similiarPositionItem.quote);
+				}
 			}
 
 			recalculatePercentages.call(this);
