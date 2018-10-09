@@ -1418,16 +1418,18 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {Array.<PositionTreeDefinition>} definitions
-	 * @param {Array.<Object>} portfolios
-	 * @param {Array.<Object>} positions
-	 * @param {Array.<Object>} summaries
+	 * @param {Array.<Object>} portfolios - The portfolios.
+	 * @param {Array.<Object>} positions - The positions (for all of the portfolios).
+	 * @param {Array.<Object>} summaries - The positions summaries (for all of the positions).
+	 * @param {PositionSummaryFrame} - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 */
 	class PositionContainer {
-		constructor(definitions, portfolios, positions, summaries) {
+		constructor(definitions, portfolios, positions, summaries, frame) {
 			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
 			assert.argumentIsArray(summaries, 'summaries');
+			assert.argumentIsOptional(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
 
 			this._definitions = definitions;
 
@@ -1442,17 +1444,23 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._currentSummaryFrame = PositionSummaryFrame.YTD;
+			this._currentSummaryFrame = frame || PositionSummaryFrame.YTD;
 			this._currentSummaryRange = array.last(this._currentSummaryFrame.getRecentRanges(0));
+
+			this._previousSummaryFrame = frame || PositionSummaryFrame.YEARLY;
+			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(3);
+
+			if (this._currentSummaryFrame === this._previousSummaryFrame) {
+				this._previousSummaryRanges.pop();
+			} else {
+				this._previousSummaryRanges.shift();
+			}
 
 			this._summariesCurrent = summaries.reduce((map, summary) => {
 				addSummaryCurrent(map, summary, this._currentSummaryFrame, this._currentSummaryRange);
 
 				return map;
 			}, { });
-
-			this._previousSummaryFrame = PositionSummaryFrame.YEARLY;
-			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(1);
 
 			this._summariesPrevious = summaries.reduce((map, summary) => {
 				addSummaryPrevious(map, summary, this._previousSummaryFrame, this._previousSummaryRanges);
@@ -3239,8 +3247,8 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * A container for a single position, which handles quote changes and
-	 * notifies observers -- which are typically parent-level {@link PositionGroup}
+	 * A container for a single position, which handles quote changes and notifies
+	 * observers -- which are typically parent-level {@link PositionGroup}
 	 * instances.
 	 *
 	 * @public
@@ -3352,7 +3360,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The year-to-date summary of the encapsulated position.
+		 * The current summary of the encapsulated position.
 		 *
 		 * @public
 		 * @returns {Object}
@@ -3362,7 +3370,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Previous year's summaries for the encapsulated position.
+		 * Previous summaries for the encapsulated position.
 		 *
 		 * @public
 		 * @returns {Object}
@@ -3375,7 +3383,7 @@ module.exports = (() => {
 		 * Various data regarding the encapsulated position.
 		 *
 		 * @public
-		 * @returns {*}
+		 * @returns {Object}
 		 */
 		get data() {
 			return this._data;
@@ -3385,7 +3393,7 @@ module.exports = (() => {
 		 * The current quote for the symbol of the encapsulated position.
 		 *
 		 * @public
-		 * @returns {null|{Object}}
+		 * @returns {null|Object}
 		 */
 		get quote() {
 			return this._currentQuote;
@@ -17456,6 +17464,76 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			});
 		});
 	});
+
+	describe('and recent ranges are calculated', () => {
+		let todayYear;
+		let todayMonth;
+		let todayDay;
+
+		beforeEach(() => {
+			const today = new Date();
+
+			todayYear = today.getFullYear();
+			todayMonth = today.getMonth() + 1;
+			todayDay = today.getDate();
+		});
+
+		describe('the most recent YTD frame', () => {
+			let ranges;
+
+			beforeEach(() => {
+				ranges = PositionSummaryFrame.YTD.getRecentRanges(0);
+			});
+
+			it('should contain one range', () => {
+				expect(ranges.length).toEqual(1);
+			});
+
+			it('the range should begin at the end of last year', () => {
+				expect(ranges[0].start.format()).toEqual(`${todayYear - 1}-12-31`);
+			});
+
+			it('the range should end at the end of this year', () => {
+				expect(ranges[0].end.format()).toEqual(`${todayYear}-12-31`);
+			});
+		});
+
+		describe('the three most recent YEARLY frames', () => {
+			let ranges;
+
+			beforeEach(() => {
+				ranges = PositionSummaryFrame.YEARLY.getRecentRanges(2);
+			});
+
+			it('should contain three range', () => {
+				expect(ranges.length).toEqual(3);
+			});
+
+			it('the first range should begin at the end of this year (minus three years)', () => {
+				expect(ranges[0].start.format()).toEqual(`${todayYear - 4}-12-31`);
+			});
+
+			it('the first range should end at the end of this year (minus two years)', () => {
+				expect(ranges[0].end.format()).toEqual(`${todayYear - 3}-12-31`);
+			});
+
+			it('the second range should begin at the end of this year (minus two years)', () => {
+				expect(ranges[1].start.format()).toEqual(`${todayYear - 3}-12-31`);
+			});
+
+			it('the second range should end at the end of this year (minus one years)', () => {
+				expect(ranges[1].end.format()).toEqual(`${todayYear - 2}-12-31`);
+			});
+
+			it('the third range should begin at the end of the year before last', () => {
+				expect(ranges[2].start.format()).toEqual(`${todayYear - 2}-12-31`);
+			});
+
+			it('the third range should end at the end of last year', () => {
+				expect(ranges[2].end.format()).toEqual(`${todayYear - 1}-12-31`);
+			});
+		});
+	});
 });
 
 },{"./../../../lib/data/PositionSummaryFrame":3,"./../../../lib/data/TransactionType":4,"@barchart/common-js/lang/Day":21,"@barchart/common-js/lang/Decimal":22}],53:[function(require,module,exports){
@@ -17557,7 +17635,8 @@ describe('When requesting all the user-initiated transaction types', () => {
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
-const InstrumentType = require('./../../../lib/data/InstrumentType');
+const InstrumentType = require('./../../../lib/data/InstrumentType'),
+	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
@@ -17590,6 +17669,37 @@ describe('When a position container data is gathered', () => {
 		};
 	}
 
+	function getSummaries(position, frame, count) {
+		const ranges = frame.getRecentRanges(count - 1);
+
+		return ranges.map((range) => {
+			return {
+				portfolio: position.portfolio,
+				position: position.position,
+				frame: frame,
+				start: {
+					date: range.start,
+					open: position.snapshot.open,
+					value: position.snapshot.value,
+					basis: position.snapshot.basis
+				},
+				end: {
+					date: range.end,
+					open: position.snapshot.open,
+					value: position.snapshot.value,
+					basis: position.snapshot.basis
+				},
+				period: {
+					buys: new Decimal(0),
+					sells: new Decimal(0),
+					income: new Decimal(0),
+					realized: new Decimal(0),
+					unrealized: new Decimal(0)
+				}
+			};
+		});
+	}
+
 	describe('for two portfolios, each with the same position, and the second portfolio with an addition position', () => {
 		let portfolios;
 		let positions;
@@ -17612,7 +17722,12 @@ describe('When a position container data is gathered', () => {
 				getPosition('My Second Portfolio', 'TSLA')
 			];
 
-			summaries = [ ];
+			summaries = positions.reduce((accumulator, position) => {
+				accumulator = accumulator.concat(getSummaries(position, PositionSummaryFrame.YTD, 1));
+				accumulator = accumulator.concat(getSummaries(position, PositionSummaryFrame.YEARLY, 3));
+
+				return accumulator;
+			}, [ ]);
 		});
 
 		describe('and a container is created grouping by total, portfolio, and instrument', () => {
@@ -17659,11 +17774,49 @@ describe('When a position container data is gathered', () => {
 			it('the "b" portfolio group should have two items', () => {
 				expect(container.getGroup(name, [ 'totals', 'My Second Portfolio' ]).items.length).toEqual(2);
 			});
+
+			describe('and an item is pulled for one of the positions', function() {
+				let item;
+
+				let todayYear;
+				let todayMonth;
+				let todayDay;
+
+				beforeEach(() => {
+					item = container.getGroup(name, [ 'totals', 'My First Portfolio' ]).items[0];
+
+					const today = new Date();
+
+					todayYear = today.getFullYear();
+					todayMonth = today.getMonth() + 1;
+					todayDay = today.getDate();
+				});
+
+				it('the current summary should be a YTD summary for this year', () => {
+					expect(item.currentSummary).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YTD && s.start.date.format() === `${(todayYear - 1)}-12-31` && s.end.date.format() === `${(todayYear - 0)}-12-31`));
+				});
+
+				it('should have two previous summaries', () => {
+					expect(item.previousSummaries.length).toEqual(3);
+				});
+
+				it('the previous (x1) summary should be a YEARLY summary for three years ago', () => {
+					expect(item.previousSummaries[0]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 4)}-12-31` && s.end.date.format() === `${(todayYear - 3)}-12-31`));
+				});
+
+				it('the previous (x2) summary should be a YEARLY summary for the year before last', () => {
+					expect(item.previousSummaries[1]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 3)}-12-31` && s.end.date.format() === `${(todayYear - 2)}-12-31`));
+				});
+
+				it('the previous (x3) summary should be a YEARLY summary for last year', () => {
+					expect(item.previousSummaries[2]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 2)}-12-31` && s.end.date.format() === `${(todayYear - 1)}-12-31`));
+				});
+			});
 		});
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":1,"./../../../lib/processing/PositionContainer":6,"./../../../lib/processing/definitions/PositionLevelDefinition":9,"./../../../lib/processing/definitions/PositionLevelType":10,"./../../../lib/processing/definitions/PositionTreeDefinition":11,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Decimal":22}],55:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":1,"./../../../lib/data/PositionSummaryFrame":3,"./../../../lib/processing/PositionContainer":6,"./../../../lib/processing/definitions/PositionLevelDefinition":9,"./../../../lib/processing/definitions/PositionLevelType":10,"./../../../lib/processing/definitions/PositionTreeDefinition":11,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Decimal":22}],55:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
