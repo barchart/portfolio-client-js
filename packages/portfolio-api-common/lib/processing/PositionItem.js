@@ -11,8 +11,8 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * A container for a single position, which handles quote changes and
-	 * notifies observers -- which are typically parent-level {@link PositionGroup}
+	 * A container for a single position, which handles quote changes and notifies
+	 * observers -- which are typically parent-level {@link PositionGroup}
 	 * instances.
 	 *
 	 * @public
