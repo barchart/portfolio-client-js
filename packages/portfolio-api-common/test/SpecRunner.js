@@ -1662,8 +1662,17 @@ module.exports = (() => {
 			}
 
 			const existingBarchartSymbols = this.getPositionSymbols(false);
+			const existingPositionItem = this._items.find(item => item.position.position === position.position);
 
-			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
+			let currentQuote = null;
+			let previousQuote = null;
+
+			if (existingPositionItem) {
+				currentQuote = existingPositionItem.quote || null;
+				previousQuote = existingPositionItem.previousQuote || null;
+			}
+
+			removePositionItem.call(this, existingPositionItem);
 
 			summaries.forEach((summary) => {
 				addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
@@ -1674,6 +1683,14 @@ module.exports = (() => {
 
 			addBarchartSymbol(this._symbols, item);
 			addDisplaySymbol(this._symbolsDisplay, item);
+
+			if (previousQuote !== null) {
+				item.setQuote(previousQuote);
+			}
+
+			if (currentQuote !== null) {
+				item.setQuote(currentQuote);
+			}
 
 			this._items.push(item);
 
@@ -2294,7 +2311,7 @@ module.exports = (() => {
 		}
 	}
 
-	function createPositionItem(position) {
+	function createPositionItem(position, currentQuote, previousQuote) {
 		const portfolio = this._portfolios[position.portfolio];
 
 		let returnRef;
@@ -3277,6 +3294,7 @@ module.exports = (() => {
 			this._data.basis = null;
 
 			this._currentQuote = null;
+			this._previousQuote = null;
 			this._currentPrice = null;
 
 			this._data.currentPrice = null;
@@ -3390,13 +3408,23 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The current quote for the symbol of the encapsulated position.
+		 * The most recent quote for the symbol of the encapsulated position.
 		 *
 		 * @public
 		 * @returns {null|Object}
 		 */
 		get quote() {
 			return this._currentQuote;
+		}
+
+		/**
+		 * The second most recent quote for the symbol of the encapsulated position.
+		 *
+		 * @public
+		 * @returns {null|Object}
+		 */
+		get previousQuote() {
+			return this._previousQuote;
 		}
 
 		updatePortfolio(portfolio) {
@@ -3436,6 +3464,7 @@ module.exports = (() => {
 				this._currentPricePrevious = this._currentPrice;
 				this._currentPrice = quote.lastPrice;
 
+				this._previousQuote = this._currentQuote;
 				this._currentQuote = quote;
 
 				this._quoteChangedEvent.fire(this._currentQuote);
