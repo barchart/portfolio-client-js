@@ -124,7 +124,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The year-to-date summary of the encapsulated position.
+		 * The current summary of the encapsulated position.
 		 *
 		 * @public
 		 * @returns {Object}
@@ -134,7 +134,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Previous year's summaries for the encapsulated position.
+		 * Previous summaries for the encapsulated position.
 		 *
 		 * @public
 		 * @returns {Object}
@@ -147,7 +147,7 @@ module.exports = (() => {
 		 * Various data regarding the encapsulated position.
 		 *
 		 * @public
-		 * @returns {*}
+		 * @returns {Object}
 		 */
 		get data() {
 			return this._data;
@@ -157,7 +157,7 @@ module.exports = (() => {
 		 * The current quote for the symbol of the encapsulated position.
 		 *
 		 * @public
-		 * @returns {null|{Object}}
+		 * @returns {null|Object}
 		 */
 		get quote() {
 			return this._currentQuote;

@@ -39,16 +39,18 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {Array.<PositionTreeDefinition>} definitions
-	 * @param {Array.<Object>} portfolios
-	 * @param {Array.<Object>} positions
-	 * @param {Array.<Object>} summaries
+	 * @param {Array.<Object>} portfolios - The portfolios.
+	 * @param {Array.<Object>} positions - The positions (for all of the portfolios).
+	 * @param {Array.<Object>} summaries - The positions summaries (for all of the positions).
+	 * @param {PositionSummaryFrame} - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 */
 	class PositionContainer {
-		constructor(definitions, portfolios, positions, summaries) {
+		constructor(definitions, portfolios, positions, summaries, frame) {
 			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
 			assert.argumentIsArray(summaries, 'summaries');
+			assert.argumentIsOptional(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
 
 			this._definitions = definitions;
 
@@ -63,17 +65,23 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._currentSummaryFrame = PositionSummaryFrame.YTD;
+			this._currentSummaryFrame = frame || PositionSummaryFrame.YTD;
 			this._currentSummaryRange = array.last(this._currentSummaryFrame.getRecentRanges(0));
+
+			this._previousSummaryFrame = frame || PositionSummaryFrame.YEARLY;
+			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(3);
+
+			if (this._currentSummaryFrame === this._previousSummaryFrame) {
+				this._previousSummaryRanges.pop();
+			} else {
+				this._previousSummaryRanges.shift();
+			}
 
 			this._summariesCurrent = summaries.reduce((map, summary) => {
 				addSummaryCurrent(map, summary, this._currentSummaryFrame, this._currentSummaryRange);
 
 				return map;
 			}, { });
-
-			this._previousSummaryFrame = PositionSummaryFrame.YEARLY;
-			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(1);
 
 			this._summariesPrevious = summaries.reduce((map, summary) => {
 				addSummaryPrevious(map, summary, this._previousSummaryFrame, this._previousSummaryRanges);
