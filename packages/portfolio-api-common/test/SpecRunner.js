@@ -1663,12 +1663,12 @@ module.exports = (() => {
 
 			const existingBarchartSymbols = this.getPositionSymbols(false);
 
-			let similiarPositionItem;
+			let similarPositionItem;
 
-			if (is.object(position.instrument.symbol) && is.string(position.instrument.symbol.barchart)) {
-				similiarPositionItem = this._items.find(item => is.object(item.position.instrument.symbol) && item.position.instrument.symbol.barchart === position.instrument.symbol.barchart) || null;
+			if (extractSymbolForBarchart(position)) {
+				similarPositionItem = this._items.find(item => extractSymbolForBarchart(item.position) === extractSymbolForBarchart(position)) || null;
 			} else {
-				similiarPositionItem = null;
+				similarPositionItem = null;
 			}
 
 			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
@@ -1718,13 +1718,13 @@ module.exports = (() => {
 				this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
 			}
 
-			if (similiarPositionItem !== null) {
-				if (similiarPositionItem.previousQuote) {
-					item.setQuote(similiarPositionItem.previousQuote);
+			if (similarPositionItem !== null) {
+				if (similarPositionItem.previousQuote) {
+					item.setQuote(similarPositionItem.previousQuote);
 				}
 
-				if (similiarPositionItem.quote) {
-					item.setQuote(similiarPositionItem.quote);
+				if (similarPositionItem.quote) {
+					item.setQuote(similarPositionItem.quote);
 				}
 			}
 
