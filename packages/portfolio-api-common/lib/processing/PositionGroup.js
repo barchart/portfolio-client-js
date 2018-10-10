@@ -797,10 +797,10 @@ module.exports = (() => {
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.total = updates.unrealized.add(actual.realized).add(actual.income);
 
-		let endingChange = market.subtract(actual.endingPrevious);
+		let endingChange = updates.market.subtract(actual.endingPrevious);
 		let endingChangePercent;
 
-		if (endingPrevious.getIsZero()) {
+		if (actual.endingPrevious.getIsZero()) {
 			if (endingChange.getIsPositive()) {
 				endingChangePercent = Decimal.ONE;
 			} else if (endingChange.getIsNegative()) {
