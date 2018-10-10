@@ -171,6 +171,16 @@ module.exports = (() => {
 	 * @property {Day} end
 	 */
 
+	/**
+	 * The start and and date for a {@link PositionSummaryFrame} along with the frame type.
+	 *
+	 * @typedef PositionSummaryRangeDefinition
+	 * @type {Object}
+	 * @property {Day} start
+	 * @property {Day} end
+	 * @property {PositionSummaryFrame} frame
+	 */
+
 	function getRange(start, end) {
 		return {
 			start: start,
