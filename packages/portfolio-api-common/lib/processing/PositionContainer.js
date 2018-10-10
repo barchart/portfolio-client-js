@@ -42,7 +42,7 @@ module.exports = (() => {
 	 * @param {Array.<Object>} portfolios - The portfolios.
 	 * @param {Array.<Object>} positions - The positions (for all of the portfolios).
 	 * @param {Array.<Object>} summaries - The positions summaries (for all of the positions).
-	 * @param {PositionSummaryFrame} - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
+	 * @param {PositionSummaryFrame=} - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 */
 	class PositionContainer {
 		constructor(definitions, portfolios, positions, summaries, frame) {
