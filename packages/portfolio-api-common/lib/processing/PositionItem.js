@@ -65,6 +65,9 @@ module.exports = (() => {
 			this._data.summaryTotalPrevious = null;
 			this._data.summaryTotalPrevious2 = null;
 
+			this._data.endingPrevious = null;
+			this._data.endingPrevious2 = null;
+
 			this._data.realized = null;
 			this._data.income = null;
 			this._data.basisPrice = null;
@@ -380,9 +383,16 @@ module.exports = (() => {
 
 		data.income = snapshot.income;
 
-		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary, getPreviousSummary(previousSummaries, 1));
-		data.summaryTotalPrevious = calculateSummaryTotal(getPreviousSummary(previousSummaries, 1), getPreviousSummary(previousSummaries, 2));
-		data.summaryTotalPrevious2 = calculateSummaryTotal(getPreviousSummary(previousSummaries, 2), getPreviousSummary(previousSummaries, 3));
+		const previousSummary1 = getPreviousSummary(previousSummaries, 1);
+		const previousSummary2 = getPreviousSummary(previousSummaries, 2);
+		const previousSummary3 = getPreviousSummary(previousSummaries, 3);
+
+		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary, previousSummary1);
+		data.summaryTotalPrevious = calculateSummaryTotal(previousSummary1, previousSummary2);
+		data.summaryTotalPrevious2 = calculateSummaryTotal(previousSummary2, previousSummary3);
+
+		data.endingPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.value;
+		data.endingPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
