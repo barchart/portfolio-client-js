@@ -26,7 +26,7 @@ module.exports = function () {
 	window.Barchart.ValuationType = ValuationType;
 }();
 
-},{"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Timezones":35,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/data/ValuationType":55,"@barchart/tgam-jwt-js/lib/JwtGateway":60}],2:[function(require,module,exports){
+},{"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Timezones":35,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/data/ValuationType":55,"@barchart/tgam-jwt-js/lib/JwtGateway":61}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -138,6 +138,7 @@ var TransactionType = require('@barchart/portfolio-api-common/lib/data/Transacti
 
 var PortfolioSchema = require('@barchart/portfolio-api-common/lib/serialization/PortfolioSchema'),
     PositionSummarySchema = require('@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema'),
+    PositionSummaryDefinitionSchema = require('@barchart/portfolio-api-common/lib/serialization/PositionSummaryDefinitionSchema'),
     PositionSchema = require('@barchart/portfolio-api-common/lib/serialization/PositionSchema'),
     TransactionSchema = require('@barchart/portfolio-api-common/lib/serialization/TransactionSchema');
 
@@ -233,6 +234,16 @@ module.exports = function () {
 					return x.format();
 				});
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
+			_this._readPositionSummaryDefinitionEndpoint = EndpointBuilder.for('read-position-summary-definitions', 'read position summary definitions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withLiteralParameter('ranges', 'ranges');
+			}).withQueryBuilder(function (qb) {
+				qb.withVariableParameter('frames', 'frames', 'frames', true, function (frames) {
+					return frames.map(function (f) {
+						return f.code;
+					}).join();
+				});
+			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDefinitionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
@@ -344,7 +355,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Creates a portfolio
+    * Creates a portfolio.
     *
     * @public
     * @param {Object} portfolio
@@ -388,7 +399,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Updates a portfolio
+    * Updates a portfolio.
     *
     * @public
     * @param {Object} portfolio
@@ -410,7 +421,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Deletes a portfolio
+    * Deletes a portfolio.
     *
     * @public
     * @param {String} portfolio - ID of the portfolio to update
@@ -458,7 +469,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Updates a position
+    * Updates a position.
     *
     * @public
     * @param {Object} position
@@ -600,6 +611,31 @@ module.exports = function () {
 			}
 
 			/**
+    * Returns all position summary definitions for a portfolio.
+    *
+    * @public
+    * @param {String} portfolio
+    * @param {Array.<PositionSummaryFrame>} frames
+    */
+
+		}, {
+			key: 'readPositionSummaryDefinitions',
+			value: function readPositionSummaryDefinitions(portfolio, frames) {
+				var _this12 = this;
+
+				return Promise.resolve().then(function () {
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+
+					var query = {};
+
+					query.portfolio = portfolio;
+					query.frames = frames;
+
+					return Gateway.invoke(_this12._readPositionSummaryDefinitionEndpoint, query);
+				});
+			}
+
+			/**
     * Deletes a position.
     *
     * @public
@@ -611,15 +647,15 @@ module.exports = function () {
 		}, {
 			key: 'deletePosition',
 			value: function deletePosition(portfolio, position) {
-				var _this12 = this;
+				var _this13 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this12);
+					checkStart.call(_this13);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
 
-					return Gateway.invoke(_this12._deletePositionEndpoint, { portfolio: portfolio, position: position });
+					return Gateway.invoke(_this13._deletePositionEndpoint, { portfolio: portfolio, position: position });
 				});
 			}
 
@@ -634,10 +670,10 @@ module.exports = function () {
 		}, {
 			key: 'createTransaction',
 			value: function createTransaction(transaction) {
-				var _this13 = this;
+				var _this14 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this13);
+					checkStart.call(_this14);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
@@ -649,7 +685,7 @@ module.exports = function () {
 
 					var schema = getTransactionSchema(transaction);
 
-					return Gateway.invoke(_this13._createTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this14._createTransactionEndpoint, schema.schema.format(transaction));
 				});
 			}
 
@@ -664,10 +700,10 @@ module.exports = function () {
 		}, {
 			key: 'batchTransactions',
 			value: function batchTransactions(portfolio, transactions) {
-				var _this14 = this;
+				var _this15 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this14);
+					checkStart.call(_this15);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', Object);
 					assert.argumentIsArray(transactions, 'transactions', Object);
@@ -692,7 +728,7 @@ module.exports = function () {
 						batchData.transactionItems.push(JSON.stringify(schema.schema.format(transaction)));
 					});
 
-					return Gateway.invoke(_this14._batchTransactionEndpoint, batchData);
+					return Gateway.invoke(_this15._batchTransactionEndpoint, batchData);
 				});
 			}
 
@@ -707,10 +743,10 @@ module.exports = function () {
 		}, {
 			key: 'editTransaction',
 			value: function editTransaction(transaction) {
-				var _this15 = this;
+				var _this16 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this15);
+					checkStart.call(_this16);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
@@ -719,7 +755,7 @@ module.exports = function () {
 
 					var schema = getTransactionSchema(transaction);
 
-					return Gateway.invoke(_this15._editTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this16._editTransactionEndpoint, schema.schema.format(transaction));
 				});
 			}
 
@@ -739,10 +775,10 @@ module.exports = function () {
 		}, {
 			key: 'deleteTransaction',
 			value: function deleteTransaction(portfolio, position, sequence, force, echoStart, echoEnd) {
-				var _this16 = this;
+				var _this17 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this16);
+					checkStart.call(_this17);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
@@ -766,7 +802,7 @@ module.exports = function () {
 						payload.echoEnd = echoEnd;
 					}
 
-					return Gateway.invoke(_this16._deleteTransactionEndpoint, payload);
+					return Gateway.invoke(_this17._deleteTransactionEndpoint, payload);
 				});
 			}
 
@@ -782,15 +818,15 @@ module.exports = function () {
 		}, {
 			key: 'readTransactions',
 			value: function readTransactions(portfolio, position) {
-				var _this17 = this;
+				var _this18 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this17);
+					checkStart.call(_this18);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					return Gateway.invoke(_this17._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
+					return Gateway.invoke(_this18._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
 				});
 			}
 
@@ -810,10 +846,10 @@ module.exports = function () {
 		}, {
 			key: 'readTransactionsFormatted',
 			value: function readTransactionsFormatted(portfolio, position, startDay, endDay, descending) {
-				var _this18 = this;
+				var _this19 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this18);
+					checkStart.call(_this19);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
@@ -836,16 +872,16 @@ module.exports = function () {
 
 					payload.descending = is.boolean(descending) && descending;
 
-					return Gateway.invoke(_this18._readTransactionsReportEndpoint, payload);
+					return Gateway.invoke(_this19._readTransactionsReportEndpoint, payload);
 				});
 			}
 		}, {
 			key: 'readTransactionsFormattedPage',
 			value: function readTransactionsFormattedPage(portfolio, position, sequence, count, descending) {
-				var _this19 = this;
+				var _this20 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this19);
+					checkStart.call(_this20);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
@@ -870,7 +906,7 @@ module.exports = function () {
 
 					payload.descending = is.boolean(descending) && descending;
 
-					return Gateway.invoke(_this19._readTransactionsReportEndpoint, payload);
+					return Gateway.invoke(_this20._readTransactionsReportEndpoint, payload);
 				});
 			}
 
@@ -1043,6 +1079,14 @@ module.exports = function () {
 		}
 	});
 
+	var responseInterceptorForPositionSummaryDefinitionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
+		try {
+			return JSON.parse(response.data, PositionSummaryDefinitionSchema.CLIENT.schema.getReviver());
+		} catch (e) {
+			console.log('Error deserializing position summary definition', e);
+		}
+	});
+
 	var responseInterceptorForTransactionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
 			return JSON.parse(response.data, TransactionSchema.CLIENT.schema.getReviver());
@@ -1110,7 +1154,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/lang/promise":42,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":53,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":57,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":58,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":59}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/lang/promise":42,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":53,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":57,"@barchart/portfolio-api-common/lib/serialization/PositionSummaryDefinitionSchema":58,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":59,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":60}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1461,7 +1505,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.26'
+		version: '1.2.27'
 	};
 }();
 
@@ -2217,7 +2261,7 @@ module.exports = function () {
 	return Gateway;
 }();
 
-},{"./../../lang/array":36,"./../../lang/assert":37,"./../../lang/attributes":38,"./../../lang/promise":42,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":62}],10:[function(require,module,exports){
+},{"./../../lang/array":36,"./../../lang/assert":37,"./../../lang/attributes":38,"./../../lang/promise":42,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":63}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6285,7 +6329,7 @@ module.exports = function () {
 	return Decimal;
 }();
 
-},{"./Enum":32,"./assert":37,"./is":40,"big.js":87}],31:[function(require,module,exports){
+},{"./Enum":32,"./assert":37,"./is":40,"big.js":88}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6844,7 +6888,7 @@ module.exports = function () {
 	return Timestamp;
 }();
 
-},{"./assert":37,"./is":40,"moment-timezone":92}],35:[function(require,module,exports){
+},{"./assert":37,"./is":40,"moment-timezone":93}],35:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8401,7 +8445,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":37,"moment-timezone/builds/moment-timezone-with-data-2010-2020":90}],44:[function(require,module,exports){
+},{"./assert":37,"moment-timezone/builds/moment-timezone-with-data-2010-2020":91}],44:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8877,7 +8921,7 @@ module.exports = function () {
 	return DataType;
 }();
 
-},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":37,"./../../lang/is":40,"moment":94}],46:[function(require,module,exports){
+},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":37,"./../../lang/is":40,"moment":95}],46:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -10069,7 +10113,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"uuid":95}],52:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"uuid":96}],52:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum');
@@ -10289,6 +10333,19 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns the range which contains a given date and all subsequent ranges.
+		 *
+		 * @public
+		 * @param {Day} date
+		 * @return {Array.<PositionSummaryRange>}
+		 */
+		getRangesFromDate(date) {
+			const transaction = { date: date, snapshot: { open: Decimal.ONE } };
+
+			return this.getRanges([ transaction ]);
+		}
+
+		/**
 		 * Returns the start date for a frame, a given number of periods ago.
 		 *
 		 * @public
@@ -10358,6 +10415,16 @@ module.exports = (() => {
 	 * @type {Object}
 	 * @property {Day} start
 	 * @property {Day} end
+	 */
+
+	/**
+	 * The start and and date for a {@link PositionSummaryFrame} along with the frame type.
+	 *
+	 * @typedef PositionSummaryDefinition
+	 * @type {Object}
+	 * @property {Day} start
+	 * @property {Day} end
+	 * @property {PositionSummaryFrame} frame
 	 */
 
 	function getRange(start, end) {
@@ -11226,6 +11293,7 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
+		.withField('system.locked', DataType.BOOLEAN, true)
 		.withField('root', DataType.STRING, true)
 		.schema
 	);
@@ -11255,6 +11323,7 @@ module.exports = (() => {
 		.withField('snapshot.basis', DataType.DECIMAL)
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
+		.withField('system.locked', DataType.BOOLEAN, true)
 		.withField('previous', DataType.NUMBER, true)
 		.schema
 	);
@@ -11276,8 +11345,67 @@ module.exports = (() => {
 })();
 
 },{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/ValuationType":55,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],58:[function(require,module,exports){
-const Currency = require('@barchart/common-js/lang/Currency'),
-	DataType = require('@barchart/common-js/serialization/json/DataType'),
+const DataType = require('@barchart/common-js/serialization/json/DataType'),
+	Enum = require('@barchart/common-js/lang/Enum'),
+	Schema = require('@barchart/common-js/serialization/json/Schema'),
+	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
+
+const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * The schemas which can be used to represent position summary objects.
+	 *
+	 * @public
+	 * @extends {Enum}
+	 */
+	class PositionSummaryDefinitionSchema extends Enum {
+		constructor(schema) {
+			super(schema.name, schema.name);
+
+			this._schema = schema;
+		}
+
+		/**
+		 * The actual {@link Schema}.
+		 *
+		 * @public
+		 * @returns {Schema}
+		 */
+		get schema() {
+			return this._schema;
+		}
+
+		/**
+		 * The complete position summary definition schema.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PositionSummaryDefinitionSchema}
+		 */
+		static get COMPLETE() {
+			return complete;
+		}
+
+		toString() {
+			return '[PositionSummaryDefinitionSchema]';
+		}
+	}
+
+	const complete = new PositionSummaryDefinitionSchema(SchemaBuilder.withName('complete')
+		.withField('start', DataType.DAY)
+		.withField('end', DataType.DAY)
+		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
+		.schema
+	);
+
+	return PositionSummaryDefinitionSchema;
+})();
+
+},{"./../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
+const DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
@@ -11393,7 +11521,7 @@ module.exports = (() => {
 	return PositionSummarySchema;
 })();
 
-},{"./../data/PositionDirection":52,"./../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
+},{"./../data/PositionDirection":52,"./../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],60:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -11749,7 +11877,7 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/TransactionType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],60:[function(require,module,exports){
+},{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/TransactionType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],61:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -12147,7 +12275,7 @@ module.exports = function () {
 	return JwtGateway;
 }();
 
-},{"./index":61,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/assert":37,"@barchart/common-js/timing/Scheduler":50}],61:[function(require,module,exports){
+},{"./index":62,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/assert":37,"@barchart/common-js/timing/Scheduler":50}],62:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -12158,9 +12286,9 @@ module.exports = function () {
 	};
 }();
 
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":64}],63:[function(require,module,exports){
+},{"./lib/axios":65}],64:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -12344,7 +12472,7 @@ module.exports = function xhrAdapter(config) {
 };
 
 }).call(this,require('_process'))
-},{"../core/createError":70,"./../core/settle":73,"./../helpers/btoa":77,"./../helpers/buildURL":78,"./../helpers/cookies":80,"./../helpers/isURLSameOrigin":82,"./../helpers/parseHeaders":84,"./../utils":86,"_process":88}],64:[function(require,module,exports){
+},{"../core/createError":71,"./../core/settle":74,"./../helpers/btoa":78,"./../helpers/buildURL":79,"./../helpers/cookies":81,"./../helpers/isURLSameOrigin":83,"./../helpers/parseHeaders":85,"./../utils":87,"_process":89}],65:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -12398,7 +12526,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":65,"./cancel/CancelToken":66,"./cancel/isCancel":67,"./core/Axios":68,"./defaults":75,"./helpers/bind":76,"./helpers/spread":85,"./utils":86}],65:[function(require,module,exports){
+},{"./cancel/Cancel":66,"./cancel/CancelToken":67,"./cancel/isCancel":68,"./core/Axios":69,"./defaults":76,"./helpers/bind":77,"./helpers/spread":86,"./utils":87}],66:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12419,7 +12547,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -12478,14 +12606,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":65}],67:[function(require,module,exports){
+},{"./Cancel":66}],68:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./../defaults');
@@ -12566,7 +12694,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"./../defaults":75,"./../utils":86,"./InterceptorManager":69,"./dispatchRequest":71}],69:[function(require,module,exports){
+},{"./../defaults":76,"./../utils":87,"./InterceptorManager":70,"./dispatchRequest":72}],70:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12620,7 +12748,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":86}],70:[function(require,module,exports){
+},{"./../utils":87}],71:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -12640,7 +12768,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":72}],71:[function(require,module,exports){
+},{"./enhanceError":73}],72:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12728,7 +12856,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":67,"../defaults":75,"./../helpers/combineURLs":79,"./../helpers/isAbsoluteURL":81,"./../utils":86,"./transformData":74}],72:[function(require,module,exports){
+},{"../cancel/isCancel":68,"../defaults":76,"./../helpers/combineURLs":80,"./../helpers/isAbsoluteURL":82,"./../utils":87,"./transformData":75}],73:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12751,7 +12879,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -12779,7 +12907,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":70}],74:[function(require,module,exports){
+},{"./createError":71}],75:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -12801,7 +12929,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":86}],75:[function(require,module,exports){
+},{"./../utils":87}],76:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -12897,7 +13025,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":63,"./adapters/xhr":63,"./helpers/normalizeHeaderName":83,"./utils":86,"_process":88}],76:[function(require,module,exports){
+},{"./adapters/http":64,"./adapters/xhr":64,"./helpers/normalizeHeaderName":84,"./utils":87,"_process":89}],77:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -12910,7 +13038,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 'use strict';
 
 // btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
@@ -12948,7 +13076,7 @@ function btoa(input) {
 
 module.exports = btoa;
 
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -13018,7 +13146,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":86}],79:[function(require,module,exports){
+},{"./../utils":87}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -13034,7 +13162,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -13089,7 +13217,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":86}],81:[function(require,module,exports){
+},{"./../utils":87}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -13105,7 +13233,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -13175,7 +13303,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":86}],83:[function(require,module,exports){
+},{"./../utils":87}],84:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -13189,7 +13317,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":86}],84:[function(require,module,exports){
+},{"../utils":87}],85:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -13244,7 +13372,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":86}],85:[function(require,module,exports){
+},{"./../utils":87}],86:[function(require,module,exports){
 'use strict';
 
 /**
@@ -13273,7 +13401,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -13578,7 +13706,7 @@ module.exports = {
   trim: trim
 };
 
-},{"./helpers/bind":76,"is-buffer":89}],87:[function(require,module,exports){
+},{"./helpers/bind":77,"is-buffer":90}],88:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -14519,7 +14647,7 @@ module.exports = {
   }
 })(this);
 
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -14705,7 +14833,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -14728,7 +14856,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -15930,7 +16058,7 @@ function isSlowBuffer (obj) {
 	return moment;
 }));
 
-},{"moment":94}],91:[function(require,module,exports){
+},{"moment":95}],92:[function(require,module,exports){
 module.exports={
 	"version": "2016j",
 	"zones": [
@@ -16530,11 +16658,11 @@ module.exports={
 		"Pacific/Pohnpei|Pacific/Ponape"
 	]
 }
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":91,"./moment-timezone":93}],93:[function(require,module,exports){
+},{"./data/packed/latest.json":92,"./moment-timezone":94}],94:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -17137,7 +17265,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":94}],94:[function(require,module,exports){
+},{"moment":95}],95:[function(require,module,exports){
 //! moment.js
 
 ;(function (global, factory) {
@@ -21645,7 +21773,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],95:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 var v1 = require('./v1');
 var v4 = require('./v4');
 
@@ -21655,7 +21783,7 @@ uuid.v4 = v4;
 
 module.exports = uuid;
 
-},{"./v1":98,"./v4":99}],96:[function(require,module,exports){
+},{"./v1":99,"./v4":100}],97:[function(require,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -21680,7 +21808,7 @@ function bytesToUuid(buf, offset) {
 
 module.exports = bytesToUuid;
 
-},{}],97:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 (function (global){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
@@ -21717,7 +21845,7 @@ if (!rng) {
 module.exports = rng;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],98:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -21819,7 +21947,7 @@ function v1(options, buf, offset) {
 
 module.exports = v1;
 
-},{"./lib/bytesToUuid":96,"./lib/rng":97}],99:[function(require,module,exports){
+},{"./lib/bytesToUuid":97,"./lib/rng":98}],100:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -21850,5 +21978,5 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
-},{"./lib/bytesToUuid":96,"./lib/rng":97}]},{},[1,5])(5)
+},{"./lib/bytesToUuid":97,"./lib/rng":98}]},{},[1,5])(5)
 });
