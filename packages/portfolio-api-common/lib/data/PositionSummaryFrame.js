@@ -87,6 +87,19 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns the range which contains a given date and all subsequent ranges.
+		 *
+		 * @public
+		 * @param {Day} date
+		 * @return {Array.<PositionSummaryRange>}
+		 */
+		getRangesFromDate(date) {
+			const transaction = { date: date, snapshot: { open: Decimal.ONE } };
+
+			return this.getRanges([ transaction ]);
+		}
+
+		/**
 		 * Returns the start date for a frame, a given number of periods ago.
 		 *
 		 * @public
