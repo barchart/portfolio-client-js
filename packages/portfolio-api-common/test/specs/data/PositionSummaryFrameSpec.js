@@ -422,4 +422,36 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			});
 		});
 	});
+
+	describe('and prior ranges are calculated', () => {
+		describe('for YEARLY ranges', () => {
+			describe('from 2017-10-10, including one previous ranges', () => {
+				let ranges;
+
+				beforeEach(() => {
+					ranges = PositionSummaryFrame.YEARLY.getPriorRanges(new Day(2015, 4, 20), 1);
+				});
+
+				it('should return two ranges', () => {
+					expect(ranges.length).toEqual(2);
+				});
+
+				it('the first range should begin on 2013-12-31', () => {
+					expect(ranges[0].start.getIsEqual(new Day(2013, 12, 31))).toEqual(true);
+				});
+
+				it('the first range should end on 2014-12-31', () => {
+					expect(ranges[0].end.getIsEqual(new Day(2014, 12, 31))).toEqual(true);
+				});
+
+				it('the second range should begin on 2014-12-31', () => {
+					expect(ranges[1].start.getIsEqual(new Day(2014, 12, 31))).toEqual(true);
+				});
+
+				it('the second range should end on 2015-12-31', () => {
+					expect(ranges[1].end.getIsEqual(new Day(2015, 12, 31))).toEqual(true);
+				});
+			});
+		});
+	});
 });
