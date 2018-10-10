@@ -485,9 +485,29 @@ module.exports = (() => {
 		 * @return {Array.<PositionSummaryRange>}
 		 */
 		getRangesFromDate(date) {
+			assert.argumentIsRequired(date, 'date', Day, 'Day');
+
 			const transaction = { date: date, snapshot: { open: Decimal.ONE } };
 
 			return this.getRanges([ transaction ]);
+		}
+
+		/**
+		 * Returns the range immediately prior to the range containing the
+		 * date supplied.
+		 *
+		 * @public
+		 * @param {Day} date
+		 * @param {Number} periods
+		 */
+		getPriorRanges(date, periods) {
+			assert.argumentIsRequired(date, 'date', Day, 'Day');
+			assert.argumentIsRequired(periods, 'periods', Number, 'Number');
+
+			const transactionOne = { date: this.getStartDate((periods - 1), date), snapshot: { open: Decimal.ONE } };
+			const transactionTwo = { date: date, snapshot: { open: Decimal.ZERO } };
+
+			return this._rangeCalculator([ transactionOne, transactionTwo ]);
 		}
 
 		/**
@@ -495,12 +515,14 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Number} periods
+		 * @param {Day=} start
 		 * @returns {Day}
 		 */
-		getStartDate(periods) {
+		getStartDate(periods, start) {
 			assert.argumentIsRequired(periods, 'periods', Number);
+			assert.argumentIsOptional(start, 'start', Day, 'Day');
 
-			return this._startDateCalculator(periods);
+			return this._startDateCalculator(periods, start);
 		}
 
 		/**
@@ -633,24 +655,24 @@ module.exports = (() => {
 		return ranges;
 	}
 
-	function getYearlyStartDate(periods) {
-		const today = Day.getToday();
+	function getYearlyStartDate(periods, date) {
+		const today = date || Day.getToday();
 
-		return Day.getToday()
+		return today
 			.subtractMonths(today.month - 1)
 			.subtractDays(today.day)
 			.subtractYears(periods);
 	}
 
-	function getQuarterlyStartDate(periods) {
+	function getQuarterlyStartDate(periods, date) {
 		return null;
 	}
 
-	function getMonthlyStartDate(periods) {
+	function getMonthlyStartDate(periods, date) {
 		return null;
 	}
 
-	function getYearToDateStartDate(periods) {
+	function getYearToDateStartDate(periods, date) {
 		return null;
 	}
 
@@ -17629,6 +17651,38 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 
 			it('the third range should end at the end of last year', () => {
 				expect(ranges[2].end.format()).toEqual(`${todayYear - 1}-12-31`);
+			});
+		});
+	});
+
+	describe('and prior ranges are calculated', () => {
+		describe('for YEARLY ranges', () => {
+			describe('from 2017-10-10, including one previous ranges', () => {
+				let ranges;
+
+				beforeEach(() => {
+					ranges = PositionSummaryFrame.YEARLY.getPriorRanges(new Day(2015, 4, 20), 1);
+				});
+
+				it('should return two ranges', () => {
+					expect(ranges.length).toEqual(2);
+				});
+
+				it('the first range should begin on 2013-12-31', () => {
+					expect(ranges[0].start.getIsEqual(new Day(2013, 12, 31))).toEqual(true);
+				});
+
+				it('the first range should end on 2014-12-31', () => {
+					expect(ranges[0].end.getIsEqual(new Day(2014, 12, 31))).toEqual(true);
+				});
+
+				it('the second range should begin on 2014-12-31', () => {
+					expect(ranges[1].start.getIsEqual(new Day(2014, 12, 31))).toEqual(true);
+				});
+
+				it('the second range should end on 2015-12-31', () => {
+					expect(ranges[1].end.getIsEqual(new Day(2015, 12, 31))).toEqual(true);
+				});
 			});
 		});
 	});
