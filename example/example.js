@@ -1081,7 +1081,7 @@ module.exports = function () {
 
 	var responseInterceptorForPositionSummaryDefinitionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			return JSON.parse(response.data, PositionSummaryDefinitionSchema.CLIENT.schema.getReviver());
+			return JSON.parse(response.data, PositionSummaryDefinitionSchema.COMPLETE.schema.getReviver());
 		} catch (e) {
 			console.log('Error deserializing position summary definition', e);
 		}
@@ -1505,7 +1505,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.27'
+		version: '1.2.28'
 	};
 }();
 
