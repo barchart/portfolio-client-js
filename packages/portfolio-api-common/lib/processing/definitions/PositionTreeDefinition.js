@@ -11,6 +11,7 @@ module.exports = (() => {
 	 * @public
 	 * @param {String} name
 	 * @param {Array.<PositionLevelDefinition>} definitions
+	 * @oaram {Array.<String>=} exclusionDependencies
 	 */
 	class PositionTreeDefinitions {
 		constructor(name, definitions, exclusionDependencies) {
