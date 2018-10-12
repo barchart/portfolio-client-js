@@ -399,7 +399,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * An enumeration used to define timeframes for position summaries.
+	 * An enumeration used to define time frames for position summaries.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -2505,12 +2505,14 @@ module.exports = (() => {
 			this._dataFormat.locked = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
+			this._dataFormat.quantityPrevious = null;
 			this._dataFormat.basisPrice = null;
 
 			this._dataActual.key = this._key;
 			this._dataActual.description = this._description;
 			this._dataActual.newsExists = false;
 			this._dataActual.quantity = null;
+			this._dataActual.quantityPrevious = null;
 			this._dataActual.basisPrice = null;
 
 			if (this._single && items.length === 1) {
@@ -2560,10 +2562,10 @@ module.exports = (() => {
 			this._dataActual.summaryTotalCurrent = null;
 			this._dataActual.summaryTotalPrevious = null;
 			this._dataActual.summaryTotalPrevious2 = null;
-			this._dataActual.endingPrevious = null;
-			this._dataActual.endingPrevious2 = null;
-			this._dataActual.endingChange = null;
-			this._dataActual.endingChangePercent = null;
+			this._dataActual.marketPrevious = null;
+			this._dataActual.marketPrevious2 = null;
+			this._dataActual.marketChange = null;
+			this._dataActual.marketChangePercent = null;
 			this._dataActual.cashTotal = null;
 
 			this._dataFormat.currentPrice = null;
@@ -2587,10 +2589,10 @@ module.exports = (() => {
 			this._dataFormat.summaryTotalPreviousNegative = false;
 			this._dataFormat.summaryTotalPrevious2 = null;
 			this._dataFormat.summaryTotalPrevious2Negative = false;
-			this._dataFormat.endingPrevious = null;
-			this._dataFormat.endingPrevious2 = null;
-			this._dataFormat.endingChange = null;
-			this._dataFormat.endingChangePercent = null;
+			this._dataFormat.marketPrevious = null;
+			this._dataFormat.marketPrevious2 = null;
+			this._dataFormat.marketChange = null;
+			this._dataFormat.marketChangePercent = null;
 			this._dataFormat.cashTotal = null;
 			this._dataFormat.portfolioType = null;
 
@@ -3087,8 +3089,8 @@ module.exports = (() => {
 			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.summaryTotalCurrent));
 			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.summaryTotalPrevious));
 			updates.summaryTotalPrevious2 = updates.summaryTotalPrevious2.add(translate(item, item.data.summaryTotalPrevious2));
-			updates.endingPrevious = updates.endingPrevious.add(translate(item, item.data.endingPrevious));
-			updates.endingPrevious2 = updates.endingPrevious2.add(translate(item, item.data.endingPrevious2));
+			updates.marketPrevious = updates.marketPrevious.add(translate(item, item.data.marketPrevious));
+			updates.marketPrevious2 = updates.marketPrevious2.add(translate(item, item.data.marketPrevious2));
 
 			if (item.position.instrument.type === InstrumentType.CASH) {
 				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
@@ -3103,8 +3105,8 @@ module.exports = (() => {
 			summaryTotalCurrent: Decimal.ZERO,
 			summaryTotalPrevious: Decimal.ZERO,
 			summaryTotalPrevious2: Decimal.ZERO,
-			endingPrevious: Decimal.ZERO,
-			endingPrevious2: Decimal.ZERO,
+			marketPrevious: Decimal.ZERO,
+			marketPrevious2: Decimal.ZERO,
 			cashTotal: Decimal.ZERO
 		});
 
@@ -3115,8 +3117,8 @@ module.exports = (() => {
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.summaryTotalPrevious = updates.summaryTotalPrevious;
 		actual.summaryTotalPrevious2 = updates.summaryTotalPrevious2;
-		actual.endingPrevious = updates.endingPrevious;
-		actual.endingPrevious2 = updates.endingPrevious2;
+		actual.marketPrevious = updates.marketPrevious;
+		actual.marketPrevious2 = updates.marketPrevious2;
 		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
@@ -3128,8 +3130,8 @@ module.exports = (() => {
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
 		format.summaryTotalPrevious2 = formatCurrency(updates.summaryTotalPrevious2, currency);
 		format.summaryTotalPrevious2Negative = updates.summaryTotalPrevious2.getIsNegative();
-		format.endingPrevious = formatCurrency(updates.endingPrevious, currency);
-		format.endingPrevious2 = formatCurrency(updates.endingPrevious2, currency);
+		format.marketPrevious = formatCurrency(updates.marketPrevious, currency);
+		format.marketPrevious2 = formatCurrency(updates.marketPrevious2, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
 		calculateUnrealizedPercent(group);
@@ -3138,9 +3140,13 @@ module.exports = (() => {
 			const item = group._items[0];
 
 			actual.quantity = item.position.snapshot.open;
+			actual.quantityPrevious = item.data.quantityPrevious;
+			
 			actual.basisPrice = item.data.basisPrice;
 
 			format.quantity = formatDecimal(actual.quantity, 2);
+			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
+			
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
@@ -3227,23 +3233,23 @@ module.exports = (() => {
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.total = updates.unrealized.add(actual.realized).add(actual.income);
 
-		let endingChange = updates.market.subtract(actual.endingPrevious);
-		let endingChangePercent;
+		let marketChange = updates.market.subtract(actual.marketPrevious);
+		let marketChangePercent;
 
-		if (actual.endingPrevious.getIsZero()) {
-			if (endingChange.getIsPositive()) {
-				endingChangePercent = Decimal.ONE;
-			} else if (endingChange.getIsNegative()) {
-				endingChangePercent = Decimal.NEGATIVE_ONE;
+		if (actual.marketPrevious.getIsZero()) {
+			if (marketChange.getIsPositive()) {
+				marketChangePercent = Decimal.ONE;
+			} else if (marketChange.getIsNegative()) {
+				marketChangePercent = Decimal.NEGATIVE_ONE;
 			} else {
-				endingChangePercent = Decimal.ZERO;
+				marketChangePercent = Decimal.ZERO;
 			}
 		} else {
-			endingChangePercent = endingChange.divide(actual.endingPrevious);
+			marketChangePercent = marketChange.divide(actual.marketPrevious);
 		}
 
-		actual.endingChange = endingChange;
-		actual.endingChangePercent = endingChangePercent;
+		actual.marketChange = marketChange;
+		actual.marketChangePercent = marketChangePercent;
 
 		format.market = formatCurrency(actual.market, currency);
 		
@@ -3264,8 +3270,8 @@ module.exports = (() => {
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
 
-		format.endingChange = formatCurrency(actual.endingChange, currency);
-		format.endingChangePercent = formatPercent(actual.endingChangePercent, 2);
+		format.marketChange = formatCurrency(actual.marketChange, currency);
+		format.marketChangePercent = formatPercent(actual.marketChangePercent, 2);
 
 		calculateUnrealizedPercent(group);
 	}
@@ -3399,9 +3405,12 @@ module.exports = (() => {
 			this._data.summaryTotalPrevious = null;
 			this._data.summaryTotalPrevious2 = null;
 
-			this._data.endingPrevious = null;
-			this._data.endingPrevious2 = null;
+			this._data.marketPrevious = null;
+			this._data.marketPrevious2 = null;
 
+			this._data.quantityPrevious = null;
+			this._data.quantityPrevious2 = null;
+			
 			this._data.realized = null;
 			this._data.income = null;
 			this._data.basisPrice = null;
@@ -3725,8 +3734,10 @@ module.exports = (() => {
 		data.summaryTotalPrevious = calculateSummaryTotal(previousSummary1, previousSummary2);
 		data.summaryTotalPrevious2 = calculateSummaryTotal(previousSummary2, previousSummary3);
 
-		data.endingPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.value;
-		data.endingPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
+		data.marketPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.value;
+		data.marketPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
+
+		data.quantityPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.open;
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;

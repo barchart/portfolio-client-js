@@ -710,7 +710,7 @@ module.exports = (() => {
 			const item = group._items[0];
 
 			actual.quantity = item.position.snapshot.open;
-			actual.quantityPrevious = item.quantityPrevious;
+			actual.quantityPrevious = item.data.quantityPrevious;
 			
 			actual.basisPrice = item.data.basisPrice;
 
