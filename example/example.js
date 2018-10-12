@@ -290,6 +290,14 @@ module.exports = function () {
 					return x.format();
 				}).withVariableParameter('page', 'page', 'page', true).withVariableParameter('sequence', 'sequence', 'sequence', true).withVariableParameter('count', 'count', 'count', true).withVariableParameter('descending', 'descending', 'descending', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
+			_this._downloadBrokerageReportEndpoint = EndpointBuilder.for('download-brokerage-report', 'download brokerage report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+				pb.withLiteralParameter('reports', 'reports').withLiteralParameter('pdf', 'pdf').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('brokerage', 'brokerage').withLiteralParameter('frames', 'frames').withVariableParameter('frame', 'frame', 'frame', false, function (x) {
+					return x.code;
+				}).withLiteralParameter('date', 'date').withVariableParameter('start', 'start', 'start', false, function (x) {
+					return x.format();
+				});
+			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 			return _this;
 		}
 
@@ -575,13 +583,13 @@ module.exports = function () {
 					assert.argumentIsOptional(periods, 'periods', Number);
 					assert.argumentIsOptional(start, 'start', Day);
 
-					var query = {
+					var payload = {
 						portfolio: portfolio || '*',
 						position: position || '*'
 					};
 
 					if (frames) {
-						query.frames = frames.map(function (frame) {
+						payload.frames = frames.map(function (frame) {
 							if (is.string(frame)) {
 								return Enum.fromCode(PositionSummaryFrame, frame);
 							} else {
@@ -591,7 +599,7 @@ module.exports = function () {
 					}
 
 					if (periods) {
-						query.periods = periods;
+						payload.periods = periods;
 					}
 
 					if (start) {
@@ -603,10 +611,10 @@ module.exports = function () {
 							s = start;
 						}
 
-						query.start = s;
+						payload.start = s;
 					}
 
-					return Gateway.invoke(_this11._readPositionSummariesEndpoint, query);
+					return Gateway.invoke(_this11._readPositionSummariesEndpoint, payload);
 				});
 			}
 
@@ -626,12 +634,12 @@ module.exports = function () {
 				return Promise.resolve().then(function () {
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 
-					var query = {};
+					var payload = {};
 
-					query.portfolio = portfolio;
-					query.frames = frames;
+					payload.portfolio = portfolio;
+					payload.frames = frames;
 
-					return Gateway.invoke(_this12._readPositionSummaryDefinitionEndpoint, query);
+					return Gateway.invoke(_this12._readPositionSummaryDefinitionEndpoint, payload);
 				});
 			}
 
@@ -708,11 +716,11 @@ module.exports = function () {
 					assert.argumentIsRequired(portfolio, 'portfolio', Object);
 					assert.argumentIsArray(transactions, 'transactions', Object);
 
-					var batchData = {};
+					var payload = {};
 
-					batchData.portfolio = portfolio.portfolio;
-					batchData.transactionTypes = [];
-					batchData.transactionItems = [];
+					payload.portfolio = portfolio.portfolio;
+					payload.transactionTypes = [];
+					payload.transactionItems = [];
 
 					transactions.forEach(function (transaction) {
 						transaction.portfolio = portfolio.portfolio;
@@ -724,11 +732,11 @@ module.exports = function () {
 						var code = getTransactionTypeCode(transaction);
 						var schema = getTransactionSchema(transaction);
 
-						batchData.transactionTypes.push(code);
-						batchData.transactionItems.push(JSON.stringify(schema.schema.format(transaction)));
+						payload.transactionTypes.push(code);
+						payload.transactionItems.push(JSON.stringify(schema.schema.format(transaction)));
 					});
 
-					return Gateway.invoke(_this15._batchTransactionEndpoint, batchData);
+					return Gateway.invoke(_this15._batchTransactionEndpoint, payload);
 				});
 			}
 
@@ -875,6 +883,19 @@ module.exports = function () {
 					return Gateway.invoke(_this19._readTransactionsReportEndpoint, payload);
 				});
 			}
+
+			/**
+    * Reads a single page of formatted transactions.
+    * 
+    * @public
+    * @param {String} portfolio
+    * @param {String} position
+    * @param {Number=} sequence
+    * @param {Number=} count
+    * @param {Boolean=} descending
+    * @returns {Promise<Object[]>}
+    */
+
 		}, {
 			key: 'readTransactionsFormattedPage',
 			value: function readTransactionsFormattedPage(portfolio, position, sequence, count, descending) {
@@ -907,6 +928,36 @@ module.exports = function () {
 					payload.descending = is.boolean(descending) && descending;
 
 					return Gateway.invoke(_this20._readTransactionsReportEndpoint, payload);
+				});
+			}
+
+			/**
+    * @public
+    * @param {String=} portfolio
+    * @param {PositionSummaryFrame} frame
+    * @param {Day} start
+    * @returns {Promise}
+    */
+
+		}, {
+			key: 'downloadBrokerageReport',
+			value: function downloadBrokerageReport(portfolio, frame, start) {
+				var _this21 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this21);
+
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+					assert.argumentIsRequired(frame, 'frame', String);
+					assert.argumentIsRequired(start, 'start', Day, 'Day');
+
+					var payload = {};
+
+					payload.portfolio = portfolio;
+					payload.frame = frame;
+					payload.start = start;
+
+					return Gateway.invoke(_this21._downloadBrokerageReportEndpoint, payload);
 				});
 			}
 
@@ -1505,7 +1556,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.28'
+		version: '1.2.29'
 	};
 }();
 
