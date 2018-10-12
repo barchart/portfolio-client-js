@@ -1466,19 +1466,21 @@ module.exports = (() => {
 	 * @param {Array.<Object>} portfolios - The portfolios.
 	 * @param {Array.<Object>} positions - The positions (for all of the portfolios).
 	 * @param {Array.<Object>} summaries - The positions summaries (for all of the positions).
-	 * @param {PositionSummaryFrame=} - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
+	 * @param {PositionSummaryFrame=} reportFrame - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 */
 	class PositionContainer {
-		constructor(definitions, portfolios, positions, summaries, frame) {
+		constructor(definitions, portfolios, positions, summaries, reportFrame) {
 			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
 			assert.argumentIsArray(summaries, 'summaries');
-			assert.argumentIsOptional(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
+			assert.argumentIsOptional(reportFrame, 'reportFrame', PositionSummaryFrame, 'PositionSummaryFrame');
 
 			this._definitions = definitions;
 
 			this._groupBindings = { };
+
+			this._reporting = reportFrame instanceof PositionSummaryFrame;
 
 			this._positionSymbolAddedEvent = new Event(this);
 			this._positionSymbolRemovedEvent = new Event(this);
@@ -1489,10 +1491,10 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._currentSummaryFrame = frame || PositionSummaryFrame.YTD;
+			this._currentSummaryFrame = reportFrame || PositionSummaryFrame.YTD;
 			this._currentSummaryRange = array.last(this._currentSummaryFrame.getRecentRanges(0));
 
-			this._previousSummaryFrame = frame || PositionSummaryFrame.YEARLY;
+			this._previousSummaryFrame = reportFrame || PositionSummaryFrame.YEARLY;
 			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(3);
 
 			if (this._currentSummaryFrame === this._previousSummaryFrame) {
@@ -2366,7 +2368,7 @@ module.exports = (() => {
 			const currentSummary = this._summariesCurrent[ position.position ] || null;
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
-			returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries);
+			returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting);
 		} else {
 			returnRef = null;
 		}
@@ -3360,9 +3362,10 @@ module.exports = (() => {
 	 * @param {Object} position
 	 * @param {Object} currentSummary
 	 * @param {Array.<Object>} previousSummaries
+	 * @param {Boolean} reporting
 	 */
 	class PositionItem extends Disposable {
-		constructor(portfolio, position, currentSummary, previousSummaries) {
+		constructor(portfolio, position, currentSummary, previousSummaries, reporting) {
 			super();
 
 			this._portfolio = portfolio;
@@ -3375,6 +3378,8 @@ module.exports = (() => {
 
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];
+
+			this._reporting = reporting;
 
 			this._data = { };
 
@@ -3704,7 +3709,7 @@ module.exports = (() => {
 
 	function calculateStaticData(item) {
 		const position = item.position;
-		const snapshot = item.position.snapshot;
+		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
@@ -3748,7 +3753,7 @@ module.exports = (() => {
 
 	function calculatePriceData(item, price) {
 		const position = item.position;
-		const snapshot = item.position.snapshot;
+		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
@@ -3898,6 +3903,28 @@ module.exports = (() => {
 		assert.argumentIsRequired(position, 'position');
 
 		return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
+	}
+
+	function getSnapshot(position, currentSummary, reporting) {
+		let snapshot;
+
+		if (reporting) {
+			snapshot = { };
+
+			snapshot.date = currentSummary.end.date;
+			snapshot.open = currentSummary.end.open;
+			snapshot.direction = currentSummary.end.direction;
+			snapshot.buys = currentSummary.period.buys;
+			snapshot.sells = currentSummary.period.sells;
+			snapshot.gain = currentSummary.period.realized;
+			snapshot.basis = currentSummary.end.basis;
+			snapshot.income = currentSummary.period.income;
+			snapshot.value = currentSummary.end.value;
+		} else {
+			snapshot = position.snapshot;
+		}
+
+		return snapshot;
 	}
 
 	return PositionItem;
