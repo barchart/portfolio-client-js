@@ -20,9 +20,10 @@ module.exports = (() => {
 	 * @param {Object} position
 	 * @param {Object} currentSummary
 	 * @param {Array.<Object>} previousSummaries
+	 * @param {Boolean} reporting
 	 */
 	class PositionItem extends Disposable {
-		constructor(portfolio, position, currentSummary, previousSummaries) {
+		constructor(portfolio, position, currentSummary, previousSummaries, reporting) {
 			super();
 
 			this._portfolio = portfolio;
@@ -35,6 +36,8 @@ module.exports = (() => {
 
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];
+
+			this._reporting = reporting;
 
 			this._data = { };
 
@@ -364,7 +367,7 @@ module.exports = (() => {
 
 	function calculateStaticData(item) {
 		const position = item.position;
-		const snapshot = item.position.snapshot;
+		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
@@ -408,7 +411,7 @@ module.exports = (() => {
 
 	function calculatePriceData(item, price) {
 		const position = item.position;
-		const snapshot = item.position.snapshot;
+		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
@@ -558,6 +561,28 @@ module.exports = (() => {
 		assert.argumentIsRequired(position, 'position');
 
 		return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
+	}
+
+	function getSnapshot(position, currentSummary, reporting) {
+		let snapshot;
+
+		if (reporting) {
+			snapshot = { };
+
+			snapshot.date = currentSummary.end.date;
+			snapshot.open = currentSummary.end.open;
+			snapshot.direction = currentSummary.end.direction;
+			snapshot.buys = currentSummary.period.buys;
+			snapshot.sells = currentSummary.period.sells;
+			snapshot.gain = currentSummary.period.realized;
+			snapshot.basis = currentSummary.end.basis;
+			snapshot.income = currentSummary.period.income;
+			snapshot.value = currentSummary.end.value;
+		} else {
+			snapshot = position.snapshot;
+		}
+
+		return snapshot;
 	}
 
 	return PositionItem;
