@@ -8,7 +8,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * An enumeration used to define timeframes for position summaries.
+	 * An enumeration used to define time frames for position summaries.
 	 *
 	 * @public
 	 * @extends {Enum}
