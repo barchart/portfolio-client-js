@@ -677,7 +677,7 @@ module.exports = (() => {
 	}
 
 	function getYearlyRangeDescription(start, end) {
-		return end.year.toString();
+		return `Year ended ${end.year.toString()}`;
 	}
 
 	function getQuarterlyRangeDescription(start, end) {
@@ -4216,6 +4216,7 @@ module.exports = (() => {
 	 * @public
 	 * @param {String} name
 	 * @param {Array.<PositionLevelDefinition>} definitions
+	 * @oaram {Array.<String>=} exclusionDependencies
 	 */
 	class PositionTreeDefinitions {
 		constructor(name, definitions, exclusionDependencies) {
