@@ -948,7 +948,7 @@ module.exports = function () {
 					checkStart.call(_this21);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
-					assert.argumentIsRequired(frame, 'frame', String);
+					assert.argumentIsRequired(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
 					assert.argumentIsRequired(start, 'start', Day, 'Day');
 
 					var payload = {};
@@ -1556,7 +1556,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.29'
+		version: '1.2.30'
 	};
 }();
 
