@@ -1467,14 +1467,19 @@ module.exports = (() => {
 	 * @param {Array.<Object>} positions - The positions (for all of the portfolios).
 	 * @param {Array.<Object>} summaries - The positions summaries (for all of the positions).
 	 * @param {PositionSummaryFrame=} reportFrame - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
+	 * @param {Day=} reportDate - The end date for the report frame.
 	 */
 	class PositionContainer {
-		constructor(definitions, portfolios, positions, summaries, reportFrame) {
+		constructor(definitions, portfolios, positions, summaries, reportFrame, reportDate) {
 			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
 			assert.argumentIsArray(summaries, 'summaries');
 			assert.argumentIsOptional(reportFrame, 'reportFrame', PositionSummaryFrame, 'PositionSummaryFrame');
+
+			if (reportFrame) {
+				assert.argumentIsRequired(reportDate, 'reportDate', Day, 'Day');
+			}
 
 			this._definitions = definitions;
 
@@ -1491,15 +1496,21 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._currentSummaryFrame = reportFrame || PositionSummaryFrame.YTD;
-			this._currentSummaryRange = array.last(this._currentSummaryFrame.getRecentRanges(0));
+			if (reportFrame) {
+				this._currentSummaryFrame = reportFrame;
+				this._currentSummaryRange = array.last(this._currentSummaryFrame.getPriorRanges(reportDate, 0));
 
-			this._previousSummaryFrame = reportFrame || PositionSummaryFrame.YEARLY;
-			this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(3);
+				this._previousSummaryFrame = reportFrame;
+				this._previousSummaryRanges = this._currentSummaryFrame.getPriorRanges(reportDate, 3);
 
-			if (this._currentSummaryFrame === this._previousSummaryFrame) {
 				this._previousSummaryRanges.pop();
 			} else {
+				this._currentSummaryFrame = PositionSummaryFrame.YTD;
+				this._currentSummaryRange = array.first(this._currentSummaryFrame.getRecentRanges(0));
+
+				this._previousSummaryFrame = PositionSummaryFrame.YEARLY;
+				this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(3);
+
 				this._previousSummaryRanges.shift();
 			}
 
