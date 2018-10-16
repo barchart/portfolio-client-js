@@ -292,7 +292,7 @@ module.exports = function () {
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._downloadBrokerageReportEndpoint = EndpointBuilder.for('download-brokerage-report', 'download brokerage report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('reports', 'reports').withLiteralParameter('pdf', 'pdf').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('brokerage', 'brokerage').withLiteralParameter('frames', 'frames').withVariableParameter('frame', 'frame', 'frame', false, function (x) {
+				pb.withLiteralParameter('reports', 'reports').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('frames', 'frames').withVariableParameter('frame', 'frame', 'frame', false, function (x) {
 					return x.code;
 				}).withLiteralParameter('date', 'date').withVariableParameter('start', 'start', 'start', false, function (x) {
 					return x.format();
@@ -1556,7 +1556,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.30'
+		version: '1.2.31'
 	};
 }();
 
