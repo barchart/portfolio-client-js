@@ -282,7 +282,7 @@ module.exports = function () {
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readBrokerageReportAvailabilityEndpoint = EndpointBuilder.for('read-brokerage-report-availability', 'read brokerage report availability').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withLiteralParameter('ranges', 'ranges');
+				pb.withLiteralParameter('reports', 'reports').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('availability', 'availability');
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('frames', 'frames', 'frames', true, function (frames) {
 					return frames.map(function (f) {
@@ -1554,7 +1554,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.36'
+		version: '1.2.37'
 	};
 }();
 
