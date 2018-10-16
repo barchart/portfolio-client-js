@@ -136,9 +136,9 @@ var assert = require('@barchart/common-js/lang/assert'),
 
 var TransactionType = require('@barchart/portfolio-api-common/lib/data/TransactionType');
 
-var PortfolioSchema = require('@barchart/portfolio-api-common/lib/serialization/PortfolioSchema'),
+var BrokerageReportAvailabilitySchema = require('@barchart/portfolio-api-common/lib/serialization/reports/BrokerageReportAvailabilitySchema'),
+    PortfolioSchema = require('@barchart/portfolio-api-common/lib/serialization/PortfolioSchema'),
     PositionSummarySchema = require('@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema'),
-    PositionSummaryDefinitionSchema = require('@barchart/portfolio-api-common/lib/serialization/PositionSummaryDefinitionSchema'),
     PositionSchema = require('@barchart/portfolio-api-common/lib/serialization/PositionSchema'),
     TransactionSchema = require('@barchart/portfolio-api-common/lib/serialization/TransactionSchema');
 
@@ -235,16 +235,6 @@ module.exports = function () {
 				});
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
-			_this._readPositionSummaryDefinitionEndpoint = EndpointBuilder.for('read-position-summary-definitions', 'read position summary definitions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withLiteralParameter('ranges', 'ranges');
-			}).withQueryBuilder(function (qb) {
-				qb.withVariableParameter('frames', 'frames', 'frames', true, function (frames) {
-					return frames.map(function (f) {
-						return f.code;
-					}).join();
-				});
-			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDefinitionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
-
 			_this._readTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
 			}).withQueryBuilder(function (qb) {
@@ -290,6 +280,16 @@ module.exports = function () {
 					return x.format();
 				}).withVariableParameter('page', 'page', 'page', true).withVariableParameter('sequence', 'sequence', 'sequence', true).withVariableParameter('count', 'count', 'count', true).withVariableParameter('descending', 'descending', 'descending', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
+			_this._readBrokerageReportAvailabilityEndpoint = EndpointBuilder.for('read-brokerage-report-availability', 'read brokerage report availability').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withLiteralParameter('ranges', 'ranges');
+			}).withQueryBuilder(function (qb) {
+				qb.withVariableParameter('frames', 'frames', 'frames', true, function (frames) {
+					return frames.map(function (f) {
+						return f.code;
+					}).join();
+				});
+			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForBrokerageReportAvailabilityDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._downloadBrokerageReportEndpoint = EndpointBuilder.for('download-brokerage-report', 'download brokerage report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('reports', 'reports').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('frames', 'frames').withVariableParameter('frame', 'frame', 'frame', false, function (x) {
@@ -619,31 +619,6 @@ module.exports = function () {
 			}
 
 			/**
-    * Returns all position summary definitions for a portfolio.
-    *
-    * @public
-    * @param {String} portfolio
-    * @param {Array.<PositionSummaryFrame>} frames
-    */
-
-		}, {
-			key: 'readPositionSummaryDefinitions',
-			value: function readPositionSummaryDefinitions(portfolio, frames) {
-				var _this12 = this;
-
-				return Promise.resolve().then(function () {
-					assert.argumentIsRequired(portfolio, 'portfolio', String);
-
-					var payload = {};
-
-					payload.portfolio = portfolio;
-					payload.frames = frames;
-
-					return Gateway.invoke(_this12._readPositionSummaryDefinitionEndpoint, payload);
-				});
-			}
-
-			/**
     * Deletes a position.
     *
     * @public
@@ -655,15 +630,15 @@ module.exports = function () {
 		}, {
 			key: 'deletePosition',
 			value: function deletePosition(portfolio, position) {
-				var _this13 = this;
+				var _this12 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this13);
+					checkStart.call(_this12);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
 
-					return Gateway.invoke(_this13._deletePositionEndpoint, { portfolio: portfolio, position: position });
+					return Gateway.invoke(_this12._deletePositionEndpoint, { portfolio: portfolio, position: position });
 				});
 			}
 
@@ -678,10 +653,10 @@ module.exports = function () {
 		}, {
 			key: 'createTransaction',
 			value: function createTransaction(transaction) {
-				var _this14 = this;
+				var _this13 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this14);
+					checkStart.call(_this13);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
@@ -693,7 +668,7 @@ module.exports = function () {
 
 					var schema = getTransactionSchema(transaction);
 
-					return Gateway.invoke(_this14._createTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this13._createTransactionEndpoint, schema.schema.format(transaction));
 				});
 			}
 
@@ -708,10 +683,10 @@ module.exports = function () {
 		}, {
 			key: 'batchTransactions',
 			value: function batchTransactions(portfolio, transactions) {
-				var _this15 = this;
+				var _this14 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this15);
+					checkStart.call(_this14);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', Object);
 					assert.argumentIsArray(transactions, 'transactions', Object);
@@ -736,7 +711,7 @@ module.exports = function () {
 						payload.transactionItems.push(JSON.stringify(schema.schema.format(transaction)));
 					});
 
-					return Gateway.invoke(_this15._batchTransactionEndpoint, payload);
+					return Gateway.invoke(_this14._batchTransactionEndpoint, payload);
 				});
 			}
 
@@ -751,10 +726,10 @@ module.exports = function () {
 		}, {
 			key: 'editTransaction',
 			value: function editTransaction(transaction) {
-				var _this16 = this;
+				var _this15 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this16);
+					checkStart.call(_this15);
 
 					assert.argumentIsRequired(transaction, 'transaction', Object);
 					assert.argumentIsRequired(transaction.portfolio, 'transaction.portfolio', String);
@@ -763,7 +738,7 @@ module.exports = function () {
 
 					var schema = getTransactionSchema(transaction);
 
-					return Gateway.invoke(_this16._editTransactionEndpoint, schema.schema.format(transaction));
+					return Gateway.invoke(_this15._editTransactionEndpoint, schema.schema.format(transaction));
 				});
 			}
 
@@ -783,10 +758,10 @@ module.exports = function () {
 		}, {
 			key: 'deleteTransaction',
 			value: function deleteTransaction(portfolio, position, sequence, force, echoStart, echoEnd) {
-				var _this17 = this;
+				var _this16 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this17);
+					checkStart.call(_this16);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
@@ -810,7 +785,7 @@ module.exports = function () {
 						payload.echoEnd = echoEnd;
 					}
 
-					return Gateway.invoke(_this17._deleteTransactionEndpoint, payload);
+					return Gateway.invoke(_this16._deleteTransactionEndpoint, payload);
 				});
 			}
 
@@ -826,15 +801,15 @@ module.exports = function () {
 		}, {
 			key: 'readTransactions',
 			value: function readTransactions(portfolio, position) {
-				var _this18 = this;
+				var _this17 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this18);
+					checkStart.call(_this17);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
 
-					return Gateway.invoke(_this18._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
+					return Gateway.invoke(_this17._readTransactionsEndpoint, { portfolio: portfolio, position: position || '*' });
 				});
 			}
 
@@ -854,10 +829,10 @@ module.exports = function () {
 		}, {
 			key: 'readTransactionsFormatted',
 			value: function readTransactionsFormatted(portfolio, position, startDay, endDay, descending) {
-				var _this19 = this;
+				var _this18 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this19);
+					checkStart.call(_this18);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsOptional(position, 'position', String);
@@ -880,7 +855,7 @@ module.exports = function () {
 
 					payload.descending = is.boolean(descending) && descending;
 
-					return Gateway.invoke(_this19._readTransactionsReportEndpoint, payload);
+					return Gateway.invoke(_this18._readTransactionsReportEndpoint, payload);
 				});
 			}
 
@@ -899,10 +874,10 @@ module.exports = function () {
 		}, {
 			key: 'readTransactionsFormattedPage',
 			value: function readTransactionsFormattedPage(portfolio, position, sequence, count, descending) {
-				var _this20 = this;
+				var _this19 = this;
 
 				return Promise.resolve().then(function () {
-					checkStart.call(_this20);
+					checkStart.call(_this19);
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(position, 'position', String);
@@ -927,7 +902,30 @@ module.exports = function () {
 
 					payload.descending = is.boolean(descending) && descending;
 
-					return Gateway.invoke(_this20._readTransactionsReportEndpoint, payload);
+					return Gateway.invoke(_this19._readTransactionsReportEndpoint, payload);
+				});
+			}
+
+			/**
+    * Returns all position summary definitions for a portfolio.
+    *
+    * @public
+    * @param {String} portfolio
+    */
+
+		}, {
+			key: 'readBrokerageReportAvailability',
+			value: function readBrokerageReportAvailability(portfolio) {
+				var _this20 = this;
+
+				return Promise.resolve().then(function () {
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+
+					var payload = {};
+
+					payload.portfolio = portfolio;
+
+					return Gateway.invoke(_this20._readBrokerageReportAvailabilityEndpoint, payload);
 				});
 			}
 
@@ -1130,11 +1128,11 @@ module.exports = function () {
 		}
 	});
 
-	var responseInterceptorForPositionSummaryDefinitionDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
+	var responseInterceptorForBrokerageReportAvailabilityDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			return JSON.parse(response.data, PositionSummaryDefinitionSchema.COMPLETE.schema.getReviver());
+			return JSON.parse(response.data, BrokerageReportAvailabilitySchema.COMPLETE.schema.getReviver());
 		} catch (e) {
-			console.log('Error deserializing position summary definition', e);
+			console.log('Error deserializing brokerage report availability definition', e);
 		}
 	});
 
@@ -1205,7 +1203,7 @@ module.exports = function () {
 	return PortfolioGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/lang/promise":42,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":53,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":57,"@barchart/portfolio-api-common/lib/serialization/PositionSummaryDefinitionSchema":58,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":59,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":60}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/lang/promise":42,"@barchart/portfolio-api-common/lib/data/PositionSummaryFrame":53,"@barchart/portfolio-api-common/lib/data/TransactionType":54,"@barchart/portfolio-api-common/lib/serialization/PortfolioSchema":56,"@barchart/portfolio-api-common/lib/serialization/PositionSchema":57,"@barchart/portfolio-api-common/lib/serialization/PositionSummarySchema":58,"@barchart/portfolio-api-common/lib/serialization/TransactionSchema":59,"@barchart/portfolio-api-common/lib/serialization/reports/BrokerageReportAvailabilitySchema":60}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1556,7 +1554,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.32'
+		version: '1.2.33'
 	};
 }();
 
@@ -9107,7 +9105,7 @@ module.exports = function () {
    * the schema.
    *
    * @public
-   * @param {data} data
+   * @param {Object} data
    * @returns {Object}
    */
 
@@ -9189,7 +9187,13 @@ module.exports = function () {
 				};
 
 				return function (key, value) {
-					return advance(key).reviver(value);
+					var item = advance(key);
+
+					if (key === '') {
+						return value;
+					} else {
+						return item.reviver(value);
+					}
 				};
 			}
 
@@ -10305,7 +10309,7 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-	 * An enumeration used to define timeframes for position summaries.
+	 * An enumeration used to define time frames for position summaries.
 	 *
 	 * @public
 	 * @extends {Enum}
@@ -10391,9 +10395,29 @@ module.exports = (() => {
 		 * @return {Array.<PositionSummaryRange>}
 		 */
 		getRangesFromDate(date) {
+			assert.argumentIsRequired(date, 'date', Day, 'Day');
+
 			const transaction = { date: date, snapshot: { open: Decimal.ONE } };
 
 			return this.getRanges([ transaction ]);
+		}
+
+		/**
+		 * Returns the range immediately prior to the range containing the
+		 * date supplied.
+		 *
+		 * @public
+		 * @param {Day} date
+		 * @param {Number} periods
+		 */
+		getPriorRanges(date, periods) {
+			assert.argumentIsRequired(date, 'date', Day, 'Day');
+			assert.argumentIsRequired(periods, 'periods', Number, 'Number');
+
+			const transactionOne = { date: this.getStartDate((periods - 1), date), snapshot: { open: Decimal.ONE } };
+			const transactionTwo = { date: date, snapshot: { open: Decimal.ZERO } };
+
+			return this._rangeCalculator([ transactionOne, transactionTwo ]);
 		}
 
 		/**
@@ -10401,12 +10425,14 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Number} periods
+		 * @param {Day=} start
 		 * @returns {Day}
 		 */
-		getStartDate(periods) {
+		getStartDate(periods, start) {
 			assert.argumentIsRequired(periods, 'periods', Number);
+			assert.argumentIsOptional(start, 'start', Day, 'Day');
 
-			return this._startDateCalculator(periods);
+			return this._startDateCalculator(periods, start);
 		}
 
 		/**
@@ -10539,29 +10565,29 @@ module.exports = (() => {
 		return ranges;
 	}
 
-	function getYearlyStartDate(periods) {
-		const today = Day.getToday();
+	function getYearlyStartDate(periods, date) {
+		const today = date || Day.getToday();
 
-		return Day.getToday()
+		return today
 			.subtractMonths(today.month - 1)
 			.subtractDays(today.day)
 			.subtractYears(periods);
 	}
 
-	function getQuarterlyStartDate(periods) {
+	function getQuarterlyStartDate(periods, date) {
 		return null;
 	}
 
-	function getMonthlyStartDate(periods) {
+	function getMonthlyStartDate(periods, date) {
 		return null;
 	}
 
-	function getYearToDateStartDate(periods) {
+	function getYearToDateStartDate(periods, date) {
 		return null;
 	}
 
 	function getYearlyRangeDescription(start, end) {
-		return end.year.toString();
+		return `Year ended ${end.year.toString()}`;
 	}
 
 	function getQuarterlyRangeDescription(start, end) {
@@ -11401,66 +11427,6 @@ const DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
-
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * The schemas which can be used to represent position summary objects.
-	 *
-	 * @public
-	 * @extends {Enum}
-	 */
-	class PositionSummaryDefinitionSchema extends Enum {
-		constructor(schema) {
-			super(schema.name, schema.name);
-
-			this._schema = schema;
-		}
-
-		/**
-		 * The actual {@link Schema}.
-		 *
-		 * @public
-		 * @returns {Schema}
-		 */
-		get schema() {
-			return this._schema;
-		}
-
-		/**
-		 * The complete position summary definition schema.
-		 *
-		 * @static
-		 * @public
-		 * @returns {PositionSummaryDefinitionSchema}
-		 */
-		static get COMPLETE() {
-			return complete;
-		}
-
-		toString() {
-			return '[PositionSummaryDefinitionSchema]';
-		}
-	}
-
-	const complete = new PositionSummaryDefinitionSchema(SchemaBuilder.withName('complete')
-		.withField('start', DataType.DAY)
-		.withField('end', DataType.DAY)
-		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
-		.schema
-	);
-
-	return PositionSummaryDefinitionSchema;
-})();
-
-},{"./../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
-const DataType = require('@barchart/common-js/serialization/json/DataType'),
-	Enum = require('@barchart/common-js/lang/Enum'),
-	Schema = require('@barchart/common-js/serialization/json/Schema'),
-	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
-
 const PositionDirection = require('./../data/PositionDirection'),
 	PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
@@ -11572,7 +11538,7 @@ module.exports = (() => {
 	return PositionSummarySchema;
 })();
 
-},{"./../data/PositionDirection":52,"./../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],60:[function(require,module,exports){
+},{"./../data/PositionDirection":52,"./../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],59:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -11928,7 +11894,67 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/TransactionType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],61:[function(require,module,exports){
+},{"./../data/InstrumentType":51,"./../data/PositionDirection":52,"./../data/TransactionType":54,"@barchart/common-js/lang/Currency":28,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/is":40,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],60:[function(require,module,exports){
+const DataType = require('@barchart/common-js/serialization/json/DataType'),
+	Enum = require('@barchart/common-js/lang/Enum'),
+	Schema = require('@barchart/common-js/serialization/json/Schema'),
+	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
+
+const PositionSummaryFrame = require('./../../data/PositionSummaryFrame');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * Schema used to represent availability of a brokerage report.
+	 *
+	 * @public
+	 * @extends {Enum}
+	 */
+	class BrokerageReportAvailabilitySchema extends Enum {
+		constructor(schema) {
+			super(schema.name, schema.name);
+
+			this._schema = schema;
+		}
+
+		/**
+		 * The actual {@link Schema}.
+		 *
+		 * @public
+		 * @returns {Schema}
+		 */
+		get schema() {
+			return this._schema;
+		}
+
+		/**
+		 * The complete position summary definition schema.
+		 *
+		 * @static
+		 * @public
+		 * @returns {BrokerageReportAvailabilitySchema}
+		 */
+		static get COMPLETE() {
+			return complete;
+		}
+
+		toString() {
+			return '[BrokerageReportAvailabilitySchema]';
+		}
+	}
+
+	const complete = new BrokerageReportAvailabilitySchema(SchemaBuilder.withName('complete')
+		.withField('start', DataType.DAY)
+		.withField('end', DataType.DAY)
+		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
+		.schema
+	);
+
+	return BrokerageReportAvailabilitySchema;
+})();
+
+},{"./../../data/PositionSummaryFrame":53,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/Schema":47,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],61:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
