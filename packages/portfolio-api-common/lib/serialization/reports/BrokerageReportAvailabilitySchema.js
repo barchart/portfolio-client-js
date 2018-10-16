@@ -3,7 +3,7 @@ const DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
-const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+const PositionSummaryFrame = require('./../../data/PositionSummaryFrame');
 
 module.exports = (() => {
 	'use strict';
