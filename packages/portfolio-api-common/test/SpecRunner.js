@@ -677,7 +677,7 @@ module.exports = (() => {
 	}
 
 	function getYearlyRangeDescription(start, end) {
-		return `Year ended ${end.year.format()}`;
+		return `Year ended ${end.format()}`;
 	}
 
 	function getQuarterlyRangeDescription(start, end) {
