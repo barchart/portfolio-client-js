@@ -935,13 +935,13 @@ module.exports = function () {
     * @public
     * @param {String=} portfolio
     * @param {PositionSummaryFrame} frame
-    * @param {Day} start
+    * @param {Day} end
     * @returns {Promise}
     */
 
 		}, {
 			key: 'downloadBrokerageReport',
-			value: function downloadBrokerageReport(portfolio, frame, start) {
+			value: function downloadBrokerageReport(portfolio, frame, end) {
 				var _this21 = this;
 
 				return Promise.resolve().then(function () {
@@ -949,13 +949,13 @@ module.exports = function () {
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
-					assert.argumentIsRequired(start, 'start', Day, 'Day');
+					assert.argumentIsRequired(end, 'end', Day, 'Day');
 
 					var payload = {};
 
 					payload.portfolio = portfolio;
 					payload.frame = frame;
-					payload.start = start;
+					payload.start = end;
 
 					return Gateway.invoke(_this21._downloadBrokerageReportEndpoint, payload);
 				});
@@ -1556,7 +1556,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.31'
+		version: '1.2.32'
 	};
 }();
 
