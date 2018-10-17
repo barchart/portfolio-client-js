@@ -71,8 +71,8 @@ module.exports = (() => {
 			this._data.marketPrevious = null;
 			this._data.marketPrevious2 = null;
 
+			this._data.quantity = null;
 			this._data.quantityPrevious = null;
-			this._data.quantityPrevious2 = null;
 			
 			this._data.realized = null;
 			this._data.income = null;
@@ -385,6 +385,7 @@ module.exports = (() => {
 
 		const data = item._data;
 
+		data.quantity = snapshot.open;
 		data.previousPrice = position.previous || null;
 
 		let basis;

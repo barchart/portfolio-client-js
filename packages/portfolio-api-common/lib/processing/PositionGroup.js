@@ -734,7 +734,7 @@ module.exports = (() => {
 		if (group.single && group._items.length === 1) {
 			const item = group._items[0];
 
-			actual.quantity = item.position.snapshot.open;
+			actual.quantity = item.data.quantity;
 			actual.quantityPrevious = item.data.quantityPrevious;
 			
 			actual.basisPrice = item.data.basisPrice;
