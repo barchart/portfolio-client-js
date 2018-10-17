@@ -78,6 +78,9 @@ module.exports = (() => {
 			this._data.income = null;
 			this._data.basisPrice = null;
 
+			this._data.realizedPeriod = null;
+			this._data.unrealizedPeriod = null;
+
 			this._data.newsExists = false;
 			this._data.fundamental = { };
 			this._data.locked = getIsLocked(position);
@@ -368,7 +371,12 @@ module.exports = (() => {
 	function calculateStaticData(item) {
 		const position = item.position;
 		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
+
 		const previousSummaries = item.previousSummaries;
+
+		const previousSummary1 = getPreviousSummary(previousSummaries, 1);
+		const previousSummary2 = getPreviousSummary(previousSummaries, 2);
+		const previousSummary3 = getPreviousSummary(previousSummaries, 3);
 
 		const data = item._data;
 
@@ -389,18 +397,17 @@ module.exports = (() => {
 
 		data.income = snapshot.income;
 
-		const previousSummary1 = getPreviousSummary(previousSummaries, 1);
-		const previousSummary2 = getPreviousSummary(previousSummaries, 2);
-		const previousSummary3 = getPreviousSummary(previousSummaries, 3);
-
 		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary, previousSummary1);
 		data.summaryTotalPrevious = calculateSummaryTotal(previousSummary1, previousSummary2);
 		data.summaryTotalPrevious2 = calculateSummaryTotal(previousSummary2, previousSummary3);
 
 		data.marketPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.value;
 		data.marketPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
-
 		data.quantityPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.open;
+
+		data.periodRealized = calculateRealizedPeriod(item.currentSummary, previousSummary1);
+		data.periodUnrealized = calculateUnrealizedPeriod(item.currentSummary, previousSummary1);
+		data.periodIncome = calculateIncomePeriod(item.currentSummary, previousSummary1);
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -536,6 +543,48 @@ module.exports = (() => {
 			const period = currentSummary.period;
 
 			returnRef = period.realized.add(period.income).add(period.unrealized).subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculateRealizedPeriod(currentSummary, previousSummary) {
+		let returnRef;
+
+		if (currentSummary) {
+			const period = currentSummary.period;
+
+			returnRef = period.unrealized;
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculateUnrealizedPeriod(currentSummary, previousSummary) {
+		let returnRef;
+
+		if (currentSummary) {
+			const period = currentSummary.period;
+
+			returnRef = period.unrealized.subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculateIncomePeriod(currentSummary, previousSummary) {
+		let returnRef;
+
+		if (currentSummary) {
+			const period = currentSummary.period;
+
+			returnRef = period.income;
 		} else {
 			returnRef = Decimal.ZERO;
 		}

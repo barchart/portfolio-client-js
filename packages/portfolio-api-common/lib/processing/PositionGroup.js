@@ -166,6 +166,14 @@ module.exports = (() => {
 			this._dataFormat.cashTotal = null;
 			this._dataFormat.portfolioType = null;
 
+			this._dataActual.periodRealized = null;
+			this._dataActual.periodUnrealized = null;
+			this._dataActual.periodIncome = null;
+
+			this._dataFormat.periodRealized = null;
+			this._dataFormat.periodUnrealized = null;
+			this._dataFormat.periodIncome = null;
+
 			this._items.forEach((item) => {
 				bindItem.call(this, item);
 			});
@@ -662,6 +670,10 @@ module.exports = (() => {
 			updates.marketPrevious = updates.marketPrevious.add(translate(item, item.data.marketPrevious));
 			updates.marketPrevious2 = updates.marketPrevious2.add(translate(item, item.data.marketPrevious2));
 
+			updates.periodRealized = updates.periodRealized.add(translate(item, item.data.periodRealized));
+			updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
+			updates.periodIncome = updates.periodIncome.add(translate(item, item.data.periodIncome));
+
 			if (item.position.instrument.type === InstrumentType.CASH) {
 				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
 			}
@@ -677,7 +689,10 @@ module.exports = (() => {
 			summaryTotalPrevious2: Decimal.ZERO,
 			marketPrevious: Decimal.ZERO,
 			marketPrevious2: Decimal.ZERO,
-			cashTotal: Decimal.ZERO
+			periodRealized: Decimal.ZERO,
+			periodUnrealized: Decimal.ZERO,
+			periodIncome: Decimal.ZERO,
+			cashTotal: Decimal.ZERO,
 		});
 
 		actual.basis = updates.basis;
