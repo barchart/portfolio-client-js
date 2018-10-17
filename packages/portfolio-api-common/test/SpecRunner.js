@@ -1528,7 +1528,7 @@ module.exports = (() => {
 			}, { });
 
 			this._items = positions.reduce((items, position) => {
-				const item = createPositionItem.call(this, position);
+				const item = createPositionItem.call(this, position, reportFrame ? true : false);
 
 				if (item) {
 					items.push(item);
@@ -1737,7 +1737,7 @@ module.exports = (() => {
 				addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
 			});
 
-			const item = createPositionItem.call(this, position);
+			const item = createPositionItem.call(this, position, false);
 
 			addBarchartSymbol(this._symbols, item);
 			addDisplaySymbol(this._symbolsDisplay, item);
@@ -2383,7 +2383,7 @@ module.exports = (() => {
 		}
 	}
 
-	function createPositionItem(position, currentQuote, previousQuote) {
+	function createPositionItem(position, requireCurrentSummary) {
 		const portfolio = this._portfolios[position.portfolio];
 
 		let returnRef;
@@ -2392,7 +2392,11 @@ module.exports = (() => {
 			const currentSummary = this._summariesCurrent[ position.position ] || null;
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
-			returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting);
+			if (!requireCurrentSummary || currentSummary !== null) {
+				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting);
+			} else {
+				returnRef = null;
+			}
 		} else {
 			returnRef = null;
 		}
@@ -6295,12 +6299,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Converts a string (which matches the output of {@link Day#format} into
-    * a {@link Day} instance.
+    * Clones a {@link Day} instance.
     *
     * @public
     * @static
-    * @param {String} value
+    * @param {Day} value
     * @returns {Day}
     */
 
@@ -6341,6 +6344,24 @@ module.exports = function () {
 				return this._day;
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Day, 'Day');
+
+				return new Day(value.year, value.month, value.day);
+			}
+
+			/**
+    * Converts a string (which matches the output of {@link Day#format} into
+    * a {@link Day} instance.
+    *
+    * @public
+    * @static
+    * @param {String} value
+    * @returns {Day}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				assert.argumentIsRequired(value, 'value', String);
@@ -6657,15 +6678,17 @@ module.exports = function () {
     *
     * @public
     * @param {Boolean=} approximate
+    * @param {Number=} places
     * @returns {Boolean}
     */
 
 		}, {
 			key: 'getIsZero',
-			value: function getIsZero(approximate) {
+			value: function getIsZero(approximate, places) {
 				assert.argumentIsOptional(approximate, 'approximate', Boolean);
+				assert.argumentIsOptional(places, 'places', Number);
 
-				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(20, RoundingMode.NORMAL).getIsZero();
+				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(places || Big.DP, RoundingMode.NORMAL).getIsZero();
 			}
 
 			/**
@@ -6765,6 +6788,43 @@ module.exports = function () {
 			}
 
 			/**
+    * Returns true if the current instance is an integer (i.e. has no decimal
+    * component).
+    *
+    * @public
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsInteger',
+			value: function getIsInteger() {
+				return this.getIsEqual(this.round(0));
+			}
+
+			/**
+    * Returns the number of decimal places used.
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'getDecimalPlaces',
+			value: function getDecimalPlaces() {
+				var matches = this.toFixed().match(/-?\d*\.(\d*)/);
+
+				var returnVal = void 0;
+
+				if (matches === null) {
+					returnVal = 0;
+				} else {
+					returnVal = matches[1].length;
+				}
+
+				return returnVal;
+			}
+
+			/**
     * Emits a floating point value that approximates the value of the current
     * instance.
     *
@@ -6812,10 +6872,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Parses the value emitted by {@link Decimal#toJSON}.
+    * Clones a {@link Decimal} instance.
     *
     * @public
-    * @param {String} value
+    * @static
+    * @param {Decimal} value
     * @returns {Decimal}
     */
 
@@ -6825,6 +6886,22 @@ module.exports = function () {
 				return '[Decimal]';
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Decimal, 'Decimal');
+
+				return new Decimal(value._big);
+			}
+
+			/**
+    * Parses the value emitted by {@link Decimal#toJSON}.
+    *
+    * @public
+    * @param {String} value
+    * @returns {Decimal}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Decimal(value);
@@ -7846,10 +7923,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Parses the value emitted by {@link Timestamp#toJSON}.
+    * Clones a {@link Timestamp} instance.
     *
     * @public
-    * @param {Number} value
+    * @static
+    * @param {Timestamp} value
     * @returns {Timestamp}
     */
 
@@ -7885,6 +7963,22 @@ module.exports = function () {
 				return this._moment;
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
+
+				return new Timestamp(value._timestamp, value._timezone);
+			}
+
+			/**
+    * Parses the value emitted by {@link Timestamp#toJSON}.
+    *
+    * @public
+    * @param {Number} value
+    * @returns {Timestamp}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Timestamp(value);
