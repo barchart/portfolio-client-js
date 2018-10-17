@@ -166,10 +166,14 @@ module.exports = (() => {
 			this._dataFormat.cashTotal = null;
 			this._dataFormat.portfolioType = null;
 
+			this._dataActual.periodPrice = null;
+			this._dataActual.periodPricePrevious = null;
 			this._dataActual.periodRealized = null;
 			this._dataActual.periodUnrealized = null;
 			this._dataActual.periodIncome = null;
 
+			this._dataFormat.periodPrice = null;
+			this._dataFormat.periodPricePrevious = null;
 			this._dataFormat.periodRealized = null;
 			this._dataFormat.periodUnrealized = null;
 			this._dataFormat.periodIncome = null;
@@ -735,10 +739,16 @@ module.exports = (() => {
 			
 			actual.basisPrice = item.data.basisPrice;
 
+			actual.periodPrice = item.periodPrice;
+			actual.periodPricePrevious = item.periodPricePrevious;
+
 			format.quantity = formatDecimal(actual.quantity, 2);
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 			
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
+
+			format.periodPrice = formatCurrency(actual.periodPrice, currency);
+			format.periodPricePrevious = formatCurrency(actual.periodPricePrevious, currency);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
