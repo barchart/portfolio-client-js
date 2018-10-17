@@ -2610,6 +2610,14 @@ module.exports = (() => {
 			this._dataFormat.cashTotal = null;
 			this._dataFormat.portfolioType = null;
 
+			this._dataActual.periodRealized = null;
+			this._dataActual.periodUnrealized = null;
+			this._dataActual.periodIncome = null;
+
+			this._dataFormat.periodRealized = null;
+			this._dataFormat.periodUnrealized = null;
+			this._dataFormat.periodIncome = null;
+
 			this._items.forEach((item) => {
 				bindItem.call(this, item);
 			});
@@ -3106,6 +3114,10 @@ module.exports = (() => {
 			updates.marketPrevious = updates.marketPrevious.add(translate(item, item.data.marketPrevious));
 			updates.marketPrevious2 = updates.marketPrevious2.add(translate(item, item.data.marketPrevious2));
 
+			updates.periodRealized = updates.periodRealized.add(translate(item, item.data.periodRealized));
+			updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
+			updates.periodIncome = updates.periodIncome.add(translate(item, item.data.periodIncome));
+
 			if (item.position.instrument.type === InstrumentType.CASH) {
 				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
 			}
@@ -3121,7 +3133,10 @@ module.exports = (() => {
 			summaryTotalPrevious2: Decimal.ZERO,
 			marketPrevious: Decimal.ZERO,
 			marketPrevious2: Decimal.ZERO,
-			cashTotal: Decimal.ZERO
+			periodRealized: Decimal.ZERO,
+			periodUnrealized: Decimal.ZERO,
+			periodIncome: Decimal.ZERO,
+			cashTotal: Decimal.ZERO,
 		});
 
 		actual.basis = updates.basis;
@@ -3432,6 +3447,9 @@ module.exports = (() => {
 			this._data.income = null;
 			this._data.basisPrice = null;
 
+			this._data.realizedPeriod = null;
+			this._data.unrealizedPeriod = null;
+
 			this._data.newsExists = false;
 			this._data.fundamental = { };
 			this._data.locked = getIsLocked(position);
@@ -3722,7 +3740,12 @@ module.exports = (() => {
 	function calculateStaticData(item) {
 		const position = item.position;
 		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
+
 		const previousSummaries = item.previousSummaries;
+
+		const previousSummary1 = getPreviousSummary(previousSummaries, 1);
+		const previousSummary2 = getPreviousSummary(previousSummaries, 2);
+		const previousSummary3 = getPreviousSummary(previousSummaries, 3);
 
 		const data = item._data;
 
@@ -3743,18 +3766,17 @@ module.exports = (() => {
 
 		data.income = snapshot.income;
 
-		const previousSummary1 = getPreviousSummary(previousSummaries, 1);
-		const previousSummary2 = getPreviousSummary(previousSummaries, 2);
-		const previousSummary3 = getPreviousSummary(previousSummaries, 3);
-
 		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary, previousSummary1);
 		data.summaryTotalPrevious = calculateSummaryTotal(previousSummary1, previousSummary2);
 		data.summaryTotalPrevious2 = calculateSummaryTotal(previousSummary2, previousSummary3);
 
 		data.marketPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.value;
 		data.marketPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
-
 		data.quantityPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.open;
+
+		data.periodRealized = calculateRealizedPeriod(item.currentSummary, previousSummary1);
+		data.periodUnrealized = calculateUnrealizedPeriod(item.currentSummary, previousSummary1);
+		data.periodIncome = calculateIncomePeriod(item.currentSummary, previousSummary1);
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -3890,6 +3912,48 @@ module.exports = (() => {
 			const period = currentSummary.period;
 
 			returnRef = period.realized.add(period.income).add(period.unrealized).subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculateRealizedPeriod(currentSummary, previousSummary) {
+		let returnRef;
+
+		if (currentSummary) {
+			const period = currentSummary.period;
+
+			returnRef = period.unrealized;
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculateUnrealizedPeriod(currentSummary, previousSummary) {
+		let returnRef;
+
+		if (currentSummary) {
+			const period = currentSummary.period;
+
+			returnRef = period.unrealized.subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculateIncomePeriod(currentSummary, previousSummary) {
+		let returnRef;
+
+		if (currentSummary) {
+			const period = currentSummary.period;
+
+			returnRef = period.income;
 		} else {
 			returnRef = Decimal.ZERO;
 		}
@@ -6186,11 +6250,12 @@ module.exports = function () {
 			}
 
 			/**
-    * Clones a {@link Day} instance.
+    * Converts a string (which matches the output of {@link Day#format} into
+    * a {@link Day} instance.
     *
     * @public
     * @static
-    * @param {Day} value
+    * @param {String} value
     * @returns {Day}
     */
 
@@ -6231,24 +6296,6 @@ module.exports = function () {
 				return this._day;
 			}
 		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Day, 'Day');
-
-				return new Day(value.year, value.month, value.day);
-			}
-
-			/**
-    * Converts a string (which matches the output of {@link Day#format} into
-    * a {@link Day} instance.
-    *
-    * @public
-    * @static
-    * @param {String} value
-    * @returns {Day}
-    */
-
-		}, {
 			key: 'parse',
 			value: function parse(value) {
 				assert.argumentIsRequired(value, 'value', String);
@@ -6565,17 +6612,15 @@ module.exports = function () {
     *
     * @public
     * @param {Boolean=} approximate
-    * @param {Number=} places
     * @returns {Boolean}
     */
 
 		}, {
 			key: 'getIsZero',
-			value: function getIsZero(approximate, places) {
+			value: function getIsZero(approximate) {
 				assert.argumentIsOptional(approximate, 'approximate', Boolean);
-				assert.argumentIsOptional(places, 'places', Number);
 
-				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(places || Big.DP, RoundingMode.NORMAL).getIsZero();
+				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(20, RoundingMode.NORMAL).getIsZero();
 			}
 
 			/**
@@ -6675,43 +6720,6 @@ module.exports = function () {
 			}
 
 			/**
-    * Returns true if the current instance is an integer (i.e. has no decimal
-    * component).
-    *
-    * @public
-    * @return {Boolean}
-    */
-
-		}, {
-			key: 'getIsInteger',
-			value: function getIsInteger() {
-				return this.getIsEqual(this.round(0));
-			}
-
-			/**
-    * Returns the number of decimal places used.
-    *
-    * @public
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'getDecimalPlaces',
-			value: function getDecimalPlaces() {
-				var matches = this.toFixed().match(/-?\d*\.(\d*)/);
-
-				var returnVal = void 0;
-
-				if (matches === null) {
-					returnVal = 0;
-				} else {
-					returnVal = matches[1].length;
-				}
-
-				return returnVal;
-			}
-
-			/**
     * Emits a floating point value that approximates the value of the current
     * instance.
     *
@@ -6759,11 +6767,10 @@ module.exports = function () {
 			}
 
 			/**
-    * Clones a {@link Decimal} instance.
+    * Parses the value emitted by {@link Decimal#toJSON}.
     *
     * @public
-    * @static
-    * @param {Decimal} value
+    * @param {String} value
     * @returns {Decimal}
     */
 
@@ -6773,22 +6780,6 @@ module.exports = function () {
 				return '[Decimal]';
 			}
 		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Decimal, 'Decimal');
-
-				return new Decimal(value._big);
-			}
-
-			/**
-    * Parses the value emitted by {@link Decimal#toJSON}.
-    *
-    * @public
-    * @param {String} value
-    * @returns {Decimal}
-    */
-
-		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Decimal(value);
@@ -7810,11 +7801,10 @@ module.exports = function () {
 			}
 
 			/**
-    * Clones a {@link Timestamp} instance.
+    * Parses the value emitted by {@link Timestamp#toJSON}.
     *
     * @public
-    * @static
-    * @param {Timestamp} value
+    * @param {Number} value
     * @returns {Timestamp}
     */
 
@@ -7850,22 +7840,6 @@ module.exports = function () {
 				return this._moment;
 			}
 		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
-
-				return new Timestamp(value._timestamp, value._timezone);
-			}
-
-			/**
-    * Parses the value emitted by {@link Timestamp#toJSON}.
-    *
-    * @public
-    * @param {Number} value
-    * @returns {Timestamp}
-    */
-
-		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Timestamp(value);
