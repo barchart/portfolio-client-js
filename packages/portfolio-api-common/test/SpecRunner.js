@@ -2622,10 +2622,14 @@ module.exports = (() => {
 			this._dataFormat.cashTotal = null;
 			this._dataFormat.portfolioType = null;
 
+			this._dataActual.periodPrice = null;
+			this._dataActual.periodPricePrevious = null;
 			this._dataActual.periodRealized = null;
 			this._dataActual.periodUnrealized = null;
 			this._dataActual.periodIncome = null;
 
+			this._dataFormat.periodPrice = null;
+			this._dataFormat.periodPricePrevious = null;
 			this._dataFormat.periodRealized = null;
 			this._dataFormat.periodUnrealized = null;
 			this._dataFormat.periodIncome = null;
@@ -3191,10 +3195,16 @@ module.exports = (() => {
 			
 			actual.basisPrice = item.data.basisPrice;
 
+			actual.periodPrice = item.data.periodPrice;
+			actual.periodPricePrevious = item.data.periodPricePrevious;
+
 			format.quantity = formatDecimal(actual.quantity, 2);
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
-			
+
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
+
+			format.periodPrice = formatCurrency(actual.periodPrice, currency);
+			format.periodPricePrevious = formatCurrency(actual.periodPricePrevious, currency);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
@@ -3465,8 +3475,12 @@ module.exports = (() => {
 			this._data.income = null;
 			this._data.basisPrice = null;
 
-			this._data.realizedPeriod = null;
-			this._data.unrealizedPeriod = null;
+			this._data.periodRealized = null;
+			this._data.periodUnrealized = null;
+			this._data.periodIncome = null;
+
+			this._data.periodPrice = null;
+			this._data.periodPricePrevious = null;
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
@@ -3757,13 +3771,14 @@ module.exports = (() => {
 
 	function calculateStaticData(item) {
 		const position = item.position;
-		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 
-		const previousSummaries = item.previousSummaries;
+		const currentSummary = item.currentSummary;
 
-		const previousSummary1 = getPreviousSummary(previousSummaries, 1);
-		const previousSummary2 = getPreviousSummary(previousSummaries, 2);
-		const previousSummary3 = getPreviousSummary(previousSummaries, 3);
+		const previousSummary1 = getPreviousSummary(item.previousSummaries, 1);
+		const previousSummary2 = getPreviousSummary(item.previousSummaries, 2);
+		const previousSummary3 = getPreviousSummary(item.previousSummaries, 3);
+
+		const snapshot = getSnapshot(position, currentSummary, item._reporting);
 
 		const data = item._data;
 
@@ -3800,6 +3815,18 @@ module.exports = (() => {
 			data.basisPrice = Decimal.ZERO;
 		} else {
 			data.basisPrice = basis.divide(snapshot.open);
+		}
+
+		if (currentSummary && !currentSummary.end.open.getIsZero()) {
+			data.periodPrice = currentSummary.end.value.divide(currentSummary.end.open);
+		} else {
+			data.periodPrice = null;
+		}
+
+		if (previousSummary1 && !previousSummary1.end.open.getIsZero()) {
+			data.periodPricePrevious = previousSummary1.end.value.divide(previousSummary1.end.open);
+		} else {
+			data.periodPricePrevious = null;
 		}
 	}
 

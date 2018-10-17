@@ -420,16 +420,16 @@ module.exports = (() => {
 			data.basisPrice = basis.divide(snapshot.open);
 		}
 
-		if (currentSummary) {
+		if (currentSummary && !currentSummary.end.open.getIsZero()) {
 			data.periodPrice = currentSummary.end.value.divide(currentSummary.end.open);
 		} else {
-			data.previousPrice = null;
+			data.periodPrice = null;
 		}
 
-		if (previousSummary1) {
-			data.periodPrice = previousSummary1.end.value.divide(previousSummary1.end.open);
+		if (previousSummary1 && !previousSummary1.end.open.getIsZero()) {
+			data.periodPricePrevious = previousSummary1.end.value.divide(previousSummary1.end.open);
 		} else {
-			data.previousPrice = null;
+			data.periodPricePrevious = null;
 		}
 	}
 

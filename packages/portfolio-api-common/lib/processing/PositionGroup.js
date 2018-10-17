@@ -739,12 +739,12 @@ module.exports = (() => {
 			
 			actual.basisPrice = item.data.basisPrice;
 
-			actual.periodPrice = item.periodPrice;
-			actual.periodPricePrevious = item.periodPricePrevious;
+			actual.periodPrice = item.data.periodPrice;
+			actual.periodPricePrevious = item.data.periodPricePrevious;
 
 			format.quantity = formatDecimal(actual.quantity, 2);
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
-			
+
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
 
 			format.periodPrice = formatCurrency(actual.periodPrice, currency);
