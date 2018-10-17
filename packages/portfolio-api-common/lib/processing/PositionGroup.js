@@ -704,6 +704,9 @@ module.exports = (() => {
 		actual.summaryTotalPrevious2 = updates.summaryTotalPrevious2;
 		actual.marketPrevious = updates.marketPrevious;
 		actual.marketPrevious2 = updates.marketPrevious2;
+		actual.periodRealized = updates.periodRealized;
+		actual.periodUnrealized = updates.periodUnrealized;
+		actual.periodIncome = updates.periodIncome;
 		actual.cashTotal = updates.cashTotal;
 
 		format.basis = formatCurrency(actual.basis, currency);
@@ -717,6 +720,9 @@ module.exports = (() => {
 		format.summaryTotalPrevious2Negative = updates.summaryTotalPrevious2.getIsNegative();
 		format.marketPrevious = formatCurrency(updates.marketPrevious, currency);
 		format.marketPrevious2 = formatCurrency(updates.marketPrevious2, currency);
+		format.periodRealized = formatCurrency(updates.periodRealized, currency);
+		format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
+		format.periodIncome = formatCurrency(updates.periodIncome, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
 		calculateUnrealizedPercent(group);
