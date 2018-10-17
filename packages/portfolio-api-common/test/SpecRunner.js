@@ -1923,6 +1923,18 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets a historical forex quote.
+		 *
+		 * @public
+		 * @param {Object} forexQuote
+		 * @param {Day} date
+		 */
+		setHistoricalForexQuote(forexQuote, date) {
+			assert.argumentIsRequired(forexQuote, 'forexQuote', Object);
+			assert.argumentIsRequired(date, 'date', Day, 'Day');
+		}
+
+		/**
 		 * Returns all forex symbols that are required to do currency translations.
 		 *
 		 * @public
@@ -3931,7 +3943,7 @@ module.exports = (() => {
 		if (currentSummary) {
 			const period = currentSummary.period;
 
-			returnRef = period.unrealized;
+			returnRef = period.realized;
 		} else {
 			returnRef = Decimal.ZERO;
 		}
