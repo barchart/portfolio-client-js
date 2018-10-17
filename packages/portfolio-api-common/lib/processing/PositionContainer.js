@@ -104,7 +104,7 @@ module.exports = (() => {
 			}, { });
 
 			this._items = positions.reduce((items, position) => {
-				const item = createPositionItem.call(this, position);
+				const item = createPositionItem.call(this, position, reportFrame ? true : false);
 
 				if (item) {
 					items.push(item);
@@ -313,7 +313,7 @@ module.exports = (() => {
 				addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
 			});
 
-			const item = createPositionItem.call(this, position);
+			const item = createPositionItem.call(this, position, false);
 
 			addBarchartSymbol(this._symbols, item);
 			addDisplaySymbol(this._symbolsDisplay, item);
@@ -959,7 +959,7 @@ module.exports = (() => {
 		}
 	}
 
-	function createPositionItem(position) {
+	function createPositionItem(position, requireCurrentSummary) {
 		const portfolio = this._portfolios[position.portfolio];
 
 		let returnRef;
@@ -968,7 +968,11 @@ module.exports = (() => {
 			const currentSummary = this._summariesCurrent[ position.position ] || null;
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
-			returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting);
+			if (!requireCurrentSummary || currentSummary !== null) {
+				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting);
+			} else {
+				returnRef = null;
+			}
 		} else {
 			returnRef = null;
 		}
