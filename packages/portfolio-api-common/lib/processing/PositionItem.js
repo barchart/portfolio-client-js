@@ -556,7 +556,7 @@ module.exports = (() => {
 		if (currentSummary) {
 			const period = currentSummary.period;
 
-			returnRef = period.unrealized;
+			returnRef = period.realized;
 		} else {
 			returnRef = Decimal.ZERO;
 		}
