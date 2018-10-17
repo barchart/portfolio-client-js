@@ -959,7 +959,7 @@ module.exports = (() => {
 		}
 	}
 
-	function createPositionItem(position, currentQuote, previousQuote) {
+	function createPositionItem(position) {
 		const portfolio = this._portfolios[position.portfolio];
 
 		let returnRef;
