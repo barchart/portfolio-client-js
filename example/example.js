@@ -78,7 +78,7 @@ module.exports = function () {
 		}, {
 			key: 'developmentHost',
 			get: function get() {
-				return 'y0glq1g3x7.execute-api.us-east-1.amazonaws.com/dev';
+				return 'ldnddf3nsh.execute-api.us-east-1.amazonaws.com/dev';
 			}
 
 			/**
@@ -1554,7 +1554,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.37'
+		version: '1.2.38'
 	};
 }();
 
