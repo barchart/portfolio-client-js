@@ -62,20 +62,6 @@ module.exports = function () {
 				return '[Configuration]';
 			}
 		}], [{
-			key: 'localHost',
-			get: function get() {
-				return '127.0.0.1';
-			}
-
-			/**
-    * The host of the development system.
-    *
-    * @public
-    * @static
-    * @returns {String}
-    */
-
-		}, {
 			key: 'developmentHost',
 			get: function get() {
 				return 'ldnddf3nsh.execute-api.us-east-1.amazonaws.com/dev';
@@ -998,25 +984,6 @@ module.exports = function () {
 				return this._environment;
 			}
 		}], [{
-			key: 'forLocal',
-			value: function forLocal(requestInterceptor) {
-				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
-					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
-
-					return start(new PortfolioGateway('http', Configuration.localHost, 3000, requestInterceptor));
-				});
-			}
-
-			/**
-    * Creates and starts a new {@link PortfolioGateway} for use in the development environment.
-    *
-    * @public
-    * @static
-    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
-    * @returns {Promise.<PortfolioGateway>}
-    */
-
-		}, {
 			key: 'forDevelopment',
 			value: function forDevelopment(requestInterceptor) {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
@@ -1079,7 +1046,7 @@ module.exports = function () {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
-					return start(new PortfolioGateway('http', Configuration.adminHost, 443, requestInterceptor));
+					return start(new PortfolioGateway('https', Configuration.adminHost, 443, requestInterceptor));
 				});
 			}
 		}]);
@@ -1626,7 +1593,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.40'
+		version: '1.2.41'
 	};
 }();
 
