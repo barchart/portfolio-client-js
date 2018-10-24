@@ -1063,6 +1063,25 @@ module.exports = function () {
 					return start(new PortfolioGateway('https', Configuration.productionHost, 443, 'production', requestInterceptor));
 				});
 			}
+
+			/**
+    * Creates and starts a new {@link PortfolioGateway} for use in the administration environment.
+    *
+    * @public
+    * @static
+    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise.<PortfolioGateway>}
+    */
+
+		}, {
+			key: 'forAdmin',
+			value: function forAdmin(requestInterceptor) {
+				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
+					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
+
+					return start(new PortfolioGateway('http', Configuration.adminHost, 443, requestInterceptor));
+				});
+			}
 		}]);
 
 		return PortfolioGateway;
@@ -1607,7 +1626,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.39'
+		version: '1.2.40'
 	};
 }();
 
