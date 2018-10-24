@@ -108,6 +108,20 @@ module.exports = function () {
 			get: function get() {
 				return 'o77obtxxr4.execute-api.us-east-1.amazonaws.com/prod';
 			}
+
+			/**
+    * The host of the internal admin system.
+    *
+    * @public
+    * @static
+    * @return {String}
+    */
+
+		}, {
+			key: 'adminHost',
+			get: function get() {
+				return '38moiq7ek9.execute-api.us-east-1.amazonaws.com/admin';
+			}
 		}]);
 
 		return Configuration;
@@ -1216,8 +1230,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var assert = require('@barchart/common-js/lang/assert'),
     Disposable = require('@barchart/common-js/lang/Disposable'),
-    Enum = require('@barchart/common-js/lang/Enum'),
-    is = require('@barchart/common-js/lang/is'),
     Scheduler = require('@barchart/common-js/timing/Scheduler');
 
 var EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBuilder'),
@@ -1411,7 +1423,7 @@ module.exports = function () {
 		}], [{
 			key: 'forDevelopment',
 			value: function forDevelopment(userId, userLegacyId) {
-				return start(new JwtGateway(_forDevelopment(userId, userLegacyId), 60000));
+				return start(new JwtGateway(_forDevelopment(userId, userLegacyId), 180000));
 			}
 
 			/**
@@ -1498,6 +1510,39 @@ module.exports = function () {
 					return jwtGateway.toRequestInterceptor();
 				});
 			}
+
+			/**
+    * Creates and starts a new {@link JwtGateway} for use in the internal admin environment.
+    *
+    * @public
+    * @static
+    * @param {String} userId - The identifier of the user to impersonate.
+    * @param {String} userLegacyId - The legacy identifier of the user to impersonate.
+    * @returns {Promise.<JwtGateway>}
+    */
+
+		}, {
+			key: 'forAdmin',
+			value: function forAdmin(userId, userLegacyId) {
+				return start(new JwtGateway(_forAdmin(userId, userLegacyId), 180000));
+			}
+
+			/**
+    * Creates and starts a new {@link RequestInterceptor} for use in the internal admin environment.
+    *
+    * @public
+    * @static
+    * @param {String} userId - The identifier of the user to impersonate.
+    * @returns {Promise.<RequestInterceptor>}
+    */
+
+		}, {
+			key: 'forAdminClient',
+			value: function forAdminClient(userId, userLegacyId) {
+				return JwtGateway.forAdmin(userId, userLegacyId).then(function (jwtGateway) {
+					return jwtGateway.toRequestInterceptor();
+				});
+			}
 		}]);
 
 		return JwtGateway;
@@ -1539,10 +1584,18 @@ module.exports = function () {
 		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
+	function _forAdmin(userId, legacyUserId) {
+		return EndpointBuilder.for('read-jwt-token-for-development', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.adminHost).withPathBuilder(function (pb) {
+			pb.withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
+		}).withQueryBuilder(function (qb) {
+			qb.withLiteralParameter('user', 'userId', userId).withLiteralParameter('legacy user', 'userLegacyId', legacyUserId).withLiteralParameter('user context', 'userContext', 'TGAM').withLiteralParameter('user permission level', 'userPermissions', 'registered');
+		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
+	}
+
 	return JwtGateway;
 }();
 
-},{"./../../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":40,"@barchart/common-js/timing/Scheduler":50}],5:[function(require,module,exports){
+},{"./../../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/assert":37,"@barchart/common-js/timing/Scheduler":50}],5:[function(require,module,exports){
 'use strict';
 
 var JwtGateway = require('./gateway/jwt/JwtGateway'),
@@ -1554,7 +1607,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.38'
+		version: '1.2.39'
 	};
 }();
 
