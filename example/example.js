@@ -1046,7 +1046,7 @@ module.exports = function () {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
-					return start(new PortfolioGateway('https', Configuration.adminHost, 443, requestInterceptor));
+					return start(new PortfolioGateway('https', Configuration.adminHost, 443, 'admin', requestInterceptor));
 				});
 			}
 		}]);
@@ -1571,10 +1571,18 @@ module.exports = function () {
 	}
 
 	function _forAdmin(userId, legacyUserId) {
-		return EndpointBuilder.for('read-jwt-token-for-development', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.adminHost).withPathBuilder(function (pb) {
+		return EndpointBuilder.for('read-jwt-token-for-admin', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.adminHost).withPathBuilder(function (pb) {
 			pb.withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
 		}).withQueryBuilder(function (qb) {
-			qb.withLiteralParameter('user', 'userId', userId).withLiteralParameter('legacy user', 'userLegacyId', legacyUserId).withLiteralParameter('user context', 'userContext', 'TGAM').withLiteralParameter('user permission level', 'userPermissions', 'registered');
+			if (userId) {
+				qb.withLiteralParameter('user', 'userId', userId);
+			}
+
+			if (legacyUserId) {
+				qb.withLiteralParameter('legacy user', 'userLegacyId', legacyUserId);
+			}
+
+			qb.withLiteralParameter('user context', 'userContext', 'TGAM').withLiteralParameter('user permission level', 'userPermissions', 'registered');
 		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
@@ -1593,7 +1601,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.41'
+		version: '1.2.42'
 	};
 }();
 
