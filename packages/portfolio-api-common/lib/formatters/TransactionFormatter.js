@@ -205,6 +205,7 @@ module.exports = (() => {
 
 	formatters.set(TransactionType.DISTRIBUTION_REINVEST, (t) => {
 		return {
+			boughtSold: t.quantity,
 			shares: t.snapshot.open.subtract(t.quantity),
 			price: t.dividend.price,
 			fee: t.fee,
