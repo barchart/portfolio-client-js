@@ -57,6 +57,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Unable to delete, a related position is locked.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get POSITION_DELETE_FAILED_POSITION_LOCKED() {
+			return positionDeleteFailedPositionLocked;
+		}
+
+		/**
 		 * The position does not exist.
 		 *
 		 * @public
@@ -97,8 +108,8 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The transaction would cause the position to change (from long to
-		 * short, or vice versa).
+		 * The transaction would cause the position direction to change
+		 * from long to short, or vice versa.
 		 *
 		 * @public
 		 * @static
@@ -144,7 +155,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The transaction failed because the position has been locked.
+		 * The transaction failed because a related position is locked.
 		 *
 		 * @public
 		 * @static
@@ -189,6 +200,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Unable to delete, a related position is locked.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_DELETE_FAILED_POSITION_LOCKED() {
+			return transactionDeleteFailedPositionLocked;
+		}
+
+		/**
 		 * Unable to edit, the transaction doesn't exist.
 		 *
 		 * @public
@@ -221,6 +243,7 @@ module.exports = (() => {
 
 	const positionCreateFailedNoPortfolio = new FailureType('POSITION_CREATE_FAILED_NO_PORTFOLIO', 'Unable to create transaction. The portfolio does not exist, has it been deleted?');
 	const positionUpdateFailedNoPosition = new FailureType('POSITION_UPDATE_FAILED_NO_POSITION', 'Unable to update preferences for position. The position does not exist, has it been deleted?');
+	const positionDeleteFailedPositionLocked = new FailureType('POSITION_DELETE_FAILED_POSITION_LOCKED', 'Unable to delete position, your {L|description} history is being recalculated. Please wait a minute or two and retry.');
 
 	const transactionCreateFailedNoPosition = new FailureType('TRANSACTION_CREATE_FAILED_NO_POSITION', 'Unable to create transaction. The referenced position does not exist. Has it been deleted?');
 	const transactionCreateFailedOutOfSequence = new FailureType('TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE', 'Unable to process transaction, because the transaction date is out-of-sequence. In other words, it would occur before an existing transaction. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
@@ -235,6 +258,7 @@ module.exports = (() => {
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
 	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.');
 	const transactionDeleteFailedDirectionSwitchOnRewrite = new FailureType('TRANSACTION_DELETE_FAILED_DIRECTION_SWITCH_ON_REWRITE', 'Deleting this transaction would cause your history to be re-written and the position to switch from long to short (i.e. positive to negative) or vice versa.');
+	const transactionDeleteFailedPositionLocked = new FailureType('TRANSACTION_DELETE_FAILED_POSITION_LOCKED', 'Unable to delete transaction, your {L|description} history is being recalculated. Please wait a minute or two and retry.');
 
 	const transactionEditFailedNoTransaction = new FailureType('TRANSACTION_EDIT_FAILED_NO_TRANSACTION', 'Unable to edit transaction. The referenced transaction does not exist.');
 	const transactionEditFailedTypeReserved = new FailureType('TRANSACTION_EDIT_FAILED_TYPE_RESERVED', 'Unable to edit {U|type.description} transaction, this type of transaction is managed by the system.');
