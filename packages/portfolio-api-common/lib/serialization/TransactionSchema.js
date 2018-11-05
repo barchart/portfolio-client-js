@@ -317,7 +317,8 @@ module.exports = (() => {
 		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
-		.withField('value', DataType.DECIMAL)
+		.withField('rate', DataType.DECIMAL, true)
+		.withField('value', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
