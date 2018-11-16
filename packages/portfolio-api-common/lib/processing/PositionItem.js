@@ -650,7 +650,7 @@ module.exports = (() => {
 		if (currentSummary) {
 			const period = currentSummary.period;
 
-			returnRef = currentSummary.end.basis;
+			returnRef = currentSummary.end.basis.absolute();
 		} else {
 			returnRef = Decimal.ZERO;
 		}
