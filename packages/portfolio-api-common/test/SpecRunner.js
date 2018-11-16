@@ -3443,7 +3443,7 @@ module.exports = (() => {
 	}
 
 	function calculatePeriodPercent(realized, realizedBasis, unrealized, unrealizedBasis) {
-		const numerator = realizedBasis.add(unrealized);
+		const numerator = realized.add(unrealized);
 		const denominator = realizedBasis.add(unrealizedBasis);
 
 		return denominator.getIsZero() ? Decimal.ZERO : numerator.divide(denominator);
@@ -4107,7 +4107,7 @@ module.exports = (() => {
 		if (currentSummary) {
 			const period = currentSummary.period;
 
-			returnRef = currentSummary.end.basis;
+			returnRef = currentSummary.end.basis.absolute();
 		} else {
 			returnRef = Decimal.ZERO;
 		}
