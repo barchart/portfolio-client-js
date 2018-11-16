@@ -169,7 +169,17 @@ module.exports = (() => {
 			this._dataActual.periodPrice = null;
 			this._dataActual.periodPricePrevious = null;
 			this._dataActual.periodRealized = null;
+			this._dataActual.periodRealizedPrevious = null;
+			this._dataActual.periodRealizedPrevious2 = null;
+			this._dataActual.periodRealizedBasis = null;
+			this._dataActual.periodRealizedBasisPrevious = null;
+			this._dataActual.periodRealizedBasisPrevious2 = null;
 			this._dataActual.periodUnrealized = null;
+			this._dataActual.periodUnrealizedPrevious = null;
+			this._dataActual.periodUnrealizedPrevious2 = null;
+			this._dataActual.periodUnrealizedBasis = null;
+			this._dataActual.periodUnrealizedBasisPrevious = null;
+			this._dataActual.periodUnrealizedBasisPrevious2 = null;
 			this._dataActual.periodIncome = null;
 
 			this._dataFormat.periodPrice = null;
@@ -177,6 +187,14 @@ module.exports = (() => {
 			this._dataFormat.periodRealized = null;
 			this._dataFormat.periodUnrealized = null;
 			this._dataFormat.periodIncome = null;
+
+			this._dataActual.periodPercent = null;
+			this._dataActual.periodPreviousPercent = null;
+			this._dataActual.periodPrevious2Percent = null;
+
+			this._dataFormat.periodPercent = null;
+			this._dataFormat.periodPreviousPercent = null;
+			this._dataFormat.periodPrevious2Percent = null;
 
 			this._items.forEach((item) => {
 				bindItem.call(this, item);
@@ -731,7 +749,9 @@ module.exports = (() => {
 
 		calculateUnrealizedPercent(group);
 
-		if (group.single && group._items.length === 1) {
+		const groupItems = group._items;
+
+		if (group.single && groupItems.length === 1) {
 			const item = group._items[0];
 
 			actual.quantity = item.data.quantity;
@@ -750,11 +770,33 @@ module.exports = (() => {
 			format.periodPrice = formatCurrency(actual.periodPrice, currency);
 			format.periodPricePrevious = formatCurrency(actual.periodPricePrevious, currency);
 
+			actual.periodRealized = item.data.periodRealized;
+			actual.periodRealizedPrevious = item.data.periodRealizedPrevious;
+			actual.periodRealizedPrevious2 = item.data.periodRealizedPrevious2;
+
+			actual.periodRealizedBasis = item.data.periodRealizedBasis;
+			actual.periodRealizedBasisPrevious = item.data.periodRealizedBasisPrevious;
+			actual.periodRealizedBasisPrevious2 = item.data.periodRealizedBasisPrevious2;
+
+			actual.periodUnrealized = item.data.periodUnrealized;
+			actual.periodUnrealizedPrevious = item.data.periodUnrealizedPrevious;
+			actual.periodUnrealizedPrevious2 = item.data.periodUnrealizedPrevious2;
+
+			actual.periodUnrealizedBasis = item.data.periodUnrealizedBasis;
+			actual.periodUnrealizedBasisPrevious = item.data.periodUnrealizedBasisPrevious;
+			actual.periodUnrealizedBasisPrevious2 = item.data.periodUnrealizedBasisPrevious2;
+
+			actual.periodPercent = calculatePeriodPercent(actual.periodRealized, actual.periodRealizedBasis, actual.periodUnrealized, actual.periodUnrealizedBasis);
+			actual.periodPercentPrevious = calculatePeriodPercent(actual.periodRealizedPrevious, actual.periodRealizedBasisPrevious, actual.periodUnrealizedPrevious, actual.periodUnrealizedBasisPrevious);
+			actual.periodPercentPrevious2 = calculatePeriodPercent(actual.periodRealizedPrevious2, actual.periodRealizedBasisPrevious2, actual.periodUnrealizedPrevious2, actual.periodUnrealizedBasisPrevious2);
+
+			format.periodPercent = formatPercent(actual.periodPercent, 2);
+			format.periodPercentPrevious = formatPercent(actual.periodPercentPrevious, 2);
+			format.periodPercentPrevious2 = formatPercent(actual.periodPercentPrevious2, 2);
+
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
 		}
-
-		const groupItems = group._items;
 
 		let portfolioType = null;
 
@@ -875,6 +917,13 @@ module.exports = (() => {
 		format.marketChangePercent = formatPercent(actual.marketChangePercent, 2);
 
 		calculateUnrealizedPercent(group);
+
+		if (group.single && item) {
+			actual.periodUnrealized = item.data.periodUnrealized;
+
+			actual.periodPercent = calculatePeriodPercent(actual.periodRealized, actual.periodRealizedBasis, actual.periodUnrealized, actual.periodUnrealizedBasis);
+			format.periodPercent = formatPercent(actual.periodPercent, 2);
+		}
 	}
 
 	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
@@ -931,6 +980,13 @@ module.exports = (() => {
 			actual.unrealizedPercent = actual.unrealized.divide(actual.basis);
 			format.unrealizedPercent = formatPercent(actual.unrealizedPercent, 2);
 		}
+	}
+
+	function calculatePeriodPercent(realized, realizedBasis, unrealized, unrealizedBasis) {
+		const numerator = realizedBasis.add(unrealized);
+		const denominator = realizedBasis.add(unrealizedBasis);
+
+		return denominator.getIsZero() ? Decimal.ZERO : numerator.divide(denominator);
 	}
 
 	const unchanged = { up: false, down: false };
