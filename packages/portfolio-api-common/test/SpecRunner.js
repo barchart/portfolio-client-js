@@ -6419,11 +6419,12 @@ module.exports = function () {
 			}
 
 			/**
-    * Clones a {@link Day} instance.
+    * Converts a string (which matches the output of {@link Day#format} into
+    * a {@link Day} instance.
     *
     * @public
     * @static
-    * @param {Day} value
+    * @param {String} value
     * @returns {Day}
     */
 
@@ -6464,24 +6465,6 @@ module.exports = function () {
 				return this._day;
 			}
 		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Day, 'Day');
-
-				return new Day(value.year, value.month, value.day);
-			}
-
-			/**
-    * Converts a string (which matches the output of {@link Day#format} into
-    * a {@link Day} instance.
-    *
-    * @public
-    * @static
-    * @param {String} value
-    * @returns {Day}
-    */
-
-		}, {
 			key: 'parse',
 			value: function parse(value) {
 				assert.argumentIsRequired(value, 'value', String);
@@ -6798,17 +6781,15 @@ module.exports = function () {
     *
     * @public
     * @param {Boolean=} approximate
-    * @param {Number=} places
     * @returns {Boolean}
     */
 
 		}, {
 			key: 'getIsZero',
-			value: function getIsZero(approximate, places) {
+			value: function getIsZero(approximate) {
 				assert.argumentIsOptional(approximate, 'approximate', Boolean);
-				assert.argumentIsOptional(places, 'places', Number);
 
-				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(places || Big.DP, RoundingMode.NORMAL).getIsZero();
+				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(20, RoundingMode.NORMAL).getIsZero();
 			}
 
 			/**
@@ -6908,43 +6889,6 @@ module.exports = function () {
 			}
 
 			/**
-    * Returns true if the current instance is an integer (i.e. has no decimal
-    * component).
-    *
-    * @public
-    * @return {Boolean}
-    */
-
-		}, {
-			key: 'getIsInteger',
-			value: function getIsInteger() {
-				return this.getIsEqual(this.round(0));
-			}
-
-			/**
-    * Returns the number of decimal places used.
-    *
-    * @public
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'getDecimalPlaces',
-			value: function getDecimalPlaces() {
-				var matches = this.toFixed().match(/-?\d*\.(\d*)/);
-
-				var returnVal = void 0;
-
-				if (matches === null) {
-					returnVal = 0;
-				} else {
-					returnVal = matches[1].length;
-				}
-
-				return returnVal;
-			}
-
-			/**
     * Emits a floating point value that approximates the value of the current
     * instance.
     *
@@ -6992,11 +6936,10 @@ module.exports = function () {
 			}
 
 			/**
-    * Clones a {@link Decimal} instance.
+    * Parses the value emitted by {@link Decimal#toJSON}.
     *
     * @public
-    * @static
-    * @param {Decimal} value
+    * @param {String} value
     * @returns {Decimal}
     */
 
@@ -7006,22 +6949,6 @@ module.exports = function () {
 				return '[Decimal]';
 			}
 		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Decimal, 'Decimal');
-
-				return new Decimal(value._big);
-			}
-
-			/**
-    * Parses the value emitted by {@link Decimal#toJSON}.
-    *
-    * @public
-    * @param {String} value
-    * @returns {Decimal}
-    */
-
-		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Decimal(value);
@@ -8043,11 +7970,10 @@ module.exports = function () {
 			}
 
 			/**
-    * Clones a {@link Timestamp} instance.
+    * Parses the value emitted by {@link Timestamp#toJSON}.
     *
     * @public
-    * @static
-    * @param {Timestamp} value
+    * @param {Number} value
     * @returns {Timestamp}
     */
 
@@ -8083,22 +8009,6 @@ module.exports = function () {
 				return this._moment;
 			}
 		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
-
-				return new Timestamp(value._timestamp, value._timezone);
-			}
-
-			/**
-    * Parses the value emitted by {@link Timestamp#toJSON}.
-    *
-    * @public
-    * @param {Number} value
-    * @returns {Timestamp}
-    */
-
-		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Timestamp(value);
@@ -17827,6 +17737,51 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
+
+
+	/////
+
+	describe('and month position summary ranges are processed for a transaction set that does not close', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2018, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				},
+				{
+					date: new Day(2018, 11, 21),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				}
+			];
+
+			ranges = PositionSummaryFrame.MONTHLY.getRanges(transactions);
+		});
+
+		it('should have 2 ranges (assuming the current year is 2018 and the current month is November)', () => {
+			expect(ranges.length).toEqual(2);
+		});
+
+		it('the first range should be from 2018-09-30 to 2018-10-31', () => {
+			expect(ranges[0].start.format()).toEqual('2018-09-30');
+			expect(ranges[0].end.format()).toEqual('2018-10-31');
+		});
+
+		it('the second range should be from {X} to {Y}', () => {
+		});
+	});
+
+	///////
+
+
+
 	describe('and getting the start date for yearly frames', () => {
 		describe('for one year ago', function() {
 			let start;
@@ -17868,6 +17823,39 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			});
 		});
 	});
+
+
+
+
+	////
+
+	describe('and getting the start date for monthly frames', () => {
+		describe('for one month ago', function () {
+			let start;
+
+			beforeEach(() => {
+				start = PositionSummaryFrame.MONTHLY.getStartDate(1);
+			});
+
+			it('should be in ...', () => {
+				expect(start.month).toEqual(0);
+			});
+
+			it('should be on the ...', () => {
+				expect(start.day).toEqual(0);
+			});
+
+			it('should be ... months ago', () => {
+				expect(start.year).toEqual(0);
+			});
+		});
+	});
+
+	////
+
+
+
+
 
 	describe('and recent ranges are calculated', () => {
 		let todayYear;

@@ -311,6 +311,51 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
+
+
+	/////
+
+	describe('and month position summary ranges are processed for a transaction set that does not close', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2018, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				},
+				{
+					date: new Day(2018, 11, 21),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				}
+			];
+
+			ranges = PositionSummaryFrame.MONTHLY.getRanges(transactions);
+		});
+
+		it('should have 2 ranges (assuming the current year is 2018 and the current month is November)', () => {
+			expect(ranges.length).toEqual(2);
+		});
+
+		it('the first range should be from 2018-09-30 to 2018-10-31', () => {
+			expect(ranges[0].start.format()).toEqual('2018-09-30');
+			expect(ranges[0].end.format()).toEqual('2018-10-31');
+		});
+
+		it('the second range should be from {X} to {Y}', () => {
+		});
+	});
+
+	///////
+
+
+
 	describe('and getting the start date for yearly frames', () => {
 		describe('for one year ago', function() {
 			let start;
@@ -352,6 +397,39 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			});
 		});
 	});
+
+
+
+
+	////
+
+	describe('and getting the start date for monthly frames', () => {
+		describe('for one month ago', function () {
+			let start;
+
+			beforeEach(() => {
+				start = PositionSummaryFrame.MONTHLY.getStartDate(1);
+			});
+
+			it('should be in ...', () => {
+				expect(start.month).toEqual(0);
+			});
+
+			it('should be on the ...', () => {
+				expect(start.day).toEqual(0);
+			});
+
+			it('should be ... months ago', () => {
+				expect(start.year).toEqual(0);
+			});
+		});
+	});
+
+	////
+
+
+
+
 
 	describe('and recent ranges are calculated', () => {
 		let todayYear;
