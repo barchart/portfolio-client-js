@@ -632,7 +632,32 @@ module.exports = (() => {
 	}
 
 	function getMonthlyRanges(transactions) {
-		return [ ];
+    const ranges = [ ];
+    
+    if (!transactions.length) {
+    	return ranges;
+		}
+
+		const first = array.first(transactions);
+		const last = array.last(transactions);
+
+		const firstDate = first.date;
+		let lastDate;
+
+		lastDate = last.snapshot.open.getIsZero()
+			? new Day(last.date.year, last.date.month, last.date.day).addMonths(1)
+			: Day.getToday();
+		lastDate = lastDate.getEndOfMonth();
+
+		for (
+			let end = firstDate.getEndOfMonth();
+			end.format() <= lastDate.format();
+			end = end.addMonths(1).getEndOfMonth()
+		) {
+			ranges.push(getRange(end.subtractMonths(1).getEndOfMonth(), end));
+		}
+    
+    return ranges;
 	}
 
 	function getYearToDateRanges(transactions) {
@@ -669,7 +694,11 @@ module.exports = (() => {
 	}
 
 	function getMonthlyStartDate(periods, date) {
-		return null;
+    const today = date || Day.getToday();
+    
+		return today
+			.subtractMonths(periods)
+			.subtractDays(today.day);
 	}
 
 	function getYearToDateStartDate(periods, date) {
@@ -6312,6 +6341,19 @@ module.exports = function () {
 			}
 
 			/**
+    * Returns a new Day instance for the end of the month of the current instance.
+    *
+    * @public
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'getEndOfMonth',
+			value: function getEndOfMonth() {
+				return new Day(this.year, this.month, Day.getDaysInMonth(this.year, this.month));
+			}
+
+			/**
     * Indicates if another {@link Day} occurs before the current instance.
     *
     * @public
@@ -6419,12 +6461,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Converts a string (which matches the output of {@link Day#format} into
-    * a {@link Day} instance.
+    * Clones a {@link Day} instance.
     *
     * @public
     * @static
-    * @param {String} value
+    * @param {Day} value
     * @returns {Day}
     */
 
@@ -6465,6 +6506,24 @@ module.exports = function () {
 				return this._day;
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Day, 'Day');
+
+				return new Day(value.year, value.month, value.day);
+			}
+
+			/**
+    * Converts a string (which matches the output of {@link Day#format} into
+    * a {@link Day} instance.
+    *
+    * @public
+    * @static
+    * @param {String} value
+    * @returns {Day}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				assert.argumentIsRequired(value, 'value', String);
@@ -6781,15 +6840,17 @@ module.exports = function () {
     *
     * @public
     * @param {Boolean=} approximate
+    * @param {Number=} places
     * @returns {Boolean}
     */
 
 		}, {
 			key: 'getIsZero',
-			value: function getIsZero(approximate) {
+			value: function getIsZero(approximate, places) {
 				assert.argumentIsOptional(approximate, 'approximate', Boolean);
+				assert.argumentIsOptional(places, 'places', Number);
 
-				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(20, RoundingMode.NORMAL).getIsZero();
+				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(places || Big.DP, RoundingMode.NORMAL).getIsZero();
 			}
 
 			/**
@@ -6889,6 +6950,43 @@ module.exports = function () {
 			}
 
 			/**
+    * Returns true if the current instance is an integer (i.e. has no decimal
+    * component).
+    *
+    * @public
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsInteger',
+			value: function getIsInteger() {
+				return this.getIsEqual(this.round(0));
+			}
+
+			/**
+    * Returns the number of decimal places used.
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'getDecimalPlaces',
+			value: function getDecimalPlaces() {
+				var matches = this.toFixed().match(/-?\d*\.(\d*)/);
+
+				var returnVal = void 0;
+
+				if (matches === null) {
+					returnVal = 0;
+				} else {
+					returnVal = matches[1].length;
+				}
+
+				return returnVal;
+			}
+
+			/**
     * Emits a floating point value that approximates the value of the current
     * instance.
     *
@@ -6936,10 +7034,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Parses the value emitted by {@link Decimal#toJSON}.
+    * Clones a {@link Decimal} instance.
     *
     * @public
-    * @param {String} value
+    * @static
+    * @param {Decimal} value
     * @returns {Decimal}
     */
 
@@ -6949,6 +7048,22 @@ module.exports = function () {
 				return '[Decimal]';
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Decimal, 'Decimal');
+
+				return new Decimal(value._big);
+			}
+
+			/**
+    * Parses the value emitted by {@link Decimal#toJSON}.
+    *
+    * @public
+    * @param {String} value
+    * @returns {Decimal}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Decimal(value);
@@ -7970,10 +8085,11 @@ module.exports = function () {
 			}
 
 			/**
-    * Parses the value emitted by {@link Timestamp#toJSON}.
+    * Clones a {@link Timestamp} instance.
     *
     * @public
-    * @param {Number} value
+    * @static
+    * @param {Timestamp} value
     * @returns {Timestamp}
     */
 
@@ -8009,6 +8125,22 @@ module.exports = function () {
 				return this._moment;
 			}
 		}], [{
+			key: 'clone',
+			value: function clone(value) {
+				assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
+
+				return new Timestamp(value._timestamp, value._timezone);
+			}
+
+			/**
+    * Parses the value emitted by {@link Timestamp#toJSON}.
+    *
+    * @public
+    * @param {Number} value
+    * @returns {Timestamp}
+    */
+
+		}, {
 			key: 'parse',
 			value: function parse(value) {
 				return new Timestamp(value);
@@ -10013,7 +10145,7 @@ module.exports = function () {
    * the schema.
    *
    * @public
-   * @param {data} data
+   * @param {Object} data
    * @returns {Object}
    */
 
@@ -10095,7 +10227,13 @@ module.exports = function () {
 				};
 
 				return function (key, value) {
-					return advance(key).reviver(value);
+					var item = advance(key);
+
+					if (key === '') {
+						return value;
+					} else {
+						return item.reviver(value);
+					}
 				};
 			}
 
@@ -17774,7 +17912,9 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges[0].end.format()).toEqual('2018-10-31');
 		});
 
-		it('the second range should be from {X} to {Y}', () => {
+		it('the second range should be from 2018-10-31 to 2018-11-30', () => {
+      expect(ranges[1].start.format()).toEqual('2018-10-31');
+      expect(ranges[1].end.format()).toEqual('2018-11-30');
 		});
 	});
 
@@ -17837,18 +17977,34 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				start = PositionSummaryFrame.MONTHLY.getStartDate(1);
 			});
 
-			it('should be in ...', () => {
-				expect(start.month).toEqual(0);
+			it('should be on the last day of month', () => {
+				const today = Day.getToday();
+				
+				expect(start.day).toEqual(Day.getDaysInMonth(today.year, today.month - 2));
 			});
 
-			it('should be on the ...', () => {
-				expect(start.day).toEqual(0);
-			});
-
-			it('should be ... months ago', () => {
-				expect(start.year).toEqual(0);
+			it('should be month ago', () => {
+				expect(start.month).toEqual(Day.getToday().month - 2);
 			});
 		});
+    
+    describe('for three months ago', function () {
+      let start;
+      
+      beforeEach(() => {
+        start = PositionSummaryFrame.MONTHLY.getStartDate(3);
+      });
+      
+      it('should be on the last day of month', () => {
+        const today = Day.getToday();
+        
+        expect(start.day).toEqual(Day.getDaysInMonth(today.year, today.month - 4));
+      });
+      
+      it('should be 3 month ago', () => {
+        expect(start.month).toEqual(Day.getToday().month - 4);
+      });
+    });
 	});
 
 	////

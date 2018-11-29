@@ -241,7 +241,32 @@ module.exports = (() => {
 	}
 
 	function getMonthlyRanges(transactions) {
-		return [ ];
+    const ranges = [ ];
+    
+    if (!transactions.length) {
+    	return ranges;
+		}
+
+		const first = array.first(transactions);
+		const last = array.last(transactions);
+
+		const firstDate = first.date;
+		let lastDate;
+
+		lastDate = last.snapshot.open.getIsZero()
+			? new Day(last.date.year, last.date.month, last.date.day).addMonths(1)
+			: Day.getToday();
+		lastDate = lastDate.getEndOfMonth();
+
+		for (
+			let end = firstDate.getEndOfMonth();
+			end.format() <= lastDate.format();
+			end = end.addMonths(1).getEndOfMonth()
+		) {
+			ranges.push(getRange(end.subtractMonths(1).getEndOfMonth(), end));
+		}
+    
+    return ranges;
 	}
 
 	function getYearToDateRanges(transactions) {
@@ -278,7 +303,11 @@ module.exports = (() => {
 	}
 
 	function getMonthlyStartDate(periods, date) {
-		return null;
+    const today = date || Day.getToday();
+    
+		return today
+			.subtractMonths(periods)
+			.subtractDays(today.day);
 	}
 
 	function getYearToDateStartDate(periods, date) {

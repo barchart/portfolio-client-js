@@ -348,7 +348,9 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges[0].end.format()).toEqual('2018-10-31');
 		});
 
-		it('the second range should be from {X} to {Y}', () => {
+		it('the second range should be from 2018-10-31 to 2018-11-30', () => {
+      expect(ranges[1].start.format()).toEqual('2018-10-31');
+      expect(ranges[1].end.format()).toEqual('2018-11-30');
 		});
 	});
 
@@ -411,18 +413,34 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				start = PositionSummaryFrame.MONTHLY.getStartDate(1);
 			});
 
-			it('should be in ...', () => {
-				expect(start.month).toEqual(0);
+			it('should be on the last day of month', () => {
+				const today = Day.getToday();
+				
+				expect(start.day).toEqual(Day.getDaysInMonth(today.year, today.month - 2));
 			});
 
-			it('should be on the ...', () => {
-				expect(start.day).toEqual(0);
-			});
-
-			it('should be ... months ago', () => {
-				expect(start.year).toEqual(0);
+			it('should be month ago', () => {
+				expect(start.month).toEqual(Day.getToday().month - 2);
 			});
 		});
+    
+    describe('for three months ago', function () {
+      let start;
+      
+      beforeEach(() => {
+        start = PositionSummaryFrame.MONTHLY.getStartDate(3);
+      });
+      
+      it('should be on the last day of month', () => {
+        const today = Day.getToday();
+        
+        expect(start.day).toEqual(Day.getDaysInMonth(today.year, today.month - 4));
+      });
+      
+      it('should be 3 month ago', () => {
+        expect(start.month).toEqual(Day.getToday().month - 4);
+      });
+    });
 	});
 
 	////
