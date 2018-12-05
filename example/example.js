@@ -64,7 +64,7 @@ module.exports = function () {
 		}], [{
 			key: 'developmentHost',
 			get: function get() {
-				return 'portfolio-dev.aws.barchart.com/dev';
+				return 'portfolio-dev.aws.barchart.com';
 			}
 
 			/**
@@ -78,7 +78,7 @@ module.exports = function () {
 		}, {
 			key: 'stagingHost',
 			get: function get() {
-				return 'portfolio-stage.aws.barchart.com/stage';
+				return 'portfolio-stage.aws.barchart.com';
 			}
 
 			/**
@@ -92,7 +92,7 @@ module.exports = function () {
 		}, {
 			key: 'productionHost',
 			get: function get() {
-				return 'portfolio.aws.barchart.com/prod';
+				return 'portfolio.aws.barchart.com';
 			}
 
 			/**
@@ -106,7 +106,7 @@ module.exports = function () {
 		}, {
 			key: 'adminHost',
 			get: function get() {
-				return 'portfolio-admin.aws.barchart.com/admin';
+				return 'portfolio-admin.aws.barchart.com';
 			}
 		}]);
 
@@ -1601,7 +1601,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.44'
+		version: '1.2.45'
 	};
 }();
 
