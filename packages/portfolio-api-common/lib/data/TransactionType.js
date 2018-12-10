@@ -352,6 +352,17 @@ module.exports = (() => {
 		static get DEBIT() {
 			return debit;
 		}
+    
+    /**
+     * A delist.
+     *
+     * @public
+     * @static
+     * @returns {TransactionType}
+     */
+		static get DELIST() {
+			return delist;
+		}
 
 		/**
 		 * A system-generated deposit, arising from another transaction.
@@ -412,7 +423,8 @@ module.exports = (() => {
 	const credit = new TransactionType('CR', 'Credit', 'Credit', 0, false, false, false, false, false, false, false, true, true);
 
 	const valuation = new TransactionType('V', 'Valuation', 'Valuation', 0, false, false, false, false, false, false, false, false, false);
-	const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
+  const delist = new TransactionType('DL', 'Delist', 'Delist', 0, false, false, false, false, false, false, false, false, false);
+  const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
 
 	return TransactionType;
 })();

@@ -258,6 +258,7 @@ module.exports = (() => {
 	associateTypes(InstrumentType.OTHER, TransactionType.INCOME, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.FEE, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.VALUATION, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.OTHER, TransactionType.DELIST, true, [ PositionDirection.LONG ]);
 
 	associateTypes(InstrumentType.CASH, TransactionType.DEPOSIT, true);
 	associateTypes(InstrumentType.CASH, TransactionType.WITHDRAWAL, true);

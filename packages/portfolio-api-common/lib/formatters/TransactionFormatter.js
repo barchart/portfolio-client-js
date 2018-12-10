@@ -216,7 +216,7 @@ module.exports = (() => {
 	formatters.set(TransactionType.INCOME, (t) => {
 		return {
 			total: t.income.amount
-		};	
+		};
 	});
 
 	formatters.set(TransactionType.FEE, (t) => {
@@ -254,6 +254,8 @@ module.exports = (() => {
 			price: rate
 		};
 	});
+	
+	formatters.set(TransactionType.DELIST, () => ({}));
 
 	const cashFormatter = (t) => {
 		return {

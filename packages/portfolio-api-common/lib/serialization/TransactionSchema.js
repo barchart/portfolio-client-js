@@ -113,6 +113,10 @@ module.exports = (() => {
 		static get VALUATION() {
 			return valuation;
 		}
+		
+		static get DELIST() {
+			return delist;
+		}
 
 		static get INCOME() {
 			return income;
@@ -322,8 +326,18 @@ module.exports = (() => {
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
-
-	const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
+	
+	const delist = new TransactionSchema(SchemaBuilder.withName(TransactionType.DELIST.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('date', DataType.DAY)
+		.withField('force', DataType.BOOLEAN, true)
+		.schema
+	);
+  
+  const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('sequence', DataType.NUMBER, true)
@@ -349,6 +363,7 @@ module.exports = (() => {
 	addSchemaToMap(TransactionType.DEPOSIT, deposit);
 	addSchemaToMap(TransactionType.WITHDRAWAL, withdrawal);
 	addSchemaToMap(TransactionType.VALUATION, valuation);
+	addSchemaToMap(TransactionType.DELIST, delist);
 	addSchemaToMap(TransactionType.INCOME, income);
 
 	return TransactionSchema;
