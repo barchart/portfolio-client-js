@@ -353,13 +353,13 @@ module.exports = (() => {
 			return debit;
 		}
     
-    /**
-     * A delist.
-     *
-     * @public
-     * @static
-     * @returns {TransactionType}
-     */
+		/**
+		 * A system-generated transaction, indicating the security has stopped active trading.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
 		static get DELIST() {
 			return delist;
 		}
@@ -412,6 +412,7 @@ module.exports = (() => {
 	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
 	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
+	const delist = new TransactionType('DL', 'Delist', 'Delist', 0, false, false, false, false, false, false, false, false, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
 	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
@@ -423,8 +424,7 @@ module.exports = (() => {
 	const credit = new TransactionType('CR', 'Credit', 'Credit', 0, false, false, false, false, false, false, false, true, true);
 
 	const valuation = new TransactionType('V', 'Valuation', 'Valuation', 0, false, false, false, false, false, false, false, false, false);
-  const delist = new TransactionType('DL', 'Delist', 'Delist', 0, false, false, false, false, false, false, false, false, false);
-  const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
+	const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
 
 	return TransactionType;
 })();

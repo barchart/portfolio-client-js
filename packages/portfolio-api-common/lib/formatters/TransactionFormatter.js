@@ -255,7 +255,9 @@ module.exports = (() => {
 		};
 	});
 	
-	formatters.set(TransactionType.DELIST, () => ({}));
+	formatters.set(TransactionType.DELIST, () => {
+		return { };
+	});
 
 	const cashFormatter = (t) => {
 		return {

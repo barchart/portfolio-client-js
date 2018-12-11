@@ -244,6 +244,7 @@ module.exports = (() => {
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_REINVEST, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_STOCK, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SPLIT, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.DELIST, false);
 
 	associateTypes(InstrumentType.FUND, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.FUND, TransactionType.SELL, true, [ PositionDirection.LONG ]);
@@ -252,13 +253,13 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_CASH, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_REINVEST, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_FUND, false);
+	associateTypes(InstrumentType.FUND, TransactionType.DELIST, false);
 
 	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.INCOME, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.FEE, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.VALUATION, true, [ PositionDirection.LONG ]);
-	associateTypes(InstrumentType.OTHER, TransactionType.DELIST, true, [ PositionDirection.LONG ]);
 
 	associateTypes(InstrumentType.CASH, TransactionType.DEPOSIT, true);
 	associateTypes(InstrumentType.CASH, TransactionType.WITHDRAWAL, true);
