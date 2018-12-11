@@ -1089,6 +1089,17 @@ module.exports = (() => {
 		static get DEBIT() {
 			return debit;
 		}
+    
+		/**
+		 * A system-generated transaction, indicating the security has stopped active trading.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get DELIST() {
+			return delist;
+		}
 
 		/**
 		 * A system-generated deposit, arising from another transaction.
@@ -1138,6 +1149,7 @@ module.exports = (() => {
 	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
 	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
+	const delist = new TransactionType('DL', 'Delist', 'Delist', 0, false, false, false, false, false, false, false, false, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
 	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
@@ -1401,6 +1413,7 @@ module.exports = (() => {
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_REINVEST, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_STOCK, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SPLIT, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.DELIST, false);
 
 	associateTypes(InstrumentType.FUND, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.FUND, TransactionType.SELL, true, [ PositionDirection.LONG ]);
@@ -1409,6 +1422,7 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_CASH, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_REINVEST, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_FUND, false);
+	associateTypes(InstrumentType.FUND, TransactionType.DELIST, false);
 
 	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
@@ -4701,6 +4715,10 @@ module.exports = (() => {
 		static get VALUATION() {
 			return valuation;
 		}
+		
+		static get DELIST() {
+			return delist;
+		}
 
 		static get INCOME() {
 			return income;
@@ -4910,8 +4928,18 @@ module.exports = (() => {
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
-
-	const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
+	
+	const delist = new TransactionSchema(SchemaBuilder.withName(TransactionType.DELIST.code)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
+		.withField('sequence', DataType.NUMBER, true)
+		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
+		.withField('date', DataType.DAY)
+		.withField('force', DataType.BOOLEAN, true)
+		.schema
+	);
+  
+  const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('sequence', DataType.NUMBER, true)
@@ -4937,6 +4965,7 @@ module.exports = (() => {
 	addSchemaToMap(TransactionType.DEPOSIT, deposit);
 	addSchemaToMap(TransactionType.WITHDRAWAL, withdrawal);
 	addSchemaToMap(TransactionType.VALUATION, valuation);
+	addSchemaToMap(TransactionType.DELIST, delist);
 	addSchemaToMap(TransactionType.INCOME, income);
 
 	return TransactionSchema;
@@ -17875,10 +17904,6 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-
-
-	/////
-
 	describe('and month position summary ranges are processed for a transaction set that does not close', () => {
 		let ranges;
 
@@ -17903,8 +17928,8 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			ranges = PositionSummaryFrame.MONTHLY.getRanges(transactions);
 		});
 
-		it('should have 2 ranges (assuming the current year is 2018 and the current month is November)', () => {
-			expect(ranges.length).toEqual(2);
+		it('should have three ranges (assuming the current year is 2018 and the current month is December)', () => {
+			expect(ranges.length).toEqual(3);
 		});
 
 		it('the first range should be from 2018-09-30 to 2018-10-31', () => {
@@ -17913,14 +17938,15 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the second range should be from 2018-10-31 to 2018-11-30', () => {
-      expect(ranges[1].start.format()).toEqual('2018-10-31');
-      expect(ranges[1].end.format()).toEqual('2018-11-30');
+		  expect(ranges[1].start.format()).toEqual('2018-10-31');
+		  expect(ranges[1].end.format()).toEqual('2018-11-30');
+		});
+
+		it('the third range should be from 2018-10-31 to 2018-11-30', () => {
+			expect(ranges[2].start.format()).toEqual('2018-11-30');
+			expect(ranges[2].end.format()).toEqual('2018-12-31');
 		});
 	});
-
-	///////
-
-
 
 	describe('and getting the start date for yearly frames', () => {
 		describe('for one year ago', function() {
