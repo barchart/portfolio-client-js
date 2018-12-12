@@ -3289,9 +3289,9 @@ module.exports = (() => {
 			actual.periodUnrealizedBasisPrevious = item.data.periodUnrealizedBasisPrevious;
 			actual.periodUnrealizedBasisPrevious2 = item.data.periodUnrealizedBasisPrevious2;
 
-			actual.periodPercent = calculatePeriodPercent(actual.periodRealized, actual.periodRealizedBasis, actual.periodUnrealized, actual.periodUnrealizedBasis);
-			actual.periodPercentPrevious = calculatePeriodPercent(actual.periodRealizedPrevious, actual.periodRealizedBasisPrevious, actual.periodUnrealizedPrevious, actual.periodUnrealizedBasisPrevious);
-			actual.periodPercentPrevious2 = calculatePeriodPercent(actual.periodRealizedPrevious2, actual.periodRealizedBasisPrevious2, actual.periodUnrealizedPrevious2, actual.periodUnrealizedBasisPrevious2);
+			actual.periodPercent = calculatePeriodPercent(actual.summaryTotalCurrent, actual.periodRealizedBasis, actual.periodUnrealizedBasis);
+			actual.periodPercentPrevious = calculatePeriodPercent(actual.summaryTotalPrevious, actual.periodRealizedBasisPrevious, actual.periodUnrealizedBasisPrevious);
+			actual.periodPercentPrevious2 = calculatePeriodPercent(actual.summaryTotalPrevious2, actual.periodRealizedBasisPrevious2, actual.periodUnrealizedBasisPrevious2);
 
 			format.periodPercent = formatPercent(actual.periodPercent, 2);
 			format.periodPercentPrevious = formatPercent(actual.periodPercentPrevious, 2);
@@ -3424,7 +3424,7 @@ module.exports = (() => {
 		if (group.single && item) {
 			actual.periodUnrealized = item.data.periodUnrealized;
 
-			actual.periodPercent = calculatePeriodPercent(actual.periodRealized, actual.periodRealizedBasis, actual.periodUnrealized, actual.periodUnrealizedBasis);
+			actual.periodPercent = calculatePeriodPercent(actual.summaryTotalCurrent, actual.periodRealizedBasis, actual.periodUnrealizedBasis);
 			format.periodPercent = formatPercent(actual.periodPercent, 2);
 		}
 	}
@@ -3485,8 +3485,8 @@ module.exports = (() => {
 		}
 	}
 
-	function calculatePeriodPercent(realized, realizedBasis, unrealized, unrealizedBasis) {
-		const numerator = realized.add(unrealized);
+	function calculatePeriodPercent(periodSummaryTotal, realizedBasis, unrealizedBasis) {
+		const numerator = periodSummaryTotal;
 		const denominator = realizedBasis.add(unrealizedBasis);
 
 		return denominator.getIsZero() ? Decimal.ZERO : numerator.divide(denominator);
@@ -4148,8 +4148,6 @@ module.exports = (() => {
 		let returnRef;
 
 		if (currentSummary) {
-			const period = currentSummary.period;
-
 			returnRef = currentSummary.end.basis.absolute();
 		} else {
 			returnRef = Decimal.ZERO;
