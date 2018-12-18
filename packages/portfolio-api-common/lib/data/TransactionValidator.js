@@ -1,6 +1,7 @@
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
-	is = require('@barchart/common-js/lang/is');
+	is = require('@barchart/common-js/lang/is'),
+	Day = require('@barchart/common-js/lang/Day');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
@@ -216,6 +217,40 @@ module.exports = (() => {
 		 */
 		static validateDirectionSwitch(instrumentType, currentDirection, proposedDirection) {
 			return currentDirection === null || instrumentType.canSwitchDirection || (currentDirection.closed || proposedDirection.closed || currentDirection.positive === proposedDirection.positive);
+		}
+		
+		/**
+		 * Determines if the transaction can be added or edited with given date.
+		 *
+		 * @static
+		 * @public
+		 * @param transactions
+		 * @param transaction
+		 * @returns {Boolean}
+		 */
+		static validateTransactionDate(transactions, transaction) {
+			assert.argumentIsArray(transactions, 'transactions');
+			
+			let valid = true;
+			
+			const delistTransaction = transactions.find(t => {
+				return t.type.code === TransactionType.BUY.code
+			});
+			
+			if (delistTransaction) {
+				// TODO: opening transaction types list, is it correct?
+				const isOpening = [
+					TransactionType.BUY.code,
+					TransactionType.SELL_SHORT.code,
+				].some(code => code === transaction.type.code);
+				
+				const isWrongDate = isOpening &&
+					Day.compareDays(transaction.date, delistTransaction.date) === 1;
+				
+				valid = !isWrongDate;
+			}
+			
+			return valid;
 		}
 
 		toString() {
