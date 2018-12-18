@@ -234,7 +234,7 @@ module.exports = (() => {
 			let valid = true;
 			
 			const delistTransaction = transactions.find(t => {
-				return t.type.code === TransactionType.BUY.code
+				return t.type.code === TransactionType.DELIST.code
 			});
 			
 			if (delistTransaction) {
