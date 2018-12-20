@@ -238,11 +238,8 @@ module.exports = (() => {
 			});
 			
 			if (delistTransaction) {
-				// TODO: opening transaction types list, is it correct?
-				const isOpening = [
-					TransactionType.BUY.code,
-					TransactionType.SELL_SHORT.code,
-				].some(code => code === transaction.type.code);
+				const isOpening = TransactionType.OPENING
+					.some(code => code === transaction.type.code);
 				
 				const isWrongDate = isOpening &&
 					Day.compareDays(transaction.date, delistTransaction.date) === 1;
