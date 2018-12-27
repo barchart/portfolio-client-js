@@ -218,23 +218,6 @@ module.exports = (() => {
 		static validateDirectionSwitch(instrumentType, currentDirection, proposedDirection) {
 			return currentDirection === null || instrumentType.canSwitchDirection || (currentDirection.closed || proposedDirection.closed || currentDirection.positive === proposedDirection.positive);
 		}
-		
-		/**
-		 * Assuming the transaction list is ordered by sequence, validates that
-		 * no opening transactions exist after delisting date.
-		 *
-		 * @static
-		 * @public
-		 * @param {Array.<Object>} transactions
-		 * @returns {Boolean}
-		 */
-		static validateDelisting(transactions) {
-			assert.argumentIsArray(transactions, 'transactions');
-
-			const delistIndex = transactions.findIndex(t =>  t.type === TransactionType.DELIST);
-
-			return delistIndex < 0 || !transactions.some((t, i) => delistIndex < i && t.type.opening);
-		}
 
 		toString() {
 			return '[TransactionValidator]';

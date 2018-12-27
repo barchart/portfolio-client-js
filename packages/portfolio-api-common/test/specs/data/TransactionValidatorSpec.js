@@ -79,28 +79,6 @@ describe('When validating transaction references', () => {
 	});
 });
 
-describe('When validating transactions which could include instrument delisting', () => {
-	const build = (type) => {
-		return { type: type };
-	};
-
-	it('An array without a DELSIT transaction should be valid', () => {
-		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL) ])).toEqual(true);
-	});
-
-	it('An array with a final DELSIT transaction should be valid', () => {
-		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST) ])).toEqual(true);
-	});
-
-	it('An array with a closing transaction after a DELIST transaction should be valid', () => {
-		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST), build(TransactionType.SELL) ])).toEqual(true);
-	});
-
-	it('An array with an opening transaction after a DELIST transaction should not be valid', () => {
-		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST), build(TransactionType.BUY) ])).toEqual(false);
-	});
-});
-
 describe('When requesting all the user-initiated transaction types', () => {
 	'use strict';
 
