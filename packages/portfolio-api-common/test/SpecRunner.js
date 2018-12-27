@@ -759,7 +759,6 @@ module.exports = (() => {
 	 * @param {Boolean} corporateAction
 	 * @param {Boolean} initial
 	 * @param {Boolean} significant
-	 * @param {Boolean} eod
  	 */
 	class TransactionType extends Enum {
 		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, significant) {
@@ -1089,7 +1088,7 @@ module.exports = (() => {
 		static get DEBIT() {
 			return debit;
 		}
-    
+  
 		/**
 		 * A system-generated transaction, indicating the security has stopped active trading.
 		 *
@@ -1149,7 +1148,7 @@ module.exports = (() => {
 	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
 	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
-	const delist = new TransactionType('DL', 'Delist', 'Delist', 0, false, false, false, false, false, false, false, false, false);
+	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
 	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
@@ -1169,7 +1168,8 @@ module.exports = (() => {
 },{"@barchart/common-js/lang/Enum":24,"@barchart/common-js/lang/assert":29}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
-	is = require('@barchart/common-js/lang/is');
+	is = require('@barchart/common-js/lang/is'),
+	Day = require('@barchart/common-js/lang/Day');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
@@ -1386,6 +1386,23 @@ module.exports = (() => {
 		static validateDirectionSwitch(instrumentType, currentDirection, proposedDirection) {
 			return currentDirection === null || instrumentType.canSwitchDirection || (currentDirection.closed || proposedDirection.closed || currentDirection.positive === proposedDirection.positive);
 		}
+		
+		/**
+		 * Assuming the transaction list is ordered by sequence, validates that
+		 * no opening transactions exist after delisting date.
+		 *
+		 * @static
+		 * @public
+		 * @param {Array.<Object>} transactions
+		 * @returns {Boolean}
+		 */
+		static validateDelisting(transactions) {
+			assert.argumentIsArray(transactions, 'transactions');
+
+			const delistIndex = transactions.findIndex(t =>  t.type === TransactionType.DELIST);
+
+			return delistIndex < 0 || !transactions.some((t, i) => delistIndex < i && t.type.opening);
+		}
 
 		toString() {
 			return '[TransactionValidator]';
@@ -1464,7 +1481,7 @@ module.exports = (() => {
 	return TransactionValidator;
 })();
 
-},{"./InstrumentType":1,"./PositionDirection":2,"./TransactionType":4,"@barchart/common-js/lang/array":28,"@barchart/common-js/lang/assert":29,"@barchart/common-js/lang/is":33}],6:[function(require,module,exports){
+},{"./InstrumentType":1,"./PositionDirection":2,"./TransactionType":4,"@barchart/common-js/lang/Day":21,"@barchart/common-js/lang/array":28,"@barchart/common-js/lang/assert":29,"@barchart/common-js/lang/is":33}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
@@ -18150,7 +18167,7 @@ describe('When validating transaction order', () => {
 	'use strict';
 
 	const build = (sequence, day, type) => {
-		return { sequence: sequence, date: Day.parse(day), type: (type || TransactionType.BUY ) };
+		return { sequence: sequence, date: Day.parse(day), type: (type || TransactionType.BUY) };
 	};
 
 	it('An array of zero transactions should be valid', () => {
@@ -18219,6 +18236,28 @@ describe('When validating transaction references', () => {
 
 	it('An array with non-distinct references should be not valid', () => {
 		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1), build('a', 2) ])).toEqual(false);
+	});
+});
+
+describe('When validating transactions which could include instrument delisting', () => {
+	const build = (type) => {
+		return { type: type };
+	};
+
+	it('An array without a DELSIT transaction should be valid', () => {
+		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL) ])).toEqual(true);
+	});
+
+	it('An array with a final DELSIT transaction should be valid', () => {
+		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST) ])).toEqual(true);
+	});
+
+	it('An array with a closing transaction after a DELIST transaction should be valid', () => {
+		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST), build(TransactionType.SELL) ])).toEqual(true);
+	});
+
+	it('An array with an opening transaction after a DELIST transaction should not be valid', () => {
+		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST), build(TransactionType.BUY) ])).toEqual(false);
 	});
 });
 
