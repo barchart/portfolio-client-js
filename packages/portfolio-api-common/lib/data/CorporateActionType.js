@@ -11,13 +11,10 @@ module.exports = (() => {
 	 * @extends {Enum}
 	 * @param {String} code
 	 * @param {String} description
-	 * @param {Boolean} internal
 	 */
 	class CorporateActionType extends Enum {
-		constructor(code, description, internal) {
+		constructor(code, description) {
 			super(code, description);
-
-			this._internal = is.boolean(internal) && internal;
 		}
 
 		/**
@@ -76,14 +73,14 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A fictitious event, used for internal system purposes.
+		 * A delisting.
 		 *
 		 * @public
 		 * @static
 		 * @returns {CorporateActionType}
 		 */
-		static get JOB() {
-			return job;
+		static get DELIST() {
+			return delist;
 		}
 	}
 
@@ -91,7 +88,7 @@ module.exports = (() => {
 	const nameChange = new CorporateActionType('NAME_CHANGE', 'Name Change', false);
 	const dividend = new CorporateActionType('DIVIDEND', 'Dividend', false);
 	const split = new CorporateActionType('SPLIT', 'Split', false);
-	const job = new CorporateActionType('JOB', 'Job', true);
+	const delist = new CorporateActionType('DELIST', 'Delist', false);
 
 	return CorporateActionType;
 })();
