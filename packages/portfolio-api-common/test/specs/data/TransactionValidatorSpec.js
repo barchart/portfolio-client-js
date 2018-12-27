@@ -7,7 +7,7 @@ describe('When validating transaction order', () => {
 	'use strict';
 
 	const build = (sequence, day, type) => {
-		return { sequence: sequence, date: Day.parse(day), type: (type || TransactionType.BUY ) };
+		return { sequence: sequence, date: Day.parse(day), type: (type || TransactionType.BUY) };
 	};
 
 	it('An array of zero transactions should be valid', () => {
@@ -76,6 +76,28 @@ describe('When validating transaction references', () => {
 
 	it('An array with non-distinct references should be not valid', () => {
 		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1), build('a', 2) ])).toEqual(false);
+	});
+});
+
+describe('When validating transactions which could include instrument delisting', () => {
+	const build = (type) => {
+		return { type: type };
+	};
+
+	it('An array without a DELSIT transaction should be valid', () => {
+		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL) ])).toEqual(true);
+	});
+
+	it('An array with a final DELSIT transaction should be valid', () => {
+		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST) ])).toEqual(true);
+	});
+
+	it('An array with a closing transaction after a DELIST transaction should be valid', () => {
+		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST), build(TransactionType.SELL) ])).toEqual(true);
+	});
+
+	it('An array with an opening transaction after a DELIST transaction should not be valid', () => {
+		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST), build(TransactionType.BUY) ])).toEqual(false);
 	});
 });
 

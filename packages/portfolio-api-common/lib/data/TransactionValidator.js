@@ -220,34 +220,20 @@ module.exports = (() => {
 		}
 		
 		/**
-		 * Determines if the transaction can be added or edited with given date.
+		 * Assuming the transaction list is ordered by sequence, validates that
+		 * no opening transactions exist after delisting date.
 		 *
 		 * @static
 		 * @public
 		 * @param {Array.<Object>} transactions
-		 * @param transaction
 		 * @returns {Boolean}
 		 */
-		static validateTransactionDate(transactions, transaction) {
+		static validateDelisting(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
-			
-			let valid = true;
-			
-			const delistTransaction = transactions.find(t => {
-				return t.type.code === TransactionType.DELIST.code
-			});
-			
-			if (delistTransaction) {
-				const isOpening = TransactionType.OPENING
-					.some(code => code === transaction.type.code);
-				
-				const isWrongDate = isOpening &&
-					Day.compareDays(transaction.date, delistTransaction.date) === 1;
-				
-				valid = !isWrongDate;
-			}
-			
-			return valid;
+
+			const delistIndex = transactions.findIndex(t =>  t.type === TransactionType.DELIST);
+
+			return delistIndex < 0 || !transactions.some((t, i) => delistIndex < i && t.type.opening);
 		}
 
 		toString() {

@@ -22,7 +22,6 @@ module.exports = (() => {
 	 * @param {Boolean} corporateAction
 	 * @param {Boolean} initial
 	 * @param {Boolean} significant
-	 * @param {Boolean} eod
  	 */
 	class TransactionType extends Enum {
 		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, significant) {
@@ -175,22 +174,6 @@ module.exports = (() => {
 		 */
 		get significant() {
 			return this._significant;
-		}
-		
-		/**
-		 * @public
-		 * @returns {Array}
-		 */
-		static get ALL() {
-			return types;
-		}
-		
-		/**
-		 * @public
-		 * @returns {Array}
-		 */
-		static get OPENING() {
-			return this.ALL.filter(t => t.opening);
 		}
 
 		/**
@@ -417,40 +400,30 @@ module.exports = (() => {
 			return '[TransactionType]';
 		}
 	}
-	
-	const types = [];
-	
-	const createTransactionType = (...args) => {
-		const transactionType = new TransactionType(...args);
-		
-		types.push(transactionType);
-		
-		return transactionType;
-	};
 
-	const buy = createTransactionType('B', 'Buy', 'Buy', 0, true, false, false, true, false, false, false, true, true);
-	const sell = createTransactionType('S', 'Sell', 'Sell', 0, false, true, false, false, true, false, false, false, true);
-	const buyShort = createTransactionType('BS', 'Buy To Cover', 'Buy To Cover', 0, true, false, false, false, true, false, false, false, true);
-	const sellShort = createTransactionType('SS', 'Sell Short', 'Sell Short', 0, false, true, false, true, false, false, false, true, true);
-	const dividend = createTransactionType('DV', 'Dividend', 'Dividend', 1, false, false, true, false, false, false, true, false, false);
-	const dividendReinvest = createTransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false);
-	const dividendStock = createTransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false);
-	const split = createTransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
-	const fee = createTransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
-	const feeUnits = createTransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
-	const delist = createTransactionType('DL', 'Delist', 'Delist', 0, false, false, false, false, false, false, false, false, false);
+	const buy = new TransactionType('B', 'Buy', 'Buy', 0, true, false, false, true, false, false, false, true, true);
+	const sell = new TransactionType('S', 'Sell', 'Sell', 0, false, true, false, false, true, false, false, false, true);
+	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', 0, true, false, false, false, true, false, false, false, true);
+	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', 0, false, true, false, true, false, false, false, true, true);
+	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 1, false, false, true, false, false, false, true, false, false);
+	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false);
+	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false);
+	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
+	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
+	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
+	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, false);
 
-	const distributionCash = createTransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
-	const distributionReinvest = createTransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
-	const distributionFund = createTransactionType('DF', 'Distribution (Units)', 'Unit Distribution', 1, false, false, false, true, false, false, true, false, false);
+	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
+	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
+	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', 1, false, false, false, true, false, false, true, false, false);
 
-	const deposit = createTransactionType('D', 'Deposit', 'Deposit', 0, false, false, false, false, false, false, false, true, true);
-	const withdrawal = createTransactionType('W', 'Withdrawal', 'Withdrawal', 0, false, false, false, false, false, false, false, true, true);
-	const debit = createTransactionType('DR', 'Debit', 'Debit', 0, false, false, false, false, false, false, false, true, true);
-	const credit = createTransactionType('CR', 'Credit', 'Credit', 0, false, false, false, false, false, false, false, true, true);
+	const deposit = new TransactionType('D', 'Deposit', 'Deposit', 0, false, false, false, false, false, false, false, true, true);
+	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', 0, false, false, false, false, false, false, false, true, true);
+	const debit = new TransactionType('DR', 'Debit', 'Debit', 0, false, false, false, false, false, false, false, true, true);
+	const credit = new TransactionType('CR', 'Credit', 'Credit', 0, false, false, false, false, false, false, false, true, true);
 
-	const valuation = createTransactionType('V', 'Valuation', 'Valuation', 0, false, false, false, false, false, false, false, false, false);
-	const income = createTransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
+	const valuation = new TransactionType('V', 'Valuation', 'Valuation', 0, false, false, false, false, false, false, false, false, false);
+	const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
 
 	return TransactionType;
 })();
