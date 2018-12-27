@@ -297,8 +297,8 @@ module.exports = (() => {
 	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.');
 	const transactionDeleteFailedDirectionSwitchOnRewrite = new FailureType('TRANSACTION_DELETE_FAILED_DIRECTION_SWITCH_ON_REWRITE', 'Deleting this transaction would cause your history to be re-written and the position to switch from long to short (i.e. positive to negative) or vice versa.');
 	const transactionDeleteFailedPositionLocked = new FailureType('TRANSACTION_DELETE_FAILED_POSITION_LOCKED', 'Unable to delete transaction, your {L|description} history is being recalculated. Please wait a minute or two and retry.');
-	const transactionDeleteFailedTypeReserved = new FailureType('TRANSACTION_DELETE_FAILED_TYPE_RESERVED', 'Unable to delete transaction, this type of transaction is managed by the system.');
-	
+	const transactionDeleteFailedTypeReserved = new FailureType('TRANSACTION_DELETE_FAILED_TYPE_RESERVED', 'Unable to delete {U|type.description} transaction, this type of transaction is managed by the system.');
+
 	const transactionEditFailedInvalidDate = new FailureType('TRANSACTION_EDIT_FAILED_INVALID_DATE', 'Unable to edit transaction with given date.');
 	const transactionEditFailedNoTransaction = new FailureType('TRANSACTION_EDIT_FAILED_NO_TRANSACTION', 'Unable to edit transaction. The referenced transaction does not exist.');
 	const transactionEditFailedTypeReserved = new FailureType('TRANSACTION_EDIT_FAILED_TYPE_RESERVED', 'Unable to edit {U|type.description} transaction, this type of transaction is managed by the system.');
