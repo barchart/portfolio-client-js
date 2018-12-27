@@ -224,7 +224,7 @@ module.exports = (() => {
 		 *
 		 * @static
 		 * @public
-		 * @param transactions
+		 * @param {Array.<Object>} transactions
 		 * @param transaction
 		 * @returns {Boolean}
 		 */
