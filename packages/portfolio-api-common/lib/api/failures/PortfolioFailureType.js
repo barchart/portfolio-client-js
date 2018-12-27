@@ -88,6 +88,18 @@ module.exports = (() => {
 		static get TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE() {
 			return transactionCreateFailedOutOfSequence;
 		}
+		
+		/**
+		 * The transaction date is invalid.
+		 * For example create opening transaction after delist date.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_INVALID_DATE() {
+			return transactionCreateFailedInvalidDate;
+		}
 
 		/**
 		 * @public
@@ -164,6 +176,18 @@ module.exports = (() => {
 		static get TRANSACTION_CREATE_FAILED_POSITION_LOCKED() {
 			return transactionCreateFailedPositionLocked;
 		}
+		
+		/**
+		 * The transaction (of this type) cannot be deleted by a user, instead,
+		 * it is created and managed by the system (e.g. dividends).
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_DELETE_FAILED_TYPE_RESERVED() {
+			return transactionDeleteFailedTypeReserved;
+		}
 
 		/**
 		 * Deleting any transaction except for the most recent requires
@@ -209,6 +233,18 @@ module.exports = (() => {
 		static get TRANSACTION_DELETE_FAILED_POSITION_LOCKED() {
 			return transactionDeleteFailedPositionLocked;
 		}
+		
+		/**
+		 * The transaction date is invalid.
+		 * For example edit opening transaction after delist date.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_EDIT_FAILED_INVALID_DATE() {
+			return transactionEditFailedInvalidDate;
+		}
 
 		/**
 		 * Unable to edit, the transaction doesn't exist.
@@ -247,10 +283,12 @@ module.exports = (() => {
 
 	const transactionCreateFailedNoPosition = new FailureType('TRANSACTION_CREATE_FAILED_NO_POSITION', 'Unable to create transaction. The referenced position does not exist. Has it been deleted?');
 	const transactionCreateFailedOutOfSequence = new FailureType('TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE', 'Unable to process transaction, because the transaction date is out-of-sequence. In other words, it would occur before an existing transaction. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
+	const transactionCreateFailedInvalidDate = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DATE', 'Unable to process transaction with given date.');
 	const transactionCreateFailedTypeInvalidForInstrument = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_INSTRUMENT', 'Unable to process transaction, {L|transactionType.description} transactions cannot be used with {L|instrumentType.description} positions.');
 	const transactionCreateFailedTypeInvalidForDirection = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_DIRECTION', 'Unable to process transaction, a {L|positionDirection.description} position would be created (i.e. you would have {L|positionDirection.sign} shares/units). {u|instrumentType.description} positions cannot have {L|positionDirection.description} positions.');
 	const transactionCreateFailedInvalidDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DIRECTION_SWITCH', 'Unable to process transaction, the transaction would switch the position from {L|currentDirection.description} to {L|proposedDirection.description} (i.e. {L|currentDirection.sign} to {L|proposedDirection.sign} shares/units). This is not allowed. Please close the current position (i.e. zero it out) and then enter a second transaction.');
 	const transactionCreateFailedInvalidInitialType = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_INITIAL_TYPE', 'Unable to process operation because the first transaction would to be a {U|transactionType.description}, which is not allowed -- since {U|transactionType.description} transactions cannot open a position.');
+
 	const transactionCreateFailedTypeReserved = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_RESERVED', 'Unable to create {U|type.description} transaction, this type of transaction is managed by the system.');
 	const transactionCreateFailedReinvestPriceUnavailable = new FailureType('TRANSACTION_CREATE_FAILED_REINVEST_PRICE_UNAVAILABLE', 'Unable to create transaction, a dividend was paid on {L|day}; however no historical price is available for this day. To successfully create this transaction, please turn off dividend reinvestment for this position.');
 	const transactionCreateFailedPositionLocked = new FailureType('TRANSACTION_CREATE_FAILED_POSITION_LOCKED', 'Unable to create transaction, your {L|description} history is being recalculated. Please re-enter this transaction in a minute or two.');
@@ -259,7 +297,9 @@ module.exports = (() => {
 	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.');
 	const transactionDeleteFailedDirectionSwitchOnRewrite = new FailureType('TRANSACTION_DELETE_FAILED_DIRECTION_SWITCH_ON_REWRITE', 'Deleting this transaction would cause your history to be re-written and the position to switch from long to short (i.e. positive to negative) or vice versa.');
 	const transactionDeleteFailedPositionLocked = new FailureType('TRANSACTION_DELETE_FAILED_POSITION_LOCKED', 'Unable to delete transaction, your {L|description} history is being recalculated. Please wait a minute or two and retry.');
-
+	const transactionDeleteFailedTypeReserved = new FailureType('TRANSACTION_DELETE_FAILED_TYPE_RESERVED', 'Unable to delete transaction, this type of transaction is managed by the system.')
+	
+	const transactionEditFailedInvalidDate = new FailureType('TRANSACTION_EDIT_FAILED_INVALID_DATE', 'Unable to edit transaction with given date.');
 	const transactionEditFailedNoTransaction = new FailureType('TRANSACTION_EDIT_FAILED_NO_TRANSACTION', 'Unable to edit transaction. The referenced transaction does not exist.');
 	const transactionEditFailedTypeReserved = new FailureType('TRANSACTION_EDIT_FAILED_TYPE_RESERVED', 'Unable to edit {U|type.description} transaction, this type of transaction is managed by the system.');
 
