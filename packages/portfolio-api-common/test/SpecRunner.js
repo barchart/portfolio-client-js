@@ -1386,23 +1386,6 @@ module.exports = (() => {
 		static validateDirectionSwitch(instrumentType, currentDirection, proposedDirection) {
 			return currentDirection === null || instrumentType.canSwitchDirection || (currentDirection.closed || proposedDirection.closed || currentDirection.positive === proposedDirection.positive);
 		}
-		
-		/**
-		 * Assuming the transaction list is ordered by sequence, validates that
-		 * no opening transactions exist after delisting date.
-		 *
-		 * @static
-		 * @public
-		 * @param {Array.<Object>} transactions
-		 * @returns {Boolean}
-		 */
-		static validateDelisting(transactions) {
-			assert.argumentIsArray(transactions, 'transactions');
-
-			const delistIndex = transactions.findIndex(t =>  t.type === TransactionType.DELIST);
-
-			return delistIndex < 0 || !transactions.some((t, i) => delistIndex < i && t.type.opening);
-		}
 
 		toString() {
 			return '[TransactionValidator]';
@@ -18236,28 +18219,6 @@ describe('When validating transaction references', () => {
 
 	it('An array with non-distinct references should be not valid', () => {
 		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1), build('a', 2) ])).toEqual(false);
-	});
-});
-
-describe('When validating transactions which could include instrument delisting', () => {
-	const build = (type) => {
-		return { type: type };
-	};
-
-	it('An array without a DELSIT transaction should be valid', () => {
-		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL) ])).toEqual(true);
-	});
-
-	it('An array with a final DELSIT transaction should be valid', () => {
-		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST) ])).toEqual(true);
-	});
-
-	it('An array with a closing transaction after a DELIST transaction should be valid', () => {
-		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST), build(TransactionType.SELL) ])).toEqual(true);
-	});
-
-	it('An array with an opening transaction after a DELIST transaction should not be valid', () => {
-		expect(TransactionValidator.validateDelisting([ build(TransactionType.BUY), build(TransactionType.SELL), build(TransactionType.DELIST), build(TransactionType.BUY) ])).toEqual(false);
 	});
 });
 
