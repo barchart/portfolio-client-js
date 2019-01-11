@@ -46,32 +46,33 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			const a = transactions.reduce((list, transaction) => {
+			const list = transactions.reduce((accumulator, transaction) => {
 				const position = transaction.position;
 
 				if (instruments.hasOwnProperty(position)) {
 					let instrument = instruments[position];
-					let formatted = getBasicTransaction(transaction, instrument);
+					let formatted = { instrument: instrument };
 
-					if (formatters.has(transaction.type)) {
-						const formatterFunction = formatters.get(transaction.type);
-						const formattedTransaction = formatterFunction(transaction);
+					const formatterFunctions = formatters.get(transaction.type);
 
-						Object.keys(formattedTransaction).map((key) => {
-							if (!is.undefined(formattedTransaction[key]) && formattedTransaction[key] instanceof Decimal) {
-								const precision = instrument.currency.precision;
+					formatterFunctions.forEach((formatterFunction) => {
+						formatterFunction(transaction, formatted);
+					});
 
-								formattedTransaction[key] = formatter.numberToString(formattedTransaction[key].toFloat(), precision, ',');
-							}
-						});
+					Object.keys(formatted).forEach((key) => {
+						const value = formatted[key];
 
-						formatted = Object.assign({}, formatted, formattedTransaction);
-					}
+						if (value instanceof Decimal) {
+							const precision = instrument.currency.precision;
 
-					list.push(formatted);
+							formatted[key] = formatter.numberToString(value.toFloat(), precision, ',');
+						}
+					});
+
+					accumulator.push(formatted);
 				}
 
-				return list;
+				return accumulator;
 			}, [ ]);
 
 			let comparator;
@@ -82,13 +83,13 @@ module.exports = (() => {
 				comparator = comparatorAscending;
 			}
 
-			a.sort(comparator);
+			list.sort(comparator);
 
-			a.forEach((t) => {
+			list.forEach((t) => {
 				delete t.instrument.id;
 			});
 
-			return a;
+			return list;
 		}
 
 		/**
@@ -120,7 +121,15 @@ module.exports = (() => {
 		}
 	}
 
-	const getBasicTransaction = (t, i) => {
+	const basicFormatter = (t, f) => {
+		f.date = t.date;
+		f.type = t.type.display;
+		f.code = t.type.code;
+		f.sequence = t.sequence;
+		f.position = t.position;
+	};
+
+	const averageCostFormatter = (t, f) => {
 		const basis = t.snapshot.basis;
 		const open = t.snapshot.open;
 
@@ -132,126 +141,85 @@ module.exports = (() => {
 			average = '';
 		}
 
-		return {
-			date: t.date,
-			type: t.type.display,
-			code: t.type.code,
-			sequence: t.sequence,
-			instrument: i,
-			position: t.position,
-			average: average
-		};
+		f.average = average;
 	};
 
-	const formatters = new Map();
-	
-	const buySellFormatter = (t) => {
-		return {
-			boughtSold: t.quantity,
-			price: t.trade.price,
-			fee: t.fee,
-			total: t.amount
-		};
+	const buySellFormatter = (t, f) => {
+		f.boughtSold = t.quantity;
+		f.price = t.trade.price;
+		f.fee = t.fee;
+		f.total = t.amount;
 	};
 
-	formatters.set(TransactionType.BUY, buySellFormatter);
-	formatters.set(TransactionType.SELL, buySellFormatter);
-	formatters.set(TransactionType.BUY_SHORT, buySellFormatter);
-	formatters.set(TransactionType.SELL_SHORT, buySellFormatter);
+	const dividendFormatter = (t, f) => {
+		f.shares = t.snapshot.open;
+		f.total = t.dividend.amount;
+		f.rate = t.dividend.rate;
+	};
 
-	formatters.set(TransactionType.DIVIDEND, (t) => {
-		return {
-			shares: t.snapshot.open,
-			total: t.dividend.amount,
-			rate: t.dividend.rate
-		};
-	});
-
-	formatters.set(TransactionType.DIVIDEND_STOCK, (t) => {
-		const data = {
-			boughtSold: t.quantity,
-			fee: t.fee
-		};
+	const dividendStockFormatter = (t, f) => {
+		f.boughtSold = t.quantity;
+		f.fee = t.fee;
 
 		if (t.dividend && t.dividend.rate && t.dividend.price) {
-			data.shares = t.snapshot.open.subtract(t.quantity);
-			data.price = t.dividend.price;
-			data.rate = t.dividend.rate;
+			f.shares = t.snapshot.open.subtract(t.quantity);
+			f.price = t.dividend.price;
+			f.rate = t.dividend.rate;
 		}
+	};
 
-		return data;
-	});
+	const dividendReinvestFormatter = (t, f) => {
+		f.boughtSold = t.quantity;
+		f.shares = t.snapshot.open.subtract(t.quantity);
+		f.price = t.dividend.price;
+		f.fee = t.fee;
+		f.rate = t.dividend.rate;
+	};
 
-	formatters.set(TransactionType.DIVIDEND_REINVEST, (t) => {
-		return {
-			boughtSold: t.quantity,
-			shares: t.snapshot.open.subtract(t.quantity),
-			price: t.dividend.price,
-			fee: t.fee,
-			rate: t.dividend.rate
-		};
-	});
+	const distributionCashFormatter = (t, f) => {
+		f.shares = t.snapshot.open;
+		f.total = t.dividend.amount;
+		f.rate = t.dividend.rate;
+	};
 
-	formatters.set(TransactionType.DISTRIBUTION_CASH, (t) => {
-		return {
-			shares: t.snapshot.open,
-			total: t.dividend.amount,
-			rate: t.dividend.rate
-		};
-	});
-
-	formatters.set(TransactionType.DISTRIBUTION_FUND, (t) => {
-		const data = {
-			boughtSold: t.quantity,
-			fee: t.fee
-		};
+	const distributionFundFormatter = (t, f) => {
+		f.boughtSold =t.quantity;
+		f.fee = t.fee;
 
 		if (t.dividend && t.dividend.rate && t.dividend.price) {
-			data.shares = t.snapshot.open.subtract(t.quantity);
-			data.price = t.dividend.price;
-			data.rate = t.dividend.rate;
+			f.shares = t.snapshot.open.subtract(t.quantity);
+			f.price = t.dividend.price;
+			f.rate = t.dividend.rate;
 		}
+	};
 
-		return data;
-	});
+	const distributionReinvestFormatter = (t, f) => {
+		f.boughtSold = t.quantity;
+		f.shares = t.snapshot.open.subtract(t.quantity);
+		f.price = t.dividend.price;
+		f.fee = t.fee;
+		f.rate = t.dividend.rate;
+	};
 
-	formatters.set(TransactionType.DISTRIBUTION_REINVEST, (t) => {
-		return {
-			boughtSold: t.quantity,
-			shares: t.snapshot.open.subtract(t.quantity),
-			price: t.dividend.price,
-			fee: t.fee,
-			rate: t.dividend.rate
-		};
-	});
+	const incomeFormatter = (t, f) => {
+		f.total = t.income.amount;
+	};
 
-	formatters.set(TransactionType.INCOME, (t) => {
-		return {
-			total: t.income.amount
-		};
-	});
+	const feeFormatter = (t, f) => {
+		f.fee = t.charge.amount;
+		f.total = t.charge.amount;
+	};
 
-	formatters.set(TransactionType.FEE, (t) => {
-		return {
-			fee: t.charge.amount,
-			total: t.charge.amount
-		};
-	});
+	const feeUnitsFormatter = (t, f) => {
+		f.boughtSold = t.quantity;
+	};
 
-	formatters.set(TransactionType.FEE_UNITS, (t) => {
-		return {
-			boughtSold: t.quantity
-		};
-	});
+	const splitFormatter = (t, f) => {
+		f.shares = t.quantity;
+		f.rate = t.split.numerator.divide(t.split.denominator);
+	};
 
-	formatters.set(TransactionType.SPLIT, (t) => {
-		return {
-			shares: t.quantity,
-			rate: t.split.numerator.divide(t.split.denominator)
-		};
-	});
-
-	formatters.set(TransactionType.VALUATION, (t) => {
+	const valuationFormatter = (t, f) => {
 		let rate;
 
 		if (t.valuation.rate) {
@@ -262,39 +230,43 @@ module.exports = (() => {
 			rate = t.valuation.value.divide(t.snapshot.open);
 		}
 
-		return {
-			price: rate
-		};
-	});
-	
-	formatters.set(TransactionType.DELIST, () => {
-		return { };
-	});
-
-	const cashFormatter = (t) => {
-		return {
-			total: t.quantity
-		};
+		f.price = rate;
 	};
 
-	formatters.set(TransactionType.DEPOSIT, cashFormatter);
-	formatters.set(TransactionType.WITHDRAWAL, cashFormatter);
+	const cashFormatter = (t, f) => {
+		f.total = t.quantity;
+	};
 
-	formatters.set(TransactionType.DEBIT, (t) => {
-		const formatted = cashFormatter(t);
+	const debitFormatter = (t, f) => {
+		f.description = t.description;
+	};
 
-		formatted.description = t.description;
+	const creditFormatter = (t, f) => {
+		f.description = t.description;
+	};
 
-		return formatted;
-	});
+	const formatters = new Map();
 
-	formatters.set(TransactionType.CREDIT, (t) => {
-		const formatted = cashFormatter(t);
-
-		formatted.description = t.description;
-
-		return formatted;
-	});
+	formatters.set(TransactionType.BUY, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.SELL, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.BUY_SHORT, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.SELL_SHORT, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.DIVIDEND, [ basicFormatter, dividendFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.DIVIDEND_STOCK, [ basicFormatter, dividendStockFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.DIVIDEND_REINVEST, [ basicFormatter, dividendReinvestFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.DISTRIBUTION_CASH, [ basicFormatter, distributionCashFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.DISTRIBUTION_FUND, [ basicFormatter, distributionFundFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.DISTRIBUTION_REINVEST, [ basicFormatter, distributionReinvestFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.INCOME, [ basicFormatter, incomeFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.FEE, [ basicFormatter, feeFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.FEE_UNITS, [ basicFormatter, feeUnitsFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.SPLIT, [ basicFormatter, splitFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.VALUATION, [ basicFormatter, valuationFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.DELIST, [ basicFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.DEPOSIT, [ basicFormatter, cashFormatter ]);
+	formatters.set(TransactionType.WITHDRAWAL, [ basicFormatter, cashFormatter ]);
+	formatters.set(TransactionType.DEBIT, [ basicFormatter, cashFormatter, debitFormatter ]);
+	formatters.set(TransactionType.CREDIT, [ basicFormatter, cashFormatter, creditFormatter ]);
 
 	function getInstrumentTypePriority(type) {
 		if (type === InstrumentType.CASH) {
