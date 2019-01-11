@@ -17622,8 +17622,8 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
 		});
 
-		it('should have three ranges (assuming the current year is 2018)', () => {
-			expect(ranges.length).toEqual(3);
+		it('should have four ranges (assuming the current year is 2019)', () => {
+			expect(ranges.length).toEqual(4);
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
@@ -17639,6 +17639,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		it('the third range should be from 12-31-2016 to 12-31-2017', () => {
 			expect(ranges[2].start.format()).toEqual('2016-12-31');
 			expect(ranges[2].end.format()).toEqual('2017-12-31');
+		});
+
+		it('the fourth range should be from 12-31-2017 to 12-31-2018', () => {
+			expect(ranges[3].start.format()).toEqual('2017-12-31');
+			expect(ranges[3].end.format()).toEqual('2018-12-31');
 		});
 	});
 
@@ -17715,7 +17720,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and yearly position summary ranges are processed for a transaction set closes in the current next year -- assuming its 2018', () => {
+	describe('and yearly position summary ranges are processed for a transaction set that opens in 2015 and closes in 2017', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -17739,7 +17744,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
 		});
 
-		it('should have two ranges', () => {
+		it('should have three ranges', () => {
 			expect(ranges.length).toEqual(3);
 		});
 
@@ -17759,7 +17764,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and yearly position summary ranges are processed for a transaction set closed in 2016, but has after-the-fact superfluous valuations in 2017 and 2018', () => {
+	describe('and yearly position summary ranges are processed for a transaction set that opens in 2019 and closes in 2016, but has after-the-fact superfluous valuations in 2017 and 2018', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -17812,7 +17817,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and a year-to-date position summary ranges are processed for a transaction set that closed last year', () => {
+	describe('and a year-to-date position summary ranges are processed for a transaction set that closed in 2017', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -17841,13 +17846,13 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and a year-to-date position summary ranges are processed for a transaction set that opened this year and has not yet closed', () => {
+	describe('and a year-to-date position summary ranges are processed for a transaction set that opened this year and has not yet closed (assuming its 2019)', () => {
 		let ranges;
 
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2018, 1, 1),
+					date: new Day(2019, 1, 1),
 					snapshot: {
 						open: new Decimal(100)
 					},
@@ -17862,26 +17867,26 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges.length).toEqual(1);
 		});
 
-		it('the first range should be from 12-31-2017 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2017-12-31');
-			expect(ranges[0].end.format()).toEqual('2018-12-31');
+		it('the first range should be from 12-31-2018 to 12-31-2019', () => {
+			expect(ranges[0].start.format()).toEqual('2018-12-31');
+			expect(ranges[0].end.format()).toEqual('2019-12-31');
 		});
 	});
 
-	describe('and a year-to-date position summary ranges are processed for a transaction set that opened and closed this year', () => {
+	describe('and a year-to-date position summary ranges are processed for a transaction set that that opened and closed in 2019', () => {
 		let ranges;
 
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2018, 1, 1),
+					date: new Day(2019, 1, 1),
 					snapshot: {
 						open: new Decimal(1)
 					},
 					type: TransactionType.BUY
 				},
 				{
-					date: new Day(2018, 1, 2),
+					date: new Day(2019, 1, 2),
 					snapshot: {
 						open: new Decimal(0)
 					},
@@ -17896,62 +17901,20 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges.length).toEqual(1);
 		});
 
-		it('the first range should be from 12-31-2017 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2017-12-31');
-			expect(ranges[0].end.format()).toEqual('2018-12-31');
-		});
-	});
-
-	describe('and month position summary ranges are processed for a transaction set that does not close', () => {
-		let ranges;
-
-		beforeEach(() => {
-			const transactions = [
-				{
-					date: new Day(2018, 10, 20),
-					snapshot: {
-						open: new Decimal(1)
-					},
-					type: TransactionType.BUY
-				},
-				{
-					date: new Day(2018, 11, 21),
-					snapshot: {
-						open: new Decimal(1)
-					},
-					type: TransactionType.BUY
-				}
-			];
-
-			ranges = PositionSummaryFrame.MONTHLY.getRanges(transactions);
-		});
-
-		it('should have three ranges (assuming the current year is 2018 and the current month is December)', () => {
-			expect(ranges.length).toEqual(3);
-		});
-
-		it('the first range should be from 2018-09-30 to 2018-10-31', () => {
-			expect(ranges[0].start.format()).toEqual('2018-09-30');
-			expect(ranges[0].end.format()).toEqual('2018-10-31');
-		});
-
-		it('the second range should be from 2018-10-31 to 2018-11-30', () => {
-		  expect(ranges[1].start.format()).toEqual('2018-10-31');
-		  expect(ranges[1].end.format()).toEqual('2018-11-30');
-		});
-
-		it('the third range should be from 2018-10-31 to 2018-11-30', () => {
-			expect(ranges[2].start.format()).toEqual('2018-11-30');
-			expect(ranges[2].end.format()).toEqual('2018-12-31');
+		it('the first range should be from 12-31-2018 to 12-31-2019', () => {
+			expect(ranges[0].start.format()).toEqual('2018-12-31');
+			expect(ranges[0].end.format()).toEqual('2019-12-31');
 		});
 	});
 
 	describe('and getting the start date for yearly frames', () => {
-		describe('for one year ago', function() {
+		describe('for one year ago', () => {
 			let start;
+			let today;
 
 			beforeEach(() => {
 				start = PositionSummaryFrame.YEARLY.getStartDate(1);
+				today = new Date();
 			});
 
 			it('should be in December', () => {
@@ -17963,15 +17926,17 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			});
 
 			it('should be two years ago', () => {
-				expect(start.year).toEqual(Day.getToday().year - 2);
+				expect(start.year).toEqual(today.getFullYear() - 2);
 			});
 		});
 
-		describe('for two years ago', function() {
+		describe('for two years ago', () => {
 			let start;
+			let today;
 
 			beforeEach(() => {
 				start = PositionSummaryFrame.YEARLY.getStartDate(2);
+				today = new Date();
 			});
 
 			it('should be in December', () => {
@@ -17982,60 +17947,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				expect(start.day).toEqual(31);
 			});
 
-			it('should be two years ago', () => {
-				expect(start.year).toEqual(Day.getToday().year - 3);
+			it('should be three years ago', () => {
+				expect(start.year).toEqual(today.getFullYear() - 3);
 			});
 		});
 	});
-
-
-
-
-	////
-
-	describe('and getting the start date for monthly frames', () => {
-		describe('for one month ago', function () {
-			let start;
-
-			beforeEach(() => {
-				start = PositionSummaryFrame.MONTHLY.getStartDate(1);
-			});
-
-			it('should be on the last day of month', () => {
-				const today = Day.getToday();
-				
-				expect(start.day).toEqual(Day.getDaysInMonth(today.year, today.month - 2));
-			});
-
-			it('should be month ago', () => {
-				expect(start.month).toEqual(Day.getToday().month - 2);
-			});
-		});
-    
-    describe('for three months ago', function () {
-      let start;
-      
-      beforeEach(() => {
-        start = PositionSummaryFrame.MONTHLY.getStartDate(3);
-      });
-      
-      it('should be on the last day of month', () => {
-        const today = Day.getToday();
-        
-        expect(start.day).toEqual(Day.getDaysInMonth(today.year, today.month - 4));
-      });
-      
-      it('should be 3 month ago', () => {
-        expect(start.month).toEqual(Day.getToday().month - 4);
-      });
-    });
-	});
-
-	////
-
-
-
-
 
 	describe('and recent ranges are calculated', () => {
 		let todayYear;

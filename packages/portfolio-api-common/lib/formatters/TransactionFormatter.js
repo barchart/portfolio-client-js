@@ -121,13 +121,25 @@ module.exports = (() => {
 	}
 
 	const getBasicTransaction = (t, i) => {
+		const basis = t.snapshot.basis;
+		const open = t.snapshot.open;
+
+		let average;
+
+		if (basis && open && !open.getIsZero()) {
+			average = basis.divide(open);
+		} else {
+			average = '';
+		}
+
 		return {
 			date: t.date,
 			type: t.type.display,
 			code: t.type.code,
 			sequence: t.sequence,
 			instrument: i,
-			position: t.position
+			position: t.position,
+			average: average
 		};
 	};
 
