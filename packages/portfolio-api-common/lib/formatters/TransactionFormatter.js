@@ -136,7 +136,7 @@ module.exports = (() => {
 		let average;
 
 		if (basis && open && !open.getIsZero()) {
-			average = basis.divide(open);
+			average = basis.divide(open).absolute();
 		} else {
 			average = '';
 		}
