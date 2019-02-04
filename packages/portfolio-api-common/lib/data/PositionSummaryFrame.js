@@ -64,7 +64,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Number} periods
-		 * @returns {Array.<PositionSummaryRange>}
+		 * @returns {PositionSummaryRange[]}
 		 */
 		getRecentRanges(periods) {
 			const startDate = this.getStartDate(periods);
@@ -77,8 +77,8 @@ module.exports = (() => {
 		 * Returns the ranges for the set of {@link Transaction} objects.
 		 *
 		 * @public
-		 * @param {Array.<Transaction>} transactions
-		 * @returns {Array.<PositionSummaryRange>}
+		 * @param {Transaction[]} transactions
+		 * @returns {PositionSummaryRange[]}
 		 */
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
@@ -91,7 +91,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Day} date
-		 * @return {Array.<PositionSummaryRange>}
+		 * @return {PositionSummaryRange[]}
 		 */
 		getRangesFromDate(date) {
 			assert.argumentIsRequired(date, 'date', Day, 'Day');
@@ -241,32 +241,32 @@ module.exports = (() => {
 	}
 
 	function getMonthlyRanges(transactions) {
-    const ranges = [ ];
-    
-    if (!transactions.length) {
-    	return ranges;
+		const ranges = [ ];
+
+		if (!transactions.length) {
+			return ranges;
 		}
 
 		const first = array.first(transactions);
 		const last = array.last(transactions);
 
 		const firstDate = first.date;
+
 		let lastDate;
 
-		lastDate = last.snapshot.open.getIsZero()
-			? new Day(last.date.year, last.date.month, last.date.day).addMonths(1)
-			: Day.getToday();
+		if (last.snapshot.open.getIsZero()) {
+			lastDate = new Day(last.date.year, last.date.month, last.date.day).addMonths(1);
+		} else {
+			lastDate = Day.getToday();
+		}
+
 		lastDate = lastDate.getEndOfMonth();
 
-		for (
-			let end = firstDate.getEndOfMonth();
-			end.format() <= lastDate.format();
-			end = end.addMonths(1).getEndOfMonth()
-		) {
+		for (let end = firstDate.getEndOfMonth(); end.format() <= lastDate.format(); end = end.addMonths(1).getEndOfMonth()) {
 			ranges.push(getRange(end.subtractMonths(1).getEndOfMonth(), end));
 		}
-    
-    return ranges;
+
+		return ranges;
 	}
 
 	function getYearToDateRanges(transactions) {
@@ -303,8 +303,8 @@ module.exports = (() => {
 	}
 
 	function getMonthlyStartDate(periods, date) {
-    const today = date || Day.getToday();
-    
+		const today = date || Day.getToday();
+
 		return today
 			.subtractMonths(periods)
 			.subtractDays(today.day);
@@ -323,7 +323,7 @@ module.exports = (() => {
 	}
 
 	function getMonthlyRangeDescription(start, end) {
-		return '';
+		return `Month ended ${end.format()}`;
 	}
 
 	function getYearToDateRangeDescription(start, end) {
