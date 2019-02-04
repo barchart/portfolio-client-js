@@ -180,8 +180,8 @@ module.exports = (() => {
 	}
 
 	const yearly = new PositionSummaryFrame('YEARLY', 'year', false, getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const quarterly = new PositionSummaryFrame('QUARTERLY', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
+	const monthly = new PositionSummaryFrame('MONTHLY', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
 	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
 
 	/**
