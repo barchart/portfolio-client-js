@@ -571,8 +571,8 @@ module.exports = (() => {
 	}
 
 	const yearly = new PositionSummaryFrame('YEARLY', 'year', false, getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
-	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
-	const monthly = new PositionSummaryFrame('MONTH', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const quarterly = new PositionSummaryFrame('QUARTERLY', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
+	const monthly = new PositionSummaryFrame('MONTHLY', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
 	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
 
 	/**
@@ -646,9 +646,9 @@ module.exports = (() => {
 		let lastDate;
 
 		if (last.snapshot.open.getIsZero()) {
-			lastDate = new Day(last.date.year, last.date.month, last.date.day).addMonths(1)
+			lastDate = new Day(last.date.year, last.date.month, last.date.day).addMonths(1);
 		} else {
-			lastDate = Day.getToday()
+			lastDate = Day.getToday();
 		}
 
 		lastDate = lastDate.getEndOfMonth();
