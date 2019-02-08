@@ -244,6 +244,8 @@ module.exports = (() => {
 		const ranges = [ ];
 
 		if (transactions.length !== 0) {
+			const today = Day.getToday();
+
 			const first = array.first(transactions);
 			const last = array.last(transactions);
 
@@ -254,7 +256,11 @@ module.exports = (() => {
 			if (last.snapshot.open.getIsZero()) {
 				lastDate = last.date;
 			} else {
-				lastDate = Day.getToday();
+				lastDate = today;
+			}
+
+			if (today.month === lastDate.month && today.year === lastDate.year) {
+				lastDate = lastDate.subtractMonths(1);
 			}
 
 			lastDate = lastDate.getEndOfMonth();
