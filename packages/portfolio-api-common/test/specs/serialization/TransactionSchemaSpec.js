@@ -1,9 +1,7 @@
-const Currency = require('@barchart/common-js/lang/Currency'),
-	Day = require('@barchart/common-js/lang/Day'),
+const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
-const InstrumentType = require('./../../../lib/data/InstrumentType'),
-	TransactionType = require('./../../../lib/data/TransactionType');
+const TransactionType = require('./../../../lib/data/TransactionType');
 
 const TransactionSchema = require('./../../../lib/serialization/TransactionSchema');
 
