@@ -635,6 +635,8 @@ module.exports = (() => {
 		const ranges = [ ];
 
 		if (transactions.length !== 0) {
+			const today = Day.getToday();
+
 			const first = array.first(transactions);
 			const last = array.last(transactions);
 
@@ -645,7 +647,11 @@ module.exports = (() => {
 			if (last.snapshot.open.getIsZero()) {
 				lastDate = last.date;
 			} else {
-				lastDate = Day.getToday();
+				lastDate = today;
+			}
+
+			if (today.month === lastDate.month && today.year === lastDate.year) {
+				lastDate = lastDate.subtractMonths(1);
 			}
 
 			lastDate = lastDate.getEndOfMonth();
@@ -17911,13 +17917,35 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
+	describe('and yearly position summary ranges are processed for a transaction set that opens in the current year', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: Day.getToday(),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				}
+			];
+
+			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
+		});
+
+		it('should have zero ranges', () => {
+			expect(ranges.length).toEqual(0);
+		});
+	});
+
 	describe('and monthly position summary ranges are processed for a transaction set that does not close', () => {
 		let ranges;
 
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2019, 1, 20),
+					date: new Day(2018, 12, 20),
 					snapshot: {
 						open: new Decimal(1)
 					},
@@ -17939,16 +17967,16 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges.length > 1).toEqual(true);
 		});
 
-		it('the first range should be from 12-31-2018 to 01-31-2019', () => {
-			expect(ranges[0].start.format()).toEqual('2018-12-31');
-			expect(ranges[0].end.format()).toEqual('2019-01-31');
+		it('the first range should be from 11-30-2018 to 12-31-2018', () => {
+			expect(ranges[0].start.format()).toEqual('2018-11-30');
+			expect(ranges[0].end.format()).toEqual('2018-12-31');
 		});
 
-		it('the last range should be for the current month', () => {
+		it('the last range should be for the previous month', () => {
 			const today = Day.getToday();
 
-			expect(ranges[ranges.length - 1].start.format()).toEqual(today.getEndOfMonth().subtractMonths(1).getEndOfMonth().format());
-			expect(ranges[ranges.length - 1].end.format()).toEqual(today.getEndOfMonth().format());
+			expect(ranges[ranges.length - 1].start.format()).toEqual(today.subtractMonths(2).getEndOfMonth().format());
+			expect(ranges[ranges.length - 1].end.format()).toEqual(today.subtractMonths(1).getEndOfMonth().format());
 		});
 	});
 
@@ -18022,6 +18050,28 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		it('the second range should be from 10-31-2015 to 11-30-2015', () => {
 			expect(ranges[1].start.format()).toEqual('2015-10-31');
 			expect(ranges[1].end.format()).toEqual('2015-11-30');
+		});
+	});
+
+	describe('and monthly position summary ranges are processed for a transaction set that opens in the current month', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: Day.getToday(),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				}
+			];
+
+			ranges = PositionSummaryFrame.MONTHLY.getRanges(transactions);
+		});
+
+		it('should have zero ranges', () => {
+			expect(ranges.length).toEqual(0);
 		});
 	});
 
@@ -18545,12 +18595,10 @@ describe('When a position container data is gathered', () => {
 });
 
 },{"./../../../lib/data/InstrumentType":1,"./../../../lib/data/PositionSummaryFrame":3,"./../../../lib/processing/PositionContainer":6,"./../../../lib/processing/definitions/PositionLevelDefinition":9,"./../../../lib/processing/definitions/PositionLevelType":10,"./../../../lib/processing/definitions/PositionTreeDefinition":11,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Decimal":22}],55:[function(require,module,exports){
-const Currency = require('@barchart/common-js/lang/Currency'),
-	Day = require('@barchart/common-js/lang/Day'),
+const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
-const InstrumentType = require('./../../../lib/data/InstrumentType'),
-	TransactionType = require('./../../../lib/data/TransactionType');
+const TransactionType = require('./../../../lib/data/TransactionType');
 
 const TransactionSchema = require('./../../../lib/serialization/TransactionSchema');
 
@@ -18613,4 +18661,4 @@ describe('When transactions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":1,"./../../../lib/data/TransactionType":4,"./../../../lib/serialization/TransactionSchema":12,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Day":21,"@barchart/common-js/lang/Decimal":22}]},{},[52,53,54,55]);
+},{"./../../../lib/data/TransactionType":4,"./../../../lib/serialization/TransactionSchema":12,"@barchart/common-js/lang/Day":21,"@barchart/common-js/lang/Decimal":22}]},{},[52,53,54,55]);
