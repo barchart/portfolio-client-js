@@ -243,27 +243,25 @@ module.exports = (() => {
 	function getMonthlyRanges(transactions) {
 		const ranges = [ ];
 
-		if (!transactions.length) {
-			return ranges;
-		}
+		if (transactions.length !== 0) {
+			const first = array.first(transactions);
+			const last = array.last(transactions);
 
-		const first = array.first(transactions);
-		const last = array.last(transactions);
+			const firstDate = first.date;
 
-		const firstDate = first.date;
+			let lastDate;
 
-		let lastDate;
+			if (last.snapshot.open.getIsZero()) {
+				lastDate = last.date;
+			} else {
+				lastDate = Day.getToday();
+			}
 
-		if (last.snapshot.open.getIsZero()) {
-			lastDate = new Day(last.date.year, last.date.month, last.date.day).addMonths(1);
-		} else {
-			lastDate = Day.getToday();
-		}
+			lastDate = lastDate.getEndOfMonth();
 
-		lastDate = lastDate.getEndOfMonth();
-
-		for (let end = firstDate.getEndOfMonth(); end.format() <= lastDate.format(); end = end.addMonths(1).getEndOfMonth()) {
-			ranges.push(getRange(end.subtractMonths(1).getEndOfMonth(), end));
+			for (let end = firstDate.getEndOfMonth(); !end.getIsAfter(lastDate); end = end.addMonths(1).getEndOfMonth()) {
+				ranges.push(getRange(end.subtractMonths(1).getEndOfMonth(), end));
+			}
 		}
 
 		return ranges;

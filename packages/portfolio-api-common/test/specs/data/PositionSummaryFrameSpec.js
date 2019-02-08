@@ -173,7 +173,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and yearly position summary ranges are processed for a transaction set that opens in 2019 and closes in 2016, but has after-the-fact superfluous valuations in 2017 and 2018', () => {
+	describe('and yearly position summary ranges are processed for a transaction set that opens in 2015 and closes in 2016, but has after-the-fact superfluous valuations in 2017 and 2018', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -223,6 +223,120 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
 			expect(ranges[1].start.format()).toEqual('2015-12-31');
 			expect(ranges[1].end.format()).toEqual('2016-12-31');
+		});
+	});
+
+	describe('and monthly position summary ranges are processed for a transaction set that does not close', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2019, 1, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				},
+				{
+					date: new Day(2019, 2, 21),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				}
+			];
+
+			ranges = PositionSummaryFrame.MONTHLY.getRanges(transactions);
+		});
+
+		it('should have at least two ranges', () => {
+			expect(ranges.length > 1).toEqual(true);
+		});
+
+		it('the first range should be from 12-31-2018 to 01-31-2019', () => {
+			expect(ranges[0].start.format()).toEqual('2018-12-31');
+			expect(ranges[0].end.format()).toEqual('2019-01-31');
+		});
+
+		it('the last range should be for the current month', () => {
+			const today = Day.getToday();
+
+			expect(ranges[ranges.length - 1].start.format()).toEqual(today.getEndOfMonth().subtractMonths(1).getEndOfMonth().format());
+			expect(ranges[ranges.length - 1].end.format()).toEqual(today.getEndOfMonth().format());
+		});
+	});
+
+	describe('and monthly position summary ranges are processed for a transaction set closes the same month', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2018, 12, 1),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				},
+				{
+					date: new Day(2018, 12, 31),
+					snapshot: {
+						open: new Decimal(0)
+					},
+					type: TransactionType.SELL
+				}
+			];
+
+			ranges = PositionSummaryFrame.MONTHLY.getRanges(transactions);
+		});
+
+		it('should have one range', () => {
+			expect(ranges.length).toEqual(1);
+		});
+
+		it('the first range should be from 11-30-2018 to 12-31-2018', () => {
+			expect(ranges[0].start.format()).toEqual('2018-11-30');
+			expect(ranges[0].end.format()).toEqual('2018-12-31');
+		});
+	});
+
+	describe('and monthly position summary ranges are processed for a transaction set closes the next month', () => {
+		let ranges;
+
+		beforeEach(() => {
+			const transactions = [
+				{
+					date: new Day(2015, 10, 20),
+					snapshot: {
+						open: new Decimal(1)
+					},
+					type: TransactionType.BUY
+				},
+				{
+					date: new Day(2015, 11, 20),
+					snapshot: {
+						open: new Decimal(0)
+					},
+					type: TransactionType.SELL
+				}
+			];
+
+			ranges = PositionSummaryFrame.MONTHLY.getRanges(transactions);
+		});
+
+		it('should have two ranges', () => {
+			expect(ranges.length).toEqual(2);
+		});
+
+		it('the first range should be from 09-30-2015 to 10-31-2015', () => {
+			expect(ranges[0].start.format()).toEqual('2015-09-30');
+			expect(ranges[0].end.format()).toEqual('2015-10-31');
+		});
+
+		it('the second range should be from 10-31-2015 to 11-30-2015', () => {
+			expect(ranges[1].start.format()).toEqual('2015-10-31');
+			expect(ranges[1].end.format()).toEqual('2015-11-30');
 		});
 	});
 
