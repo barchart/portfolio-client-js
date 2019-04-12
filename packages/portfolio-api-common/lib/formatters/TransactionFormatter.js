@@ -125,7 +125,6 @@ module.exports = (() => {
 		f.date = t.date;
 		f.type = t.type.display;
 		f.code = t.type.code;
-		f.system = t.type.system;
 		f.sequence = t.sequence;
 		f.position = t.position;
 	};
