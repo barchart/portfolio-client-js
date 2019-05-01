@@ -189,12 +189,12 @@ module.exports = (() => {
 			this._dataFormat.periodIncome = null;
 
 			this._dataActual.periodPercent = null;
-			this._dataActual.periodPreviousPercent = null;
-			this._dataActual.periodPrevious2Percent = null;
+			this._dataActual.periodPercentPrevious = null;
+			this._dataActual.periodPercentPrevious2 = null;
 
 			this._dataFormat.periodPercent = null;
-			this._dataFormat.periodPreviousPercent = null;
-			this._dataFormat.periodPrevious2Percent = null;
+			this._dataFormat.periodPercentPrevious = null;
+			this._dataFormat.periodPercentPrevious2 = null;
 
 			this._items.forEach((item) => {
 				bindItem.call(this, item);
