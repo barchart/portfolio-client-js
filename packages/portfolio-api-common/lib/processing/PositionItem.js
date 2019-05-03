@@ -62,12 +62,6 @@ module.exports = (() => {
 			this._data.unrealized = null;
 			this._data.unrealizedChange = null;
 
-			this._data.summaryTotalCurrent = null;
-			this._data.summaryTotalCurrentChange = null;
-
-			this._data.summaryTotalPrevious = null;
-			this._data.summaryTotalPrevious2 = null;
-
 			this._data.marketPrevious = null;
 			this._data.marketPrevious2 = null;
 
@@ -78,26 +72,24 @@ module.exports = (() => {
 			this._data.income = null;
 			this._data.basisPrice = null;
 
-			this._data.periodRealized = null;
-			this._data.periodRealizedPrevious = null;
-			this._data.periodRealizedPrevious2 = null;
-
-			this._data.periodRealizedBasis = null;
-			this._data.periodRealizedBasisPrevious = null;
-			this._data.periodRealizedBasisPrevious2 = null;
-
-			this._data.periodUnrealized = null;
-			this._data.periodUnrealizedPrevious = null;
-			this._data.periodUnrealizedPrevious2 = null;
-
-			this._data.periodUnrealizedBasis = null;
-			this._data.periodUnrealizedBasisPrevious = null;
-			this._data.periodUnrealizedBasisPrevious2 = null;
-
 			this._data.periodIncome = null;
+			this._data.periodRealized = null;
+			this._data.periodUnrealized = null;
 
 			this._data.periodPrice = null;
 			this._data.periodPricePrevious = null;
+
+			this._data.periodGain = null;
+			this._data.periodGainChange = null;
+
+			this._data.periodGainPrevious = null;
+			this._data.periodGainPrevious2 = null;
+
+			this._data.periodDivisor = null;
+			this._data.periodDivisorChange = null;
+
+			this._data.periodDivisorPrevious = null;
+			this._data.periodDivisorPrevious2 = null;
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
@@ -393,7 +385,6 @@ module.exports = (() => {
 
 		const previousSummary1 = getPreviousSummary(item.previousSummaries, 1);
 		const previousSummary2 = getPreviousSummary(item.previousSummaries, 2);
-		const previousSummary3 = getPreviousSummary(item.previousSummaries, 3);
 
 		const snapshot = getSnapshot(position, currentSummary, item._reporting);
 
@@ -417,31 +408,21 @@ module.exports = (() => {
 
 		data.income = snapshot.income;
 
-		data.summaryTotalCurrent = calculateSummaryTotal(item.currentSummary, previousSummary1);
-		data.summaryTotalPrevious = calculateSummaryTotal(previousSummary1, previousSummary2);
-		data.summaryTotalPrevious2 = calculateSummaryTotal(previousSummary2, previousSummary3);
-
 		data.marketPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.value;
 		data.marketPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
 		data.quantityPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.open;
 
-		data.periodRealized = calculatePeriodRealized(item.currentSummary, previousSummary1);
-		data.periodRealizedPrevious = calculatePeriodRealized(previousSummary1, previousSummary2);
-		data.periodRealizedPrevious2 = calculatePeriodRealized(previousSummary2, previousSummary3);
-		
-		data.periodRealizedBasis = calculatePeriodRealizedBasis(item.currentSummary, previousSummary1);
-		data.periodRealizedBasisPrevious = calculatePeriodRealizedBasis(previousSummary1, previousSummary2);
-		data.periodRealizedBasisPrevious2 = calculatePeriodRealizedBasis(previousSummary2, previousSummary3);
-		
-		data.periodUnrealized = calculatePeriodUnrealized(item.currentSummary, previousSummary1);
-		data.periodUnrealizedPrevious = calculatePeriodUnrealized(previousSummary1, previousSummary2);
-		data.periodUnrealizedPrevious2 = calculatePeriodUnrealized(previousSummary2, previousSummary3);
+		data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal.ZERO;
+		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
+		data.periodUnrealized = currentSummary !== null ? currentSummary.period.unrealized : Decimal.ZERO;
 
-		data.periodUnrealizedBasis = calculatePeriodUnrealizedBasis(item.currentSummary, previousSummary1);
-		data.periodUnrealizedBasisPrevious = calculatePeriodUnrealizedBasis(previousSummary1, previousSummary2);
-		data.periodUnrealizedBasisPrevious2 = calculatePeriodUnrealizedBasis(previousSummary2, previousSummary3);
-		
-		data.periodIncome = calculatePeriodIncome(item.currentSummary, previousSummary1);
+		data.periodGain = calculatePeriodGain(currentSummary);
+		data.periodGainPrevious = calculatePeriodGain(previousSummary1);
+		data.periodGainPrevious2 = calculatePeriodGain(previousSummary2);
+
+		data.periodDivisor = calculatePeriodDivisor(currentSummary);
+		data.periodDivisorPrevious = calculatePeriodDivisor(previousSummary1);
+		data.periodDivisorPrevious2 = calculatePeriodDivisor(previousSummary2);
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -465,7 +446,6 @@ module.exports = (() => {
 	function calculatePriceData(item, price) {
 		const position = item.position;
 		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
-		const previousSummaries = item.previousSummaries;
 
 		const data = item._data;
 
@@ -528,8 +508,6 @@ module.exports = (() => {
 		const currentSummary = item.currentSummary;
 
 		if (currentSummary && position.instrument.type !== InstrumentType.CASH) {
-			const previousSummary = getPreviousSummary(previousSummaries, 1);
-
 			let priceToUse;
 
 			if (price) {
@@ -543,8 +521,6 @@ module.exports = (() => {
 			}
 
 			if (priceToUse !== null) {
-				const period = currentSummary.period;
-
 				let unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
 				let unrealizedChange;
 
@@ -554,60 +530,46 @@ module.exports = (() => {
 					unrealizedChange = Decimal.ZERO;
 				}
 
-				let summaryTotalCurrent = period.realized.add(period.income).add(unrealized).subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
-				let summaryTotalCurrentChange;
-
-				if (data.summaryTotalCurrent !== null) {
-					summaryTotalCurrentChange = summaryTotalCurrent.subtract(data.summaryTotalCurrent);
-				} else {
-					summaryTotalCurrentChange = Decimal.ZERO;
-				}
-
-				data.summaryTotalCurrent = summaryTotalCurrent;
-				data.summaryTotalCurrentChange = summaryTotalCurrentChange;
-
 				data.unrealized = unrealized;
 				data.unrealizedChange = unrealizedChange;
 
-				data.periodUnrealized = calculatePeriodUnrealized(item.currentSummary, previousSummary, data.unrealized);
-				data.periodUnrealizedChange = unrealizedChange;
-			} else {
-				data.summaryTotalCurrentChange = Decimal.ZERO;
+				let periodGain = calculatePeriodGain(currentSummary, priceToUse);
+				let periodGainChange;
 
+				if (data.periodGain !== null) {
+					periodGainChange = periodGain.subtract(data.periodGain);
+				} else {
+					periodGainChange = Decimal.ZERO;
+				}
+
+				data.periodGain = periodGain;
+				data.periodGainChange = periodGainChange;
+			} else {
 				data.unrealized = Decimal.ZERO;
 				data.unrealizedChange = Decimal.ZERO;
 
-				data.periodUnrealizedChange = Decimal.ZERO;
+				data.periodGainChange = Decimal.ZERO;
 			}
-		} else {
-			data.summaryTotalCurrentChange = Decimal.ZERO;
-
-			data.unrealized = Decimal.ZERO;
-			data.unrealizedChange = Decimal.ZERO;
 		}
 	}
 
-	function calculateSummaryTotal(currentSummary, previousSummary) {
+	function calculatePeriodGain(currentSummary, overridePrice) {
 		let returnRef;
 
 		if (currentSummary) {
-			const period = currentSummary.period;
+			let endValue;
 
-			returnRef = period.realized.add(period.income).add(period.unrealized).subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
-		} else {
-			returnRef = Decimal.ZERO;
-		}
+			if (overridePrice) {
+				endValue = currentSummary.end.open.multiply(overridePrice);
+			} else {
+				endValue = currentSummary.end.value;
+			}
 
-		return returnRef;
-	}
+			const valueChange = endValue.subtract(currentSummary.start.value);
+			const tradeChange = currentSummary.period.sells.subtract(currentSummary.period.buys);
+			const incomeChange = currentSummary.period.income;
 
-	function calculatePeriodRealized(currentSummary, previousSummary) {
-		let returnRef;
-
-		if (currentSummary) {
-			const period = currentSummary.period;
-
-			returnRef = period.realized;
+			returnRef = valueChange.add(tradeChange).add(incomeChange);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
@@ -615,54 +577,11 @@ module.exports = (() => {
 		return returnRef;
 	}
 
-	function calculatePeriodRealizedBasis(currentSummary, previousSummary) {
+	function calculatePeriodDivisor(currentSummary) {
 		let returnRef;
 
 		if (currentSummary) {
-			const period = currentSummary.period;
-
-			returnRef = period.sells.subtract(calculatePeriodRealized(currentSummary, previousSummary));
-		} else {
-			returnRef = Decimal.ZERO;
-		}
-
-		return returnRef;
-	}
-	
-	function calculatePeriodUnrealized(currentSummary, previousSummary, override) {
-		let returnRef;
-
-		if (currentSummary) {
-			const period = currentSummary.period;
-			const unrealized = override || period.unrealized;
-
-			returnRef = unrealized.subtract(previousSummary !== null ? previousSummary.period.unrealized : Decimal.ZERO);
-		} else {
-			returnRef = Decimal.ZERO;
-		}
-
-		return returnRef;
-	}
-	
-	function calculatePeriodUnrealizedBasis(currentSummary, previousSummary) {
-		let returnRef;
-
-		if (currentSummary) {
-			returnRef = currentSummary.end.basis.absolute();
-		} else {
-			returnRef = Decimal.ZERO;
-		}
-
-		return returnRef;
-	}
-
-	function calculatePeriodIncome(currentSummary, previousSummary) {
-		let returnRef;
-
-		if (currentSummary) {
-			const period = currentSummary.period;
-
-			returnRef = period.income;
+			returnRef = currentSummary.start.value.add(currentSummary.period.buys);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
