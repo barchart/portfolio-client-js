@@ -550,6 +550,11 @@ module.exports = (() => {
 
 				data.periodGainChange = Decimal.ZERO;
 			}
+		} else {
+			data.unrealized = Decimal.ZERO;
+			data.unrealizedChange = Decimal.ZERO;
+
+			data.periodGainChange = Decimal.ZERO;
 		}
 	}
 
