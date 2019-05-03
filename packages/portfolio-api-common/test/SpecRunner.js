@@ -3891,6 +3891,7 @@ module.exports = (() => {
 
 		const previousSummary1 = getPreviousSummary(item.previousSummaries, 1);
 		const previousSummary2 = getPreviousSummary(item.previousSummaries, 2);
+		const previousSummary3 = getPreviousSummary(item.previousSummaries, 3);
 
 		const snapshot = getSnapshot(position, currentSummary, item._reporting);
 
@@ -3922,13 +3923,13 @@ module.exports = (() => {
 		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
 		data.periodUnrealized = currentSummary !== null ? currentSummary.period.unrealized : Decimal.ZERO;
 
-		data.periodGain = calculatePeriodGain(currentSummary);
-		data.periodGainPrevious = calculatePeriodGain(previousSummary1);
-		data.periodGainPrevious2 = calculatePeriodGain(previousSummary2);
+		data.periodGain = calculatePeriodGain(currentSummary, previousSummary1);
+		data.periodGainPrevious = calculatePeriodGain(previousSummary1, previousSummary2);
+		data.periodGainPrevious2 = calculatePeriodGain(previousSummary2, previousSummary3);
 
-		data.periodDivisor = calculatePeriodDivisor(currentSummary);
-		data.periodDivisorPrevious = calculatePeriodDivisor(previousSummary1);
-		data.periodDivisorPrevious2 = calculatePeriodDivisor(previousSummary2);
+		data.periodDivisor = calculatePeriodDivisor(currentSummary, previousSummary1);
+		data.periodDivisorPrevious = calculatePeriodDivisor(previousSummary1, previousSummary2);
+		data.periodDivisorPrevious2 = calculatePeriodDivisor(previousSummary2, previousSummary3);
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -4012,6 +4013,7 @@ module.exports = (() => {
 		data.unrealizedTodayChange = unrealizedTodayChange;
 
 		const currentSummary = item.currentSummary;
+		const previousSummary = getPreviousSummary(item.previousSummaries, 1);
 
 		if (currentSummary && position.instrument.type !== InstrumentType.CASH) {
 			let priceToUse;
@@ -4039,7 +4041,7 @@ module.exports = (() => {
 				data.unrealized = unrealized;
 				data.unrealizedChange = unrealizedChange;
 
-				let periodGain = calculatePeriodGain(currentSummary, priceToUse);
+				let periodGain = calculatePeriodGain(currentSummary, previousSummary, priceToUse);
 				let periodGainChange;
 
 				if (data.periodGain !== null) {
@@ -4064,10 +4066,18 @@ module.exports = (() => {
 		}
 	}
 
-	function calculatePeriodGain(currentSummary, overridePrice) {
+	function calculatePeriodGain(currentSummary, previousSummary, overridePrice) {
 		let returnRef;
 
 		if (currentSummary) {
+			let startValue;
+
+			if (previousSummary) {
+				startValue = previousSummary.end.value;
+			} else {
+				startValue = Decimal.ZERO;
+			}
+
 			let endValue;
 
 			if (overridePrice) {
@@ -4076,7 +4086,7 @@ module.exports = (() => {
 				endValue = currentSummary.end.value;
 			}
 
-			const valueChange = endValue.subtract(currentSummary.start.value);
+			const valueChange = endValue.subtract(startValue);
 			const tradeChange = currentSummary.period.sells.subtract(currentSummary.period.buys);
 			const incomeChange = currentSummary.period.income;
 
@@ -4088,11 +4098,19 @@ module.exports = (() => {
 		return returnRef;
 	}
 
-	function calculatePeriodDivisor(currentSummary) {
+	function calculatePeriodDivisor(currentSummary, previousSummary) {
 		let returnRef;
 
 		if (currentSummary) {
-			returnRef = currentSummary.start.value.add(currentSummary.period.buys);
+			let startValue;
+
+			if (previousSummary) {
+				startValue = previousSummary.end.value;
+			} else {
+				startValue = Decimal.ZERO;
+			}
+
+			returnRef = startValue.add(currentSummary.period.buys);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
