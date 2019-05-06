@@ -5,7 +5,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is');
 
-const InstrumentType = require('./../data/InstrumentType');
+const InstrumentType = require('./../data/InstrumentType'),
+	PositionDirection = require('./../data/PositionDirection');
 
 module.exports = (() => {
 	'use strict';
@@ -90,6 +91,8 @@ module.exports = (() => {
 
 			this._data.periodDivisorPrevious = null;
 			this._data.periodDivisorPrevious2 = null;
+
+			this._data.initiate = null;
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
@@ -391,6 +394,8 @@ module.exports = (() => {
 
 		const data = item._data;
 
+		data.initiate = guessInitiateDirection(item.previousSummaries, item.currentSummary);
+
 		data.quantity = snapshot.open;
 		data.previousPrice = position.previous || null;
 
@@ -417,13 +422,13 @@ module.exports = (() => {
 		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
 		data.periodUnrealized = currentSummary !== null ? currentSummary.period.unrealized : Decimal.ZERO;
 
-		data.periodGain = calculatePeriodGain(currentSummary, previousSummary1);
-		data.periodGainPrevious = calculatePeriodGain(previousSummary1, previousSummary2);
-		data.periodGainPrevious2 = calculatePeriodGain(previousSummary2, previousSummary3);
+		data.periodGain = calculatePeriodGain(data.initiate, currentSummary, previousSummary1);
+		data.periodGainPrevious = calculatePeriodGain(data.initiate, previousSummary1, previousSummary2);
+		data.periodGainPrevious2 = calculatePeriodGain(data.initiate, previousSummary2, previousSummary3);
 
-		data.periodDivisor = calculatePeriodDivisor(currentSummary, previousSummary1);
-		data.periodDivisorPrevious = calculatePeriodDivisor(previousSummary1, previousSummary2);
-		data.periodDivisorPrevious2 = calculatePeriodDivisor(previousSummary2, previousSummary3);
+		data.periodDivisor = calculatePeriodDivisor(data.initiate, currentSummary, previousSummary1);
+		data.periodDivisorPrevious = calculatePeriodDivisor(data.initiate, previousSummary1, previousSummary2);
+		data.periodDivisorPrevious2 = calculatePeriodDivisor(data.initiate, previousSummary2, previousSummary3);
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -535,7 +540,7 @@ module.exports = (() => {
 				data.unrealized = unrealized;
 				data.unrealizedChange = unrealizedChange;
 
-				let periodGain = calculatePeriodGain(currentSummary, previousSummary, priceToUse);
+				let periodGain = calculatePeriodGain(data.initiate, currentSummary, previousSummary, priceToUse);
 				let periodGainChange;
 
 				if (data.periodGain !== null) {
@@ -560,31 +565,55 @@ module.exports = (() => {
 		}
 	}
 
-	function calculatePeriodGain(currentSummary, previousSummary, overridePrice) {
+	function guessInitiateDirection(previousSummaries, currentSummary) {
+		const summaries = previousSummaries.concat(currentSummary);
+
+		const direction = summaries.reduce((accumulator, summary) => {
+			let returnRef = accumulator;
+
+			if (summary === null && summary.start.direction !== PositionDirection.EVEN) {
+				returnRef = summary.start.direction;
+			}
+
+			if (summary === null && summary.start.direction !== PositionDirection.EVEN) {
+				returnRef = summary.end.direction;
+			}
+
+			return returnRef;
+		}, null);
+
+		return direction || PositionDirection.LONG;
+	}
+
+	function calculatePeriodGain(direction, currentSummary, previousSummary, overridePrice) {
 		let returnRef;
 
 		if (currentSummary) {
-			let startValue;
+			if (direction === PositionDirection.LONG) {
+				let startValue;
 
-			if (previousSummary) {
-				startValue = previousSummary.end.value;
+				if (previousSummary) {
+					startValue = previousSummary.end.value;
+				} else {
+					startValue = Decimal.ZERO;
+				}
+
+				let endValue;
+
+				if (overridePrice) {
+					endValue = currentSummary.end.open.multiply(overridePrice);
+				} else {
+					endValue = currentSummary.end.value;
+				}
+
+				const valueChange = endValue.subtract(startValue);
+				const tradeChange = currentSummary.period.sells.subtract(currentSummary.period.buys.opposite());
+				const incomeChange = currentSummary.period.income;
+
+				returnRef = valueChange.add(tradeChange).add(incomeChange);
 			} else {
-				startValue = Decimal.ZERO;
+				returnRef = Decimal.ZERO;
 			}
-
-			let endValue;
-
-			if (overridePrice) {
-				endValue = currentSummary.end.open.multiply(overridePrice);
-			} else {
-				endValue = currentSummary.end.value;
-			}
-
-			const valueChange = endValue.subtract(startValue);
-			const tradeChange = currentSummary.period.sells.subtract(currentSummary.period.buys.opposite());
-			const incomeChange = currentSummary.period.income;
-
-			returnRef = valueChange.add(tradeChange).add(incomeChange);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
@@ -592,19 +621,23 @@ module.exports = (() => {
 		return returnRef;
 	}
 
-	function calculatePeriodDivisor(currentSummary, previousSummary) {
+	function calculatePeriodDivisor(direction, currentSummary, previousSummary) {
 		let returnRef;
 
 		if (currentSummary) {
-			let startValue;
+			if (direction === PositionDirection.LONG) {
+				let startValue;
 
-			if (previousSummary) {
-				startValue = previousSummary.end.value;
+				if (previousSummary) {
+					startValue = previousSummary.end.value;
+				} else {
+					startValue = Decimal.ZERO;
+				}
+
+				returnRef = startValue.add(currentSummary.period.buys.opposite());
 			} else {
-				startValue = Decimal.ZERO;
+				returnRef = Decimal.ZERO;
 			}
-
-			returnRef = startValue.add(currentSummary.period.buys.opposite());
 		} else {
 			returnRef = Decimal.ZERO;
 		}
