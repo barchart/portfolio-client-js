@@ -571,11 +571,11 @@ module.exports = (() => {
 		const direction = summaries.reduce((accumulator, summary) => {
 			let returnRef = accumulator;
 
-			if (summary === null && summary.start.direction !== PositionDirection.EVEN) {
+			if (summary !== null && summary.start.direction !== PositionDirection.EVEN) {
 				returnRef = summary.start.direction;
 			}
 
-			if (summary === null && summary.start.direction !== PositionDirection.EVEN) {
+			if (summary !== null && summary.end.direction !== PositionDirection.EVEN) {
 				returnRef = summary.end.direction;
 			}
 
