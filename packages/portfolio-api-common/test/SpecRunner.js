@@ -4077,11 +4077,11 @@ module.exports = (() => {
 		const direction = summaries.reduce((accumulator, summary) => {
 			let returnRef = accumulator;
 
-			if (summary === null && summary.start.direction !== PositionDirection.EVEN) {
+			if (summary !== null && summary.start.direction !== PositionDirection.EVEN) {
 				returnRef = summary.start.direction;
 			}
 
-			if (summary === null && summary.start.direction !== PositionDirection.EVEN) {
+			if (summary !== null && summary.end.direction !== PositionDirection.EVEN) {
 				returnRef = summary.end.direction;
 			}
 
@@ -4095,31 +4095,27 @@ module.exports = (() => {
 		let returnRef;
 
 		if (currentSummary) {
-			if (direction === PositionDirection.LONG) {
-				let startValue;
+			let startValue;
 
-				if (previousSummary) {
-					startValue = previousSummary.end.value;
-				} else {
-					startValue = Decimal.ZERO;
-				}
-
-				let endValue;
-
-				if (overridePrice) {
-					endValue = currentSummary.end.open.multiply(overridePrice);
-				} else {
-					endValue = currentSummary.end.value;
-				}
-
-				const valueChange = endValue.subtract(startValue);
-				const tradeChange = currentSummary.period.sells.subtract(currentSummary.period.buys.opposite());
-				const incomeChange = currentSummary.period.income;
-
-				returnRef = valueChange.add(tradeChange).add(incomeChange);
+			if (previousSummary) {
+				startValue = previousSummary.end.value;
 			} else {
-				returnRef = Decimal.ZERO;
+				startValue = Decimal.ZERO;
 			}
+
+			let endValue;
+
+			if (overridePrice) {
+				endValue = currentSummary.end.open.multiply(overridePrice);
+			} else {
+				endValue = currentSummary.end.value;
+			}
+
+			const valueChange = endValue.subtract(startValue);
+			const tradeChange = currentSummary.period.sells.subtract(currentSummary.period.buys.opposite());
+			const incomeChange = currentSummary.period.income;
+
+			returnRef = valueChange.add(tradeChange).add(incomeChange);
 		} else {
 			returnRef = Decimal.ZERO;
 		}
@@ -4131,18 +4127,18 @@ module.exports = (() => {
 		let returnRef;
 
 		if (currentSummary) {
-			if (direction === PositionDirection.LONG) {
-				let startValue;
+			let startValue;
 
-				if (previousSummary) {
-					startValue = previousSummary.end.value;
-				} else {
-					startValue = Decimal.ZERO;
-				}
-
-				returnRef = startValue.add(currentSummary.period.buys.opposite());
+			if (previousSummary) {
+				startValue = previousSummary.end.value;
 			} else {
-				returnRef = Decimal.ZERO;
+				startValue = Decimal.ZERO;
+			}
+
+			if (direction === PositionDirection.SHORT) {
+				returnRef = startValue.opposite().add(currentSummary.period.sells);
+			} else {
+				returnRef = startValue.add(currentSummary.period.buys.opposite());
 			}
 		} else {
 			returnRef = Decimal.ZERO;
