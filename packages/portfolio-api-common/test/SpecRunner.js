@@ -4087,7 +4087,7 @@ module.exports = (() => {
 			}
 
 			const valueChange = endValue.subtract(startValue);
-			const tradeChange = currentSummary.period.sells.subtract(currentSummary.period.buys);
+			const tradeChange = currentSummary.period.sells.subtract(currentSummary.period.buys.opposite());
 			const incomeChange = currentSummary.period.income;
 
 			returnRef = valueChange.add(tradeChange).add(incomeChange);
@@ -4110,7 +4110,7 @@ module.exports = (() => {
 				startValue = Decimal.ZERO;
 			}
 
-			returnRef = startValue.add(currentSummary.period.buys);
+			returnRef = startValue.add(currentSummary.period.buys.opposite());
 		} else {
 			returnRef = Decimal.ZERO;
 		}
