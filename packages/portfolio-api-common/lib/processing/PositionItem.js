@@ -422,13 +422,13 @@ module.exports = (() => {
 		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
 		data.periodUnrealized = currentSummary !== null ? currentSummary.period.unrealized : Decimal.ZERO;
 
-		data.periodGain = calculatePeriodGain(data.initiate, currentSummary, previousSummary1);
-		data.periodGainPrevious = calculatePeriodGain(data.initiate, previousSummary1, previousSummary2);
-		data.periodGainPrevious2 = calculatePeriodGain(data.initiate, previousSummary2, previousSummary3);
+		data.periodGain = calculatePeriodGain(position.instrument.type, data.initiate, currentSummary, previousSummary1);
+		data.periodGainPrevious = calculatePeriodGain(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
+		data.periodGainPrevious2 = calculatePeriodGain(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
 
-		data.periodDivisor = calculatePeriodDivisor(data.initiate, currentSummary, previousSummary1);
-		data.periodDivisorPrevious = calculatePeriodDivisor(data.initiate, previousSummary1, previousSummary2);
-		data.periodDivisorPrevious2 = calculatePeriodDivisor(data.initiate, previousSummary2, previousSummary3);
+		data.periodDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, currentSummary, previousSummary1);
+		data.periodDivisorPrevious = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
+		data.periodDivisorPrevious2 = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
@@ -540,7 +540,7 @@ module.exports = (() => {
 				data.unrealized = unrealized;
 				data.unrealizedChange = unrealizedChange;
 
-				let periodGain = calculatePeriodGain(data.initiate, currentSummary, previousSummary, priceToUse);
+				let periodGain = calculatePeriodGain(position.instrument.type, data.initiate, currentSummary, previousSummary, priceToUse);
 				let periodGainChange;
 
 				if (data.periodGain !== null) {
@@ -585,10 +585,10 @@ module.exports = (() => {
 		return direction || PositionDirection.LONG;
 	}
 
-	function calculatePeriodGain(direction, currentSummary, previousSummary, overridePrice) {
+	function calculatePeriodGain(type, direction, currentSummary, previousSummary, overridePrice) {
 		let returnRef;
 
-		if (currentSummary) {
+		if (currentSummary && type !== InstrumentType.CASH) {
 			let startValue;
 
 			if (previousSummary) {
@@ -617,10 +617,10 @@ module.exports = (() => {
 		return returnRef;
 	}
 
-	function calculatePeriodDivisor(direction, currentSummary, previousSummary) {
+	function calculatePeriodDivisor(type, direction, currentSummary, previousSummary) {
 		let returnRef;
 
-		if (currentSummary) {
+		if (currentSummary && type !== InstrumentType.CASH) {
 			let startValue;
 
 			if (previousSummary) {
