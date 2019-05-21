@@ -755,6 +755,14 @@ module.exports = (() => {
 
 		calculateUnrealizedPercent(group);
 
+		actual.periodPercent = calculatePeriodPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
+		actual.periodPercentPrevious = calculatePeriodPercent(actual.summaryTotalPrevious, actual.periodDivisorPrevious);
+		actual.periodPercentPrevious2 = calculatePeriodPercent(actual.summaryTotalPrevious2, actual.periodDivisorPrevious2);
+
+		format.periodPercent = formatPercent(actual.periodPercent, 2);
+		format.periodPercentPrevious = formatPercent(actual.periodPercentPrevious, 2);
+		format.periodPercentPrevious2 = formatPercent(actual.periodPercentPrevious2, 2);
+
 		const groupItems = group._items;
 
 		if (group.single && groupItems.length === 1) {
@@ -762,27 +770,19 @@ module.exports = (() => {
 
 			actual.quantity = item.data.quantity;
 			actual.quantityPrevious = item.data.quantityPrevious;
-			
-			actual.basisPrice = item.data.basisPrice;
-
-			actual.periodPrice = item.data.periodPrice;
-			actual.periodPricePrevious = item.data.periodPricePrevious;
 
 			format.quantity = formatDecimal(actual.quantity, 2);
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 
+			actual.basisPrice = item.data.basisPrice;
+
 			format.basisPrice = formatCurrency(actual.basisPrice, currency);
+
+			actual.periodPrice = item.data.periodPrice;
+			actual.periodPricePrevious = item.data.periodPricePrevious;
 
 			format.periodPrice = formatCurrency(actual.periodPrice, currency);
 			format.periodPricePrevious = formatCurrency(actual.periodPricePrevious, currency);
-
-			actual.periodPercent = calculatePeriodPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
-			actual.periodPercentPrevious = calculatePeriodPercent(actual.summaryTotalPrevious, actual.periodDivisorPrevious);
-			actual.periodPercentPrevious2 = calculatePeriodPercent(actual.summaryTotalPrevious2, actual.periodDivisorPrevious2);
-
-			format.periodPercent = formatPercent(actual.periodPercent, 2);
-			format.periodPercentPrevious = formatPercent(actual.periodPercentPrevious, 2);
-			format.periodPercentPrevious2 = formatPercent(actual.periodPercentPrevious2, 2);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
@@ -908,11 +908,11 @@ module.exports = (() => {
 
 		calculateUnrealizedPercent(group);
 
+		actual.periodPercent = calculatePeriodPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
+		format.periodPercent = formatPercent(actual.periodPercent, 2);
+
 		if (group.single && item) {
 			actual.periodUnrealized = item.data.periodUnrealized;
-
-			actual.periodPercent = calculatePeriodPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
-			format.periodPercent = formatPercent(actual.periodPercent, 2);
 		}
 	}
 
