@@ -94,6 +94,8 @@ module.exports = (() => {
 
 			this._data.initiate = null;
 
+			this._data.totalDivisor = null;
+
 			this._data.newsExists = false;
 			this._data.fundamental = { };
 			this._data.locked = getIsLocked(position);
@@ -447,6 +449,8 @@ module.exports = (() => {
 		} else {
 			data.periodPricePrevious = null;
 		}
+
+		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, currentSummary);
 	}
 
 	function calculatePriceData(item, price) {
@@ -633,6 +637,22 @@ module.exports = (() => {
 				returnRef = startValue.opposite().add(currentSummary.period.sells);
 			} else {
 				returnRef = startValue.add(currentSummary.period.buys.opposite());
+			}
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculateTotalDivisor(type, direction, finalSummary) {
+		let returnRef;
+
+		if (finalSummary && type !== InstrumentType.CASH) {
+			if (direction === PositionDirection.SHORT) {
+				returnRef = finalSummary.period.sells;
+			} else {
+				returnRef = finalSummary.period.buys.opposite();
 			}
 		} else {
 			returnRef = Decimal.ZERO;
