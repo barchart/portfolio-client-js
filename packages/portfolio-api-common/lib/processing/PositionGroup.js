@@ -978,28 +978,32 @@ module.exports = (() => {
 		const openBasis = actual.basis;
 		const totalBasis = actual.totalDivisor;
 
-		const closedBasis = totalBasis.subtract(openBasis);
+		const numerator = actual.realized;
+		const denominator = totalBasis.subtract(openBasis);
 
-		if (closedBasis.getIsZero()) {
-			actual.realizedPercent = null;
-			format.realizedPercent = '—';
+		if (denominator.getIsZero()) {
+			actual.realizedPercent = Decimal.ZERO;
 		} else {
-			actual.realizedPercent = actual.realized.divide(closedBasis);
-			format.realizedPercent = formatPercent(actual.realizedPercent, 2);
+			actual.realizedPercent = numerator.divide(denominator);
 		}
+
+		format.realizedPercent = formatPercent(actual.realizedPercent, 2);
 	}
 
 	function calculateUnrealizedPercent(group) {
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
-		if (actual.basis.getIsZero()) {
-			actual.unrealizedPercent = null;
-			format.unrealizedPercent = '—';
+		const numerator = actual.unrealized;
+		const denominator = actual.basis;
+
+		if (denominator.getIsZero()) {
+			actual.unrealizedPercent = Decimal.ZERO;
 		} else {
-			actual.unrealizedPercent = actual.unrealized.divide(actual.basis);
-			format.unrealizedPercent = formatPercent(actual.unrealizedPercent, 2);
+			actual.unrealizedPercent = numerator.divide(denominator);
 		}
+
+		format.unrealizedPercent = formatPercent(actual.unrealizedPercent, 2);
 	}
 
 	function calculateGainPercent(gain, basis) {
