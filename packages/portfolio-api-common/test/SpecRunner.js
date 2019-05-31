@@ -2659,6 +2659,7 @@ module.exports = (() => {
 			this._dataActual.marketChange = null;
 			this._dataActual.marketChangePercent = null;
 			this._dataActual.cashTotal = null;
+			this._dataActual.totalDivisor = null;
 			this._dataActual.periodDivisorCurrent = null;
 			this._dataActual.periodDivisorPrevious = null;
 			this._dataActual.periodDivisorPrevious2 = null;
@@ -2705,10 +2706,12 @@ module.exports = (() => {
 			this._dataFormat.periodRealized = null;
 			this._dataFormat.periodUnrealized = null;
 
+			this._dataActual.totalPercent = null;
 			this._dataActual.periodPercent = null;
 			this._dataActual.periodPercentPrevious = null;
 			this._dataActual.periodPercentPrevious2 = null;
 
+			this._dataFormat.totalPercent = null;
 			this._dataFormat.periodPercent = null;
 			this._dataFormat.periodPercentPrevious = null;
 			this._dataFormat.periodPercentPrevious2 = null;
@@ -3217,6 +3220,7 @@ module.exports = (() => {
 				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
 			}
 
+			updates.totalDivisor = updates.periodDivisorCurrent.add(translate(item, item.data.totalDivisor));
 			updates.periodDivisorCurrent = updates.periodDivisorCurrent.add(translate(item, item.data.periodDivisor));
 			updates.periodDivisorPrevious = updates.periodDivisorPrevious.add(translate(item, item.data.periodDivisorPrevious));
 			updates.periodDivisorPrevious2 = updates.periodDivisorPrevious2.add(translate(item, item.data.periodDivisorPrevious2));
@@ -3236,6 +3240,7 @@ module.exports = (() => {
 			periodUnrealized: Decimal.ZERO,
 			periodIncome: Decimal.ZERO,
 			cashTotal: Decimal.ZERO,
+			totalDivisor: Decimal.ZERO,
 			periodDivisorCurrent: Decimal.ZERO,
 			periodDivisorPrevious: Decimal.ZERO,
 			periodDivisorPrevious2: Decimal.ZERO
@@ -3254,6 +3259,7 @@ module.exports = (() => {
 		actual.periodUnrealized = updates.periodUnrealized;
 		actual.periodIncome = updates.periodIncome;
 		actual.cashTotal = updates.cashTotal;
+		actual.totalDivisor = updates.totalDivisor;
 		actual.periodDivisorCurrent = updates.periodDivisorCurrent;
 		actual.periodDivisorPrevious = updates.periodDivisorPrevious;
 		actual.periodDivisorPrevious2 = updates.periodDivisorPrevious2;
@@ -3277,9 +3283,9 @@ module.exports = (() => {
 
 		calculateUnrealizedPercent(group);
 
-		actual.periodPercent = calculatePeriodPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
-		actual.periodPercentPrevious = calculatePeriodPercent(actual.summaryTotalPrevious, actual.periodDivisorPrevious);
-		actual.periodPercentPrevious2 = calculatePeriodPercent(actual.summaryTotalPrevious2, actual.periodDivisorPrevious2);
+		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
+		actual.periodPercentPrevious = calculateGainPercent(actual.summaryTotalPrevious, actual.periodDivisorPrevious);
+		actual.periodPercentPrevious2 = calculateGainPercent(actual.summaryTotalPrevious2, actual.periodDivisorPrevious2);
 
 		format.periodPercent = formatPercent(actual.periodPercent, 2);
 		format.periodPercentPrevious = formatPercent(actual.periodPercentPrevious, 2);
@@ -3386,7 +3392,9 @@ module.exports = (() => {
 		actual.unrealized = updates.unrealized;
 		actual.unrealizedToday = updates.unrealizedToday;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
+
 		actual.total = updates.unrealized.add(actual.realized).add(actual.income);
+		actual.totalPercent = calculateGainPercent(actual.total, actual.totalDivisor);
 
 		let marketChange = updates.market.subtract(actual.marketPrevious);
 		let marketChangePercent;
@@ -3424,13 +3432,14 @@ module.exports = (() => {
 
 		format.total = formatCurrency(actual.total, currency);
 		format.totalNegative = actual.total.getIsNegative();
+		format.totalPercent = formatPercent(actual.totalPercent, 2);
 
 		format.marketChange = formatCurrency(actual.marketChange, currency);
 		format.marketChangePercent = formatPercent(actual.marketChangePercent, 2);
 
 		calculateUnrealizedPercent(group);
 
-		actual.periodPercent = calculatePeriodPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
+		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
 		format.periodPercent = formatPercent(actual.periodPercent, 2);
 
 		if (group.single && item) {
@@ -3494,8 +3503,8 @@ module.exports = (() => {
 		}
 	}
 
-	function calculatePeriodPercent(periodSummaryTotal, periodDivisor) {
-		return periodDivisor.getIsZero() ? Decimal.ZERO : periodSummaryTotal.divide(periodDivisor);
+	function calculateGainPercent(gain, basis) {
+		return basis.getIsZero() ? Decimal.ZERO : gain.divide(basis);
 	}
 
 	const unchanged = { up: false, down: false };
@@ -3599,6 +3608,8 @@ module.exports = (() => {
 			this._data.periodDivisorPrevious2 = null;
 
 			this._data.initiate = null;
+
+			this._data.totalDivisor = null;
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
@@ -3953,6 +3964,8 @@ module.exports = (() => {
 		} else {
 			data.periodPricePrevious = null;
 		}
+
+		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, currentSummary);
 	}
 
 	function calculatePriceData(item, price) {
@@ -4139,6 +4152,22 @@ module.exports = (() => {
 				returnRef = startValue.opposite().add(currentSummary.period.sells);
 			} else {
 				returnRef = startValue.add(currentSummary.period.buys.opposite());
+			}
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculateTotalDivisor(type, direction, finalSummary) {
+		let returnRef;
+
+		if (finalSummary && type !== InstrumentType.CASH) {
+			if (direction === PositionDirection.SHORT) {
+				returnRef = finalSummary.period.sells;
+			} else {
+				returnRef = finalSummary.period.buys.opposite();
 			}
 		} else {
 			returnRef = Decimal.ZERO;
