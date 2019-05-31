@@ -145,6 +145,7 @@ module.exports = (() => {
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.basis = null;
 			this._dataFormat.realized = null;
+			this._dataFormat.realizedPercent = null;
 			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.marketPercent = null;
@@ -759,6 +760,7 @@ module.exports = (() => {
 		format.periodIncome = formatCurrency(updates.periodIncome, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
+		calculateRealizedPercent(group);
 		calculateUnrealizedPercent(group);
 
 		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
@@ -915,6 +917,7 @@ module.exports = (() => {
 		format.marketChange = formatCurrency(actual.marketChange, currency);
 		format.marketChangePercent = formatPercent(actual.marketChangePercent, 2);
 
+		calculateRealizedPercent(group);
 		calculateUnrealizedPercent(group);
 
 		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
@@ -965,6 +968,24 @@ module.exports = (() => {
 		} else {
 			actual.marketPercentPortfolio = calculatePercent(portfolioGroup);
 			format.marketPercentPortfolio = formatPercent(actual.marketPercentPortfolio, 2);
+		}
+	}
+
+	function calculateRealizedPercent(group) {
+		const actual = group._dataActual;
+		const format = group._dataFormat;
+
+		const openBasis = actual.basis;
+		const totalBasis = actual.totalDivisor;
+
+		const closedBasis = totalBasis.subtract(openBasis);
+
+		if (closedBasis.getIsZero()) {
+			actual.realizedPercent = null;
+			format.realizedPercent = '—';
+		} else {
+			actual.realizedPercent = actual.realized.divide(closedBasis);
+			format.realizedPercent = formatPercent(actual.realizedPercent, 2);
 		}
 	}
 
