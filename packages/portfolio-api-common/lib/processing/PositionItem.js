@@ -450,7 +450,7 @@ module.exports = (() => {
 			data.periodPricePrevious = null;
 		}
 
-		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, currentSummary);
+		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, currentSummary, position);
 	}
 
 	function calculatePriceData(item, price) {
@@ -645,14 +645,18 @@ module.exports = (() => {
 		return returnRef;
 	}
 
-	function calculateTotalDivisor(type, direction, finalSummary) {
+	function calculateTotalDivisor(type, direction, finalSummary, position) {
 		let returnRef;
+
+		// 2019-06-05, BRI. We should be reading from the summary -- in case we are
+		// running for a previous period. However, the summary does not have buy and
+		// sell totals for the entire history. Could be added.
 
 		if (finalSummary && type !== InstrumentType.CASH) {
 			if (direction === PositionDirection.SHORT) {
-				returnRef = finalSummary.period.sells;
+				returnRef = position.snapshot.sells;
 			} else {
-				returnRef = finalSummary.period.buys.opposite();
+				returnRef = position.snapshot.buys.opposite();
 			}
 		} else {
 			returnRef = Decimal.ZERO;
