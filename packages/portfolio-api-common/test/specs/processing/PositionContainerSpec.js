@@ -30,7 +30,9 @@ describe('When a position container data is gathered', () => {
 				value: new Decimal(456),
 				open: new Decimal(1),
 				income: new Decimal(0),
-				gain: new Decimal(0)
+				gain: new Decimal(0),
+				buys: new Decimal(50),
+				sells: new Decimal(0)
 			}
 		};
 	}
