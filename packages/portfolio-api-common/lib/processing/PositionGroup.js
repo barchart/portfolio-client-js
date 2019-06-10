@@ -179,11 +179,9 @@ module.exports = (() => {
 
 			this._dataActual.periodIncome = null;
 			this._dataActual.periodRealized = null;
-			this._dataActual.periodUnrealized = null;
 
 			this._dataFormat.periodIncome = null;
 			this._dataFormat.periodRealized = null;
-			this._dataFormat.periodUnrealized = null;
 
 			this._dataActual.totalPercent = null;
 			this._dataActual.periodPercent = null;
@@ -692,7 +690,6 @@ module.exports = (() => {
 			updates.marketPrevious2 = updates.marketPrevious2.add(translate(item, item.data.marketPrevious2));
 
 			updates.periodRealized = updates.periodRealized.add(translate(item, item.data.periodRealized));
-			updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
 			updates.periodIncome = updates.periodIncome.add(translate(item, item.data.periodIncome));
 
 			if (item.position.instrument.type === InstrumentType.CASH) {
@@ -716,7 +713,6 @@ module.exports = (() => {
 			marketPrevious: Decimal.ZERO,
 			marketPrevious2: Decimal.ZERO,
 			periodRealized: Decimal.ZERO,
-			periodUnrealized: Decimal.ZERO,
 			periodIncome: Decimal.ZERO,
 			cashTotal: Decimal.ZERO,
 			totalDivisor: Decimal.ZERO,
@@ -735,7 +731,6 @@ module.exports = (() => {
 		actual.marketPrevious = updates.marketPrevious;
 		actual.marketPrevious2 = updates.marketPrevious2;
 		actual.periodRealized = updates.periodRealized;
-		actual.periodUnrealized = updates.periodUnrealized;
 		actual.periodIncome = updates.periodIncome;
 		actual.cashTotal = updates.cashTotal;
 		actual.totalDivisor = updates.totalDivisor;
@@ -756,7 +751,6 @@ module.exports = (() => {
 		format.marketPrevious = formatCurrency(updates.marketPrevious, currency);
 		format.marketPrevious2 = formatCurrency(updates.marketPrevious2, currency);
 		format.periodRealized = formatCurrency(updates.periodRealized, currency);
-		format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
 		format.periodIncome = formatCurrency(updates.periodIncome, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
@@ -922,10 +916,6 @@ module.exports = (() => {
 
 		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
 		format.periodPercent = formatPercent(actual.periodPercent, 2);
-
-		if (group.single && item) {
-			actual.periodUnrealized = item.data.periodUnrealized;
-		}
 	}
 
 	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
