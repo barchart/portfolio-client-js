@@ -76,6 +76,9 @@ module.exports = (() => {
 			this._data.periodIncome = null;
 			this._data.periodRealized = null;
 
+			this._data.periodUnrealized = null;
+			this._data.periodUnrealizedChange = null;
+
 			this._data.periodPrice = null;
 			this._data.periodPricePrevious = null;
 
@@ -419,12 +422,13 @@ module.exports = (() => {
 		data.marketPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
 		data.quantityPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.open;
 
-		data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal.ZERO;
-		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
-
 		data.periodGain = calculatePeriodGain(position.instrument.type, data.initiate, currentSummary, previousSummary1);
 		data.periodGainPrevious = calculatePeriodGain(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
 		data.periodGainPrevious2 = calculatePeriodGain(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
+
+		data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal.ZERO;
+		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
+		data.periodUnrealized = calculatePeriodUnrealized(position.instrument.type, data.periodGain, data.periodRealized, data.periodIncome);
 
 		data.periodDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, currentSummary, previousSummary1);
 		data.periodDivisorPrevious = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
@@ -553,6 +557,18 @@ module.exports = (() => {
 
 				data.periodGain = periodGain;
 				data.periodGainChange = periodGainChange;
+
+				let periodUnrealized = calculatePeriodUnrealized(position.instrument.type, data.periodGain, data.periodRealized, data.periodIncome);
+				let periodUnrealizedChange;
+
+				if (data.periodUnrealized !== null) {
+					periodUnrealizedChange = periodUnrealized.subtract(data.periodUnrealized);
+				} else {
+					periodUnrealizedChange = Decimal.ZERO;
+				}
+
+				data.periodUnrealized = periodUnrealized;
+				data.periodUnrealizedChange = periodUnrealizedChange;
 			} else {
 				data.unrealized = Decimal.ZERO;
 				data.unrealizedChange = Decimal.ZERO;
@@ -636,6 +652,18 @@ module.exports = (() => {
 			} else {
 				returnRef = startValue.add(currentSummary.period.buys.opposite());
 			}
+		} else {
+			returnRef = Decimal.ZERO;
+		}
+
+		return returnRef;
+	}
+
+	function calculatePeriodUnrealized(type, periodGain, periodRealized, periodIncome) {
+		let returnRef;
+
+		if (type !== InstrumentType.CASH) {
+			returnRef = periodRealized.add(periodIncome).subtract(periodGain).opposite();
 		} else {
 			returnRef = Decimal.ZERO;
 		}
