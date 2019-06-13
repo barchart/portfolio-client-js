@@ -5285,7 +5285,7 @@ module.exports = function () {
   *
   * @public
   * @param {*} value - The value of the node.
-  * @param {Tree} parent - The parent node. If not supplied, this will be the root node.
+  * @param {Tree=} parent - The parent node. If not supplied, this will be the root node.
   */
 
 	var Tree = function () {
@@ -6431,7 +6431,20 @@ module.exports = function () {
 			}
 
 			/**
-    * Returns a new Day instance for the end of the month of the current instance.
+    * Returns a new {@link Day} instance for the start of the month referenced by the current instance.
+    *
+    * @public
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'getStartOfMonth',
+			value: function getStartOfMonth() {
+				return new Day(this.year, this.month, 1);
+			}
+
+			/**
+    * Returns a new instance for the {@link Day} end of the month referenced by the current instance.
     *
     * @public
     * @returns {Day}
@@ -6583,7 +6596,7 @@ module.exports = function () {
 				return this._month;
 			}
 
-			/**
+			/**day
     * The day of the month.
     *
     * @public
@@ -6604,7 +6617,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Converts a string (which matches the output of {@link Day#format} into
+    * Converts a string (which matches the output of {@link Day#format}) into
     * a {@link Day} instance.
     *
     * @public
@@ -6876,6 +6889,24 @@ module.exports = function () {
 			}
 
 			/**
+    * Returns a new {@link Decimal} instance with a value that results
+    * from raising the current instance to the power of the exponent
+    * provided.
+    *
+    * @public
+    * @param {Decimal|Number|String} exponent
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'raise',
+			value: function raise(exponent) {
+				assert.argumentIsRequired(exponent, 'exponent', Number);
+
+				return new Decimal(this._big.pow(exponent));
+			}
+
+			/**
     * Returns a new {@link Decimal} with a value resulting from a rounding
     * operation on the current value.
     *
@@ -7037,6 +7068,28 @@ module.exports = function () {
 			key: 'getIsEqual',
 			value: function getIsEqual(other) {
 				return this._big.eq(getBig(other));
+			}
+
+			/**
+    * Returns true is close to another value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @param {Number} places - The significant digits.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsApproximate',
+			value: function getIsApproximate(other, places) {
+				if (places === 0) {
+					return this.getIsEqual(other);
+				}
+
+				var difference = this.subtract(other).absolute();
+				var tolerance = Decimal.ONE.divide(new Decimal(10).raise(places));
+
+				return difference.getIsLessThan(tolerance);
 			}
 
 			/**
@@ -8722,8 +8775,62 @@ module.exports = function () {
 			}
 
 			return found;
+		},
+
+
+		/**
+   * Inserts an item into an array using a binary search is used to determine the
+   * proper point for insertion and returns the same array.
+   *
+   * @static
+   * @public
+   * @param {Array} a
+   * @param {*} item
+   * @param {Function} comparator
+   * @returns {Array}
+   */
+		insert: function insert(a, item, comparator) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsRequired(comparator, 'comparator', Function);
+
+			if (a.length === 0 || !(comparator(item, a[a.length - 1]) < 0)) {
+				a.push(item);
+			} else if (comparator(item, a[0]) < 0) {
+				a.unshift(item);
+			} else {
+				a.splice(binarySearch(a, item, comparator, 0, a.length - 1), 0, item);
+			}
+
+			return a;
 		}
 	};
+
+	function binarySearch(array, item, comparator, start, end) {
+		var size = end - start;
+
+		var midpointIndex = start + Math.floor(size / 2);
+		var midpointItem = array[midpointIndex];
+
+		var comparison = comparator(item, midpointItem) > 0;
+
+		if (size < 2) {
+			if (comparison > 0) {
+				var finalIndex = array.length - 1;
+
+				if (end === finalIndex && comparator(item, array[finalIndex]) > 0) {
+					return end + 1;
+				} else {
+					return end;
+				}
+			} else {
+				return start;
+			}
+		} else if (comparison > 0) {
+			return binarySearch(array, item, comparator, midpointIndex, end);
+		} else {
+			return binarySearch(array, item, comparator, start, midpointIndex);
+		}
+	}
 }();
 
 },{"./assert":29,"./is":33}],29:[function(require,module,exports){
@@ -9244,7 +9351,7 @@ module.exports = function () {
    * @static
    * @public
    * @param {*} candidate
-   * @returns {*|boolean}
+   * @returns {boolean}
    */
 		negative: function negative(candidate) {
 			return this.number(candidate) && candidate < 0;
