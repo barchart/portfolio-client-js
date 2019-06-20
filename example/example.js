@@ -920,6 +920,21 @@ module.exports = function () {
 					return Gateway.invoke(_this20._readBrokerageReportAvailabilityEndpoint, payload);
 				});
 			}
+		}, {
+			key: 'getBrokerageReportUrl',
+			value: function getBrokerageReportUrl(portfolio, frame, start) {
+				var _this21 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this21);
+
+					assert.argumentIsRequired(portfolio, 'portfolio', String);
+					assert.argumentIsRequired(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
+					assert.argumentIsRequired(start, 'start', Day, 'Day');
+
+					return 'https://portfolio-dev.aws.barchart.com/binary/reports/portfolios/9555fb81-f640-4a95-8766-aa59f38d2abd/frames/MONTHLY/date/2017-06-30';
+				});
+			}
 
 			/**
     * Creates and starts a new {@link PortfolioGateway} for use in the development environment.
@@ -1563,7 +1578,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.2'
+		version: '1.3.3'
 	};
 }();
 
