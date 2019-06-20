@@ -47,21 +47,36 @@ module.exports = function () {
 			_classCallCheck(this, Configuration);
 		}
 
-		/**
-   * The host of the development system.
-   *
-   * @public
-   * @static
-   * @returns {String}
-   */
-
-
 		_createClass(Configuration, [{
 			key: 'toString',
 			value: function toString() {
 				return '[Configuration]';
 			}
 		}], [{
+			key: 'getBrokerageHost',
+			value: function getBrokerageHost(host) {
+				if (host === Configuration.developmentHost) {
+					return '7enbtpamgg.execute-api.us-east-1.amazonaws.com/dev';
+				} else if (host === Configuration.stagingHost) {
+					return '';
+				} else if (host === Configuration.productionHost) {
+					return '';
+				} else if (host === Configuration.adminHost) {
+					return '';
+				} else {
+					return '';
+				}
+			}
+
+			/**
+    * The host of the development system.
+    *
+    * @public
+    * @static
+    * @returns {String}
+    */
+
+		}, {
 			key: 'developmentHost',
 			get: function get() {
 				return 'portfolio-dev.aws.barchart.com';
@@ -292,7 +307,7 @@ module.exports = function () {
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForBrokerageReportAvailabilityDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._brokerageReportUrlGenerator = function (user, portfolio, frame, end) {
-				return 'https://' + host + '/binary/reports/portfolios/' + portfolio + '/frames/' + frame.code + '/date/' + end.format() + '/' + user;
+				return 'https://' + Configuration.getBrokerageHost(host) + '/binary/reports/portfolios/' + portfolio + '/frames/' + frame.code + '/date/' + end.format() + '/' + user;
 			};
 			return _this;
 		}
@@ -1595,7 +1610,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.5'
+		version: '1.3.6'
 	};
 }();
 
