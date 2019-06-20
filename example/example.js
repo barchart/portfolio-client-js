@@ -307,7 +307,7 @@ module.exports = function () {
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForBrokerageReportAvailabilityDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._brokerageReportUrlGenerator = function (user, portfolio, frame, end) {
-				return 'https://' + Configuration.getBrokerageHost(host) + '/binary/reports/portfolios/' + portfolio + '/frames/' + frame.code + '/date/' + end.format() + '/' + user;
+				return 'https://' + Configuration.getBrokerageHost(host) + '/reports/portfolios/' + portfolio + '/frames/' + frame.code + '/date/' + end.format() + '/' + user;
 			};
 			return _this;
 		}
@@ -1610,7 +1610,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.6'
+		version: '1.3.7'
 	};
 }();
 
