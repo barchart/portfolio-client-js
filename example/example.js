@@ -58,11 +58,11 @@ module.exports = function () {
 				if (host === Configuration.developmentHost) {
 					return '7enbtpamgg.execute-api.us-east-1.amazonaws.com/dev';
 				} else if (host === Configuration.stagingHost) {
-					return '';
+					return 'i98b1sdxp6.execute-api.us-east-1.amazonaws.com/stage';
 				} else if (host === Configuration.productionHost) {
-					return '';
+					return 'xos40seq3e.execute-api.us-east-1.amazonaws.com/prod';
 				} else if (host === Configuration.adminHost) {
-					return '';
+					return 'q1x45oxon1.execute-api.us-east-1.amazonaws.com/admin';
 				} else {
 					return '';
 				}
@@ -1610,7 +1610,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.7'
+		version: '1.3.8'
 	};
 }();
 
