@@ -282,7 +282,7 @@ module.exports = function () {
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readBrokerageReportAvailabilityEndpoint = EndpointBuilder.for('read-brokerage-report-availability', 'read brokerage report availability').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('json', 'json').withLiteralParameter('reports', 'reports').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('availability', 'availability');
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('reports', 'reports').withLiteralParameter('brokerage', 'brokerage').withLiteralParameter('availability', 'availability');
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('frames', 'frames', 'frames', true, function (frames) {
 					return frames.map(function (f) {
@@ -290,6 +290,10 @@ module.exports = function () {
 					}).join();
 				});
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForBrokerageReportAvailabilityDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+
+			_this._brokerageReportUrlGenerator = function (portfolio, frame, end) {
+				return 'https://' + host + '/binary/reports/portfolios/' + portfolio + '/frames/' + frame.code + '/date/' + end.format();
+			};
 			return _this;
 		}
 
@@ -920,9 +924,20 @@ module.exports = function () {
 					return Gateway.invoke(_this20._readBrokerageReportAvailabilityEndpoint, payload);
 				});
 			}
+
+			/**
+    * Generates a URL suitable for downloading a brokerage report (as a PDF).
+    *
+    * @public
+    * @param {String} portfolio
+    * @param {PositionSummaryFrame} frame
+    * @param {Day} end
+    * @return {Promise<String>}
+    */
+
 		}, {
 			key: 'getBrokerageReportUrl',
-			value: function getBrokerageReportUrl(portfolio, frame, start) {
+			value: function getBrokerageReportUrl(portfolio, frame, end) {
 				var _this21 = this;
 
 				return Promise.resolve().then(function () {
@@ -930,9 +945,9 @@ module.exports = function () {
 
 					assert.argumentIsRequired(portfolio, 'portfolio', String);
 					assert.argumentIsRequired(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
-					assert.argumentIsRequired(start, 'start', Day, 'Day');
+					assert.argumentIsRequired(end, 'end', Day, 'Day');
 
-					return 'https://portfolio-dev.aws.barchart.com/binary/reports/portfolios/9555fb81-f640-4a95-8766-aa59f38d2abd/frames/MONTHLY/date/2017-06-30';
+					return _this21._brokerageReportUrlGenerator(portfolio, frame, end);
 				});
 			}
 
@@ -1578,7 +1593,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.3'
+		version: '1.3.4'
 	};
 }();
 
