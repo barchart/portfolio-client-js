@@ -541,7 +541,7 @@ module.exports = function () {
     * @public
     * @param {String=} portfolio
     * @param {String=} position
-    * @param {PositionSummaryFrame[]=|String[]=} frames
+    * @param {Array<PositionSummaryFrame>=|Array<String>=} frames
     * @param {Number=} periods
     * @param {Day=|String=} start
     * @returns {Promise<Position[]>}
@@ -1514,7 +1514,7 @@ module.exports = function () {
 
 	function _forDevelopment(userId, legacyUserId) {
 		return EndpointBuilder.for('read-jwt-token-for-development', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.developmentHost).withPathBuilder(function (pb) {
-			pb.withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
+			pb.withLiteralParameter('json', 'json').withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
 		}).withQueryBuilder(function (qb) {
 			qb.withLiteralParameter('user', 'userId', userId).withLiteralParameter('legacy user', 'userLegacyId', legacyUserId).withLiteralParameter('user context', 'userContext', 'TGAM').withLiteralParameter('user permission level', 'userPermissions', 'registered');
 		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
@@ -1522,13 +1522,13 @@ module.exports = function () {
 
 	function _forStaging(externalRequestInterceptor) {
 		return EndpointBuilder.for('translate-jwt-token-for-staging', 'lookup Barchart user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.stagingHost).withPathBuilder(function (pb) {
-			return pb.withLiteralParameter('token', 'token').withLiteralParameter('system', 'tgam').withLiteralParameter('converter', 'converter');
+			pb.withLiteralParameter('json', 'json').withLiteralParameter('token', 'token').withLiteralParameter('system', 'tgam').withLiteralParameter('converter', 'converter');
 		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
 	function _forProduction(externalRequestInterceptor) {
 		return EndpointBuilder.for('translate-jwt-token-for-production', 'lookup Barchart user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.productionHost).withPathBuilder(function (pb) {
-			return pb.withLiteralParameter('token', 'token').withLiteralParameter('system', 'tgam').withLiteralParameter('converter', 'converter');
+			pb.withLiteralParameter('json', 'json').withLiteralParameter('token', 'token').withLiteralParameter('system', 'tgam').withLiteralParameter('converter', 'converter');
 		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
@@ -1563,7 +1563,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.1'
+		version: '1.3.2'
 	};
 }();
 
