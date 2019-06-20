@@ -8,7 +8,6 @@ The code is documented with [JSDoc](http://usejsdoc.org/). While the output hasn
     > npm install
     > gulp document
 
-
 ## Development
 
 Gulp is used to check "linting" and to run unit tests.
@@ -17,7 +16,6 @@ Gulp is used to check "linting" and to run unit tests.
     > npm install
     > gulp lint
     > gulp test
-
 
 ## Build
 
