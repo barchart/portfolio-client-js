@@ -194,37 +194,37 @@ module.exports = function () {
 			}
 
 			_this._readPortfoliosEndpoint = EndpointBuilder.for('read-portfolios', 'read portfolios').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
 			}).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._createPortfolioEndpoint = EndpointBuilder.for('create-portfolio', 'create portfolio').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios');
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios');
 			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(RequestInterceptor.fromDelegate(createPortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._updatePortfolioEndpoint = EndpointBuilder.for('update-portfolio', 'update portfolio').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
 			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(RequestInterceptor.fromDelegate(updatePortfolioRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPortfolioDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deletePortfolioEndpoint = EndpointBuilder.for('delete-portfolio', 'delete portfolio').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false);
 			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readPositionsEndpoint = EndpointBuilder.for('read-positions', 'read positions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('includePreviousPrice', 'includePreviousPrice', 'includePreviousPrice', true);
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._updatePositionEndpoint = EndpointBuilder.for('update-position', 'update position').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
 			}).withBody('portfolio').withRequestInterceptor(RequestInterceptor.fromDelegate(updatePositionRequestInterceptor)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deletePositionEndpoint = EndpointBuilder.for('delete-position', 'delete position').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readPositionSummariesEndpoint = EndpointBuilder.for('read-position-summaries', 'read position summaries').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withVariableParameter('position', 'position', 'position', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withVariableParameter('position', 'position', 'position', false);
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('frames', 'frames', 'frames', true, function (frames) {
 					return frames.map(function (f) {
@@ -236,13 +236,13 @@ module.exports = function () {
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
 			}).withQueryBuilder(function (qb) {
 				qb.withLiteralParameter('mode', 'mode', 'text');
 			}).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForTransactionDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._createTransactionEndpoint = EndpointBuilder.for('create-transaction', 'create transaction').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('type', 'type', 'type', false, function (x) {
 					return x.code;
@@ -250,11 +250,11 @@ module.exports = function () {
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._batchTransactionEndpoint = EndpointBuilder.for('batch-transactions', 'batch transactions').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withLiteralParameter('multiple', 'multiple').withLiteralParameter('transactions', 'transactions');
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withLiteralParameter('multiple', 'multiple').withLiteralParameter('transactions', 'transactions');
 			}).withBody('transactions').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._editTransactionEndpoint = EndpointBuilder.for('edit-transaction', 'edit transaction').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('type', 'type', 'type', false, function (x) {
 					return x.code;
@@ -262,7 +262,7 @@ module.exports = function () {
 			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._deleteTransactionEndpoint = EndpointBuilder.for('delete-transaction', 'delete transaction').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions').withVariableParameter('sequence', 'sequence', 'sequence', false);
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('force', 'force', 'force', false).withVariableParameter('echoStart', 'echoStart', 'echoStart', true, function (x) {
 					return x.format();
@@ -272,7 +272,7 @@ module.exports = function () {
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readTransactionsReportEndpoint = EndpointBuilder.for('read-transaction-report', 'read transaction report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', true).withLiteralParameter('transactions', 'transactions').withLiteralParameter('formatted', 'formatted');
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', true).withLiteralParameter('transactions', 'transactions').withLiteralParameter('formatted', 'formatted');
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('start', 'start', 'start', true, function (x) {
 					return x.format();
@@ -282,7 +282,7 @@ module.exports = function () {
 			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readBrokerageReportAvailabilityEndpoint = EndpointBuilder.for('read-brokerage-report-availability', 'read brokerage report availability').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('reports', 'reports').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('availability', 'availability');
+				pb.withLiteralParameter('json', 'json').withLiteralParameter('reports', 'reports').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('availability', 'availability');
 			}).withQueryBuilder(function (qb) {
 				qb.withVariableParameter('frames', 'frames', 'frames', true, function (frames) {
 					return frames.map(function (f) {
@@ -290,14 +290,6 @@ module.exports = function () {
 					}).join();
 				});
 			}).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForBrokerageReportAvailabilityDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
-
-			_this._downloadBrokerageReportEndpoint = EndpointBuilder.for('download-brokerage-report', 'download brokerage report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
-				pb.withLiteralParameter('reports', 'reports').withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('frames', 'frames').withVariableParameter('frame', 'frame', 'frame', false, function (x) {
-					return x.code;
-				}).withLiteralParameter('date', 'date').withVariableParameter('start', 'start', 'start', false, function (x) {
-					return x.format();
-				});
-			}).withRequestInterceptor(requestInterceptorToUse).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 			return _this;
 		}
 
@@ -318,7 +310,7 @@ module.exports = function () {
     * containing the current instance.
     *
     * @public
-    * @returns {Promise.<PortfolioGateway>}
+    * @returns {Promise<PortfolioGateway>}
     */
 			value: function start() {
 				var _this2 = this;
@@ -345,7 +337,7 @@ module.exports = function () {
     *
     * @public
     * @param {String=} portfolio
-    * @returns {Promise.<Portfolio[]>}
+    * @returns {Promise<Portfolio[]>}
     */
 
 		}, {
@@ -367,7 +359,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} portfolio
-    * @returns {Promise.<Portfolio>}
+    * @returns {Promise<Portfolio>}
     */
 
 		}, {
@@ -389,7 +381,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} portfolio
-    * @returns {Promise.<Portfolio>}
+    * @returns {Promise<Portfolio>}
     */
 
 		}, {
@@ -411,7 +403,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} portfolio
-    * @returns {Promise.<Portfolio>}
+    * @returns {Promise<Portfolio>}
     */
 
 		}, {
@@ -433,7 +425,7 @@ module.exports = function () {
     *
     * @public
     * @param {String} portfolio - ID of the portfolio to update
-    * @returns {Promise.<Portfolio>}
+    * @returns {Promise<Portfolio>}
     */
 
 		}, {
@@ -457,7 +449,7 @@ module.exports = function () {
     * @param {String=} portfolio
     * @param {String=} position
     * @param {Boolean=} includePreviousPrice
-    * @returns {Promise.<Position[]>}
+    * @returns {Promise<Position[]>}
     */
 
 		}, {
@@ -481,7 +473,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} position
-    * @returns {Promise.<Position>}
+    * @returns {Promise<Position>}
     */
 
 		}, {
@@ -549,10 +541,10 @@ module.exports = function () {
     * @public
     * @param {String=} portfolio
     * @param {String=} position
-    * @param {Array.<PositionSummaryFrame>=|Array.<String>=} frames
+    * @param {PositionSummaryFrame[]=|String[]=} frames
     * @param {Number=} periods
     * @param {Day=|String=} start
-    * @returns {Promise.<Position[]>}
+    * @returns {Promise<Position[]>}
     */
 
 		}, {
@@ -624,7 +616,7 @@ module.exports = function () {
     * @public
     * @param {String} portfolio
     * @param {String} position
-    * @returns {Promise.<Position[]>}
+    * @returns {Promise<Position[]>}
     */
 
 		}, {
@@ -647,7 +639,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} transaction
-    * @returns {Promise.<TransactionMutateResult>}
+    * @returns {Promise<TransactionMutateResult>}
     */
 
 		}, {
@@ -720,7 +712,7 @@ module.exports = function () {
     *
     * @public
     * @param {Object} transaction
-    * @returns {Promise.<TransactionMutateResult>}
+    * @returns {Promise<TransactionMutateResult>}
     */
 
 		}, {
@@ -752,7 +744,7 @@ module.exports = function () {
     * @param {Boolean=} force
     * @param {Day=} echoStart
     * @param {Day=} echoEnd
-    * @returns {Promise.<TransactionMutateResult>}
+    * @returns {Promise<TransactionMutateResult>}
     */
 
 		}, {
@@ -795,7 +787,7 @@ module.exports = function () {
     * @public
     * @param {String} portfolio
     * @param {String=} position
-    * @returns {Promise.<Transaction[]>}
+    * @returns {Promise<Transaction[]>}
     */
 
 		}, {
@@ -823,7 +815,7 @@ module.exports = function () {
     * @param {Day=} startDay
     * @param {Day=} endDay
     * @oaram {Boolean=} descending
-    * @returns {Promise.<Object[]>}
+    * @returns {Promise<Object[]>}
     */
 
 		}, {
@@ -930,42 +922,12 @@ module.exports = function () {
 			}
 
 			/**
-    * @public
-    * @param {String=} portfolio
-    * @param {PositionSummaryFrame} frame
-    * @param {Day} end
-    * @returns {Promise}
-    */
-
-		}, {
-			key: 'downloadBrokerageReport',
-			value: function downloadBrokerageReport(portfolio, frame, end) {
-				var _this21 = this;
-
-				return Promise.resolve().then(function () {
-					checkStart.call(_this21);
-
-					assert.argumentIsRequired(portfolio, 'portfolio', String);
-					assert.argumentIsRequired(frame, 'frame', PositionSummaryFrame, 'PositionSummaryFrame');
-					assert.argumentIsRequired(end, 'end', Day, 'Day');
-
-					var payload = {};
-
-					payload.portfolio = portfolio;
-					payload.frame = frame;
-					payload.start = end;
-
-					return Gateway.invoke(_this21._downloadBrokerageReportEndpoint, payload);
-				});
-			}
-
-			/**
     * Creates and starts a new {@link PortfolioGateway} for use in the development environment.
     *
     * @public
     * @static
-    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
-    * @returns {Promise.<PortfolioGateway>}
+    * @param {RequestInterceptor=|Promise<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise<PortfolioGateway>}
     */
 
 		}, {
@@ -998,8 +960,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
-    * @returns {Promise.<PortfolioGateway>}
+    * @param {RequestInterceptor=|Promise<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise<PortfolioGateway>}
     */
 
 		}, {
@@ -1017,8 +979,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
-    * @returns {Promise.<PortfolioGateway>}
+    * @param {RequestInterceptor=|Promise<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise<PortfolioGateway>}
     */
 
 		}, {
@@ -1036,8 +998,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
-    * @returns {Promise.<PortfolioGateway>}
+    * @param {RequestInterceptor=|Promise<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise<PortfolioGateway>}
     */
 
 		}, {
@@ -1195,8 +1157,8 @@ module.exports = function () {
   *
   * @typedef TransactionMutateResult
   * @type {Object}
-  * @property {Array.<Object>} positions - All positions updated as a consequence of processing the transaction.
-  * @property {Array.<Object>} summaries - All position summaries updated as a consequence of processing the transaction.
+  * @property {Object[]} positions - All positions updated as a consequence of processing the transaction.
+  * @property {Object[]} summaries - All position summaries updated as a consequence of processing the transaction.
   * @property {Boolean} replaced - If true, the position (and position summaries) need to be replaced.
   */
 
@@ -1267,7 +1229,7 @@ module.exports = function () {
    * containing the current instance
    *
    * @public
-   * @returns {Promise.<JwtGateway>}
+   * @returns {Promise<JwtGateway>}
    */
 
 
@@ -1297,7 +1259,7 @@ module.exports = function () {
     * Retrieves a JWT token from the remote server.
     *
     * @public
-    * @returns {Promise.<String>}
+    * @returns {Promise<String>}
     */
 
 		}, {
@@ -1336,7 +1298,7 @@ module.exports = function () {
 				var refreshToken = function refreshToken() {
 					var refreshPromise = scheduler.backoff(function () {
 						return _this4.readToken();
-					}, 100, 'Read JWT token', 3).then(function (token) {
+					}, 0, 'Read JWT token', 3).then(function (token) {
 						if (_this4._refreshInterval) {
 							cachePromise = refreshPromise;
 						}
@@ -1393,7 +1355,7 @@ module.exports = function () {
     * @static
     * @param {String} userId - The identifier of the user to impersonate.
     * @param {String} userLegacyId - The legacy identifier of the user to impersonate.
-    * @returns {Promise.<JwtGateway>}
+    * @returns {Promise<JwtGateway>}
     */
 
 		}, {
@@ -1418,7 +1380,7 @@ module.exports = function () {
     * @public
     * @static
     * @param {String} userId - The identifier of the user to impersonate.
-    * @returns {Promise.<RequestInterceptor>}
+    * @returns {Promise<RequestInterceptor>}
     */
 
 		}, {
@@ -1434,8 +1396,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {Promise.<RequestInterceptor>} externalRequestInterceptorPromise
-    * @returns {Promise.<JwtGateway>}
+    * @param {Promise<RequestInterceptor>} externalRequestInterceptorPromise
+    * @returns {Promise<JwtGateway>}
     */
 
 		}, {
@@ -1451,8 +1413,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {Promise.<RequestInterceptor>} externalRequestInterceptorPromise
-    * @returns {Promise.<RequestInterceptor>}
+    * @param {Promise<RequestInterceptor>} externalRequestInterceptorPromise
+    * @returns {Promise<RequestInterceptor>}
     */
 
 		}, {
@@ -1468,8 +1430,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {Promise.<RequestInterceptor>} externalRequestInterceptorPromise
-    * @returns {Promise.<JwtGateway>}
+    * @param {Promise<RequestInterceptor>} externalRequestInterceptorPromise
+    * @returns {Promise<JwtGateway>}
     */
 
 		}, {
@@ -1485,8 +1447,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {Promise.<RequestInterceptor>} externalRequestInterceptorPromise
-    * @returns {Promise.<RequestInterceptor>}
+    * @param {Promise<RequestInterceptor>} externalRequestInterceptorPromise
+    * @returns {Promise<RequestInterceptor>}
     */
 
 		}, {
@@ -1504,7 +1466,7 @@ module.exports = function () {
     * @static
     * @param {String} userId - The identifier of the user to impersonate.
     * @param {String} userLegacyId - The legacy identifier of the user to impersonate.
-    * @returns {Promise.<JwtGateway>}
+    * @returns {Promise<JwtGateway>}
     */
 
 		}, {
@@ -1519,7 +1481,7 @@ module.exports = function () {
     * @public
     * @static
     * @param {String} userId - The identifier of the user to impersonate.
-    * @returns {Promise.<RequestInterceptor>}
+    * @returns {Promise<RequestInterceptor>}
     */
 
 		}, {
@@ -1572,7 +1534,7 @@ module.exports = function () {
 
 	function _forAdmin(userId, legacyUserId) {
 		return EndpointBuilder.for('read-jwt-token-for-admin', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.adminHost).withPathBuilder(function (pb) {
-			pb.withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
+			pb.withLiteralParameter('json', 'json').withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
 		}).withQueryBuilder(function (qb) {
 			if (userId) {
 				qb.withLiteralParameter('user', 'userId', userId);
@@ -1601,7 +1563,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.2.45'
+		version: '1.3.1'
 	};
 }();
 
