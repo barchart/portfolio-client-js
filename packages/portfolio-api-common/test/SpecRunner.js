@@ -4113,12 +4113,12 @@ module.exports = (() => {
 				data.periodUnrealizedChange = periodUnrealizedChange;
 			} else {
 				data.unrealizedChange = Decimal.ZERO;
-				data.periodUnrealized = Decimal.ZERO;
+				data.periodUnrealizedChange = Decimal.ZERO;
 				data.periodGainChange = Decimal.ZERO;
 			}
 		} else {
 			data.unrealizedChange = Decimal.ZERO;
-			data.periodUnrealized = Decimal.ZERO;
+			data.periodUnrealizedChange = Decimal.ZERO;
 			data.periodGainChange = Decimal.ZERO;
 		}
 	}
