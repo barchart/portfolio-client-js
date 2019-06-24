@@ -570,15 +570,13 @@ module.exports = (() => {
 				data.periodUnrealized = periodUnrealized;
 				data.periodUnrealizedChange = periodUnrealizedChange;
 			} else {
-				data.unrealized = Decimal.ZERO;
 				data.unrealizedChange = Decimal.ZERO;
-
+				data.periodUnrealized = Decimal.ZERO;
 				data.periodGainChange = Decimal.ZERO;
 			}
 		} else {
-			data.unrealized = Decimal.ZERO;
 			data.unrealizedChange = Decimal.ZERO;
-
+			data.periodUnrealized = Decimal.ZERO;
 			data.periodGainChange = Decimal.ZERO;
 		}
 	}
