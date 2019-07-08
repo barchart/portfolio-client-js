@@ -63,6 +63,8 @@ module.exports = function () {
 					return 'xos40seq3e.execute-api.us-east-1.amazonaws.com/prod';
 				} else if (host === Configuration.adminHost) {
 					return 'q1x45oxon1.execute-api.us-east-1.amazonaws.com/admin';
+				} else if (host === Configuration.demoHost) {
+					return 'b9132ukaob.execute-api.us-east-1.amazonaws.com/demo';
 				} else {
 					return '';
 				}
@@ -97,6 +99,20 @@ module.exports = function () {
 			}
 
 			/**
+    * The host of the public demo system.
+    *
+    * @public
+    * @static
+    * @return {String}
+    */
+
+		}, {
+			key: 'demoHost',
+			get: function get() {
+				return 'portfolio-demo.aws.barchart.com';
+			}
+
+			/**
     * The host of the production system.
     *
     * @public
@@ -122,20 +138,6 @@ module.exports = function () {
 			key: 'adminHost',
 			get: function get() {
 				return 'portfolio-admin.aws.barchart.com';
-			}
-
-			/**
-    * The host of the public demo system.
-    *
-    * @public
-    * @static
-    * @return {String}
-    */
-
-		}, {
-			key: 'demoHost',
-			get: function get() {
-				return 'portfolio-demo.aws.barchart.com';
 			}
 		}]);
 
@@ -1036,6 +1038,25 @@ module.exports = function () {
 			}
 
 			/**
+    * Creates and starts a new {@link PortfolioGateway} for use in the demo environment.
+    *
+    * @public
+    * @static
+    * @param {RequestInterceptor=|Promise<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise<PortfolioGateway>}
+    */
+
+		}, {
+			key: 'forDemo',
+			value: function forDemo(requestInterceptor) {
+				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
+					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
+
+					return start(new PortfolioGateway('https', Configuration.demoHost, 443, 'development', requestInterceptor));
+				});
+			}
+
+			/**
     * Creates and starts a new {@link PortfolioGateway} for use in the production environment.
     *
     * @public
@@ -1619,6 +1640,14 @@ module.exports = function () {
 		}).withRequestInterceptor(externalRequestInterceptor).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
+	function _forDemo(userId) {
+		return EndpointBuilder.for('read-jwt-token-for-demo', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.demoHost).withPathBuilder(function (pb) {
+			pb.withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
+		}).withQueryBuilder(function (qb) {
+			qb.withLiteralParameter('user', 'userId', userId).withLiteralParameter('legacy user', 'userLegacyId', userId).withLiteralParameter('user context', 'userContext', 'Barchart').withLiteralParameter('user permission level', 'userPermissions', 'registered');
+		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
+	}
+
 	function _forProduction(externalRequestInterceptor) {
 		return EndpointBuilder.for('translate-jwt-token-for-production', 'lookup Barchart user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.productionHost).withPathBuilder(function (pb) {
 			pb.withLiteralParameter('token', 'token').withLiteralParameter('system', 'tgam').withLiteralParameter('converter', 'converter');
@@ -1641,14 +1670,6 @@ module.exports = function () {
 		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
-	function _forDemo(userId) {
-		return EndpointBuilder.for('read-jwt-token-for-demo', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.developmentHost).withPathBuilder(function (pb) {
-			pb.withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
-		}).withQueryBuilder(function (qb) {
-			qb.withLiteralParameter('user', 'userId', userId).withLiteralParameter('legacy user', 'userLegacyId', userId).withLiteralParameter('user context', 'userContext', 'Barchart').withLiteralParameter('user permission level', 'userPermissions', 'registered');
-		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
-	}
-
 	return JwtGateway;
 }();
 
@@ -1664,7 +1685,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.9'
+		version: '1.3.10'
 	};
 }();
 
