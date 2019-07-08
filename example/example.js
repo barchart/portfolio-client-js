@@ -123,6 +123,20 @@ module.exports = function () {
 			get: function get() {
 				return 'portfolio-admin.aws.barchart.com';
 			}
+
+			/**
+    * The host of the public demo system.
+    *
+    * @public
+    * @static
+    * @return {String}
+    */
+
+		}, {
+			key: 'demoHost',
+			get: function get() {
+				return 'portfolio-demo.aws.barchart.com';
+			}
 		}]);
 
 		return Configuration;
@@ -1538,6 +1552,38 @@ module.exports = function () {
 					return jwtGateway.toRequestInterceptor();
 				});
 			}
+
+			/**
+    * Creates and starts a new {@link JwtGateway} for use in the demo environment.
+    *
+    * @public
+    * @static
+    * @param {String} userId - The identifier of the user to impersonate.
+    * @returns {Promise<JwtGateway>}
+    */
+
+		}, {
+			key: 'forDemo',
+			value: function forDemo(userId) {
+				return start(new JwtGateway(_forDemo(userId), 180000));
+			}
+
+			/**
+    * Creates and starts a new {@link RequestInterceptor} for use in the demo environment.
+    *
+    * @public
+    * @static
+    * @param {String} userId - The identifier of the user to impersonate.
+    * @returns {Promise<RequestInterceptor>}
+    */
+
+		}, {
+			key: 'forDemoClient',
+			value: function forDemoClient(userId) {
+				return JwtGateway.forDemo(userId).then(function (jwtGateway) {
+					return jwtGateway.toRequestInterceptor();
+				});
+			}
 		}]);
 
 		return JwtGateway;
@@ -1595,6 +1641,14 @@ module.exports = function () {
 		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 	}
 
+	function _forDemo(userId) {
+		return EndpointBuilder.for('read-jwt-token-for-demo', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(Configuration.developmentHost).withPathBuilder(function (pb) {
+			pb.withLiteralParameter('token', 'token').withLiteralParameter('barchart', 'barchart').withLiteralParameter('generator', 'generator');
+		}).withQueryBuilder(function (qb) {
+			qb.withLiteralParameter('user', 'userId', userId).withLiteralParameter('legacy user', 'userLegacyId', userId).withLiteralParameter('user context', 'userContext', 'Barchart').withLiteralParameter('user permission level', 'userPermissions', 'registered');
+		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
+	}
+
 	return JwtGateway;
 }();
 
@@ -1610,7 +1664,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.8'
+		version: '1.3.9'
 	};
 }();
 
@@ -4398,7 +4452,7 @@ module.exports = function () {
   *
   * @public
   * @param {*} value - The value of the node.
-  * @param {Tree=} parent - The parent node. If not supplied, this will be the root node.
+  * @param {Tree} parent - The parent node. If not supplied, this will be the root node.
   */
 
 	var Tree = function () {
@@ -5436,32 +5490,6 @@ module.exports = function () {
 			}
 
 			/**
-    * Returns a new {@link Day} instance for the start of the month referenced by the current instance.
-    *
-    * @public
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'getStartOfMonth',
-			value: function getStartOfMonth() {
-				return new Day(this.year, this.month, 1);
-			}
-
-			/**
-    * Returns a new instance for the {@link Day} end of the month referenced by the current instance.
-    *
-    * @public
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'getEndOfMonth',
-			value: function getEndOfMonth() {
-				return new Day(this.year, this.month, Day.getDaysInMonth(this.year, this.month));
-			}
-
-			/**
     * Indicates if another {@link Day} occurs before the current instance.
     *
     * @public
@@ -5601,7 +5629,7 @@ module.exports = function () {
 				return this._month;
 			}
 
-			/**day
+			/**
     * The day of the month.
     *
     * @public
@@ -5622,7 +5650,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Converts a string (which matches the output of {@link Day#format}) into
+    * Converts a string (which matches the output of {@link Day#format} into
     * a {@link Day} instance.
     *
     * @public
@@ -5894,24 +5922,6 @@ module.exports = function () {
 			}
 
 			/**
-    * Returns a new {@link Decimal} instance with a value that results
-    * from raising the current instance to the power of the exponent
-    * provided.
-    *
-    * @public
-    * @param {Decimal|Number|String} exponent
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'raise',
-			value: function raise(exponent) {
-				assert.argumentIsRequired(exponent, 'exponent', Number);
-
-				return new Decimal(this._big.pow(exponent));
-			}
-
-			/**
     * Returns a new {@link Decimal} with a value resulting from a rounding
     * operation on the current value.
     *
@@ -6073,28 +6083,6 @@ module.exports = function () {
 			key: 'getIsEqual',
 			value: function getIsEqual(other) {
 				return this._big.eq(getBig(other));
-			}
-
-			/**
-    * Returns true is close to another value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @param {Number} places - The significant digits.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsApproximate',
-			value: function getIsApproximate(other, places) {
-				if (places === 0) {
-					return this.getIsEqual(other);
-				}
-
-				var difference = this.subtract(other).absolute();
-				var tolerance = Decimal.ONE.divide(new Decimal(10).raise(places));
-
-				return difference.getIsLessThan(tolerance);
 			}
 
 			/**
@@ -7623,62 +7611,8 @@ module.exports = function () {
 			}
 
 			return found;
-		},
-
-
-		/**
-   * Inserts an item into an array using a binary search is used to determine the
-   * proper point for insertion and returns the same array.
-   *
-   * @static
-   * @public
-   * @param {Array} a
-   * @param {*} item
-   * @param {Function} comparator
-   * @returns {Array}
-   */
-		insert: function insert(a, item, comparator) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsRequired(comparator, 'comparator', Function);
-
-			if (a.length === 0 || !(comparator(item, a[a.length - 1]) < 0)) {
-				a.push(item);
-			} else if (comparator(item, a[0]) < 0) {
-				a.unshift(item);
-			} else {
-				a.splice(binarySearch(a, item, comparator, 0, a.length - 1), 0, item);
-			}
-
-			return a;
 		}
 	};
-
-	function binarySearch(array, item, comparator, start, end) {
-		var size = end - start;
-
-		var midpointIndex = start + Math.floor(size / 2);
-		var midpointItem = array[midpointIndex];
-
-		var comparison = comparator(item, midpointItem) > 0;
-
-		if (size < 2) {
-			if (comparison > 0) {
-				var finalIndex = array.length - 1;
-
-				if (end === finalIndex && comparator(item, array[finalIndex]) > 0) {
-					return end + 1;
-				} else {
-					return end;
-				}
-			} else {
-				return start;
-			}
-		} else if (comparison > 0) {
-			return binarySearch(array, item, comparator, midpointIndex, end);
-		} else {
-			return binarySearch(array, item, comparator, start, midpointIndex);
-		}
-	}
 }();
 
 },{"./assert":37,"./is":40}],37:[function(require,module,exports){
@@ -8134,7 +8068,7 @@ module.exports = function () {
    * @static
    * @public
    * @param {*} candidate
-   * @returns {boolean}
+   * @returns {*|boolean}
    */
 		negative: function negative(candidate) {
 			return this.number(candidate) && candidate < 0;
@@ -9961,7 +9895,7 @@ module.exports = function () {
     *
     * @public
     * @param {Function} actionToBackoff - The action to attempt. If it fails -- because an error is thrown, a promise is rejected, or the function returns a falsey value -- the action will be invoked again.
-    * @param {number=} millisecondDelay - The amount of time to wait to execute the action. Subsequent failures are multiply this value by 2 ^ [number of failures]. So, a 1000 millisecond backoff would schedule attempts using the following delays: 0, 1000, 2000, 4000, 8000, etc. If not specified, the first attempt will execute immediately, then a value of 1000 will be used.
+    * @param {number=} millisecondDelay - The amount of time to wait to execute the action. Subsequent failures are multiply this value by 2 ^ [number of failures]. So, a 1000 millisecond backoff would schedule attempts using the following delays: 0, 1000, 2000, 4000, 8000, etc. If not specified, the first attemopt will execute immediately, then a value of 1000 will be used.
     * @param {string=} actionDescription - Description of the action to attempt, used for logging purposes.
     * @param {number=} maximumAttempts - The number of attempts to before giving up.
     * @param {Function=} failureCallback - If provided, will be invoked if a function is considered to be failing.
@@ -9985,61 +9919,59 @@ module.exports = function () {
 						throw new Error('The Scheduler has been disposed.');
 					}
 
-					var processAction = function processAction(attempts) {
-						return Promise.resolve().then(function () {
-							var delay = void 0;
+					var scheduleBackoff = function scheduleBackoff(failureCount, e) {
+						if (failureCount > 0 && is.fn(failureCallback)) {
+							failureCallback(failureCount);
+						}
 
-							if (attempts === 0) {
-								delay = 0;
+						if (maximumAttempts > 0 && failureCount > maximumAttempts) {
+							var message = 'Maximum failures reached for ' + actionDescription;
+
+							var rejection = void 0;
+
+							if (e) {
+								e.backoff = message;
+
+								rejection = e;
 							} else {
-								delay = (millisecondDelay || 1000) * Math.pow(2, attempts - 1);
+								rejection = message;
 							}
 
-							return _this4.schedule(actionToBackoff, delay, 'Attempt [ ' + attempts + ' ] for [ ' + (actionDescription || 'unnamed action') + ' ]');
-						}).then(function (result) {
-							var resultPromise = void 0;
+							return Promise.reject(rejection);
+						}
 
-							if (!is.undefined(failureValue) && object.equals(result, failureValue)) {
-								resultPromise = Promise.reject('Attempt [ ' + attempts + ' ] for [ ' + (actionDescription || 'unnamed action') + ' ] failed due to invalid result');
+						var backoffDelay = void 0;
+
+						if (failureCount === 0) {
+							backoffDelay = millisecondDelay || 0;
+						} else {
+							backoffDelay = (millisecondDelay || 1000) * Math.pow(2, failureCount);
+						}
+
+						var successPredicate = void 0;
+
+						if (is.undefined(failureValue)) {
+							successPredicate = function successPredicate(value) {
+								return value;
+							};
+						} else {
+							successPredicate = function successPredicate(value) {
+								return !object.equals(value, failureValue);
+							};
+						}
+
+						return _this4.schedule(actionToBackoff, backoffDelay, (actionDescription || 'unspecified') + ', attempt ' + (failureCount + 1)).then(function (result) {
+							if (successPredicate(result)) {
+								return result;
 							} else {
-								resultPromise = Promise.resolve(result);
+								return scheduleBackoff(++failureCount);
 							}
-
-							return resultPromise;
 						}).catch(function (e) {
-							if (is.fn(failureCallback)) {
-								failureCallback(attempts);
-							}
-
-							return Promise.reject(e);
+							return scheduleBackoff(++failureCount, e);
 						});
 					};
 
-					var attempts = 0;
-
-					var processActionRecursive = function processActionRecursive() {
-						return processAction(attempts++).catch(function (e) {
-							if (maximumAttempts > 0 && attempts === maximumAttempts) {
-								var message = 'Maximum failures reached for ' + (actionDescription || 'unnamed action');
-
-								var rejectPromise = void 0;
-
-								if (is.object(e)) {
-									e.backoff = message;
-
-									rejectPromise = Promise.reject(e);
-								} else {
-									rejectPromise = Promise.reject(message);
-								}
-
-								return rejectPromise;
-							} else {
-								return processActionRecursive();
-							}
-						});
-					};
-
-					return processActionRecursive();
+					return scheduleBackoff(0);
 				});
 			}
 		}, {
@@ -10100,10 +10032,9 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @extends {Enum}
-	 * @param {String} code
 	 * @param {String} description
 	 * @param {String} alternateDescription
-	 * @param {Boolean} canExistEmpty
+	 * @param {String} code
 	 * @param {Boolean} canReinvest
 	 * @param {Boolean} canShort
 	 * @param {Boolean} canSwitchDirection
@@ -10115,11 +10046,10 @@ module.exports = (() => {
 	 * @param {Function} generator
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canExistEmpty, canReinvest, canShort, canSwitchDirection, usesSymbols, hasCorporateActions, closeFractional, roundQuantity, strictOrdering, generator) {
+		constructor(code, description, alternateDescription, canReinvest, canShort, canSwitchDirection, usesSymbols, hasCorporateActions, closeFractional, roundQuantity, strictOrdering, generator) {
 			super(code, description);
 
 			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
-			assert.argumentIsRequired(canExistEmpty, 'canExistEmpty', Boolean);
 			assert.argumentIsRequired(canReinvest, 'canReinvest', Boolean);
 			assert.argumentIsRequired(canShort, 'canShort', Boolean);
 			assert.argumentIsRequired(canSwitchDirection, 'canSwitchDirection', Boolean);
@@ -10131,8 +10061,6 @@ module.exports = (() => {
 			assert.argumentIsRequired(generator, 'generator', Function);
 
 			this._alternateDescription = alternateDescription;
-
-			this._canExistEmpty = canExistEmpty;
 			this._canReinvest = canReinvest;
 			this._canShort = canShort;
 			this._canSwitchDirection = canSwitchDirection;
@@ -10153,16 +10081,6 @@ module.exports = (() => {
 		 */
 		get alternateDescription() {
 			return this._alternateDescription;
-		}
-
-		/**
-		 * Indicates if the position can exist without any associated transactions.
-		 *
-		 * @public
-		 * @returns {Boolean}
-		 */
-		get canExistEmpty() {
-			return this._canExistEmpty;
 		}
 
 		/**
@@ -10345,10 +10263,10 @@ module.exports = (() => {
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', true, false, false, true, false, false, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', false, true, true, false, true, true, true, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', false, true, false, false, true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, false, false, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', false, false, true, false, false, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', true, true, false, true, true, true, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', true, false, false, true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, false, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
 
 	const map = { };
 
@@ -10557,7 +10475,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Number} periods
-		 * @returns {PositionSummaryRange[]}
+		 * @returns {Array.<PositionSummaryRange>}
 		 */
 		getRecentRanges(periods) {
 			const startDate = this.getStartDate(periods);
@@ -10570,8 +10488,8 @@ module.exports = (() => {
 		 * Returns the ranges for the set of {@link Transaction} objects.
 		 *
 		 * @public
-		 * @param {Transaction[]} transactions
-		 * @returns {PositionSummaryRange[]}
+		 * @param {Array.<Transaction>} transactions
+		 * @returns {Array.<PositionSummaryRange>}
 		 */
 		getRanges(transactions) {
 			assert.argumentIsArray(transactions, 'transactions');
@@ -10584,7 +10502,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Day} date
-		 * @return {PositionSummaryRange[]}
+		 * @return {Array.<PositionSummaryRange>}
 		 */
 		getRangesFromDate(date) {
 			assert.argumentIsRequired(date, 'date', Day, 'Day');
@@ -10673,8 +10591,8 @@ module.exports = (() => {
 	}
 
 	const yearly = new PositionSummaryFrame('YEARLY', 'year', false, getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
-	const quarterly = new PositionSummaryFrame('QUARTERLY', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
-	const monthly = new PositionSummaryFrame('MONTHLY', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const quarterly = new PositionSummaryFrame('QUARTER', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
+	const monthly = new PositionSummaryFrame('MONTH', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
 	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
 
 	/**
@@ -10734,36 +10652,7 @@ module.exports = (() => {
 	}
 
 	function getMonthlyRanges(transactions) {
-		const ranges = [ ];
-
-		if (transactions.length !== 0) {
-			const today = Day.getToday();
-
-			const first = array.first(transactions);
-			const last = array.last(transactions);
-
-			const firstDate = first.date;
-
-			let lastDate;
-
-			if (last.snapshot.open.getIsZero()) {
-				lastDate = last.date;
-			} else {
-				lastDate = today;
-			}
-
-			if (today.month === lastDate.month && today.year === lastDate.year) {
-				lastDate = lastDate.subtractMonths(1);
-			}
-
-			lastDate = lastDate.getEndOfMonth();
-
-			for (let end = firstDate.getEndOfMonth(); !end.getIsAfter(lastDate); end = end.addMonths(1).getEndOfMonth()) {
-				ranges.push(getRange(end.subtractMonths(1).getEndOfMonth(), end));
-			}
-		}
-
-		return ranges;
+		return [ ];
 	}
 
 	function getYearToDateRanges(transactions) {
@@ -10800,11 +10689,7 @@ module.exports = (() => {
 	}
 
 	function getMonthlyStartDate(periods, date) {
-		const today = date || Day.getToday();
-
-		return today
-			.subtractMonths(periods)
-			.subtractDays(today.day);
+		return null;
 	}
 
 	function getYearToDateStartDate(periods, date) {
@@ -10812,7 +10697,7 @@ module.exports = (() => {
 	}
 
 	function getYearlyRangeDescription(start, end) {
-		return `Year ended ${end.format()}`;
+		return `Year ended ${end.year.toString()}`;
 	}
 
 	function getQuarterlyRangeDescription(start, end) {
@@ -10820,7 +10705,7 @@ module.exports = (() => {
 	}
 
 	function getMonthlyRangeDescription(start, end) {
-		return `Month ended ${end.format()}`;
+		return '';
 	}
 
 	function getYearToDateRangeDescription(start, end) {
@@ -10865,7 +10750,7 @@ module.exports = (() => {
 	 * @param {Boolean} corporateAction
 	 * @param {Boolean} initial
 	 * @param {Boolean} significant
-	 * @param {Boolean} system
+	 * @param {Boolean} eod
  	 */
 	class TransactionType extends Enum {
 		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, significant) {
@@ -11195,17 +11080,6 @@ module.exports = (() => {
 		static get DEBIT() {
 			return debit;
 		}
-  
-		/**
-		 * A system-generated transaction, indicating the security has stopped active trading.
-		 *
-		 * @public
-		 * @static
-		 * @returns {TransactionType}
-		 */
-		static get DELIST() {
-			return delist;
-		}
 
 		/**
 		 * A system-generated deposit, arising from another transaction.
@@ -11255,7 +11129,6 @@ module.exports = (() => {
 	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
 	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
-	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
 	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
@@ -11891,10 +11764,6 @@ module.exports = (() => {
 		static get VALUATION() {
 			return valuation;
 		}
-		
-		static get DELIST() {
-			return delist;
-		}
 
 		static get INCOME() {
 			return income;
@@ -12099,23 +11968,12 @@ module.exports = (() => {
 		.withField('sequence', DataType.NUMBER, true)
 		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
 		.withField('date', DataType.DAY)
-		.withField('rate', DataType.DECIMAL, true)
-		.withField('value', DataType.DECIMAL, true)
+		.withField('value', DataType.DECIMAL)
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
-	
-	const delist = new TransactionSchema(SchemaBuilder.withName(TransactionType.DELIST.code)
-		.withField('portfolio', DataType.STRING)
-		.withField('position', DataType.STRING)
-		.withField('sequence', DataType.NUMBER, true)
-		.withField('type', DataType.forEnum(TransactionType, 'TransactionType'))
-		.withField('date', DataType.DAY)
-		.withField('force', DataType.BOOLEAN, true)
-		.schema
-	);
-  
-  const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
+
+	const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
 		.withField('sequence', DataType.NUMBER, true)
@@ -12141,7 +11999,6 @@ module.exports = (() => {
 	addSchemaToMap(TransactionType.DEPOSIT, deposit);
 	addSchemaToMap(TransactionType.WITHDRAWAL, withdrawal);
 	addSchemaToMap(TransactionType.VALUATION, valuation);
-	addSchemaToMap(TransactionType.DELIST, delist);
 	addSchemaToMap(TransactionType.INCOME, income);
 
 	return TransactionSchema;
@@ -12274,7 +12131,7 @@ module.exports = function () {
    * containing the current instance
    *
    * @public
-   * @returns {Promise<JwtGateway>}
+   * @returns {Promise.<JwtGateway>}
    */
 
 
@@ -12304,7 +12161,7 @@ module.exports = function () {
     * Retrieves a JWT token from the remote server.
     *
     * @public
-    * @returns {Promise<String>}
+    * @returns {Promise.<String>}
     */
 
 		}, {
@@ -12344,7 +12201,7 @@ module.exports = function () {
 				var refreshToken = function refreshToken() {
 					var refreshPromise = scheduler.backoff(function () {
 						return _this4.readToken();
-					}, 0, 'Read JWT token', 3).then(function (token) {
+					}, 100, 'Read JWT token', 3).then(function (token) {
 						if (_this4._refreshInterval > 0) {
 							cachePromise = refreshPromise;
 
@@ -12412,8 +12269,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {Promise<Endpoint>|Endpoint} endpoint - The endpoint which vends JWT tokens.
-    * @returns {Promise<JwtGateway>}
+    * @param {Promise.<Endpoint>|Endpoint} endpoint - The endpoint which vends JWT tokens.
+    * @returns {Promise.<JwtGateway>}
     */
 
 		}, {
@@ -12441,8 +12298,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {Promise<Endpoint>|Endpoint} endpoint - The endpoint which vends JWT tokens.
-    * @returns {Promise<RequestInterceptor>}
+    * @param {Promise.<Endpoint>|Endpoint} endpoint - The endpoint which vends JWT tokens.
+    * @returns {Promise.<RequestInterceptor>}
     */
 
 		}, {
@@ -12458,7 +12315,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @returns {Promise<JwtGateway>}
+    * @returns {Promise.<JwtGateway>}
     */
 
 		}, {
@@ -12472,7 +12329,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @returns {Promise<RequestInterceptor>}
+    * @returns {Promise.<RequestInterceptor>}
     */
 
 		}, {
@@ -12488,7 +12345,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @returns {Promise<JwtGateway>}
+    * @returns {Promise.<JwtGateway>}
     */
 
 		}, {
@@ -12502,7 +12359,7 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @returns {Promise<RequestInterceptor>}
+    * @returns {Promise.<RequestInterceptor>}
     */
 
 		}, {
@@ -12519,7 +12376,7 @@ module.exports = function () {
     * @public
     * @static
     * @param {Function} tokenGenerator - A function which returns the JWT token.
-    * @returns {Promise<JwtGateway>}
+    * @returns {Promise.<JwtGateway>}
     */
 
 		}, {
@@ -12536,7 +12393,7 @@ module.exports = function () {
     * @public
     * @static
     * @param {JwtGateway~tokenGenerator} tokenGenerator - A function which returns the JWT token.
-    * @returns {Promise<RequestInterceptor>}
+    * @returns {Promise.<RequestInterceptor>}
     */
 
 		}, {
@@ -12599,7 +12456,7 @@ module.exports = function () {
   * A function returns a JWT token (or a promise for a JWT token).
   *
   * @callback JwtGateway~tokenGenerator
-  * @returns {String|Promise<String>}
+  * @returns {String|Promise.<String>}
   */
 
 	return JwtGateway;
@@ -12612,13 +12469,14 @@ module.exports = function () {
 	'use strict';
 
 	return {
-		version: '1.3.2'
+		version: '1.0.42'
 	};
 }();
 
 },{}],63:[function(require,module,exports){
 module.exports = require('./lib/axios');
 },{"./lib/axios":65}],64:[function(require,module,exports){
+(function (process){
 'use strict';
 
 var utils = require('./../utils');
@@ -12627,6 +12485,7 @@ var buildURL = require('./../helpers/buildURL');
 var parseHeaders = require('./../helpers/parseHeaders');
 var isURLSameOrigin = require('./../helpers/isURLSameOrigin');
 var createError = require('../core/createError');
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || require('./../helpers/btoa');
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -12638,6 +12497,22 @@ module.exports = function xhrAdapter(config) {
     }
 
     var request = new XMLHttpRequest();
+    var loadEvent = 'onreadystatechange';
+    var xDomain = false;
+
+    // For IE 8/9 CORS support
+    // Only supports POST and GET calls and doesn't returns the response headers.
+    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+    if (process.env.NODE_ENV !== 'test' &&
+        typeof window !== 'undefined' &&
+        window.XDomainRequest && !('withCredentials' in request) &&
+        !isURLSameOrigin(config.url)) {
+      request = new window.XDomainRequest();
+      loadEvent = 'onload';
+      xDomain = true;
+      request.onprogress = function handleProgress() {};
+      request.ontimeout = function handleTimeout() {};
+    }
 
     // HTTP basic authentication
     if (config.auth) {
@@ -12652,8 +12527,8 @@ module.exports = function xhrAdapter(config) {
     request.timeout = config.timeout;
 
     // Listen for ready state
-    request.onreadystatechange = function handleLoad() {
-      if (!request || request.readyState !== 4) {
+    request[loadEvent] = function handleLoad() {
+      if (!request || (request.readyState !== 4 && !xDomain)) {
         return;
       }
 
@@ -12670,26 +12545,15 @@ module.exports = function xhrAdapter(config) {
       var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
       var response = {
         data: responseData,
-        status: request.status,
-        statusText: request.statusText,
+        // IE sends 1223 instead of 204 (https://github.com/axios/axios/issues/201)
+        status: request.status === 1223 ? 204 : request.status,
+        statusText: request.status === 1223 ? 'No Content' : request.statusText,
         headers: responseHeaders,
         config: config,
         request: request
       };
 
       settle(resolve, reject, response);
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle browser request cancellation (as opposed to a manual cancellation)
-    request.onabort = function handleAbort() {
-      if (!request) {
-        return;
-      }
-
-      reject(createError('Request aborted', config, 'ECONNABORTED', request));
 
       // Clean up request
       request = null;
@@ -12722,8 +12586,8 @@ module.exports = function xhrAdapter(config) {
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
-        cookies.read(config.xsrfCookieName) :
-        undefined;
+          cookies.read(config.xsrfCookieName) :
+          undefined;
 
       if (xsrfValue) {
         requestHeaders[config.xsrfHeaderName] = xsrfValue;
@@ -12794,13 +12658,13 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-},{"../core/createError":71,"./../core/settle":75,"./../helpers/buildURL":79,"./../helpers/cookies":81,"./../helpers/isURLSameOrigin":83,"./../helpers/parseHeaders":85,"./../utils":87}],65:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"../core/createError":71,"./../core/settle":74,"./../helpers/btoa":78,"./../helpers/buildURL":79,"./../helpers/cookies":81,"./../helpers/isURLSameOrigin":83,"./../helpers/parseHeaders":85,"./../utils":87,"_process":89}],65:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
 var bind = require('./helpers/bind');
 var Axios = require('./core/Axios');
-var mergeConfig = require('./core/mergeConfig');
 var defaults = require('./defaults');
 
 /**
@@ -12830,7 +12694,7 @@ axios.Axios = Axios;
 
 // Factory for creating new instances
 axios.create = function create(instanceConfig) {
-  return createInstance(mergeConfig(axios.defaults, instanceConfig));
+  return createInstance(utils.merge(defaults, instanceConfig));
 };
 
 // Expose Cancel & CancelToken
@@ -12849,7 +12713,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":66,"./cancel/CancelToken":67,"./cancel/isCancel":68,"./core/Axios":69,"./core/mergeConfig":74,"./defaults":77,"./helpers/bind":78,"./helpers/spread":86,"./utils":87}],66:[function(require,module,exports){
+},{"./cancel/Cancel":66,"./cancel/CancelToken":67,"./cancel/isCancel":68,"./core/Axios":69,"./defaults":76,"./helpers/bind":77,"./helpers/spread":86,"./utils":87}],66:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12939,11 +12803,10 @@ module.exports = function isCancel(value) {
 },{}],69:[function(require,module,exports){
 'use strict';
 
+var defaults = require('./../defaults');
 var utils = require('./../utils');
-var buildURL = require('../helpers/buildURL');
 var InterceptorManager = require('./InterceptorManager');
 var dispatchRequest = require('./dispatchRequest');
-var mergeConfig = require('./mergeConfig');
 
 /**
  * Create a new instance of Axios
@@ -12967,14 +12830,13 @@ Axios.prototype.request = function request(config) {
   /*eslint no-param-reassign:0*/
   // Allow for axios('example/url'[, config]) a la fetch API
   if (typeof config === 'string') {
-    config = arguments[1] || {};
-    config.url = arguments[0];
-  } else {
-    config = config || {};
+    config = utils.merge({
+      url: arguments[0]
+    }, arguments[1]);
   }
 
-  config = mergeConfig(this.defaults, config);
-  config.method = config.method ? config.method.toLowerCase() : 'get';
+  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
+  config.method = config.method.toLowerCase();
 
   // Hook up interceptors middleware
   var chain = [dispatchRequest, undefined];
@@ -12993,11 +12855,6 @@ Axios.prototype.request = function request(config) {
   }
 
   return promise;
-};
-
-Axios.prototype.getUri = function getUri(config) {
-  config = mergeConfig(this.defaults, config);
-  return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
 };
 
 // Provide aliases for supported request methods
@@ -13024,7 +12881,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"../helpers/buildURL":79,"./../utils":87,"./InterceptorManager":70,"./dispatchRequest":72,"./mergeConfig":74}],70:[function(require,module,exports){
+},{"./../defaults":76,"./../utils":87,"./InterceptorManager":70,"./dispatchRequest":72}],70:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -13186,7 +13043,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":68,"../defaults":77,"./../helpers/combineURLs":80,"./../helpers/isAbsoluteURL":82,"./../utils":87,"./transformData":76}],73:[function(require,module,exports){
+},{"../cancel/isCancel":68,"../defaults":76,"./../helpers/combineURLs":80,"./../helpers/isAbsoluteURL":82,"./../utils":87,"./transformData":75}],73:[function(require,module,exports){
 'use strict';
 
 /**
@@ -13204,86 +13061,12 @@ module.exports = function enhanceError(error, config, code, request, response) {
   if (code) {
     error.code = code;
   }
-
   error.request = request;
   error.response = response;
-  error.isAxiosError = true;
-
-  error.toJSON = function() {
-    return {
-      // Standard
-      message: this.message,
-      name: this.name,
-      // Microsoft
-      description: this.description,
-      number: this.number,
-      // Mozilla
-      fileName: this.fileName,
-      lineNumber: this.lineNumber,
-      columnNumber: this.columnNumber,
-      stack: this.stack,
-      // Axios
-      config: this.config,
-      code: this.code
-    };
-  };
   return error;
 };
 
 },{}],74:[function(require,module,exports){
-'use strict';
-
-var utils = require('../utils');
-
-/**
- * Config-specific merge-function which creates a new config-object
- * by merging two configuration objects together.
- *
- * @param {Object} config1
- * @param {Object} config2
- * @returns {Object} New object resulting from merging config2 to config1
- */
-module.exports = function mergeConfig(config1, config2) {
-  // eslint-disable-next-line no-param-reassign
-  config2 = config2 || {};
-  var config = {};
-
-  utils.forEach(['url', 'method', 'params', 'data'], function valueFromConfig2(prop) {
-    if (typeof config2[prop] !== 'undefined') {
-      config[prop] = config2[prop];
-    }
-  });
-
-  utils.forEach(['headers', 'auth', 'proxy'], function mergeDeepProperties(prop) {
-    if (utils.isObject(config2[prop])) {
-      config[prop] = utils.deepMerge(config1[prop], config2[prop]);
-    } else if (typeof config2[prop] !== 'undefined') {
-      config[prop] = config2[prop];
-    } else if (utils.isObject(config1[prop])) {
-      config[prop] = utils.deepMerge(config1[prop]);
-    } else if (typeof config1[prop] !== 'undefined') {
-      config[prop] = config1[prop];
-    }
-  });
-
-  utils.forEach([
-    'baseURL', 'transformRequest', 'transformResponse', 'paramsSerializer',
-    'timeout', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName',
-    'xsrfHeaderName', 'onUploadProgress', 'onDownloadProgress', 'maxContentLength',
-    'validateStatus', 'maxRedirects', 'httpAgent', 'httpsAgent', 'cancelToken',
-    'socketPath'
-  ], function defaultToConfig2(prop) {
-    if (typeof config2[prop] !== 'undefined') {
-      config[prop] = config2[prop];
-    } else if (typeof config1[prop] !== 'undefined') {
-      config[prop] = config1[prop];
-    }
-  });
-
-  return config;
-};
-
-},{"../utils":87}],75:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -13297,7 +13080,8 @@ var createError = require('./createError');
  */
 module.exports = function settle(resolve, reject, response) {
   var validateStatus = response.config.validateStatus;
-  if (!validateStatus || validateStatus(response.status)) {
+  // Note: status is not exposed by XDomainRequest
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
     resolve(response);
   } else {
     reject(createError(
@@ -13310,7 +13094,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":71}],76:[function(require,module,exports){
+},{"./createError":71}],75:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -13332,7 +13116,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":87}],77:[function(require,module,exports){
+},{"./../utils":87}],76:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13351,13 +13135,12 @@ function setContentTypeIfUnset(headers, value) {
 
 function getDefaultAdapter() {
   var adapter;
-  // Only Node.JS has a process variable that is of [[Class]] process
-  if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
-    // For node use HTTP adapter
-    adapter = require('./adapters/http');
-  } else if (typeof XMLHttpRequest !== 'undefined') {
+  if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
     adapter = require('./adapters/xhr');
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = require('./adapters/http');
   }
   return adapter;
 }
@@ -13366,7 +13149,6 @@ var defaults = {
   adapter: getDefaultAdapter(),
 
   transformRequest: [function transformRequest(data, headers) {
-    normalizeHeaderName(headers, 'Accept');
     normalizeHeaderName(headers, 'Content-Type');
     if (utils.isFormData(data) ||
       utils.isArrayBuffer(data) ||
@@ -13401,10 +13183,6 @@ var defaults = {
     return data;
   }],
 
-  /**
-   * A timeout in milliseconds to abort a request. If set to 0 (default) a
-   * timeout is not created.
-   */
   timeout: 0,
 
   xsrfCookieName: 'XSRF-TOKEN',
@@ -13434,7 +13212,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":64,"./adapters/xhr":64,"./helpers/normalizeHeaderName":84,"./utils":87,"_process":89}],78:[function(require,module,exports){
+},{"./adapters/http":64,"./adapters/xhr":64,"./helpers/normalizeHeaderName":84,"./utils":87,"_process":89}],77:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -13446,6 +13224,44 @@ module.exports = function bind(fn, thisArg) {
     return fn.apply(thisArg, args);
   };
 };
+
+},{}],78:[function(require,module,exports){
+'use strict';
+
+// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
+
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+function E() {
+  this.message = 'String contains an invalid character';
+}
+E.prototype = new Error;
+E.prototype.code = 5;
+E.prototype.name = 'InvalidCharacterError';
+
+function btoa(input) {
+  var str = String(input);
+  var output = '';
+  for (
+    // initialize result and counter
+    var block, charCode, idx = 0, map = chars;
+    // if the next str index does not exist:
+    //   change the mapping table to "="
+    //   check if d has no fractional digits
+    str.charAt(idx | 0) || (map = '=', idx % 1);
+    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+  ) {
+    charCode = str.charCodeAt(idx += 3 / 4);
+    if (charCode > 0xFF) {
+      throw new E();
+    }
+    block = block << 8 | charCode;
+  }
+  return output;
+}
+
+module.exports = btoa;
 
 },{}],79:[function(require,module,exports){
 'use strict';
@@ -13491,7 +13307,9 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
       if (utils.isArray(val)) {
         key = key + '[]';
-      } else {
+      }
+
+      if (!utils.isArray(val)) {
         val = [val];
       }
 
@@ -13509,11 +13327,6 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   }
 
   if (serializedParams) {
-    var hashmarkIndex = url.indexOf('#');
-    if (hashmarkIndex !== -1) {
-      url = url.slice(0, hashmarkIndex);
-    }
-
     url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
   }
 
@@ -13545,50 +13358,50 @@ module.exports = (
   utils.isStandardBrowserEnv() ?
 
   // Standard browser envs support document.cookie
-    (function standardBrowserEnv() {
-      return {
-        write: function write(name, value, expires, path, domain, secure) {
-          var cookie = [];
-          cookie.push(name + '=' + encodeURIComponent(value));
+  (function standardBrowserEnv() {
+    return {
+      write: function write(name, value, expires, path, domain, secure) {
+        var cookie = [];
+        cookie.push(name + '=' + encodeURIComponent(value));
 
-          if (utils.isNumber(expires)) {
-            cookie.push('expires=' + new Date(expires).toGMTString());
-          }
-
-          if (utils.isString(path)) {
-            cookie.push('path=' + path);
-          }
-
-          if (utils.isString(domain)) {
-            cookie.push('domain=' + domain);
-          }
-
-          if (secure === true) {
-            cookie.push('secure');
-          }
-
-          document.cookie = cookie.join('; ');
-        },
-
-        read: function read(name) {
-          var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-          return (match ? decodeURIComponent(match[3]) : null);
-        },
-
-        remove: function remove(name) {
-          this.write(name, '', Date.now() - 86400000);
+        if (utils.isNumber(expires)) {
+          cookie.push('expires=' + new Date(expires).toGMTString());
         }
-      };
-    })() :
+
+        if (utils.isString(path)) {
+          cookie.push('path=' + path);
+        }
+
+        if (utils.isString(domain)) {
+          cookie.push('domain=' + domain);
+        }
+
+        if (secure === true) {
+          cookie.push('secure');
+        }
+
+        document.cookie = cookie.join('; ');
+      },
+
+      read: function read(name) {
+        var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return (match ? decodeURIComponent(match[3]) : null);
+      },
+
+      remove: function remove(name) {
+        this.write(name, '', Date.now() - 86400000);
+      }
+    };
+  })() :
 
   // Non standard browser env (web workers, react-native) lack needed support.
-    (function nonStandardBrowserEnv() {
-      return {
-        write: function write() {},
-        read: function read() { return null; },
-        remove: function remove() {}
-      };
-    })()
+  (function nonStandardBrowserEnv() {
+    return {
+      write: function write() {},
+      read: function read() { return null; },
+      remove: function remove() {}
+    };
+  })()
 );
 
 },{"./../utils":87}],82:[function(require,module,exports){
@@ -13617,64 +13430,64 @@ module.exports = (
 
   // Standard browser envs have full support of the APIs needed to test
   // whether the request URL is of the same origin as current location.
-    (function standardBrowserEnv() {
-      var msie = /(msie|trident)/i.test(navigator.userAgent);
-      var urlParsingNode = document.createElement('a');
-      var originURL;
+  (function standardBrowserEnv() {
+    var msie = /(msie|trident)/i.test(navigator.userAgent);
+    var urlParsingNode = document.createElement('a');
+    var originURL;
 
-      /**
+    /**
     * Parse a URL to discover it's components
     *
     * @param {String} url The URL to be parsed
     * @returns {Object}
     */
-      function resolveURL(url) {
-        var href = url;
+    function resolveURL(url) {
+      var href = url;
 
-        if (msie) {
+      if (msie) {
         // IE needs attribute set twice to normalize properties
-          urlParsingNode.setAttribute('href', href);
-          href = urlParsingNode.href;
-        }
-
         urlParsingNode.setAttribute('href', href);
-
-        // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-        return {
-          href: urlParsingNode.href,
-          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-          host: urlParsingNode.host,
-          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-          hostname: urlParsingNode.hostname,
-          port: urlParsingNode.port,
-          pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
-            urlParsingNode.pathname :
-            '/' + urlParsingNode.pathname
-        };
+        href = urlParsingNode.href;
       }
 
-      originURL = resolveURL(window.location.href);
+      urlParsingNode.setAttribute('href', href);
 
-      /**
+      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+      return {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+        host: urlParsingNode.host,
+        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+                  urlParsingNode.pathname :
+                  '/' + urlParsingNode.pathname
+      };
+    }
+
+    originURL = resolveURL(window.location.href);
+
+    /**
     * Determine if a URL shares the same origin as the current location
     *
     * @param {String} requestURL The URL to test
     * @returns {boolean} True if URL shares the same origin, otherwise false
     */
-      return function isURLSameOrigin(requestURL) {
-        var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
-        return (parsed.protocol === originURL.protocol &&
+    return function isURLSameOrigin(requestURL) {
+      var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+      return (parsed.protocol === originURL.protocol &&
             parsed.host === originURL.host);
-      };
-    })() :
+    };
+  })() :
 
   // Non standard browser envs (web workers, react-native) lack needed support.
-    (function nonStandardBrowserEnv() {
-      return function isURLSameOrigin() {
-        return true;
-      };
-    })()
+  (function nonStandardBrowserEnv() {
+    return function isURLSameOrigin() {
+      return true;
+    };
+  })()
 );
 
 },{"./../utils":87}],84:[function(require,module,exports){
@@ -13955,13 +13768,9 @@ function trim(str) {
  *
  * react-native:
  *  navigator.product -> 'ReactNative'
- * nativescript
- *  navigator.product -> 'NativeScript' or 'NS'
  */
 function isStandardBrowserEnv() {
-  if (typeof navigator !== 'undefined' && (navigator.product === 'ReactNative' ||
-                                           navigator.product === 'NativeScript' ||
-                                           navigator.product === 'NS')) {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
     return false;
   }
   return (
@@ -14043,32 +13852,6 @@ function merge(/* obj1, obj2, obj3, ... */) {
 }
 
 /**
- * Function equal to merge with the difference being that no reference
- * to original objects is kept.
- *
- * @see merge
- * @param {Object} obj1 Object to merge
- * @returns {Object} Result of all merge properties
- */
-function deepMerge(/* obj1, obj2, obj3, ... */) {
-  var result = {};
-  function assignValue(val, key) {
-    if (typeof result[key] === 'object' && typeof val === 'object') {
-      result[key] = deepMerge(result[key], val);
-    } else if (typeof val === 'object') {
-      result[key] = deepMerge({}, val);
-    } else {
-      result[key] = val;
-    }
-  }
-
-  for (var i = 0, l = arguments.length; i < l; i++) {
-    forEach(arguments[i], assignValue);
-  }
-  return result;
-}
-
-/**
  * Extends object a by mutably adding to it the properties of object b.
  *
  * @param {Object} a The object to be extended
@@ -14106,12 +13889,11 @@ module.exports = {
   isStandardBrowserEnv: isStandardBrowserEnv,
   forEach: forEach,
   merge: merge,
-  deepMerge: deepMerge,
   extend: extend,
   trim: trim
 };
 
-},{"./helpers/bind":78,"is-buffer":90}],88:[function(require,module,exports){
+},{"./helpers/bind":77,"is-buffer":90}],88:[function(require,module,exports){
 /*
  *  big.js v5.0.3
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -15246,9 +15028,19 @@ process.umask = function() { return 0; };
  * @license  MIT
  */
 
-module.exports = function isBuffer (obj) {
-  return obj != null && obj.constructor != null &&
-    typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+// The _isBuffer check is for Safari 5-7 support, because it's missing
+// Object.prototype.constructor. Remove this eventually
+module.exports = function (obj) {
+  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
+}
+
+function isBuffer (obj) {
+  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+}
+
+// For Node v0.10 support. Remove this eventually.
+function isSlowBuffer (obj) {
+  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
 },{}],91:[function(require,module,exports){
@@ -18805,36 +18597,22 @@ moment.tz.load(require('./data/packed/latest.json'));
     function createDate (y, m, d, h, M, s, ms) {
         // can't just apply() to create a date:
         // https://stackoverflow.com/q/181348
-        var date;
-        // the date constructor remaps years 0-99 to 1900-1999
-        if (y < 100 && y >= 0) {
-            // preserve leap years using a full 400 year cycle, then reset
-            date = new Date(y + 400, m, d, h, M, s, ms);
-            if (isFinite(date.getFullYear())) {
-                date.setFullYear(y);
-            }
-        } else {
-            date = new Date(y, m, d, h, M, s, ms);
-        }
+        var date = new Date(y, m, d, h, M, s, ms);
 
+        // the date constructor remaps years 0-99 to 1900-1999
+        if (y < 100 && y >= 0 && isFinite(date.getFullYear())) {
+            date.setFullYear(y);
+        }
         return date;
     }
 
     function createUTCDate (y) {
-        var date;
-        // the Date.UTC function remaps years 0-99 to 1900-1999
-        if (y < 100 && y >= 0) {
-            var args = Array.prototype.slice.call(arguments);
-            // preserve leap years using a full 400 year cycle, then reset
-            args[0] = y + 400;
-            date = new Date(Date.UTC.apply(null, args));
-            if (isFinite(date.getUTCFullYear())) {
-                date.setUTCFullYear(y);
-            }
-        } else {
-            date = new Date(Date.UTC.apply(null, arguments));
-        }
+        var date = new Date(Date.UTC.apply(null, arguments));
 
+        // the Date.UTC function remaps years 0-99 to 1900-1999
+        if (y < 100 && y >= 0 && isFinite(date.getUTCFullYear())) {
+            date.setUTCFullYear(y);
+        }
         return date;
     }
 
@@ -18936,7 +18714,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
     var defaultLocaleWeek = {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 6th is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the year.
     };
 
     function localeFirstDayOfWeek () {
@@ -19045,28 +18823,25 @@ moment.tz.load(require('./data/packed/latest.json'));
     }
 
     // LOCALES
-    function shiftWeekdays (ws, n) {
-        return ws.slice(n, 7).concat(ws.slice(0, n));
-    }
 
     var defaultLocaleWeekdays = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_');
     function localeWeekdays (m, format) {
-        var weekdays = isArray(this._weekdays) ? this._weekdays :
-            this._weekdays[(m && m !== true && this._weekdays.isFormat.test(format)) ? 'format' : 'standalone'];
-        return (m === true) ? shiftWeekdays(weekdays, this._week.dow)
-            : (m) ? weekdays[m.day()] : weekdays;
+        if (!m) {
+            return isArray(this._weekdays) ? this._weekdays :
+                this._weekdays['standalone'];
+        }
+        return isArray(this._weekdays) ? this._weekdays[m.day()] :
+            this._weekdays[this._weekdays.isFormat.test(format) ? 'format' : 'standalone'][m.day()];
     }
 
     var defaultLocaleWeekdaysShort = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_');
     function localeWeekdaysShort (m) {
-        return (m === true) ? shiftWeekdays(this._weekdaysShort, this._week.dow)
-            : (m) ? this._weekdaysShort[m.day()] : this._weekdaysShort;
+        return (m) ? this._weekdaysShort[m.day()] : this._weekdaysShort;
     }
 
     var defaultLocaleWeekdaysMin = 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_');
     function localeWeekdaysMin (m) {
-        return (m === true) ? shiftWeekdays(this._weekdaysMin, this._week.dow)
-            : (m) ? this._weekdaysMin[m.day()] : this._weekdaysMin;
+        return (m) ? this._weekdaysMin[m.day()] : this._weekdaysMin;
     }
 
     function handleStrictParse$1(weekdayName, format, strict) {
@@ -19815,13 +19590,13 @@ moment.tz.load(require('./data/packed/latest.json'));
                     weekdayOverflow = true;
                 }
             } else if (w.e != null) {
-                // local weekday -- counting starts from beginning of week
+                // local weekday -- counting starts from begining of week
                 weekday = w.e + dow;
                 if (w.e < 0 || w.e > 6) {
                     weekdayOverflow = true;
                 }
             } else {
-                // default to beginning of week
+                // default to begining of week
                 weekday = dow;
             }
         }
@@ -20415,7 +20190,7 @@ moment.tz.load(require('./data/packed/latest.json'));
             years = normalizedInput.year || 0,
             quarters = normalizedInput.quarter || 0,
             months = normalizedInput.month || 0,
-            weeks = normalizedInput.week || normalizedInput.isoWeek || 0,
+            weeks = normalizedInput.week || 0,
             days = normalizedInput.day || 0,
             hours = normalizedInput.hour || 0,
             minutes = normalizedInput.minute || 0,
@@ -20719,7 +20494,7 @@ moment.tz.load(require('./data/packed/latest.json'));
                 ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the match
             };
         } else if (!!(match = isoRegex.exec(input))) {
-            sign = (match[1] === '-') ? -1 : 1;
+            sign = (match[1] === '-') ? -1 : (match[1] === '+') ? 1 : 1;
             duration = {
                 y : parseIso(match[2], sign),
                 M : parseIso(match[3], sign),
@@ -20761,7 +20536,7 @@ moment.tz.load(require('./data/packed/latest.json'));
     }
 
     function positiveMomentsDifference(base, other) {
-        var res = {};
+        var res = {milliseconds: 0, months: 0};
 
         res.months = other.month() - base.month() +
             (other.year() - base.year()) * 12;
@@ -20870,7 +20645,7 @@ moment.tz.load(require('./data/packed/latest.json'));
         if (!(this.isValid() && localInput.isValid())) {
             return false;
         }
-        units = normalizeUnits(units) || 'millisecond';
+        units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
         if (units === 'millisecond') {
             return this.valueOf() > localInput.valueOf();
         } else {
@@ -20883,7 +20658,7 @@ moment.tz.load(require('./data/packed/latest.json'));
         if (!(this.isValid() && localInput.isValid())) {
             return false;
         }
-        units = normalizeUnits(units) || 'millisecond';
+        units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
         if (units === 'millisecond') {
             return this.valueOf() < localInput.valueOf();
         } else {
@@ -20892,14 +20667,9 @@ moment.tz.load(require('./data/packed/latest.json'));
     }
 
     function isBetween (from, to, units, inclusivity) {
-        var localFrom = isMoment(from) ? from : createLocal(from),
-            localTo = isMoment(to) ? to : createLocal(to);
-        if (!(this.isValid() && localFrom.isValid() && localTo.isValid())) {
-            return false;
-        }
         inclusivity = inclusivity || '()';
-        return (inclusivity[0] === '(' ? this.isAfter(localFrom, units) : !this.isBefore(localFrom, units)) &&
-            (inclusivity[1] === ')' ? this.isBefore(localTo, units) : !this.isAfter(localTo, units));
+        return (inclusivity[0] === '(' ? this.isAfter(from, units) : !this.isBefore(from, units)) &&
+            (inclusivity[1] === ')' ? this.isBefore(to, units) : !this.isAfter(to, units));
     }
 
     function isSame (input, units) {
@@ -20908,7 +20678,7 @@ moment.tz.load(require('./data/packed/latest.json'));
         if (!(this.isValid() && localInput.isValid())) {
             return false;
         }
-        units = normalizeUnits(units) || 'millisecond';
+        units = normalizeUnits(units || 'millisecond');
         if (units === 'millisecond') {
             return this.valueOf() === localInput.valueOf();
         } else {
@@ -20918,11 +20688,11 @@ moment.tz.load(require('./data/packed/latest.json'));
     }
 
     function isSameOrAfter (input, units) {
-        return this.isSame(input, units) || this.isAfter(input, units);
+        return this.isSame(input, units) || this.isAfter(input,units);
     }
 
     function isSameOrBefore (input, units) {
-        return this.isSame(input, units) || this.isBefore(input, units);
+        return this.isSame(input, units) || this.isBefore(input,units);
     }
 
     function diff (input, units, asFloat) {
@@ -21099,130 +20869,62 @@ moment.tz.load(require('./data/packed/latest.json'));
         return this._locale;
     }
 
-    var MS_PER_SECOND = 1000;
-    var MS_PER_MINUTE = 60 * MS_PER_SECOND;
-    var MS_PER_HOUR = 60 * MS_PER_MINUTE;
-    var MS_PER_400_YEARS = (365 * 400 + 97) * 24 * MS_PER_HOUR;
-
-    // actual modulo - handles negative numbers (for dates before 1970):
-    function mod$1(dividend, divisor) {
-        return (dividend % divisor + divisor) % divisor;
-    }
-
-    function localStartOfDate(y, m, d) {
-        // the date constructor remaps years 0-99 to 1900-1999
-        if (y < 100 && y >= 0) {
-            // preserve leap years using a full 400 year cycle, then reset
-            return new Date(y + 400, m, d) - MS_PER_400_YEARS;
-        } else {
-            return new Date(y, m, d).valueOf();
-        }
-    }
-
-    function utcStartOfDate(y, m, d) {
-        // Date.UTC remaps years 0-99 to 1900-1999
-        if (y < 100 && y >= 0) {
-            // preserve leap years using a full 400 year cycle, then reset
-            return Date.UTC(y + 400, m, d) - MS_PER_400_YEARS;
-        } else {
-            return Date.UTC(y, m, d);
-        }
-    }
-
     function startOf (units) {
-        var time;
         units = normalizeUnits(units);
-        if (units === undefined || units === 'millisecond' || !this.isValid()) {
-            return this;
-        }
-
-        var startOfDate = this._isUTC ? utcStartOfDate : localStartOfDate;
-
+        // the following switch intentionally omits break keywords
+        // to utilize falling through the cases.
         switch (units) {
             case 'year':
-                time = startOfDate(this.year(), 0, 1);
-                break;
+                this.month(0);
+                /* falls through */
             case 'quarter':
-                time = startOfDate(this.year(), this.month() - this.month() % 3, 1);
-                break;
             case 'month':
-                time = startOfDate(this.year(), this.month(), 1);
-                break;
+                this.date(1);
+                /* falls through */
             case 'week':
-                time = startOfDate(this.year(), this.month(), this.date() - this.weekday());
-                break;
             case 'isoWeek':
-                time = startOfDate(this.year(), this.month(), this.date() - (this.isoWeekday() - 1));
-                break;
             case 'day':
             case 'date':
-                time = startOfDate(this.year(), this.month(), this.date());
-                break;
+                this.hours(0);
+                /* falls through */
             case 'hour':
-                time = this._d.valueOf();
-                time -= mod$1(time + (this._isUTC ? 0 : this.utcOffset() * MS_PER_MINUTE), MS_PER_HOUR);
-                break;
+                this.minutes(0);
+                /* falls through */
             case 'minute':
-                time = this._d.valueOf();
-                time -= mod$1(time, MS_PER_MINUTE);
-                break;
+                this.seconds(0);
+                /* falls through */
             case 'second':
-                time = this._d.valueOf();
-                time -= mod$1(time, MS_PER_SECOND);
-                break;
+                this.milliseconds(0);
         }
 
-        this._d.setTime(time);
-        hooks.updateOffset(this, true);
+        // weeks are a special case
+        if (units === 'week') {
+            this.weekday(0);
+        }
+        if (units === 'isoWeek') {
+            this.isoWeekday(1);
+        }
+
+        // quarters are also special
+        if (units === 'quarter') {
+            this.month(Math.floor(this.month() / 3) * 3);
+        }
+
         return this;
     }
 
     function endOf (units) {
-        var time;
         units = normalizeUnits(units);
-        if (units === undefined || units === 'millisecond' || !this.isValid()) {
+        if (units === undefined || units === 'millisecond') {
             return this;
         }
 
-        var startOfDate = this._isUTC ? utcStartOfDate : localStartOfDate;
-
-        switch (units) {
-            case 'year':
-                time = startOfDate(this.year() + 1, 0, 1) - 1;
-                break;
-            case 'quarter':
-                time = startOfDate(this.year(), this.month() - this.month() % 3 + 3, 1) - 1;
-                break;
-            case 'month':
-                time = startOfDate(this.year(), this.month() + 1, 1) - 1;
-                break;
-            case 'week':
-                time = startOfDate(this.year(), this.month(), this.date() - this.weekday() + 7) - 1;
-                break;
-            case 'isoWeek':
-                time = startOfDate(this.year(), this.month(), this.date() - (this.isoWeekday() - 1) + 7) - 1;
-                break;
-            case 'day':
-            case 'date':
-                time = startOfDate(this.year(), this.month(), this.date() + 1) - 1;
-                break;
-            case 'hour':
-                time = this._d.valueOf();
-                time += MS_PER_HOUR - mod$1(time + (this._isUTC ? 0 : this.utcOffset() * MS_PER_MINUTE), MS_PER_HOUR) - 1;
-                break;
-            case 'minute':
-                time = this._d.valueOf();
-                time += MS_PER_MINUTE - mod$1(time, MS_PER_MINUTE) - 1;
-                break;
-            case 'second':
-                time = this._d.valueOf();
-                time += MS_PER_SECOND - mod$1(time, MS_PER_SECOND) - 1;
-                break;
+        // 'date' is an alias for 'day', so it should be considered as such.
+        if (units === 'date') {
+            units = 'day';
         }
 
-        this._d.setTime(time);
-        hooks.updateOffset(this, true);
-        return this;
+        return this.startOf(units).add(1, (units === 'isoWeek' ? 'week' : units)).subtract(1, 'ms');
     }
 
     function valueOf () {
@@ -21928,14 +21630,10 @@ moment.tz.load(require('./data/packed/latest.json'));
 
         units = normalizeUnits(units);
 
-        if (units === 'month' || units === 'quarter' || units === 'year') {
-            days = this._days + milliseconds / 864e5;
+        if (units === 'month' || units === 'year') {
+            days   = this._days   + milliseconds / 864e5;
             months = this._months + daysToMonths(days);
-            switch (units) {
-                case 'month':   return months;
-                case 'quarter': return months / 3;
-                case 'year':    return months / 12;
-            }
+            return units === 'month' ? months : months / 12;
         } else {
             // handle milliseconds separately because of floating point math errors (issue #1867)
             days = this._days + Math.round(monthsToDays(this._months));
@@ -21978,7 +21676,6 @@ moment.tz.load(require('./data/packed/latest.json'));
     var asDays         = makeAs('d');
     var asWeeks        = makeAs('w');
     var asMonths       = makeAs('M');
-    var asQuarters     = makeAs('Q');
     var asYears        = makeAs('y');
 
     function clone$1 () {
@@ -22170,7 +21867,6 @@ moment.tz.load(require('./data/packed/latest.json'));
     proto$2.asDays         = asDays;
     proto$2.asWeeks        = asWeeks;
     proto$2.asMonths       = asMonths;
-    proto$2.asQuarters     = asQuarters;
     proto$2.asYears        = asYears;
     proto$2.valueOf        = valueOf$1;
     proto$2._bubble        = bubble;
@@ -22215,7 +21911,7 @@ moment.tz.load(require('./data/packed/latest.json'));
     // Side effect imports
 
 
-    hooks.version = '2.24.0';
+    hooks.version = '2.22.2';
 
     setHookCallback(createLocal);
 
@@ -22256,7 +21952,7 @@ moment.tz.load(require('./data/packed/latest.json'));
         TIME: 'HH:mm',                                  // <input type="time" />
         TIME_SECONDS: 'HH:mm:ss',                       // <input type="time" step="1" />
         TIME_MS: 'HH:mm:ss.SSS',                        // <input type="time" step="0.001" />
-        WEEK: 'GGGG-[W]WW',                             // <input type="week" />
+        WEEK: 'YYYY-[W]WW',                             // <input type="week" />
         MONTH: 'YYYY-MM'                                // <input type="month" />
     };
 
