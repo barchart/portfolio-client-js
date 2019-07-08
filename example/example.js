@@ -1380,7 +1380,7 @@ module.exports = function () {
 				var refreshToken = function refreshToken() {
 					var refreshPromise = scheduler.backoff(function () {
 						return _this4.readToken();
-					}, 0, 'Read JWT token', 3).then(function (token) {
+					}, 750, 'Read JWT token', 3).then(function (token) {
 						if (_this4._refreshInterval) {
 							cachePromise = refreshPromise;
 						}
@@ -1685,7 +1685,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.10'
+		version: '1.3.11'
 	};
 }();
 
