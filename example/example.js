@@ -1383,12 +1383,12 @@ module.exports = function () {
 					}, 750, 'Read JWT token', 3).then(function (token) {
 						if (_this4._refreshInterval) {
 							cachePromise = refreshPromise;
-						}
 
-						if (cacheDisposable === null) {
-							cacheDisposable = scheduler.repeat(function () {
-								return refreshToken();
-							}, _this4._refreshInterval, 'Refresh JWT token');
+							if (cacheDisposable === null) {
+								cacheDisposable = scheduler.repeat(function () {
+									return refreshToken();
+								}, _this4._refreshInterval, 'Refresh JWT token');
+							}
 						}
 
 						return token;
@@ -1685,7 +1685,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.11'
+		version: '1.3.12'
 	};
 }();
 
