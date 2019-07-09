@@ -1052,7 +1052,7 @@ module.exports = function () {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
-					return start(new PortfolioGateway('https', Configuration.demoHost, 443, 'development', requestInterceptor));
+					return start(new PortfolioGateway('https', Configuration.demoHost, 443, 'demo', requestInterceptor));
 				});
 			}
 
@@ -1685,7 +1685,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.12'
+		version: '1.3.13'
 	};
 }();
 
