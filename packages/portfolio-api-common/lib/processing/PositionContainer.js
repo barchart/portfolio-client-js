@@ -173,6 +173,53 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns Barchart's user identifier for the container's portfolios. If
+		 * the container has no portfolios, a null value is returned.
+		 *
+		 * @public
+		 * @returns {String|null}
+		 */
+		getBarchartUserId() {
+			let returnRef = null;
+
+			const keys = Object.keys(this._portfolios);
+
+			if (keys.length > 0) {
+				const firstKey = keys[0];
+				const firstPortfolio = this._portfolios[firstKey];
+
+				returnRef = firstPortfolio.user;
+			}
+
+			return returnRef;
+		}
+
+		/**
+		 * Returns customer's user identifier for the container's portfolios. If
+		 * the container has no portfolios, or if the portfolio(s) are not owned
+		 * by a remote customer, a null value is returned.
+		 *
+		 * @public
+		 * @returns {String|null}
+		 */
+		getCustomerUserId() {
+			let returnRef = null;
+
+			const keys = Object.keys(this._portfolios);
+
+			if (keys.length > 0) {
+				const firstKey = keys[0];
+				const firstPortfolio = this._portfolios[firstKey];
+
+				if (firstPortfolio.legacy && firstPortfolio.legacy.user) {
+					returnRef = firstPortfolio.legacy.user;
+				}
+			}
+
+			return returnRef;
+		}
+
+		/**
 		 * Adds a new portfolio to the container, injecting it into aggregation
 		 * trees, as necessary.
 		 *
