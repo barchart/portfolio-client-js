@@ -23,8 +23,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Maps transaction objects into new objects whose properties are human-readable (or
-		 * mutates the original objects, adding a "formatted" property to each transaction).
+		 * Maps transaction objects into new objects whose properties are human-readable.
 		 *
 		 * @public
 		 * @static
