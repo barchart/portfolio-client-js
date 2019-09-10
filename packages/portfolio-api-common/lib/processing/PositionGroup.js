@@ -26,7 +26,7 @@ module.exports = (() => {
 	 * @public
 	 * @param {PositionContainer} container
 	 * @param {LevelDefinition} definition
-	 * @param {Array.<PositionItem>} items
+	 * @param {PositionItem[]} items
 	 * @param {Currency} currency
 	 * @param {String} key
 	 * @param {String} description
@@ -361,7 +361,7 @@ module.exports = (() => {
 		 * Sets the list of items which are excluded from group aggregation calculations.
 		 *
 		 * @public
-		 * @param {Array.<Object>} items
+		 * @param {Object[]} items
 		 */
 		setExcludedItems(items) {
 			this._excludedItems = items;
@@ -382,7 +382,7 @@ module.exports = (() => {
 		 * Causes aggregated data to be recalculated using a new exchange rate.
 		 *
 		 * @public
-		 * @param {Array.<Rate>} rate
+		 * @param {Rate[]} rates
 		 */
 		setForexRates(rates) {
 			this._rates = rates;

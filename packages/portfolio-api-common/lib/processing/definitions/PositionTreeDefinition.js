@@ -10,8 +10,8 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {String} name
-	 * @param {Array.<PositionLevelDefinition>} definitions
-	 * @oaram {Array.<String>=} exclusionDependencies
+	 * @param {PositionLevelDefinition[]} definitions
+	 * @oaram {String[]=} exclusionDependencies
 	 */
 	class PositionTreeDefinitions {
 		constructor(name, definitions, exclusionDependencies) {
@@ -44,7 +44,7 @@ module.exports = (() => {
 		 * bottom-most level of the tree (i.e. leaf nodes).
 		 *
 		 * @public
-		 * @returns {Array.<PositionLevelDefinitions>}
+		 * @returns {PositionLevelDefinitions>[]}
 		 */
 		get definitions() {
 			return this._definitions;
@@ -55,7 +55,7 @@ module.exports = (() => {
 		 * group (from the current tree) is excluded.
 		 *
 		 * @public
-		 * @returns {Array.<String>}
+		 * @returns {String[]}
 		 */
 		get exclusionDependencies() {
 			return this._exclusionDependencies;

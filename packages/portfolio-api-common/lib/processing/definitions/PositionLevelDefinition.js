@@ -19,7 +19,7 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~keySelector} keySelector
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
-	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
+	 * @param {PositionLevelDefinition~RequiredGroup[]=} requiredGroups
 	 * @param {Boolean=} aggregateCash
 	 * @param {Function=} requiredGroupGenerator
 	 */

@@ -20,7 +20,7 @@ module.exports = (() => {
 	 * @param {Object} portfolio
 	 * @param {Object} position
 	 * @param {Object} currentSummary
-	 * @param {Array.<Object>} previousSummaries
+	 * @param {Object[]} previousSummaries
 	 * @param {Boolean} reporting
 	 */
 	class PositionItem extends Disposable {

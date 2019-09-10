@@ -28,8 +28,8 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param {Array.<Object>} transactions
-		 * @param {Array.<Object>} positions
+		 * @param {Object[]} transactions
+		 * @param {Object[]} positions
 		 * @param {Boolean=} descending
 		 * @returns {Array}
 		 */
@@ -97,7 +97,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param {Array.<Object>} transactions
+		 * @param {Object[]} transactions
 		 * @param {Boolean=} descending
 		 * @returns {Array}
 		 */

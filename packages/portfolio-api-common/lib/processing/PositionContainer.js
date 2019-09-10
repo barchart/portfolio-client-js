@@ -39,10 +39,10 @@ module.exports = (() => {
 	 * changes) for each level of grouping.
 	 *
 	 * @public
-	 * @param {Array.<PositionTreeDefinition>} definitions
-	 * @param {Array.<Object>} portfolios - The portfolios.
-	 * @param {Array.<Object>} positions - The positions (for all of the portfolios).
-	 * @param {Array.<Object>} summaries - The positions summaries (for all of the positions).
+	 * @param {PositionTreeDefinition[]} definitions
+	 * @param {Object[]} portfolios - The portfolios.
+	 * @param {Object[]} positions - The positions (for all of the portfolios).
+	 * @param {Object[]} summaries - The positions summaries (for all of the positions).
 	 * @param {PositionSummaryFrame=} reportFrame - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 * @param {Day=} reportDate - The end date for the report frame.
 	 */
@@ -284,7 +284,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} position
-		 * @param {Array.<Object>} summaries
+		 * @param {Object>[]} summaries
 		 */
 		updatePosition(position, summaries) {
 			assert.argumentIsRequired(position, 'position', Object);
@@ -387,7 +387,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Boolean} display - If true, all "display" symbols are returned; otherwise Barchart symbols are returned.
-		 * @returns {Array.<String>}
+		 * @returns {String[]}
 		 */
 		getPositionSymbols(display) {
 			const symbols = this._items.reduce((symbols, item) => {
@@ -451,8 +451,8 @@ module.exports = (() => {
 		 * triggering updates to position(s) and data aggregation(s).
 		 *
 		 * @public
-		 * @param {Array.<Object>} positionQuotes
-		 * @param {Array.<Object>} forexQuotes
+		 * @param {Object[]} positionQuotes
+		 * @param {Object[]} forexQuotes
 		 */
 		setQuotes(positionQuotes, forexQuotes) {
 			assert.argumentIsArray(positionQuotes, 'positionQuotes');
@@ -514,7 +514,7 @@ module.exports = (() => {
 		 * Returns all forex symbols that are required to do currency translations.
 		 *
 		 * @public
-		 * @returns {Array.<String>}
+		 * @returns {String[]}
 		 */
 		getForexSymbols() {
 			return this._forexSymbols;
@@ -524,7 +524,7 @@ module.exports = (() => {
 		 * Returns all current forex quotes.
 		 *
 		 * @public
-		 * @returns {Array.<Object>}
+		 * @returns {Object[]}
 		 */
 		getForexQuotes() {
 			return this._forexQuotes;
@@ -586,7 +586,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {Array.<String>} keys
+		 * @param {String[]} keys
 		 * @returns {PositionGroup}
 		 */
 		getGroup(name, keys) {
@@ -602,8 +602,8 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {Array.<String>} keys
-		 * @returns {Array.<PositionGroup>}
+		 * @param {String[]} keys
+		 * @returns {PositionGroup[]}
 		 */
 		getGroups(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
@@ -642,7 +642,7 @@ module.exports = (() => {
 		 * Returns all portfolios in the container.
 		 *
 		 * @public
-		 * @returns {Array.<Object>}
+		 * @returns {Object[]}
 		 */
 		getPortfolios() {
 			return Object.keys(this._portfolios).map(id => this._portfolios[id]);
@@ -653,7 +653,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} portfolio
-		 * @returns {Array.<Object>}
+		 * @returns {Object[]}
 		 */
 		getPositions(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', String);

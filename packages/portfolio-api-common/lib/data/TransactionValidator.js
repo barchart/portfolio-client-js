@@ -45,7 +45,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param {Array.<Object>} transactions
+		 * @param {Object[]} transactions
 		 * @param {Boolean=} strict
 		 * @returns {Boolean}
 		 */
@@ -59,7 +59,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param {Array.<Object>} transactions
+		 * @param {Object[]} transactions
 		 * @returns {Boolean}
 		 */
 		static validateReferences(transactions) {
@@ -97,7 +97,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param {Array.<Object>} transactions
+		 * @param {Object[]} transactions
 		 * @param {Boolean=} strict
 		 * @returns {Number}
 		 */
@@ -116,7 +116,7 @@ module.exports = (() => {
 		 * @param {InstrumentType} instrumentType
 		 * @param {Boolean=} userInitiated
 		 * @param {PositionDirection=} currentDirection
-		 * @returns {Array.<TransactionType>}
+		 * @returns {TransactionType[]}
 		 */
 		static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
 			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
@@ -141,7 +141,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @returns {Array.<TransactionType>}
+		 * @returns {TransactionType[]}
 		 */
 		static getUserInitiatedTransactionTypes() {
 			return array.unique(Object.keys(validTransactionTypes).reduce((types, key) => {
