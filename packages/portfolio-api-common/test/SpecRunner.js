@@ -1232,7 +1232,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param {Array.<Object>} transactions
+		 * @param {Object[]} transactions
 		 * @param {Boolean=} strict
 		 * @returns {Boolean}
 		 */
@@ -1246,7 +1246,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param {Array.<Object>} transactions
+		 * @param {Object[]} transactions
 		 * @returns {Boolean}
 		 */
 		static validateReferences(transactions) {
@@ -1284,7 +1284,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param {Array.<Object>} transactions
+		 * @param {Object[]} transactions
 		 * @param {Boolean=} strict
 		 * @returns {Number}
 		 */
@@ -1303,7 +1303,7 @@ module.exports = (() => {
 		 * @param {InstrumentType} instrumentType
 		 * @param {Boolean=} userInitiated
 		 * @param {PositionDirection=} currentDirection
-		 * @returns {Array.<TransactionType>}
+		 * @returns {TransactionType[]}
 		 */
 		static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
 			assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
@@ -1328,7 +1328,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @returns {Array.<TransactionType>}
+		 * @returns {TransactionType[]}
 		 */
 		static getUserInitiatedTransactionTypes() {
 			return array.unique(Object.keys(validTransactionTypes).reduce((types, key) => {
@@ -1525,10 +1525,10 @@ module.exports = (() => {
 	 * changes) for each level of grouping.
 	 *
 	 * @public
-	 * @param {Array.<PositionTreeDefinition>} definitions
-	 * @param {Array.<Object>} portfolios - The portfolios.
-	 * @param {Array.<Object>} positions - The positions (for all of the portfolios).
-	 * @param {Array.<Object>} summaries - The positions summaries (for all of the positions).
+	 * @param {PositionTreeDefinition[]} definitions
+	 * @param {Object[]} portfolios - The portfolios.
+	 * @param {Object[]} positions - The positions (for all of the portfolios).
+	 * @param {Object[]} summaries - The positions summaries (for all of the positions).
 	 * @param {PositionSummaryFrame=} reportFrame - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 * @param {Day=} reportDate - The end date for the report frame.
 	 */
@@ -1659,6 +1659,53 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns Barchart's user identifier for the container's portfolios. If
+		 * the container has no portfolios, a null value is returned.
+		 *
+		 * @public
+		 * @returns {String|null}
+		 */
+		getBarchartUserId() {
+			let returnRef = null;
+
+			const keys = Object.keys(this._portfolios);
+
+			if (keys.length > 0) {
+				const firstKey = keys[0];
+				const firstPortfolio = this._portfolios[firstKey];
+
+				returnRef = firstPortfolio.user;
+			}
+
+			return returnRef;
+		}
+
+		/**
+		 * Returns customer's user identifier for the container's portfolios. If
+		 * the container has no portfolios, or if the portfolio(s) are not owned
+		 * by a remote customer, a null value is returned.
+		 *
+		 * @public
+		 * @returns {String|null}
+		 */
+		getCustomerUserId() {
+			let returnRef = null;
+
+			const keys = Object.keys(this._portfolios);
+
+			if (keys.length > 0) {
+				const firstKey = keys[0];
+				const firstPortfolio = this._portfolios[firstKey];
+
+				if (firstPortfolio.legacy && firstPortfolio.legacy.user) {
+					returnRef = firstPortfolio.legacy.user;
+				}
+			}
+
+			return returnRef;
+		}
+
+		/**
 		 * Adds a new portfolio to the container, injecting it into aggregation
 		 * trees, as necessary.
 		 *
@@ -1770,7 +1817,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} position
-		 * @param {Array.<Object>} summaries
+		 * @param {Object>[]} summaries
 		 */
 		updatePosition(position, summaries) {
 			assert.argumentIsRequired(position, 'position', Object);
@@ -1873,7 +1920,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Boolean} display - If true, all "display" symbols are returned; otherwise Barchart symbols are returned.
-		 * @returns {Array.<String>}
+		 * @returns {String[]}
 		 */
 		getPositionSymbols(display) {
 			const symbols = this._items.reduce((symbols, item) => {
@@ -1937,8 +1984,8 @@ module.exports = (() => {
 		 * triggering updates to position(s) and data aggregation(s).
 		 *
 		 * @public
-		 * @param {Array.<Object>} positionQuotes
-		 * @param {Array.<Object>} forexQuotes
+		 * @param {Object[]} positionQuotes
+		 * @param {Object[]} forexQuotes
 		 */
 		setQuotes(positionQuotes, forexQuotes) {
 			assert.argumentIsArray(positionQuotes, 'positionQuotes');
@@ -2000,7 +2047,7 @@ module.exports = (() => {
 		 * Returns all forex symbols that are required to do currency translations.
 		 *
 		 * @public
-		 * @returns {Array.<String>}
+		 * @returns {String[]}
 		 */
 		getForexSymbols() {
 			return this._forexSymbols;
@@ -2010,7 +2057,7 @@ module.exports = (() => {
 		 * Returns all current forex quotes.
 		 *
 		 * @public
-		 * @returns {Array.<Object>}
+		 * @returns {Object[]}
 		 */
 		getForexQuotes() {
 			return this._forexQuotes;
@@ -2072,7 +2119,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {Array.<String>} keys
+		 * @param {String[]} keys
 		 * @returns {PositionGroup}
 		 */
 		getGroup(name, keys) {
@@ -2088,8 +2135,8 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {Array.<String>} keys
-		 * @returns {Array.<PositionGroup>}
+		 * @param {String[]} keys
+		 * @returns {PositionGroup[]}
 		 */
 		getGroups(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
@@ -2128,7 +2175,7 @@ module.exports = (() => {
 		 * Returns all portfolios in the container.
 		 *
 		 * @public
-		 * @returns {Array.<Object>}
+		 * @returns {Object[]}
 		 */
 		getPortfolios() {
 			return Object.keys(this._portfolios).map(id => this._portfolios[id]);
@@ -2139,7 +2186,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} portfolio
-		 * @returns {Array.<Object>}
+		 * @returns {Object[]}
 		 */
 		getPositions(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', String);
@@ -2548,7 +2595,7 @@ module.exports = (() => {
 	 * @public
 	 * @param {PositionContainer} container
 	 * @param {LevelDefinition} definition
-	 * @param {Array.<PositionItem>} items
+	 * @param {PositionItem[]} items
 	 * @param {Currency} currency
 	 * @param {String} key
 	 * @param {String} description
@@ -2883,7 +2930,7 @@ module.exports = (() => {
 		 * Sets the list of items which are excluded from group aggregation calculations.
 		 *
 		 * @public
-		 * @param {Array.<Object>} items
+		 * @param {Object[]} items
 		 */
 		setExcludedItems(items) {
 			this._excludedItems = items;
@@ -2904,7 +2951,7 @@ module.exports = (() => {
 		 * Causes aggregated data to be recalculated using a new exchange rate.
 		 *
 		 * @public
-		 * @param {Array.<Rate>} rate
+		 * @param {Rate[]} rates
 		 */
 		setForexRates(rates) {
 			this._rates = rates;
@@ -3562,7 +3609,7 @@ module.exports = (() => {
 	 * @param {Object} portfolio
 	 * @param {Object} position
 	 * @param {Object} currentSummary
-	 * @param {Array.<Object>} previousSummaries
+	 * @param {Object[]} previousSummaries
 	 * @param {Boolean} reporting
 	 */
 	class PositionItem extends Disposable {
@@ -4298,7 +4345,7 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~keySelector} keySelector
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
-	 * @param {Array.<PositionLevelDefinition~RequiredGroup>=} requiredGroups
+	 * @param {PositionLevelDefinition~RequiredGroup[]=} requiredGroups
 	 * @param {Boolean=} aggregateCash
 	 * @param {Function=} requiredGroupGenerator
 	 */
@@ -4599,8 +4646,8 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {String} name
-	 * @param {Array.<PositionLevelDefinition>} definitions
-	 * @oaram {Array.<String>=} exclusionDependencies
+	 * @param {PositionLevelDefinition[]} definitions
+	 * @oaram {String[]=} exclusionDependencies
 	 */
 	class PositionTreeDefinitions {
 		constructor(name, definitions, exclusionDependencies) {
@@ -4633,7 +4680,7 @@ module.exports = (() => {
 		 * bottom-most level of the tree (i.e. leaf nodes).
 		 *
 		 * @public
-		 * @returns {Array.<PositionLevelDefinitions>}
+		 * @returns {PositionLevelDefinitions>[]}
 		 */
 		get definitions() {
 			return this._definitions;
@@ -4644,7 +4691,7 @@ module.exports = (() => {
 		 * group (from the current tree) is excluded.
 		 *
 		 * @public
-		 * @returns {Array.<String>}
+		 * @returns {String[]}
 		 */
 		get exclusionDependencies() {
 			return this._exclusionDependencies;
@@ -5283,7 +5330,7 @@ module.exports = function () {
   *
   * @public
   * @param {*} value - The value of the node.
-  * @param {Tree} parent - The parent node. If not supplied, this will be the root node.
+  * @param {Tree=} parent - The parent node. If not supplied, this will be the root node.
   */
 
 	var Tree = function () {
@@ -6429,7 +6476,20 @@ module.exports = function () {
 			}
 
 			/**
-    * Returns a new Day instance for the end of the month of the current instance.
+    * Returns a new {@link Day} instance for the start of the month referenced by the current instance.
+    *
+    * @public
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'getStartOfMonth',
+			value: function getStartOfMonth() {
+				return new Day(this.year, this.month, 1);
+			}
+
+			/**
+    * Returns a new instance for the {@link Day} end of the month referenced by the current instance.
     *
     * @public
     * @returns {Day}
@@ -6581,7 +6641,7 @@ module.exports = function () {
 				return this._month;
 			}
 
-			/**
+			/**day
     * The day of the month.
     *
     * @public
@@ -6602,7 +6662,7 @@ module.exports = function () {
 			}
 
 			/**
-    * Converts a string (which matches the output of {@link Day#format} into
+    * Converts a string (which matches the output of {@link Day#format}) into
     * a {@link Day} instance.
     *
     * @public
@@ -6874,6 +6934,24 @@ module.exports = function () {
 			}
 
 			/**
+    * Returns a new {@link Decimal} instance with a value that results
+    * from raising the current instance to the power of the exponent
+    * provided.
+    *
+    * @public
+    * @param {Decimal|Number|String} exponent
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'raise',
+			value: function raise(exponent) {
+				assert.argumentIsRequired(exponent, 'exponent', Number);
+
+				return new Decimal(this._big.pow(exponent));
+			}
+
+			/**
     * Returns a new {@link Decimal} with a value resulting from a rounding
     * operation on the current value.
     *
@@ -7035,6 +7113,28 @@ module.exports = function () {
 			key: 'getIsEqual',
 			value: function getIsEqual(other) {
 				return this._big.eq(getBig(other));
+			}
+
+			/**
+    * Returns true is close to another value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @param {Number} places - The significant digits.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsApproximate',
+			value: function getIsApproximate(other, places) {
+				if (places === 0) {
+					return this.getIsEqual(other);
+				}
+
+				var difference = this.subtract(other).absolute();
+				var tolerance = Decimal.ONE.divide(new Decimal(10).raise(places));
+
+				return difference.getIsLessThan(tolerance);
 			}
 
 			/**
@@ -8720,8 +8820,62 @@ module.exports = function () {
 			}
 
 			return found;
+		},
+
+
+		/**
+   * Inserts an item into an array using a binary search is used to determine the
+   * proper point for insertion and returns the same array.
+   *
+   * @static
+   * @public
+   * @param {Array} a
+   * @param {*} item
+   * @param {Function} comparator
+   * @returns {Array}
+   */
+		insert: function insert(a, item, comparator) {
+			assert.argumentIsArray(a, 'a');
+			assert.argumentIsRequired(comparator, 'comparator', Function);
+
+			if (a.length === 0 || !(comparator(item, a[a.length - 1]) < 0)) {
+				a.push(item);
+			} else if (comparator(item, a[0]) < 0) {
+				a.unshift(item);
+			} else {
+				a.splice(binarySearch(a, item, comparator, 0, a.length - 1), 0, item);
+			}
+
+			return a;
 		}
 	};
+
+	function binarySearch(array, item, comparator, start, end) {
+		var size = end - start;
+
+		var midpointIndex = start + Math.floor(size / 2);
+		var midpointItem = array[midpointIndex];
+
+		var comparison = comparator(item, midpointItem) > 0;
+
+		if (size < 2) {
+			if (comparison > 0) {
+				var finalIndex = array.length - 1;
+
+				if (end === finalIndex && comparator(item, array[finalIndex]) > 0) {
+					return end + 1;
+				} else {
+					return end;
+				}
+			} else {
+				return start;
+			}
+		} else if (comparison > 0) {
+			return binarySearch(array, item, comparator, midpointIndex, end);
+		} else {
+			return binarySearch(array, item, comparator, start, midpointIndex);
+		}
+	}
 }();
 
 },{"./assert":29,"./is":33}],29:[function(require,module,exports){
@@ -8937,9 +9091,10 @@ module.exports = function () {
 		/**
    * Checks to see if an attribute exists on the target object.
    *
+   * @public
    * @static
    * @param {Object} target - The object to check for existence of the property.
-   * @param {String|Array.<String>} propertyNames - The property to check -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|String[]} propertyNames - The property to check -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    * @returns {boolean}
    */
@@ -8963,9 +9118,10 @@ module.exports = function () {
    * Returns a value from the target object. If the property doesn't exist; undefined
    * is returned.
    *
+   * @public
    * @static
    * @param {Object} target - The object to read from.
-   * @param {String|Array.<String>} propertyNames - The property to read -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|String[]} propertyNames - The property to read -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    * @returns {*}
    */
@@ -8998,9 +9154,10 @@ module.exports = function () {
 		/**
    * Writes a value to the target object.
    *
+   * @public
    * @static
    * @param {Object} target - The object to write to.
-   * @param {String|Array.<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|String[]} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
    * @param {*} value - The value to assign.
    * @param {String=} separator - The separator (defaults to a period character).
    */
@@ -9025,9 +9182,10 @@ module.exports = function () {
 		/**
    * Erases a property from the target object.
    *
+   * @public
    * @static
    * @param {Object} target - The object to erase a property from.
-   * @param {String|Array.<String>} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+   * @param {String|String} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
    * @param {String=} separator - The separator (defaults to a period character).
    */
 		erase: function erase(target, propertyNames, separator) {
@@ -9242,7 +9400,7 @@ module.exports = function () {
    * @static
    * @public
    * @param {*} candidate
-   * @returns {*|boolean}
+   * @returns {boolean}
    */
 		negative: function negative(candidate) {
 			return this.number(candidate) && candidate < 0;
@@ -9954,6 +10112,20 @@ module.exports = function () {
 			}
 
 			/**
+    * References an array.
+    *
+    * @public
+    * @static
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'ARRAY',
+			get: function get() {
+				return dataTypeArray;
+			}
+
+			/**
     * References a {@link Decimal} instance.
     *
     * @public
@@ -10021,6 +10193,7 @@ module.exports = function () {
 	var dataTypeNumber = new DataType('Number', null, null, is.number);
 	var dataTypeBoolean = new DataType('Boolean', null, null, is.boolean);
 	var dataTypeObject = new DataType('Object', null, null, is.object);
+	var dataTypeArray = new DataType('Array', null, null, is.array);
 
 	var dataTypeDecimal = new DataType('Decimal', null, function (x) {
 		return Decimal.parse(x);
@@ -10043,7 +10216,7 @@ module.exports = function () {
 		return x instanceof AdHoc;
 	}, getBuilder(buildAdHoc));
 
-	var dataTypes = [dataTypeString, dataTypeNumber, dataTypeBoolean, dataTypeObject, dataTypeDecimal, dataTypeDay, dataTypeTimestamp, dataTypeAdHoc];
+	var dataTypes = [dataTypeString, dataTypeNumber, dataTypeBoolean, dataTypeObject, dataTypeArray, dataTypeDecimal, dataTypeDay, dataTypeTimestamp, dataTypeAdHoc];
 
 	function getBuilder(builder) {
 		return function (data) {
