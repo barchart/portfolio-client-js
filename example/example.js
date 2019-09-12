@@ -1255,7 +1255,7 @@ module.exports = function () {
 			summaries: summaries
 		};
 
-		if (response.data.transactions) {
+		if (data.transactions) {
 			returnRef.transactions = data.transactions;
 		}
 
@@ -1713,7 +1713,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.15'
+		version: '1.3.16'
 	};
 }();
 
