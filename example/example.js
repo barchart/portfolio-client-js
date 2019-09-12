@@ -253,7 +253,7 @@ module.exports = function () {
 
 			_this._deletePositionEndpoint = EndpointBuilder.for('delete-position', 'delete position').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false);
-			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withBody('transaction').withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserializationForRemoval).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readPositionSummariesEndpoint = EndpointBuilder.for('read-position-summaries', 'read position summaries').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('summaries', 'summaries').withVariableParameter('position', 'position', 'position', false);
@@ -301,7 +301,7 @@ module.exports = function () {
 				}).withVariableParameter('echoEnd', 'echoEnd', 'echoEnd', true, function (x) {
 					return x.format();
 				});
-			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForPositionMutateDeserializationForRemoval).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
 			_this._readTransactionsReportEndpoint = EndpointBuilder.for('read-transaction-report', 'read transaction report').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', true).withLiteralParameter('transactions', 'transactions').withLiteralParameter('formatted', 'formatted');
@@ -1191,38 +1191,15 @@ module.exports = function () {
 
 	var responseInterceptorForPositionMutateDeserialization = ResponseInterceptor.fromDelegate(function (response, ignored) {
 		try {
-			var saved = response.data.positions.saved.map(function (p) {
-				return JSON.parse(p, PositionSchema.CLIENT.schema.getReviver());
-			});
-			var deleted = response.data.positions.deleted.map(function (p) {
-				return JSON.parse(p, PositionSchema.CLIENT.schema.getReviver());
-			});
-			var summaries = response.data.summaries.map(function (s) {
-				return JSON.parse(s, PositionSummarySchema.CLIENT.schema.getReviver());
-			});
+			return deserializePositionMutateData(response.data, false);
+		} catch (e) {
+			console.error('Error deserializing position mutate data', e);
+		}
+	});
 
-			var created = array.differenceBy(saved, deleted, extractInstrumentId);
-			var removed = array.differenceBy(deleted, saved, extractInstrumentId);
-			var edited = array.intersectionBy(saved, deleted, extractInstrumentId);
-
-			var returnRef = {
-				actions: {
-					created: created,
-					removed: removed,
-					edited: edited
-				},
-				positions: {
-					saved: saved,
-					deleted: deleted
-				},
-				summaries: summaries
-			};
-
-			if (response.data.transactions) {
-				returnRef.transactions = response.data.transactions;
-			}
-
-			return returnRef;
+	var responseInterceptorForPositionMutateDeserializationForRemoval = ResponseInterceptor.fromDelegate(function (response, ignored) {
+		try {
+			return deserializePositionMutateData(response.data, true);
 		} catch (e) {
 			console.error('Error deserializing position mutate data', e);
 		}
@@ -1246,6 +1223,43 @@ module.exports = function () {
 
 	function extractInstrumentId(position) {
 		return position.instrument.id;
+	}
+
+	function deserializePositionMutateData(data, removing) {
+		var saved = data.positions.saved.map(function (p) {
+			return JSON.parse(p, PositionSchema.CLIENT.schema.getReviver());
+		});
+		var deleted = data.positions.deleted.map(function (p) {
+			return JSON.parse(p, PositionSchema.CLIENT.schema.getReviver());
+		});
+		var summaries = data.summaries.map(function (s) {
+			return JSON.parse(s, PositionSummarySchema.CLIENT.schema.getReviver());
+		});
+
+		var created = array.differenceBy(saved, deleted, extractInstrumentId).filter(function (p) {
+			return p.transaction === 1 && !removing;
+		});
+		var removed = array.differenceBy(deleted, saved, extractInstrumentId);
+		var edited = array.differenceBy(array.unionBy(saved, deleted, extractInstrumentId), array.unionBy(created, removed, extractInstrumentId), extractInstrumentId);
+
+		var returnRef = {
+			actions: {
+				created: created,
+				removed: removed,
+				edited: edited
+			},
+			positions: {
+				saved: saved,
+				deleted: deleted
+			},
+			summaries: summaries
+		};
+
+		if (response.data.transactions) {
+			returnRef.transactions = data.transactions;
+		}
+
+		return returnRef;
 	}
 
 	/**
@@ -1699,7 +1713,7 @@ module.exports = function () {
 	return {
 		JwtGateway: JwtGateway,
 		PortfolioGateway: PortfolioGateway,
-		version: '1.3.14'
+		version: '1.3.15'
 	};
 }();
 
