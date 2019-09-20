@@ -4486,13 +4486,16 @@ module.exports = (() => {
 		 * @public
 		 * @static
 		 * @param {Object} portfolio
+		 * @param {Currency=} currency
 		 * @returns {PositionLevelDefinition~RequiredGroup}
 		 */
-		static buildRequiredGroupForPortfolio(portfolio) {
+		static buildRequiredGroupForPortfolio(portfolio, currency) {
+			assert.argumentIsOptional(currency, 'currency', Currency, 'Currency');
+
 			return {
 				key: PositionLevelDefinition.getKeyForPortfolioGroup(portfolio),
 				description: PositionLevelDefinition.getDescriptionForPortfolioGroup(portfolio),
-				currency: Currency.CAD
+				currency: (currency || Currency.CAD)
 			};
 		}
 
@@ -4508,12 +4511,12 @@ module.exports = (() => {
 			return portfolio.name;
 		}
 
-		static getRequiredGroupGeneratorForPortfolio() {
+		static getRequiredGroupGeneratorForPortfolio(currency) {
 			return (portfolio) => {
 				let requiredGroup;
 
 				if (is.object(portfolio) && is.string(portfolio.portfolio) && is.string(portfolio.name)) {
-					requiredGroup = PositionLevelDefinition.buildRequiredGroupForPortfolio(portfolio);
+					requiredGroup = PositionLevelDefinition.buildRequiredGroupForPortfolio(portfolio, currency);
 				} else {
 					requiredGroup = null;
 				}
@@ -4529,12 +4532,13 @@ module.exports = (() => {
 		 * @static
 		 * @param {InstrumentType} type
 		 * @param {Currency} currency
+		 * @param {Currency=} defaultCurrency
 		 * @returns {PositionLevelDefinition~RequiredGroup}
 		 */
-		static buildRequiredGroupForAssetClass(type, currency) {
+		static buildRequiredGroupForAssetClass(type, currency, defaultCurrency) {
 			return {
 				key: PositionLevelDefinition.getKeyForAssetClassGroup(type, currency),
-				description: PositionLevelDefinition.getDescriptionForAssetClassGroup(type, currency),
+				description: PositionLevelDefinition.getDescriptionForAssetClassGroup(type, currency, defaultCurrency),
 				currency: currency
 			};
 		}
@@ -4546,11 +4550,12 @@ module.exports = (() => {
 			return `${type.code}|${currency.code}`;
 		}
 
-		static getDescriptionForAssetClassGroup(type, currency) {
+		static getDescriptionForAssetClassGroup(type, currency, defaultCurrency) {
 			assert.argumentIsRequired(type, 'type', InstrumentType, 'InstrumentType');
 			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+			assert.argumentIsOptional(defaultCurrency, 'defaultCurrency', Currency, 'Currency');
 
-			return `${type.alternateDescription}${currency.code === 'CAD' ? '' : ` (${currency.alternateDescription})`}`;
+			return `${type.alternateDescription}${currency === (defaultCurrency || Currency.CAD) ? '' : ` (${currency.alternateDescription})`}`;
 		}
 
 		toString() {
