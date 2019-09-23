@@ -74,7 +74,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A function, when given a {@link PositionItem} returns a string that is used
+		 * A function, when given a {@link PositionItem}, returns a string that is used
 		 * to group {@link PositionItem} instances into different groups.
 		 *
 		 * @public
@@ -85,7 +85,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A function, when given a {@link PositionItem} returns a string used to describe the
+		 * A function, when given a {@link PositionItem}, returns a string used to describe the
 		 * group.
 		 *
 		 * @public
@@ -96,7 +96,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A function, when given a {@link PositionItem} returns the {@link Currency} used to
+		 * A function, when given a {@link PositionItem}, returns the {@link Currency} used to
 		 * display values for the group.
 		 *
 		 * @public
@@ -111,7 +111,7 @@ module.exports = (() => {
 		 * groups.
 		 *
 		 * @public
-		 * @returns {Array<String>}
+		 * @returns {String[]}
 		 */
 		get requiredGroups() {
 			return this._requiredGroups;
