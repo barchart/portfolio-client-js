@@ -44,7 +44,7 @@ module.exports = (() => {
 		 * bottom-most level of the tree (i.e. leaf nodes).
 		 *
 		 * @public
-		 * @returns {PositionLevelDefinitions>[]}
+		 * @returns {PositionLevelDefinitions[]}
 		 */
 		get definitions() {
 			return this._definitions;
