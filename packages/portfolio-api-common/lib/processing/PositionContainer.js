@@ -933,7 +933,6 @@ module.exports = (() => {
 		});
 	}
 
-
 	function updateEmptyPortfolioGroups(portfolio) {
 		Object.keys(this._trees).forEach((key) => {
 			this._trees[key].walk((group) => {
