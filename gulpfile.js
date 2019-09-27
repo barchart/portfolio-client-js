@@ -30,7 +30,7 @@ gulp.task('ensure-clean-working-directory', (cb) => {
 
 gulp.task('bump-version', () => {
 	return gulp.src([ './package.json' ])
-		.pipe(bump({ type: 'patch' }).on('error', util.log))
+		.pipe(bump({ type: 'patch' }))
 		.pipe(gulp.dest('./'));
 });
 
@@ -64,7 +64,7 @@ gulp.task('push-changes', (cb) => {
 gulp.task('create-tag', (cb) => {
 	const version = getVersionFromPackage();
 
-	git.tag(version, 'Release ' + version, function (error) {
+	git.tag(version, 'Release ' + version, (error) => {
 		if (error) {
 			return cb(error);
 		}
