@@ -17,10 +17,6 @@ const JwtGateway = require('./../../lib/gateway/jwt/JwtGateway');
 
 const PortfolioGateway = require('./../../lib/gateway/PortfolioGateway');
 
-const Gateway = require('@barchart/common-js/api/http/Gateway');
-
-const RequestInterceptor = require('@barchart/common-js/api/http/interceptors/RequestInterceptor');
-
 module.exports = (() => {
   'use strict';
 
@@ -950,7 +946,7 @@ module.exports = (() => {
   });
 })();
 
-},{"./../../lib/gateway/PortfolioGateway":3,"./../../lib/gateway/jwt/JwtGateway":4,"./../../lib/index":5,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/interceptors/RequestInterceptor":23,"@barchart/common-js/lang/Currency":30,"@barchart/common-js/lang/Day":31,"@barchart/common-js/lang/Decimal":32,"@barchart/common-js/lang/Timezones":37,"@barchart/portfolio-api-common/lib/data/TransactionType":56,"@barchart/portfolio-api-common/lib/data/ValuationType":57}],2:[function(require,module,exports){
+},{"./../../lib/gateway/PortfolioGateway":3,"./../../lib/gateway/jwt/JwtGateway":4,"./../../lib/index":5,"@barchart/common-js/lang/Currency":30,"@barchart/common-js/lang/Day":31,"@barchart/common-js/lang/Decimal":32,"@barchart/common-js/lang/Timezones":37,"@barchart/portfolio-api-common/lib/data/TransactionType":56,"@barchart/portfolio-api-common/lib/data/ValuationType":57}],2:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
   /**
@@ -2323,7 +2319,7 @@ module.exports = (() => {
   return {
     JwtGateway: JwtGateway,
     PortfolioGateway: PortfolioGateway,
-    version: '1.3.18'
+    version: '1.3.19'
   };
 })();
 
