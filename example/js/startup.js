@@ -11,9 +11,6 @@ const ValuationType = require('@barchart/portfolio-api-common/lib/data/Valuation
 const JwtGateway = require('./../../lib/gateway/jwt/JwtGateway');
 const PortfolioGateway = require('./../../lib/gateway/PortfolioGateway');
 
-const Gateway = require('@barchart/common-js/api/http/Gateway');
-const RequestInterceptor = require('@barchart/common-js/api/http/interceptors/RequestInterceptor');
-
 module.exports = (() => {
 	'use strict';
 
