@@ -409,7 +409,7 @@ module.exports = (() => {
 				date: Day.getToday(),
 				price: Decimal.parse(5),
 				quantity: Decimal.parse(100),
-				rate: Decimal.parse(.125),
+				rate: Decimal.parse(0.125),
 				effective: Day.getToday(),
 				fee: Decimal.ZERO
 			};
@@ -446,7 +446,7 @@ module.exports = (() => {
 				date: Day.getToday(),
 				price: Decimal.parse(5),
 				quantity: Decimal.parse(100),
-				rate: Decimal.parse(.125),
+				rate: Decimal.parse(0.125),
 				effective: Day.getToday(),
 				fee: Decimal.ZERO
 			};
@@ -483,7 +483,7 @@ module.exports = (() => {
 				date: Day.getToday(),
 				price: Decimal.parse(5),
 				quantity: Decimal.parse(100),
-				rate: Decimal.parse(.125),
+				rate: Decimal.parse(0.125),
 				effective: Day.getToday(),
 				fee: Decimal.ZERO
 			};
@@ -520,7 +520,7 @@ module.exports = (() => {
 				date: Day.getToday(),
 				price: Decimal.parse(5),
 				quantity: Decimal.parse(100),
-				rate: Decimal.parse(.125),
+				rate: Decimal.parse(0.125),
 				effective: Day.getToday(),
 				fee: Decimal.ZERO
 			};
@@ -557,7 +557,7 @@ module.exports = (() => {
 				date: Day.getToday(),
 				price: Decimal.parse(5),
 				quantity: Decimal.parse(100),
-				rate: Decimal.parse(.125),
+				rate: Decimal.parse(0.125),
 				effective: Day.getToday(),
 				fee: Decimal.ZERO
 			};
@@ -956,7 +956,7 @@ module.exports = (() => {
 		};
 	};
 
-	var pageModel
+	var pageModel;
 
 	$(document).ready(function() {
 		pageModel = new PageModel();
