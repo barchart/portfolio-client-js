@@ -236,7 +236,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param code
+		 * @param {Number} code
 		 * @returns {InstrumentType}
 		 */
 		static fromSymbolType(code) {
