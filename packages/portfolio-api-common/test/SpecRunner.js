@@ -237,7 +237,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @static
-		 * @param code
+		 * @param {Number} code
 		 * @returns {InstrumentType}
 		 */
 		static fromSymbolType(code) {
@@ -1527,8 +1527,8 @@ module.exports = (() => {
 	 * @public
 	 * @param {PositionTreeDefinition[]} definitions
 	 * @param {Object[]} portfolios - The portfolios.
-	 * @param {Object[]} positions - The positions (for all of the portfolios).
-	 * @param {Object[]} summaries - The positions summaries (for all of the positions).
+	 * @param {Object[]} positions - The positions (for all of portfolios).
+	 * @param {Object[]} summaries - The positions summaries (for all of positions).
 	 * @param {PositionSummaryFrame=} reportFrame - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 * @param {Day=} reportDate - The end date for the report frame.
 	 */
@@ -2418,7 +2418,6 @@ module.exports = (() => {
 			createGroups.call(this, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
 		});
 	}
-
 
 	function updateEmptyPortfolioGroups(portfolio) {
 		Object.keys(this._trees).forEach((key) => {
@@ -4400,7 +4399,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A function, when given a {@link PositionItem} returns a string that is used
+		 * A function, when given a {@link PositionItem}, returns a string that is used
 		 * to group {@link PositionItem} instances into different groups.
 		 *
 		 * @public
@@ -4411,7 +4410,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A function, when given a {@link PositionItem} returns a string used to describe the
+		 * A function, when given a {@link PositionItem}, returns a string used to describe the
 		 * group.
 		 *
 		 * @public
@@ -4422,7 +4421,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A function, when given a {@link PositionItem} returns the {@link Currency} used to
+		 * A function, when given a {@link PositionItem}, returns the {@link Currency} used to
 		 * display values for the group.
 		 *
 		 * @public
@@ -4437,7 +4436,7 @@ module.exports = (() => {
 		 * groups.
 		 *
 		 * @public
-		 * @returns {Array<String>}
+		 * @returns {String[]}
 		 */
 		get requiredGroups() {
 			return this._requiredGroups;
@@ -4613,19 +4612,49 @@ const Enum = require('@barchart/common-js/lang/Enum');
 module.exports = (() => {
 	'use strict';
 
+	/**
+	 * Describes the contents of a grouping level within a tree of positions.
+	 * This is an attribute of a {@link PositionLevelDefinition}.
+	 *
+	 * @public
+	 * @extends {Enum}
+	 */
 	class PositionLevelType extends Enum {
 		constructor(code) {
 			super(code, code);
 		}
 
+		/**
+		 * A level of grouping that represents an entire portfolio's contents.
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionLevelType}
+		 */
 		static get PORTFOLIO() {
 			return portfolio;
 		}
 
+		/**
+		 * A level of grouping that represents a single positions (i.e. guaranteed to
+		 * be a leaf node in a grouping tree).
+		 *
+		 * @public
+		 * @static
+		 * @return {PositionLevelType}
+		 */
 		static get POSITION() {
 			return position;
 		}
 
+		/**
+		 * A level of grouping that is neither a portfolio or a position. This could be an
+		 * intermediate level of grouping (e.g. an asset class within a portfolio).
+		 *
+		 * @public
+		 * @static
+		 * @return {PositionLevelType}
+		 */
 		static get OTHER() {
 			return other;
 		}
@@ -4652,7 +4681,7 @@ module.exports = (() => {
 	 * @public
 	 * @param {String} name
 	 * @param {PositionLevelDefinition[]} definitions
-	 * @oaram {String[]=} exclusionDependencies
+	 * @param {String[]=} exclusionDependencies
 	 */
 	class PositionTreeDefinitions {
 		constructor(name, definitions, exclusionDependencies) {
@@ -4685,7 +4714,7 @@ module.exports = (() => {
 		 * bottom-most level of the tree (i.e. leaf nodes).
 		 *
 		 * @public
-		 * @returns {PositionLevelDefinitions>[]}
+		 * @returns {PositionLevelDefinitions[]}
 		 */
 		get definitions() {
 			return this._definitions;
