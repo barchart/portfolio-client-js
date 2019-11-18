@@ -108,6 +108,28 @@ module.exports = (() => {
     static get TRANSACTION_BATCH() {
       return transactionBatch;
     }
+
+    /**
+     * Action type for deleting position.
+     *
+     * @public
+     * @static
+     * @returns {WebsocketActionType}
+     */
+    static get POSITION_DELETE() {
+      return positionDelete;
+    }
+
+    /**
+     * Action type for updating position.
+     *
+     * @public
+     * @static
+     * @returns {WebsocketActionType}
+     */
+    static get POSITION_UPDATE() {
+      return positionUpdate;
+    }
   }
 
   const portfolioCreate = new WebsocketActionType('PORTFOLIO_CREATE', 'Create portfolio action', 'portfolio/create');
@@ -118,6 +140,9 @@ module.exports = (() => {
   const transactionDelete = new WebsocketActionType('TRANSACTION_DELETE', 'Delete transaction action', 'transaction/delete');
   const transactionEdit = new WebsocketActionType('TRANSACTION_EDIT', 'Edit transaction action', 'transaction/edit');
   const transactionBatch = new WebsocketActionType('TRANSACTION_BATCH', 'Batch transaction action', 'transaction/batch');
+
+  const positionDelete = new WebsocketActionType('POSITION_DELETE', 'Delete position action', 'position/delete');
+  const positionUpdate = new WebsocketActionType('POSITION_UPDATE', 'Update position action', 'position/update');
 
   return WebsocketActionType;
 })();
