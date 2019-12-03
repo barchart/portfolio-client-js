@@ -18,14 +18,36 @@ module.exports = (() => {
 		}
 
 		/**
-		 * If true, the corporate action is fictitious -- used only for internal
-		 * system purposes.
+		 * A split.
 		 *
 		 * @public
-		 * @returns {Boolean}
+		 * @static
+		 * @returns {CorporateActionType}
 		 */
-		get internal() {
-			return this._internal;
+		static get SPLIT() {
+			return split;
+		}
+
+		/**
+		 * A dividend.
+		 *
+		 * @public
+		 * @static
+		 * @returns {CorporateActionType}
+		 */
+		static get DIVIDEND() {
+			return dividend;
+		}
+
+		/**
+		 * A stock dividend.
+		 *
+		 * @public
+		 * @static
+		 * @returns {CorporateActionType}
+		 */
+		static get STOCK_DIVIDEND() {
+			return stockDividend;
 		}
 
 		/**
@@ -51,28 +73,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A dividend.
-		 *
-		 * @public
-		 * @static
-		 * @returns {CorporateActionType}
-		 */
-		static get DIVIDEND() {
-			return dividend;
-		}
-
-		/**
-		 * A split.
-		 *
-		 * @public
-		 * @static
-		 * @returns {CorporateActionType}
-		 */
-		static get SPLIT() {
-			return split;
-		}
-
-		/**
 		 * A delisting.
 		 *
 		 * @public
@@ -84,10 +84,11 @@ module.exports = (() => {
 		}
 	}
 
+	const split = new CorporateActionType('SPLIT', 'Split', false);
+	const dividend = new CorporateActionType('DIVIDEND', 'Dividend', false);
+	const stockDividend = new CorporateActionType('STOCK_DIVIDEND', 'Stock Dividend', false);
 	const symbolChange = new CorporateActionType('SYMBOL_CHANGE', 'Symbol Change', false);
 	const nameChange = new CorporateActionType('NAME_CHANGE', 'Name Change', false);
-	const dividend = new CorporateActionType('DIVIDEND', 'Dividend', false);
-	const split = new CorporateActionType('SPLIT', 'Split', false);
 	const delist = new CorporateActionType('DELIST', 'Delist', false);
 
 	return CorporateActionType;
