@@ -3565,7 +3565,7 @@ module.exports = (() => {
 		const format = group._dataFormat;
 
 		const numerator = actual.unrealized;
-		const denominator = actual.basis;
+		const denominator = actual.basis.absolute();
 
 		if (denominator.getIsZero()) {
 			actual.unrealizedPercent = Decimal.ZERO;
