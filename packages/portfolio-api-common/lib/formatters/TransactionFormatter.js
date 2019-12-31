@@ -126,6 +126,7 @@ module.exports = (() => {
 		f.code = t.type.code;
 		f.sequence = t.sequence;
 		f.position = t.position;
+		f.open = t.snapshot.open;
 	};
 
 	const averageCostFormatter = (t, f) => {
@@ -151,53 +152,87 @@ module.exports = (() => {
 	};
 
 	const dividendFormatter = (t, f) => {
-		f.shares = t.snapshot.open;
 		f.total = t.dividend.amount;
 		f.rate = t.dividend.rate;
+
+		f.shares = t.amount.divide(t.dividend.rate).absolute();
 	};
 
-	const dividendStockFormatter = (t, f) => {
-		f.boughtSold = t.quantity;
-		f.fee = t.fee;
+	const distributionCashFormatter = (t, f) => {
+		f.total = t.dividend.amount;
+		f.rate = t.dividend.rate;
 
-		if (t.dividend && t.dividend.rate && t.dividend.price) {
-			f.shares = t.snapshot.open.subtract(t.quantity);
-			f.price = t.dividend.price;
-			f.rate = t.dividend.rate;
-		}
+		f.shares = t.amount.divide(t.dividend.rate).absolute();
 	};
 
 	const dividendReinvestFormatter = (t, f) => {
 		f.boughtSold = t.quantity;
-		f.shares = t.snapshot.open.subtract(t.quantity);
-		f.price = t.dividend.price;
-		f.fee = t.fee;
-		f.rate = t.dividend.rate;
-	};
 
-	const distributionCashFormatter = (t, f) => {
-		f.shares = t.snapshot.open;
-		f.total = t.dividend.amount;
-		f.rate = t.dividend.rate;
-	};
-
-	const distributionFundFormatter = (t, f) => {
-		f.boughtSold =t.quantity;
-		f.fee = t.fee;
-
-		if (t.dividend && t.dividend.rate && t.dividend.price) {
-			f.shares = t.snapshot.open.subtract(t.quantity);
-			f.price = t.dividend.price;
-			f.rate = t.dividend.rate;
+		if (f.fee && !f.fee.getIsZero()) {
+			f.fee = t.fee;
 		}
+
+		f.price = t.dividend.price;
+		f.rate = t.dividend.rate;
+
+		f.shares = t.snapshot.open.subtract(t.quantity);
 	};
 
 	const distributionReinvestFormatter = (t, f) => {
 		f.boughtSold = t.quantity;
-		f.shares = t.snapshot.open.subtract(t.quantity);
+
+		if (f.fee && !f.fee.getIsZero()) {
+			f.fee = t.fee;
+		}
+
 		f.price = t.dividend.price;
-		f.fee = t.fee;
 		f.rate = t.dividend.rate;
+
+		f.shares = t.snapshot.open.subtract(t.quantity);
+	};
+
+	const dividendStockFormatter = (t, f) => {
+		f.boughtSold = t.quantity;
+
+		if (f.fee && !f.fee.getIsZero()) {
+			f.fee = t.fee;
+		}
+
+		if (t.dividend) {
+			if (t.dividend.numerator && t.dividend.denominator) {
+				f.rate = t.dividend.numerator.divide(t.dividend.denominator);
+			} else if (t.dividend.rate) {
+				f.rate = t.dividend.rate;
+			}
+
+			if (t.dividend.price) {
+				f.price = t.dividend.price;
+			}
+		}
+
+		f.shares = t.snapshot.open.subtract(t.quantity);
+	};
+
+	const distributionFundFormatter = (t, f) => {
+		f.boughtSold = t.quantity;
+
+		if (f.fee && !f.fee.getIsZero()) {
+			f.fee = t.fee;
+		}
+
+		if (t.dividend) {
+			if (t.dividend.numerator && t.dividend.denominator) {
+				f.rate = t.dividend.numerator.divide(t.dividend.denominator);
+			} else if (t.dividend.rate) {
+				f.rate = t.dividend.rate;
+			}
+
+			if (t.dividend.price) {
+				f.price = t.dividend.price;
+			}
+		}
+
+		f.shares = t.snapshot.open.subtract(t.quantity);
 	};
 
 	const incomeFormatter = (t, f) => {
@@ -214,8 +249,9 @@ module.exports = (() => {
 	};
 
 	const splitFormatter = (t, f) => {
-		f.shares = t.quantity;
 		f.rate = t.split.numerator.divide(t.split.denominator);
+
+		f.shares = t.snapshot.open.subtract(t.quantity);
 	};
 
 	const valuationFormatter = (t, f) => {
