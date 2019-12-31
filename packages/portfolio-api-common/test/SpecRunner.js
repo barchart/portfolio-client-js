@@ -5888,8 +5888,7 @@ module.exports = (() => {
 })();
 
 },{"./../../lang/Disposable":23,"./../../lang/assert":29,"./../../lang/is":33,"./../Stack":14}],19:[function(require,module,exports){
-const assert = require('./assert'),
-      is = require('./is');
+const assert = require('./assert');
 
 module.exports = (() => {
 	'use strict';
@@ -5952,7 +5951,7 @@ module.exports = (() => {
 	return AdHoc;
 })();
 
-},{"./assert":29,"./is":33}],20:[function(require,module,exports){
+},{"./assert":29}],20:[function(require,module,exports){
 const assert = require('./assert'),
       Enum = require('./Enum'),
       is = require('./is');
@@ -8856,8 +8855,7 @@ module.exports = (() => {
 })();
 
 },{}],34:[function(require,module,exports){
-const assert = require('./assert'),
-      is = require('./is');
+const assert = require('./assert');
 
 module.exports = (() => {
 	'use strict';
@@ -8925,7 +8923,7 @@ module.exports = (() => {
 	};
 })();
 
-},{"./assert":29,"./is":33}],35:[function(require,module,exports){
+},{"./assert":29}],35:[function(require,module,exports){
 const assert = require('./../lang/assert'),
       Disposable = require('./../lang/Disposable');
 
