@@ -200,7 +200,7 @@ module.exports = (() => {
 
 		if (t.dividend) {
 			if (t.dividend.numerator && t.dividend.denominator) {
-				f.rate = t.dividend.numerator.divide(t.dividend.denominator);
+				f.rate = `${t.dividend.numerator.round(4).toFixed()} for ${t.dividend.denominator.toFixed()}`;
 			} else if (t.dividend.rate) {
 				f.rate = t.dividend.rate;
 			}
@@ -222,7 +222,7 @@ module.exports = (() => {
 
 		if (t.dividend) {
 			if (t.dividend.numerator && t.dividend.denominator) {
-				f.rate = t.dividend.numerator.divide(t.dividend.denominator);
+				f.rate = `${t.dividend.numerator.round(4).toFixed()} for ${t.dividend.denominator.toFixed()}`;
 			} else if (t.dividend.rate) {
 				f.rate = t.dividend.rate;
 			}
@@ -249,7 +249,9 @@ module.exports = (() => {
 	};
 
 	const splitFormatter = (t, f) => {
-		f.rate = t.split.numerator.divide(t.split.denominator);
+		f.boughtSold = t.quantity;
+
+		f.rate = `${t.dividend.numerator.round(4).toFixed()} for ${t.dividend.denominator.toFixed()}`;
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 	};
