@@ -155,14 +155,14 @@ module.exports = (() => {
 		f.total = t.dividend.amount;
 		f.rate = t.dividend.rate;
 
-		f.shares = t.amount.divide(t.dividend.rate).absolute();
+		f.shares = t.dividend.amount.divide(t.dividend.rate);
 	};
 
 	const distributionCashFormatter = (t, f) => {
 		f.total = t.dividend.amount;
 		f.rate = t.dividend.rate;
 
-		f.shares = t.amount.divide(t.dividend.rate).absolute();
+		f.shares = t.dividend.amount.divide(t.dividend.rate);
 	};
 
 	const dividendReinvestFormatter = (t, f) => {
