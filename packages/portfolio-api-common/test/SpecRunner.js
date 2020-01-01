@@ -17027,8 +17027,8 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
 		});
 
-		it('should have four ranges (assuming the current year is 2019)', () => {
-			expect(ranges.length).toEqual(4);
+		it('should have four ranges (assuming the current year is 2020)', () => {
+			expect(ranges.length).toEqual(5);
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
@@ -17049,6 +17049,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		it('the fourth range should be from 12-31-2017 to 12-31-2018', () => {
 			expect(ranges[3].start.format()).toEqual('2017-12-31');
 			expect(ranges[3].end.format()).toEqual('2018-12-31');
+		});
+
+		it('the fifth range should be from 12-31-2018 to 12-31-2019', () => {
+			expect(ranges[4].start.format()).toEqual('2018-12-31');
+			expect(ranges[4].end.format()).toEqual('2019-12-31');
 		});
 	});
 
@@ -17409,7 +17414,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and a year-to-date position summary ranges are processed for a transaction set that opened this year and has not yet closed (assuming its 2019)', () => {
+	describe('and a year-to-date position summary ranges are processed for a transaction set that opened this year and has not yet closed (assuming its 2020)', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -17430,26 +17435,26 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges.length).toEqual(1);
 		});
 
-		it('the first range should be from 12-31-2018 to 12-31-2019', () => {
-			expect(ranges[0].start.format()).toEqual('2018-12-31');
-			expect(ranges[0].end.format()).toEqual('2019-12-31');
+		it('the first range should be from 12-31-2019 to 12-31-2020', () => {
+			expect(ranges[0].start.format()).toEqual('2019-12-31');
+			expect(ranges[0].end.format()).toEqual('2020-12-31');
 		});
 	});
 
-	describe('and a year-to-date position summary ranges are processed for a transaction set that that opened and closed in 2019', () => {
+	describe('and a year-to-date position summary ranges are processed for a transaction set that that opened and closed in 2020', () => {
 		let ranges;
 
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2019, 1, 1),
+					date: new Day(2020, 1, 1),
 					snapshot: {
 						open: new Decimal(1)
 					},
 					type: TransactionType.BUY
 				},
 				{
-					date: new Day(2019, 1, 2),
+					date: new Day(2020, 1, 2),
 					snapshot: {
 						open: new Decimal(0)
 					},
@@ -17464,9 +17469,9 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges.length).toEqual(1);
 		});
 
-		it('the first range should be from 12-31-2018 to 12-31-2019', () => {
-			expect(ranges[0].start.format()).toEqual('2018-12-31');
-			expect(ranges[0].end.format()).toEqual('2019-12-31');
+		it('the first range should be from 12-31-2019 to 12-31-2020', () => {
+			expect(ranges[0].start.format()).toEqual('2019-12-31');
+			expect(ranges[0].end.format()).toEqual('2020-12-31');
 		});
 	});
 
