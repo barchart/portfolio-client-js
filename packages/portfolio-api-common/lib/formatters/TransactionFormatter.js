@@ -155,14 +155,30 @@ module.exports = (() => {
 		f.total = t.dividend.amount;
 		f.rate = t.dividend.rate;
 
-		f.shares = t.dividend.amount.divide(t.dividend.rate);
+		let shares;
+
+		if (!t.dividend.rate.getIsZero()) {
+			shares = t.dividend.amount.divide(t.dividend.rate);
+		} else {
+			shares = '';
+		}
+
+		f.shares = shares;
 	};
 
 	const distributionCashFormatter = (t, f) => {
 		f.total = t.dividend.amount;
 		f.rate = t.dividend.rate;
 
-		f.shares = t.dividend.amount.divide(t.dividend.rate);
+		let shares;
+
+		if (!t.dividend.rate.getIsZero()) {
+			shares = t.dividend.amount.divide(t.dividend.rate);
+		} else {
+			shares = '';
+		}
+
+		f.shares = shares;
 	};
 
 	const dividendReinvestFormatter = (t, f) => {
@@ -199,11 +215,19 @@ module.exports = (() => {
 		}
 
 		if (t.dividend) {
+			let rate;
+
 			if (t.dividend.numerator && t.dividend.denominator) {
-				f.rate = t.dividend.numerator.divide(t.dividend.denominator);
+				if (!t.dividend.denominator.getIsZero()) {
+					rate = t.dividend.numerator.divide(t.dividend.denominator);
+				} else {
+					rate = '';
+				}
 			} else if (t.dividend.rate) {
-				f.rate = t.dividend.rate;
+				rate = t.dividend.rate;
 			}
+
+			f.rate = rate;
 
 			if (t.dividend.price) {
 				f.price = t.dividend.price;
@@ -221,11 +245,19 @@ module.exports = (() => {
 		}
 
 		if (t.dividend) {
+			let rate;
+
 			if (t.dividend.numerator && t.dividend.denominator) {
-				f.rate = t.dividend.numerator.divide(t.dividend.denominator);
+				if (!t.dividend.denominator.getIsZero()) {
+					rate = t.dividend.numerator.divide(t.dividend.denominator);
+				} else {
+					rate = '';
+				}
 			} else if (t.dividend.rate) {
-				f.rate = t.dividend.rate;
+				rate = t.dividend.rate;
 			}
+
+			f.rate = rate;
 
 			if (t.dividend.price) {
 				f.price = t.dividend.price;
@@ -251,7 +283,15 @@ module.exports = (() => {
 	const splitFormatter = (t, f) => {
 		f.boughtSold = t.quantity;
 
-		f.rate = t.split.numerator.divide(t.split.denominator);
+		let rate;
+
+		if (!t.split.denominator.getIsZero()) {
+			rate = t.split.numerator.divide(t.split.denominator);
+		} else {
+			rate = '';
+		}
+
+		f.rate = rate;
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 	};
@@ -264,7 +304,11 @@ module.exports = (() => {
 		} else if (t.snapshot.open.getIsZero()) {
 			rate = null;
 		} else {
-			rate = t.valuation.value.divide(t.snapshot.open);
+			if (!t.snapshot.open.getIsZero()) {
+				rate = t.valuation.value.divide(t.snapshot.open);
+			} else {
+				rate = '';
+			}
 		}
 
 		f.price = rate;
