@@ -5112,5888 +5112,4943 @@ module.exports = (() => {
 })();
 
 },{"./../data/InstrumentType":1,"./../data/PositionDirection":2,"./../data/TransactionType":4,"@barchart/common-js/lang/Currency":20,"@barchart/common-js/lang/Enum":24,"@barchart/common-js/lang/is":33,"@barchart/common-js/serialization/json/DataType":37,"@barchart/common-js/serialization/json/Schema":39,"@barchart/common-js/serialization/json/builders/SchemaBuilder":41}],13:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A singly linked list. Each instance represents a node in the list,
-  * holding both an item, a reference to the next node.
-  *
-  * @public
-  * @param {*} value - The value of current node.
-  */
-
-	var LinkedList = function () {
-		function LinkedList(value) {
-			_classCallCheck(this, LinkedList);
-
-			this._value = value;
-
-			this._next = null;
-		}
-
-		/**
-   * Returns the value associated with the current node.
+module.exports = (() => {
+  'use strict';
+  /**
+   * A singly linked list. Each instance represents a node in the list,
+   * holding both an item, a reference to the next node.
    *
    * @public
-   * @returns {*}
+   * @param {*} value - The value of current node.
    */
 
+  class LinkedList {
+    constructor(value) {
+      this._value = value;
+      this._next = null;
+    }
+    /**
+     * Returns the value associated with the current node.
+     *
+     * @public
+     * @returns {*}
+     */
 
-		_createClass(LinkedList, [{
-			key: 'getValue',
-			value: function getValue() {
-				return this._value;
-			}
 
-			/**
-    * Returns the next node, if it exists; otherwise a null value is returned.
-    *
-    * @public
-    * @returns {Tree|null}
-    */
+    getValue() {
+      return this._value;
+    }
+    /**
+     * Returns the next node, if it exists; otherwise a null value is returned.
+     *
+     * @public
+     * @returns {Tree|null}
+     */
 
-		}, {
-			key: 'getNext',
-			value: function getNext() {
-				return this._next;
-			}
 
-			/**
-    * Returns true, if the node is the last one in the list.
-    *
-    * @public
-    * @returns {boolean}
-    */
+    getNext() {
+      return this._next;
+    }
+    /**
+     * Returns true, if the node is the last one in the list.
+     *
+     * @public
+     * @returns {boolean}
+     */
 
-		}, {
-			key: 'getIsTail',
-			value: function getIsTail() {
-				return this._next === null;
-			}
 
-			/**
-    * Adds (or inserts) a value after the current node and returns
-    * the newly added node.
-    *
-    * @public
-    * @param {*} value
-    * @returns {LinkedList}
-    */
+    getIsTail() {
+      return this._next === null;
+    }
+    /**
+     * Adds (or inserts) a value after the current node and returns
+     * the newly added node.
+     *
+     * @public
+     * @param {*} value
+     * @returns {LinkedList}
+     */
 
-		}, {
-			key: 'insert',
-			value: function insert(value) {
-				var next = new LinkedList(value);
 
-				if (this._next) {
-					next._next = this._next;
-				}
+    insert(value) {
+      const next = new LinkedList(value);
 
-				this._next = next;
+      if (this._next) {
+        next._next = this._next;
+      }
 
-				return next;
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[LinkedList]';
-			}
-		}]);
+      this._next = next;
+      return next;
+    }
 
-		return LinkedList;
-	}();
+    toString() {
+      return '[LinkedList]';
+    }
 
-	return LinkedList;
-}();
+  }
+
+  return LinkedList;
+})();
 
 },{}],14:[function(require,module,exports){
-'use strict';
+const assert = require('./../lang/assert');
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./../lang/assert');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A stack collection (supports LIFO operations).
-  *
-  * @public
-  */
-
-	var Stack = function () {
-		function Stack() {
-			_classCallCheck(this, Stack);
-
-			this._array = [];
-		}
-
-		/**
-   * Adds an item to the stack.
+module.exports = (() => {
+  'use strict';
+  /**
+   * A stack collection (supports LIFO operations).
    *
    * @public
-   * @param {object} item
-   * @returns {object} - The item added to the stack.
    */
 
+  class Stack {
+    constructor() {
+      this._array = [];
+    }
+    /**
+     * Adds an item to the stack.
+     *
+     * @public
+     * @param {object} item
+     * @returns {object} - The item added to the stack.
+     */
 
-		_createClass(Stack, [{
-			key: 'push',
-			value: function push(item) {
-				this._array.unshift(item);
 
-				return item;
-			}
+    push(item) {
+      this._array.unshift(item);
 
-			/**
-    * Removes and returns an item from the stack. Throws if the stack is empty.
-    *
-    * @public
-    * @returns {object} - The removed from the stack.
-    */
+      return item;
+    }
+    /**
+     * Removes and returns an item from the stack. Throws if the stack is empty.
+     *
+     * @public
+     * @returns {object} - The removed from the stack.
+     */
 
-		}, {
-			key: 'pop',
-			value: function pop() {
-				if (this.empty()) {
-					throw new Error('Stack is empty');
-				}
 
-				return this._array.shift();
-			}
+    pop() {
+      if (this.empty()) {
+        throw new Error('Stack is empty');
+      }
 
-			/**
-    * Returns the next item in the stack (without removing it). Throws if the stack is empty.
-    *
-    * @public
-    * @returns {object} - The item added to the queue.
-    */
+      return this._array.shift();
+    }
+    /**
+     * Returns the next item in the stack (without removing it). Throws if the stack is empty.
+     *
+     * @public
+     * @returns {object} - The item added to the queue.
+     */
 
-		}, {
-			key: 'peek',
-			value: function peek() {
-				if (this.empty()) {
-					throw new Error('Stack is empty');
-				}
 
-				return this._array[0];
-			}
+    peek() {
+      if (this.empty()) {
+        throw new Error('Stack is empty');
+      }
 
-			/**
-    * Returns true if the queue is empty; otherwise false.
-    *
-    * @public
-    * @returns {boolean}
-    */
+      return this._array[0];
+    }
+    /**
+     * Returns true if the queue is empty; otherwise false.
+     *
+     * @public
+     * @returns {boolean}
+     */
 
-		}, {
-			key: 'empty',
-			value: function empty() {
-				return this._array.length === 0;
-			}
 
-			/**
-    * Runs an action on each item in the stack.
-    *
-    * @public
-    * @param {Function} action - The action to run.
-    */
+    empty() {
+      return this._array.length === 0;
+    }
+    /**
+     * Runs an action on each item in the stack.
+     *
+     * @public
+     * @param {Function} action - The action to run.
+     */
 
-		}, {
-			key: 'scan',
-			value: function scan(action) {
-				assert.argumentIsRequired(action, 'action', Function);
 
-				this._array.forEach(function (x) {
-					return action(x);
-				});
-			}
+    scan(action) {
+      assert.argumentIsRequired(action, 'action', Function);
 
-			/**
-    * Outputs an array of the stacks's items; without affecting the
-    * queue's internal state;
-    *
-    * @public
-    * @returns {Array}
-    */
+      this._array.forEach(x => action(x));
+    }
+    /**
+     * Outputs an array of the stacks's items; without affecting the
+     * queue's internal state;
+     *
+     * @public
+     * @returns {Array}
+     */
 
-		}, {
-			key: 'toArray',
-			value: function toArray() {
-				return this._array.slice(0);
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Stack]';
-			}
-		}]);
 
-		return Stack;
-	}();
+    toArray() {
+      return this._array.slice(0);
+    }
 
-	return Stack;
-}();
+    toString() {
+      return '[Stack]';
+    }
+
+  }
+
+  return Stack;
+})();
 
 },{"./../lang/assert":29}],15:[function(require,module,exports){
-'use strict';
+const is = require('./../lang/is');
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var is = require('./../lang/is');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A tree data structure. Each instance represents a node, holding
-  * an item, a reference to the parent node, and a reference to
-  * children nodes. Children are stored in insertion order.
-  *
-  * @public
-  * @param {*} value - The value of the node.
-  * @param {Tree=} parent - The parent node. If not supplied, this will be the root node.
-  */
-
-	var Tree = function () {
-		function Tree(value, parent) {
-			_classCallCheck(this, Tree);
-
-			this._value = value;
-
-			this._parent = parent || null;
-			this._children = [];
-		}
-
-		/**
-   * Gets the root node.
+module.exports = (() => {
+  'use strict';
+  /**
+   * A tree data structure. Each instance represents a node, holding
+   * an item, a reference to the parent node, and a reference to
+   * children nodes. Children are stored in insertion order.
    *
    * @public
-   * @returns {Tree}
+   * @param {*} value - The value of the node.
+   * @param {Tree=} parent - The parent node. If not supplied, this will be the root node.
+   */
+
+  class Tree {
+    constructor(value, parent) {
+      this._value = value;
+      this._parent = parent || null;
+      this._children = [];
+    }
+    /**
+     * Gets the root node.
+     *
+     * @public
+     * @returns {Tree}
+     */
+
+
+    getRoot() {
+      if (this.getIsRoot()) {
+        return this;
+      } else {
+        return this._parent.getRoot();
+      }
+    }
+    /**
+     * Returns the parent node. If this is the root node, a null value is returned.
+     *
+     * @public
+     * @returns {Tree|null}
+     */
+
+
+    getParent() {
+      return this._parent;
+    }
+    /**
+     * Returns the collection of children nodes.
+     *
+     * @public
+     * @returns {Array<Tree>}
+     */
+
+
+    getChildren() {
+      return this._children;
+    }
+    /**
+     * Returns the value associated with the current node.
+     *
+     * @public
+     * @returns {*}
+     */
+
+
+    getValue() {
+      return this._value;
+    }
+    /**
+     * Returns true if this node has no children; otherwise false.
+     *
+     * @public
+     * @returns {boolean}
+     */
+
+
+    getIsLeaf() {
+      return this._children.length === 0;
+    }
+    /**
+     * Returns true if this node has no parent; otherwise false.
+     *
+     * @public
+     * @returns {boolean}
+     */
+
+
+    getIsRoot() {
+      return this._parent === null;
+    }
+    /**
+     * Adds a child node to the current node and returns a reference
+     * to the child node.
+     *
+     * @public
+     * @param {*} value - The value of the child.
+     * @returns {Tree}
+     */
+
+
+    addChild(value) {
+      const returnRef = new Tree(value, this);
+
+      this._children.push(returnRef);
+
+      return returnRef;
+    }
+    /**
+     * Removes a child node.
+     *
+     * @public
+     * @param {Tree} node - The child to remove.
+     */
+
+
+    removeChild(node) {
+      for (let i = this._children.length - 1; !(i < 0); i--) {
+        const child = this._children[i];
+
+        if (child === node) {
+          this._children.splice(i, 1);
+
+          child._parent = null;
+          child._children = [];
+          break;
+        }
+      }
+    }
+    /**
+     * Removes the current node from the parent tree. Use on a root node
+     * has no effect.
+     *
+     * @public
+     */
+
+
+    sever() {
+      if (this.getIsRoot()) {
+        return;
+      }
+
+      this.getParent().removeChild(this);
+    }
+    /**
+     * Searches the children nodes for the first child node that matches the
+     * predicate.
+     *
+     * @public
+     * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
+     * @returns {Tree|null}
+     */
+
+
+    findChild(predicate) {
+      let returnRef = null;
+
+      for (let i = 0; i < this._children.length; i++) {
+        let child = this._children[i];
+
+        if (predicate(child.getValue(), child)) {
+          returnRef = child;
+          break;
+        }
+      }
+
+      return returnRef;
+    }
+    /**
+     * Searches the tree recursively, starting with the current node.
+     *
+     * @public
+     * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
+     * @param {boolean=} parentFirst - If true, the true will be searched from parent-to-child (breadth first). Otherwise, child-to-parent (depth first).
+     * @param {boolean=} includeCurrentNode - True, if the current node should be checked against the predicate.
+     * @returns {Tree|null}
+     */
+
+
+    search(predicate, parentFirst, includeCurrentNode) {
+      let returnRef = null;
+
+      if (returnRef === null && parentFirst && includeCurrentNode && predicate(this.getValue(), this)) {
+        returnRef = this;
+      }
+
+      for (let i = 0; i < this._children.length; i++) {
+        const child = this._children[i];
+        returnRef = child.search(predicate, parentFirst, true);
+
+        if (returnRef !== null) {
+          break;
+        }
+      }
+
+      if (returnRef === null && !parentFirst && includeCurrentNode && predicate(this.getValue(), this)) {
+        returnRef = this;
+      }
+
+      return returnRef;
+    }
+    /**
+     * Walks the children of the current node, running an action on each node.
+     *
+     * @public
+     * @param {Tree~nodeAction} walkAction - A action to apply to each node. The action takes two arguments -- the node's value, and the node itself.
+     * @param {boolean=} parentFirst - If true, the true will be searched from parent-to-child (breadth first). Otherwise, child-to-parent (depth first).
+     * @param {boolean=} includeCurrentNode - True if the current node should be applied to the action.
+     */
+
+
+    walk(walkAction, parentFirst, includeCurrentNode) {
+      const predicate = (value, node) => {
+        walkAction(value, node);
+        return false;
+      };
+
+      this.search(predicate, parentFirst, includeCurrentNode);
+    }
+    /**
+     * Climbs the parents of the current node -- current node up to the root node, running an action on each node.
+     *
+     * @public
+     * @param {Tree~nodeAction} climbAction - A action to apply to each node. The action takes two arguments -- the node's value, and the node itself.
+     * @param {boolean=} includeCurrentNode - True if the current node should be applied to the action.
+     */
+
+
+    climb(climbAction, includeCurrentNode) {
+      if (includeCurrentNode) {
+        climbAction(this.getValue(), this);
+      }
+
+      if (this._parent !== null) {
+        this._parent.climb(climbAction, true);
+      }
+    }
+    /**
+     * Climbs the tree, evaluating each parent until a predicate is matched. Once matched,
+     * the {@link Tree} node is returned. Otherwise, if the predicate cannot be matched,
+     * a null value is returned.
+     *
+     * @public
+     * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
+     * @param {boolean=} includeCurrentNode - If true, the predicate will be applied to the current node.
+     * @returns {Tree|null}
+     */
+
+
+    findParent(predicate, includeCurrentNode) {
+      let returnRef;
+
+      if (is.boolean(includeCurrentNode) && includeCurrentNode && predicate(this.getValue(), this)) {
+        returnRef = this;
+      } else if (this._parent !== null) {
+        returnRef = this._parent.findParent(predicate, true);
+      } else {
+        returnRef = null;
+      }
+
+      return returnRef;
+    }
+    /**
+     * Creates a representation of the tree using JavaScript objects and arrays.
+     *
+     * @public
+     * @param {Function=} valueConverter - An optional function for converting the value of each node.
+     * @param {Boolean=} valueConverter - If true, empty children arrays will be excluded from output.
+     * @returns {Object}
+     */
+
+
+    toJSObj(valueConverter, omitEmptyChildren) {
+      let valueConverterToUse;
+
+      if (is.fn(valueConverter)) {
+        valueConverterToUse = valueConverter;
+      } else {
+        valueConverterToUse = x => x;
+      }
+
+      const converted = {
+        value: valueConverterToUse(this._value)
+      };
+
+      if (!(is.boolean(omitEmptyChildren) && omitEmptyChildren && this._children.length === 0)) {
+        converted.children = this._children.map(child => child.toJSObj(valueConverter, omitEmptyChildren));
+      }
+
+      return converted;
+    }
+
+    toString() {
+      return '[Tree]';
+    }
+
+  }
+  /**
+   * A predicate that is used to check a node (i.e. {@link Tree}).
+   *
+   * @callback Tree~nodePredicate
+   * @param {*} item - The candidate node's item
+   * @param {Tree} node - The candidate node.
+   * @returns {Boolean}
+   */
+
+  /**
+   * An action that is run on a node (i.e. {@link Tree}).
+   *
+   * @callback Tree~nodeAction
+   * @param {*} item - The candidate node's item
+   * @param {Tree} node - The candidate node.
    */
 
 
-		_createClass(Tree, [{
-			key: 'getRoot',
-			value: function getRoot() {
-				if (this.getIsRoot()) {
-					return this;
-				} else {
-					return this._parent.getRoot();
-				}
-			}
-
-			/**
-    * Returns the parent node. If this is the root node, a null value is returned.
-    *
-    * @public
-    * @returns {Tree|null}
-    */
-
-		}, {
-			key: 'getParent',
-			value: function getParent() {
-				return this._parent;
-			}
-
-			/**
-    * Returns the collection of children nodes.
-    *
-    * @public
-    * @returns {Array<Tree>}
-    */
-
-		}, {
-			key: 'getChildren',
-			value: function getChildren() {
-				return this._children;
-			}
-
-			/**
-    * Returns the value associated with the current node.
-    *
-    * @public
-    * @returns {*}
-    */
-
-		}, {
-			key: 'getValue',
-			value: function getValue() {
-				return this._value;
-			}
-
-			/**
-    * Returns true if this node has no children; otherwise false.
-    *
-    * @public
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsLeaf',
-			value: function getIsLeaf() {
-				return this._children.length === 0;
-			}
-
-			/**
-    * Returns true if this node has no parent; otherwise false.
-    *
-    * @public
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsRoot',
-			value: function getIsRoot() {
-				return this._parent === null;
-			}
-
-			/**
-    * Adds a child node to the current node and returns a reference
-    * to the child node.
-    *
-    * @public
-    * @param {*} value - The value of the child.
-    * @returns {Tree}
-    */
-
-		}, {
-			key: 'addChild',
-			value: function addChild(value) {
-				var returnRef = new Tree(value, this);
-
-				this._children.push(returnRef);
-
-				return returnRef;
-			}
-
-			/**
-    * Removes a child node.
-    *
-    * @public
-    * @param {Tree} node - The child to remove.
-    */
-
-		}, {
-			key: 'removeChild',
-			value: function removeChild(node) {
-				for (var i = this._children.length - 1; !(i < 0); i--) {
-					var child = this._children[i];
-
-					if (child === node) {
-						this._children.splice(i, 1);
-
-						child._parent = null;
-						child._children = [];
-
-						break;
-					}
-				}
-			}
-
-			/**
-    * Removes the current node from the parent tree. Use on a root node
-    * has no effect.
-    *
-    * @public
-    */
-
-		}, {
-			key: 'sever',
-			value: function sever() {
-				if (this.getIsRoot()) {
-					return;
-				}
-
-				this.getParent().removeChild(this);
-			}
-
-			/**
-    * Searches the children nodes for the first child node that matches the
-    * predicate.
-    *
-    * @public
-    * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
-    * @returns {Tree|null}
-    */
-
-		}, {
-			key: 'findChild',
-			value: function findChild(predicate) {
-				var returnRef = null;
-
-				for (var i = 0; i < this._children.length; i++) {
-					var child = this._children[i];
-
-					if (predicate(child.getValue(), child)) {
-						returnRef = child;
-
-						break;
-					}
-				}
-
-				return returnRef;
-			}
-
-			/**
-    * Searches the tree recursively, starting with the current node.
-    *
-    * @public
-    * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
-    * @param {boolean=} childrenFirst - True, if the tree should be searched depth first.
-    * @param {boolean=} includeCurrentNode - True, if the current node should be checked against the predicate.
-    * @returns {Tree|null}
-    */
-
-		}, {
-			key: 'search',
-			value: function search(predicate, childrenFirst, includeCurrentNode) {
-				var returnRef = null;
-
-				if (returnRef === null && childrenFirst && includeCurrentNode && predicate(this.getValue(), this)) {
-					returnRef = this;
-				}
-
-				for (var i = 0; i < this._children.length; i++) {
-					var child = this._children[i];
-
-					returnRef = child.search(predicate, childrenFirst, true);
-
-					if (returnRef !== null) {
-						break;
-					}
-				}
-
-				if (returnRef === null && !childrenFirst && includeCurrentNode && predicate(this.getValue(), this)) {
-					returnRef = this;
-				}
-
-				return returnRef;
-			}
-
-			/**
-    * Walks the children of the current node, running an action on each node.
-    *
-    * @public
-    * @param {Tree~nodeAction} walkAction - A action to apply to each node. The action takes two arguments -- the node's value, and the node itself.
-    * @param {boolean=} childrenFirst - True if the tree should be walked depth first.
-    * @param {boolean=} includeCurrentNode - True if the current node should be applied to the action.
-    */
-
-		}, {
-			key: 'walk',
-			value: function walk(walkAction, childrenFirst, includeCurrentNode) {
-				var predicate = function predicate(value, node) {
-					walkAction(value, node);
-
-					return false;
-				};
-
-				this.search(predicate, childrenFirst, includeCurrentNode);
-			}
-
-			/**
-    * Climbs the parents of the current node -- current node up to the root node, running an action on each node.
-    *
-    * @public
-    * @param {Tree~nodeAction} climbAction - A action to apply to each node. The action takes two arguments -- the node's value, and the node itself.
-    * @param {boolean=} includeCurrentNode - True if the current node should be applied to the action.
-    */
-
-		}, {
-			key: 'climb',
-			value: function climb(climbAction, includeCurrentNode) {
-				if (includeCurrentNode) {
-					climbAction(this.getValue(), this);
-				}
-
-				if (this._parent !== null) {
-					this._parent.climb(climbAction, true);
-				}
-			}
-
-			/**
-    * Climbs the tree, evaluating each parent until a predicate is matched. Once matched,
-    * the {@link Tree} node is returned. Otherwise, if the predicate cannot be matched,
-    * a null value is returned.
-    *
-    * @public
-    * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
-    * @param {boolean=} includeCurrentNode - If true, the predicate will be applied to the current node.
-    * @returns {Tree|null}
-    */
-
-		}, {
-			key: 'findParent',
-			value: function findParent(predicate, includeCurrentNode) {
-				var returnRef = void 0;
-
-				if (is.boolean(includeCurrentNode) && includeCurrentNode && predicate(this.getValue(), this)) {
-					returnRef = this;
-				} else if (this._parent !== null) {
-					returnRef = this._parent.findParent(predicate, true);
-				} else {
-					returnRef = null;
-				}
-
-				return returnRef;
-			}
-
-			/**
-    * Creates a representation of the tree using JavaScript objects and arrays.
-    *
-    * @public
-    * @param {Function=} valueConverter - An optional function for converting the value of each node.
-    * @param {Boolean=} valueConverter - If true, empty children arrays will be excluded from output.
-    * @returns {Object}
-    */
-
-		}, {
-			key: 'toJSObj',
-			value: function toJSObj(valueConverter, omitEmptyChildren) {
-				var valueConverterToUse = void 0;
-
-				if (is.fn(valueConverter)) {
-					valueConverterToUse = valueConverter;
-				} else {
-					valueConverterToUse = function valueConverterToUse(x) {
-						return x;
-					};
-				}
-
-				var converted = {
-					value: valueConverterToUse(this._value)
-				};
-
-				if (!(is.boolean(omitEmptyChildren) && omitEmptyChildren && this._children.length === 0)) {
-					converted.children = this._children.map(function (child) {
-						return child.toJSObj(valueConverter, omitEmptyChildren);
-					});
-				}
-
-				return converted;
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Tree]';
-			}
-		}]);
-
-		return Tree;
-	}();
-
-	/**
-  * A predicate that is used to check a node (i.e. {@link Tree}).
-  *
-  * @callback Tree~nodePredicate
-  * @param {*} item - The candidate node's item
-  * @param {Tree} node - The candidate node.
-  * @returns {Boolean}
-  */
-
-	/**
-  * An action that is run on a node (i.e. {@link Tree}).
-  *
-  * @callback Tree~nodeAction
-  * @param {*} item - The candidate node's item
-  * @param {Tree} node - The candidate node.
-  */
-
-	return Tree;
-}();
+  return Tree;
+})();
 
 },{"./../lang/is":33}],16:[function(require,module,exports){
-'use strict';
+const assert = require('./../../lang/assert'),
+      comparators = require('./comparators');
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./../../lang/assert'),
-    comparators = require('./comparators');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A builder for compound comparator functions (e.g. sort by last name,
-  * then by first name, then by social security number) that uses a fluent
-  * interface.
-  *
-  * @public
-  * @param {Function} comparator - The initial comparator.
-  * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
-  */
-
-	var ComparatorBuilder = function () {
-		function ComparatorBuilder(comparator, invert, previous) {
-			_classCallCheck(this, ComparatorBuilder);
-
-			assert.argumentIsRequired(comparator, 'comparator', Function);
-			assert.argumentIsOptional(invert, 'invert', Boolean);
-
-			this._comparator = comparator;
-			this._invert = invert || false;
-			this._previous = previous || null;
-		}
-
-		/**
-   * Adds a new comparator to the list of comparators to use.
+module.exports = (() => {
+  'use strict';
+  /**
+   * A builder for compound comparator functions (e.g. sort by last name,
+   * then by first name, then by social security number) that uses a fluent
+   * interface.
    *
    * @public
-   * @param {Function} comparator - The next comparator function.
+   * @param {Function} comparator - The initial comparator.
    * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
-   * @returns {ComparatorBuilder}
    */
 
+  class ComparatorBuilder {
+    constructor(comparator, invert, previous) {
+      assert.argumentIsRequired(comparator, 'comparator', Function);
+      assert.argumentIsOptional(invert, 'invert', Boolean);
+      this._comparator = comparator;
+      this._invert = invert || false;
+      this._previous = previous || null;
+    }
+    /**
+     * Adds a new comparator to the list of comparators to use.
+     *
+     * @public
+     * @param {Function} comparator - The next comparator function.
+     * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
+     * @returns {ComparatorBuilder}
+     */
 
-		_createClass(ComparatorBuilder, [{
-			key: 'thenBy',
-			value: function thenBy(comparator, invert) {
-				assert.argumentIsRequired(comparator, 'comparator', Function);
-				assert.argumentIsOptional(invert, 'invert', Boolean);
 
-				return new ComparatorBuilder(comparator, invert, this);
-			}
+    thenBy(comparator, invert) {
+      assert.argumentIsRequired(comparator, 'comparator', Function);
+      assert.argumentIsOptional(invert, 'invert', Boolean);
+      return new ComparatorBuilder(comparator, invert, this);
+    }
+    /**
+     * Flips the order of the comparator (e.g. ascending to descending).
+     *
+     * @public
+     * @returns {ComparatorBuilder}
+     */
 
-			/**
-    * Flips the order of the comparator (e.g. ascending to descending).
-    *
-    * @public
-    * @returns {ComparatorBuilder}
-    */
 
-		}, {
-			key: 'invert',
-			value: function invert() {
-				var previous = void 0;
+    invert() {
+      let previous;
 
-				if (this._previous) {
-					previous = this._previous.invert();
-				} else {
-					previous = null;
-				}
+      if (this._previous) {
+        previous = this._previous.invert();
+      } else {
+        previous = null;
+      }
 
-				return new ComparatorBuilder(this._comparator, !this._invert, previous);
-			}
+      return new ComparatorBuilder(this._comparator, !this._invert, previous);
+    }
+    /**
+     * Returns the comparator function.
+     *
+     * @public
+     * @returns {Function}
+     */
 
-			/**
-    * Returns the comparator function.
-    *
-    * @public
-    * @returns {Function}
-    */
 
-		}, {
-			key: 'toComparator',
-			value: function toComparator() {
-				var _this = this;
+    toComparator() {
+      let previousComparator;
 
-				var previousComparator = void 0;
+      if (this._previous) {
+        previousComparator = this._previous.toComparator();
+      } else {
+        previousComparator = comparators.empty;
+      }
 
-				if (this._previous) {
-					previousComparator = this._previous.toComparator();
-				} else {
-					previousComparator = comparators.empty;
-				}
+      return (a, b) => {
+        let result = previousComparator(a, b);
 
-				return function (a, b) {
-					var result = previousComparator(a, b);
+        if (result === 0) {
+          let sortA;
+          let sortB;
 
-					if (result === 0) {
-						var sortA = void 0;
-						var sortB = void 0;
+          if (this._invert) {
+            sortA = b;
+            sortB = a;
+          } else {
+            sortA = a;
+            sortB = b;
+          }
 
-						if (_this._invert) {
-							sortA = b;
-							sortB = a;
-						} else {
-							sortA = a;
-							sortB = b;
-						}
+          result = this._comparator(sortA, sortB);
+        }
 
-						result = _this._comparator(sortA, sortB);
-					}
+        return result;
+      };
+    }
 
-					return result;
-				};
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[ComparatorBuilder]';
-			}
+    toString() {
+      return '[ComparatorBuilder]';
+    }
+    /**
+     * Creates a {@link ComparatorBuilder}, given an initial comparator function.
+     *
+     * @public
+     * @param {Function} comparator - The initial comparator.
+     * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
+     * @returns {ComparatorBuilder}
+     */
 
-			/**
-    * Creates a {@link ComparatorBuilder}, given an initial comparator function.
-    *
-    * @public
-    * @param {Function} comparator - The initial comparator.
-    * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
-    * @returns {ComparatorBuilder}
-    */
 
-		}], [{
-			key: 'startWith',
-			value: function startWith(comparator, invert) {
-				return new ComparatorBuilder(comparator, invert);
-			}
-		}]);
+    static startWith(comparator, invert) {
+      return new ComparatorBuilder(comparator, invert);
+    }
 
-		return ComparatorBuilder;
-	}();
+  }
 
-	return ComparatorBuilder;
-}();
+  return ComparatorBuilder;
+})();
 
 },{"./../../lang/assert":29,"./comparators":17}],17:[function(require,module,exports){
-'use strict';
+const assert = require('./../../lang/assert');
 
-var assert = require('./../../lang/assert');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * Functions that can be used as comparators.
-  *
-  * @public
-  * @module collections/sorting/comparators
-  */
-
-	return {
-		/**
-   * Compares two dates (in ascending order).
+module.exports = (() => {
+  'use strict';
+  /**
+   * Functions that can be used as comparators.
    *
-   * @static
-   * @param {Date} a
-   * @param {Date} b
-   * @returns {Number}
+   * @public
+   * @module collections/sorting/comparators
    */
-		compareDates: function compareDates(a, b) {
-			assert.argumentIsRequired(a, 'a', Date);
-			assert.argumentIsRequired(b, 'b', Date);
 
-			return a - b;
-		},
+  return {
+    /**
+     * Compares two dates (in ascending order).
+     *
+     * @static
+     * @param {Date} a
+     * @param {Date} b
+     * @returns {Number}
+     */
+    compareDates: (a, b) => {
+      assert.argumentIsRequired(a, 'a', Date);
+      assert.argumentIsRequired(b, 'b', Date);
+      return a - b;
+    },
 
-		/**
-   * Compares two numbers (in ascending order).
-   *
-   * @static
-   * @param {Number} a
-   * @param {Number} b
-   * @returns {Number}
-   */
-		compareNumbers: function compareNumbers(a, b) {
-			assert.argumentIsRequired(a, 'a', Number);
-			assert.argumentIsRequired(b, 'b', Number);
+    /**
+     * Compares two numbers (in ascending order).
+     *
+     * @static
+     * @param {Number} a
+     * @param {Number} b
+     * @returns {Number}
+     */
+    compareNumbers: (a, b) => {
+      assert.argumentIsRequired(a, 'a', Number);
+      assert.argumentIsRequired(b, 'b', Number);
+      return a - b;
+    },
 
-			return a - b;
-		},
+    /**
+     * Compares two strings (in ascending order), using {@link String#localeCompare}.
+     *
+     * @static
+     * @param {String} a
+     * @param {String} b
+     * @returns {Number}
+     */
+    compareStrings: (a, b) => {
+      assert.argumentIsRequired(a, 'a', String);
+      assert.argumentIsRequired(b, 'b', String);
+      return a.localeCompare(b);
+    },
 
-		/**
-   * Compares two strings (in ascending order), using {@link String#localeCompare}.
-   *
-   * @static
-   * @param {String} a
-   * @param {String} b
-   * @returns {Number}
-   */
-		compareStrings: function compareStrings(a, b) {
-			assert.argumentIsRequired(a, 'a', String);
-			assert.argumentIsRequired(b, 'b', String);
+    /**
+     * Compares two boolean values (in ascending order -- false first, true second).
+     *
+     * @static
+     * @param {Boolean} a
+     * @param {Boolean} b
+     * @returns {Number}
+     */
+    compareBooleans: (a, b) => {
+      assert.argumentIsRequired(a, 'a', Boolean);
+      assert.argumentIsRequired(b, 'b', Boolean);
 
-			return a.localeCompare(b);
-		},
+      if (a === b) {
+        return 0;
+      } else if (a) {
+        return 1;
+      } else {
+        return -1;
+      }
+    },
 
-		/**
-   * Compares two objects, always returning zero.
-   *
-   * @static
-   * @param {*} a
-   * @param {*} b
-   * @returns {Number}
-   */
-		empty: function empty(a, b) {
-			return 0;
-		}
-	};
-}();
+    /**
+     * Compares two objects, always returning zero.
+     *
+     * @static
+     * @param {*} a
+     * @param {*} b
+     * @returns {Number}
+     */
+    empty: (a, b) => {
+      return 0;
+    }
+  };
+})();
 
 },{"./../../lang/assert":29}],18:[function(require,module,exports){
-'use strict';
+const Stack = require('./../Stack');
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+const assert = require('./../../lang/assert'),
+      Disposable = require('./../../lang/Disposable'),
+      is = require('./../../lang/is');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Stack = require('./../Stack');
-
-var assert = require('./../../lang/assert'),
-    Disposable = require('./../../lang/Disposable'),
-    is = require('./../../lang/is');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A stack of {@link Disposable} instances which itself inherits {@Disposable}.
-  * When {@link DisposableStack#dispose} is called, then each item in the collection
-  * is disposed in order.
-  *
-  * @public
-  * @extends {Disposable}
-  */
-
-	var DisposableStack = function (_Disposable) {
-		_inherits(DisposableStack, _Disposable);
-
-		function DisposableStack() {
-			_classCallCheck(this, DisposableStack);
-
-			var _this = _possibleConstructorReturn(this, (DisposableStack.__proto__ || Object.getPrototypeOf(DisposableStack)).call(this));
-
-			_this._stack = new Stack();
-			return _this;
-		}
-
-		/**
-   * Adds a new {@link Disposable} instance to the stack.
+module.exports = (() => {
+  'use strict';
+  /**
+   * A stack of {@link Disposable} instances which itself inherits {@Disposable}.
+   * When {@link DisposableStack#dispose} is called, then each item in the collection
+   * is disposed in order.
    *
    * @public
-   * @param {Disposable} disposable - The item to add.
+   * @extends {Disposable}
    */
 
+  class DisposableStack extends Disposable {
+    constructor() {
+      super();
+      this._stack = new Stack();
+    }
+    /**
+     * Adds a new {@link Disposable} instance to the stack.
+     *
+     * @public
+     * @param {Disposable} disposable - The item to add.
+     */
 
-		_createClass(DisposableStack, [{
-			key: 'push',
-			value: function push(disposable) {
-				assert.argumentIsRequired(disposable, 'disposable', Disposable, 'Disposable');
 
-				if (this.getIsDisposed()) {
-					throw new Error('Unable to push item onto DisposableStack because it has been disposed.');
-				}
+    push(disposable) {
+      assert.argumentIsRequired(disposable, 'disposable', Disposable, 'Disposable');
 
-				this._stack.push(disposable);
-			}
-		}, {
-			key: '_onDispose',
-			value: function _onDispose() {
-				while (!this._stack.empty()) {
-					this._stack.pop().dispose();
-				}
-			}
-		}], [{
-			key: 'fromArray',
-			value: function fromArray(bindings) {
-				assert.argumentIsArray(bindings, 'bindings', Disposable, 'Disposable');
+      if (this.getIsDisposed()) {
+        throw new Error('Unable to push item onto DisposableStack because it has been disposed.');
+      }
 
-				var returnRef = new DisposableStack();
+      this._stack.push(disposable);
+    }
 
-				for (var i = 0; i < bindings.length; i++) {
-					returnRef.push(bindings[i]);
-				}
+    _onDispose() {
+      while (!this._stack.empty()) {
+        this._stack.pop().dispose();
+      }
+    }
 
-				return returnRef;
-			}
-		}, {
-			key: 'pushPromise',
-			value: function pushPromise(stack, promise) {
-				assert.argumentIsRequired(stack, 'stack', DisposableStack, 'DisposableStack');
-				assert.argumentIsRequired(promise, 'promise');
+    static fromArray(bindings) {
+      assert.argumentIsArray(bindings, 'bindings', Disposable, 'Disposable');
+      const returnRef = new DisposableStack();
 
-				return promise.then(function (b) {
-					var bindings = void 0;
+      for (let i = 0; i < bindings.length; i++) {
+        returnRef.push(bindings[i]);
+      }
 
-					if (is.array(b)) {
-						bindings = b;
-					} else {
-						bindings = [b];
-					}
+      return returnRef;
+    }
 
-					bindings.forEach(function (binding) {
-						return stack.push(binding);
-					});
-				});
-			}
-		}]);
+    static pushPromise(stack, promise) {
+      assert.argumentIsRequired(stack, 'stack', DisposableStack, 'DisposableStack');
+      assert.argumentIsRequired(promise, 'promise');
+      return promise.then(b => {
+        let bindings;
 
-		return DisposableStack;
-	}(Disposable);
+        if (is.array(b)) {
+          bindings = b;
+        } else {
+          bindings = [b];
+        }
 
-	return DisposableStack;
-}();
+        bindings.forEach(binding => stack.push(binding));
+      });
+    }
+
+  }
+
+  return DisposableStack;
+})();
 
 },{"./../../lang/Disposable":23,"./../../lang/assert":29,"./../../lang/is":33,"./../Stack":14}],19:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./assert'),
-    is = require('./is');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A serialization container for ad hoc data where internal data is serialized
-  * as an escaped JSON string.
-  *
-  * @public
-  * @param {Object} data
-  */
-
-	var AdHoc = function () {
-		function AdHoc(data) {
-			_classCallCheck(this, AdHoc);
-
-			this._data = data || {};
-		}
-
-		/**
-   * The data.
-   * 
-   * @public
-   * @returns {Object}
-   */
-
-
-		_createClass(AdHoc, [{
-			key: 'toJSON',
-			value: function toJSON() {
-				return JSON.stringify(this._data);
-			}
-
-			/**
-    * Given a code, returns the enumeration item.
-    *
-    * @public
-    * @param {String} code
-    * @returns {AdHoc}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[AdHoc]';
-			}
-		}, {
-			key: 'data',
-			get: function get() {
-				return this._data;
-			}
-
-			/**
-    * The data.
-    *
-    * @public
-    * @param {Object} data
-    */
-			,
-			set: function set(data) {
-				assert.argumentIsRequired(data, 'data', Object);
-
-				this._data = data;
-			}
-		}], [{
-			key: 'parse',
-			value: function parse(serialized) {
-				return new AdHoc(JSON.parse(serialized));
-			}
-		}]);
-
-		return AdHoc;
-	}();
-
-	return AdHoc;
-}();
-
-},{"./assert":29,"./is":33}],20:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var assert = require('./assert'),
-    Enum = require('./Enum'),
-    is = require('./is');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * An enumeration for currency types.
-  *
-  * @public
-  * @param {String} code - Currency code (e.g. "USD")
-  * @param {String} description - The description (e.g. "US Dollar")
-  * @param {Number} precision - The number of decimal places possible for by a real world transaction.
-  * @extends {Enum}
-  */
-
-	var Currency = function (_Enum) {
-		_inherits(Currency, _Enum);
-
-		function Currency(code, description, precision, alternateDescription) {
-			_classCallCheck(this, Currency);
-
-			var _this = _possibleConstructorReturn(this, (Currency.__proto__ || Object.getPrototypeOf(Currency)).call(this, code, description));
-
-			assert.argumentIsRequired(precision, 'precision', Number);
-			assert.argumentIsValid(precision, 'precision', is.integer, 'is an integer');
-
-			assert.argumentIsOptional(alternateDescription, 'alternateDescription', String);
-
-			_this._precision = precision;
-
-			_this._alternateDescription = alternateDescription || description;
-			return _this;
-		}
-
-		/**
-   * The maximum number of decimal places supported by a real world transaction.
-   *
-   * @public
-   * @returns {Number}
-   */
-
-
-		_createClass(Currency, [{
-			key: 'toString',
-			value: function toString() {
-				return '[Currency (code=' + this.code + ')]';
-			}
-		}, {
-			key: 'precision',
-			get: function get() {
-				return this._precision;
-			}
-
-			/**
-    * An alternate human-readable description.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'alternateDescription',
-			get: function get() {
-				return this._alternateDescription;
-			}
-
-			/**
-    * Given a code, returns the enumeration item.
-    *
-    * @public
-    * @param {String} code
-    * @returns {Currency|null}
-    */
-
-		}], [{
-			key: 'parse',
-			value: function parse(code) {
-				return Enum.fromCode(Currency, code);
-			}
-
-			/**
-    * The Canadian Dollar.
-    *
-    * @public
-    * @returns {Currency}
-    */
-
-		}, {
-			key: 'CAD',
-			get: function get() {
-				return cad;
-			}
-
-			/**
-    * The Euro.
-    *
-    * @public
-    * @returns {Currency}
-    */
-
-		}, {
-			key: 'EUR',
-			get: function get() {
-				return eur;
-			}
-
-			/**
-    * The US Dollar.
-    *
-    * @public
-    * @returns {Currency}
-    */
-
-		}, {
-			key: 'USD',
-			get: function get() {
-				return usd;
-			}
-		}]);
-
-		return Currency;
-	}(Enum);
-
-	var cad = new Currency('CAD', 'Canadian Dollar', 2, 'CAD$');
-	var eur = new Currency('EUR', 'Euro', 2, 'EUR');
-	var usd = new Currency('USD', 'US Dollar', 2, 'US$');
-
-	return Currency;
-}();
-
-},{"./Enum":24,"./assert":29,"./is":33}],21:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./assert'),
-    ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder'),
-    comparators = require('./../collections/sorting/comparators'),
-    is = require('./is');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A data structure that represents a day (year, month, and day)
-  * without consideration for time or timezone.
-  *
-  * @public
-  * @param {Number} year
-  * @param {Number} month
-  * @param {Number} day
-  */
-
-	var Day = function () {
-		function Day(year, month, day) {
-			_classCallCheck(this, Day);
-
-			if (!Day.validate(year, month, day)) {
-				throw new Error('Unable to instantiate Day, input is invalid [' + year + '], [' + month + '], [' + day + ']');
-			}
-
-			this._year = year;
-			this._month = month;
-			this._day = day;
-		}
-
-		/**
-   * Calculates a new {@link Day} in the future (or past).
-   *
-   * @public
-   * @param {Number} days - The number of days to add (negative numbers can be used for subtraction).
-   * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
-   * @returns {Day}
-   */
-
-
-		_createClass(Day, [{
-			key: 'addDays',
-			value: function addDays(days, inverse) {
-				assert.argumentIsRequired(days, 'days', Number);
-				assert.argumentIsOptional(inverse, inverse, Boolean);
-				assert.argumentIsValid(days, 'days', is.large, 'is an integer');
-
-				var totalDaysToShift = void 0;
-
-				if (is.boolean(inverse) && inverse) {
-					totalDaysToShift = days * -1;
-				} else {
-					totalDaysToShift = days;
-				}
-
-				var positive = is.positive(totalDaysToShift);
-
-				var shiftedDay = this._day;
-				var shiftedMonth = this._month;
-				var shiftedYear = this._year;
-
-				while (totalDaysToShift !== 0) {
-					var monthDaysAvailable = void 0;
-					var monthDaysToShift = void 0;
-
-					if (positive) {
-						monthDaysAvailable = Day.getDaysInMonth(shiftedYear, shiftedMonth) - shiftedDay;
-						monthDaysToShift = Math.min(totalDaysToShift, monthDaysAvailable);
-					} else {
-						monthDaysAvailable = 1 - shiftedDay;
-						monthDaysToShift = Math.max(totalDaysToShift, monthDaysAvailable);
-					}
-
-					totalDaysToShift = totalDaysToShift - monthDaysToShift;
-
-					if (totalDaysToShift === 0) {
-						shiftedDay = shiftedDay + monthDaysToShift;
-					} else if (positive) {
-						shiftedMonth++;
-
-						if (shiftedMonth > 12) {
-							shiftedYear++;
-							shiftedMonth = 1;
-						}
-
-						shiftedDay = 0;
-					} else {
-						shiftedMonth--;
-
-						if (shiftedMonth < 1) {
-							shiftedYear--;
-							shiftedMonth = 12;
-						}
-
-						shiftedDay = Day.getDaysInMonth(shiftedYear, shiftedMonth) + 1;
-					}
-				}
-
-				return new Day(shiftedYear, shiftedMonth, shiftedDay);
-			}
-
-			/**
-    * Calculates a new {@link Day} in the past (or future).
-    *
-    * @public
-    * @param {Number} days - The number of days to subtract (negative numbers can be used for addition).
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'subtractDays',
-			value: function subtractDays(days) {
-				return this.addDays(days, true);
-			}
-
-			/**
-    * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
-    * the month and the new month has fewer days than the current month, days will be subtracted
-    * as necessary (e.g. adding one month to March 31 will return April 30).
-    *
-    * @public
-    * @param {Number} months - The number of months to add (negative numbers can be used for subtraction).
-    * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'addMonths',
-			value: function addMonths(months, inverse) {
-				assert.argumentIsRequired(months, 'months', Number);
-				assert.argumentIsOptional(inverse, inverse, Boolean);
-				assert.argumentIsValid(months, 'months', is.large, 'is an integer');
-
-				var totalMonthsToShift = void 0;
-
-				if (is.boolean(inverse) && inverse) {
-					totalMonthsToShift = months * -1;
-				} else {
-					totalMonthsToShift = months;
-				}
-
-				var monthsToShift = totalMonthsToShift % 12;
-				var yearsToShift = (totalMonthsToShift - monthsToShift) / 12;
-
-				var shiftedYear = this.year + yearsToShift;
-				var shiftedMonth = this.month + monthsToShift;
-				var shiftedDay = this.day;
-
-				if (shiftedMonth > 12) {
-					shiftedYear = shiftedYear + 1;
-					shiftedMonth = shiftedMonth - 12;
-				}
-
-				if (shiftedMonth < 1) {
-					shiftedYear = shiftedYear - 1;
-					shiftedMonth = shiftedMonth + 12;
-				}
-
-				while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
-					shiftedDay = shiftedDay - 1;
-				}
-
-				return new Day(shiftedYear, shiftedMonth, shiftedDay);
-			}
-
-			/**
-    * Calculates a new {@link Day} in the past (or future).
-    *
-    * @public
-    * @param {Number} months - The number of months to subtract (negative numbers can be used for addition).
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'subtractMonths',
-			value: function subtractMonths(months) {
-				return this.addMonths(months, true);
-			}
-
-			/**
-    * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
-    * the month and the new month has fewer days than the current month, days will be subtracted
-    * as necessary (e.g. adding one year to February 29 will return February 28).
-    *
-    * @public
-    * @param {Number} years - The number of years to add (negative numbers can be used for subtraction).
-    * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'addYears',
-			value: function addYears(years, inverse) {
-				assert.argumentIsRequired(years, 'years', Number);
-				assert.argumentIsOptional(inverse, inverse, Boolean);
-				assert.argumentIsValid(years, 'years', is.large, 'is an integer');
-
-				var yearsToShift = void 0;
-
-				if (is.boolean(inverse) && inverse) {
-					yearsToShift = years * -1;
-				} else {
-					yearsToShift = years;
-				}
-
-				var shiftedYear = this.year + yearsToShift;
-				var shiftedMonth = this.month;
-				var shiftedDay = this.day;
-
-				while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
-					shiftedDay = shiftedDay - 1;
-				}
-
-				return new Day(shiftedYear, shiftedMonth, shiftedDay);
-			}
-
-			/**
-    * Calculates a new {@link Day} in the past (or future).
-    *
-    * @public
-    * @param {Number} years - The number of years to subtract (negative numbers can be used for addition).
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'subtractYears',
-			value: function subtractYears(years) {
-				return this.addYears(years, true);
-			}
-
-			/**
-    * Returns a new {@link Day} instance for the start of the month referenced by the current instance.
-    *
-    * @public
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'getStartOfMonth',
-			value: function getStartOfMonth() {
-				return new Day(this.year, this.month, 1);
-			}
-
-			/**
-    * Returns a new instance for the {@link Day} end of the month referenced by the current instance.
-    *
-    * @public
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'getEndOfMonth',
-			value: function getEndOfMonth() {
-				return new Day(this.year, this.month, Day.getDaysInMonth(this.year, this.month));
-			}
-
-			/**
-    * Indicates if another {@link Day} occurs before the current instance.
-    *
-    * @public
-    * @param {Day} other
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsBefore',
-			value: function getIsBefore(other) {
-				return Day.compareDays(this, other) < 0;
-			}
-
-			/**
-    * Indicates if another {@link Day} occurs after the current instance.
-    *
-    * @public
-    * @param {Day} other
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsAfter',
-			value: function getIsAfter(other) {
-				return Day.compareDays(this, other) > 0;
-			}
-
-			/**
-    * Indicates the current day falls between two other days, inclusive
-    * of the range boundaries.
-    *
-    * @public
-    * @param {Day=} first
-    * @param {Day=} last
-    * @param {boolean=} exclusive
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsContained',
-			value: function getIsContained(first, last) {
-				assert.argumentIsOptional(first, 'first', Day, 'Day');
-				assert.argumentIsOptional(last, 'last', Day, 'Day');
-
-				var notAfter = void 0;
-				var notBefore = void 0;
-
-				if (first && last && first.getIsAfter(last)) {
-					notBefore = false;
-					notAfter = false;
-				} else {
-					notAfter = !(last instanceof Day) || !this.getIsAfter(last);
-					notBefore = !(first instanceof Day) || !this.getIsBefore(first);
-				}
-
-				return notAfter && notBefore;
-			}
-
-			/**
-    * Indicates if another {@link Day} occurs after the current instance.
-    *
-    * @public
-    * @param {Day} other
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsEqual',
-			value: function getIsEqual(other) {
-				return Day.compareDays(this, other) === 0;
-			}
-
-			/**
-    * The year.
-    *
-    * @public
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'format',
-
-
-			/**
-    * Outputs the date as the formatted string: {year}-{month}-{day}.
-    *
-    * @public
-    * @returns {String}
-    */
-			value: function format() {
-				return leftPad(this._year, 4, '0') + '-' + leftPad(this._month, 2, '0') + '-' + leftPad(this._day, 2, '0');
-			}
-
-			/**
-    * Returns the JSON representation.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'toJSON',
-			value: function toJSON() {
-				return this.format();
-			}
-
-			/**
-    * Clones a {@link Day} instance.
-    *
-    * @public
-    * @static
-    * @param {Day} value
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Day]';
-			}
-		}, {
-			key: 'year',
-			get: function get() {
-				return this._year;
-			}
-
-			/**
-    * The month of the year (January is one, December is twelve).
-    *
-    * @public
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'month',
-			get: function get() {
-				return this._month;
-			}
-
-			/**day
-    * The day of the month.
-    *
-    * @public
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'day',
-			get: function get() {
-				return this._day;
-			}
-		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Day, 'Day');
-
-				return new Day(value.year, value.month, value.day);
-			}
-
-			/**
-    * Converts a string (which matches the output of {@link Day#format}) into
-    * a {@link Day} instance.
-    *
-    * @public
-    * @static
-    * @param {String} value
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'parse',
-			value: function parse(value) {
-				assert.argumentIsRequired(value, 'value', String);
-
-				var match = value.match(dayRegex);
-
-				if (match === null) {
-					throw new Error('Unable to parse value as Day [ ' + value + ' ]');
-				}
-
-				return new Day(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
-			}
-
-			/**
-    * Creates a {@link Day} from the year, month, and day properties (in local time)
-    * of the {@link Date} argument.
-    *
-    * @public
-    * @static
-    * @param {Date} date
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'fromDate',
-			value: function fromDate(date) {
-				assert.argumentIsRequired(date, 'date', Date);
-
-				return new Day(date.getFullYear(), date.getMonth() + 1, date.getDate());
-			}
-
-			/**
-    * Creates a {@link Day} from the year, month, and day properties (in UTC)
-    * of the {@link Date} argument.
-    *
-    * @public
-    * @static
-    * @param {Date} date
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'fromDateUtc',
-			value: function fromDateUtc(date) {
-				assert.argumentIsRequired(date, 'date', Date);
-
-				return new Day(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
-			}
-
-			/**
-    * Returns a {@link Day} instance using today's local date.
-    *
-    * @static
-    * @public
-    * @returns {Day}
-    */
-
-		}, {
-			key: 'getToday',
-			value: function getToday() {
-				return Day.fromDate(new Date());
-			}
-
-			/**
-    * Returns true if the year, month, and day combination is valid; otherwise false.
-    *
-    * @public
-    * @static
-    * @param {Number} year
-    * @param {Number} month
-    * @param {Number} day
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'validate',
-			value: function validate(year, month, day) {
-				return is.integer(year) && is.integer(month) && is.integer(day) && !(month < 1) && !(month > 12) && !(day < 1) && !(day > Day.getDaysInMonth(year, month));
-			}
-
-			/**
-    * Returns the number of days in a given month.
-    *
-    * @public
-    * @static
-    * @param {number} year - The year number (e.g. 2017)
-    * @param {number} month - The month number (e.g. 2 is February)
-    */
-
-		}, {
-			key: 'getDaysInMonth',
-			value: function getDaysInMonth(year, month) {
-				switch (month) {
-					case 1:
-					case 3:
-					case 5:
-					case 7:
-					case 8:
-					case 10:
-					case 12:
-						{
-							return 31;
-						}
-					case 4:
-					case 6:
-					case 9:
-					case 11:
-						{
-							return 30;
-						}
-					case 2:
-						{
-							if (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) {
-								return 29;
-							} else {
-								return 28;
-							}
-						}
-				}
-			}
-
-			/**
-    * A comparator function for {@link Day} instances.
-    *
-    * @public
-    * @static
-    * @param {Day} a
-    * @param {Day} b
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'compareDays',
-			value: function compareDays(a, b) {
-				assert.argumentIsRequired(a, 'a', Day, 'Day');
-				assert.argumentIsRequired(b, 'b', Day, 'Day');
-
-				return comparator(a, b);
-			}
-		}]);
-
-		return Day;
-	}();
-
-	var dayRegex = /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/;
-
-	function leftPad(value, digits, character) {
-		var string = value.toString();
-		var padding = digits - string.length;
-
-		return '' + character.repeat(padding) + string;
-	}
-
-	var comparator = ComparatorBuilder.startWith(function (a, b) {
-		return comparators.compareNumbers(a.year, b.year);
-	}).thenBy(function (a, b) {
-		return comparators.compareNumbers(a.month, b.month);
-	}).thenBy(function (a, b) {
-		return comparators.compareNumbers(a.day, b.day);
-	}).toComparator();
-
-	return Day;
-}();
-
-},{"./../collections/sorting/ComparatorBuilder":16,"./../collections/sorting/comparators":17,"./assert":29,"./is":33}],22:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./assert'),
-    Enum = require('./Enum'),
-    is = require('./is');
-
-var Big = require('big.js');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * An immutable object that allows for arbitrary-precision calculations.
-  *
-  * @public
-  * @param {Decimal|Number|String} value - The value.
-  */
-
-	var Decimal = function () {
-		function Decimal(value) {
-			_classCallCheck(this, Decimal);
-
-			this._big = getBig(value);
-		}
-
-		/**
-   * Returns a new {@link Decimal} instance that is the sum of the
-   * current instance's value and the value supplied.
-   *
-   * @public
-   * @param {Decimal|Number|String} other - The value to add.
-   * @returns {Decimal}
-   */
-
-
-		_createClass(Decimal, [{
-			key: 'add',
-			value: function add(other) {
-				return new Decimal(this._big.plus(getBig(other)));
-			}
-
-			/**
-    * Returns a new {@link Decimal} instance with a value that results
-    * from the subtraction of the value supplied from the current instance's
-    * value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to subtract.
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'subtract',
-			value: function subtract(other) {
-				return new Decimal(this._big.minus(getBig(other)));
-			}
-
-			/**
-    * Returns a new {@link Decimal} instance that is the product of the
-    * current instance's value and the value supplied.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to add.
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'multiply',
-			value: function multiply(other) {
-				return new Decimal(this._big.times(getBig(other)));
-			}
-
-			/**
-    * Returns a new {@link Decimal} instance with a value that results
-    * from the division of the current instance's value by the value
-    * supplied.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to subtract.
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'divide',
-			value: function divide(other) {
-				return new Decimal(this._big.div(getBig(other)));
-			}
-
-			/**
-    * Returns a new {@link Decimal} instance with a value that results
-    * from raising the current instance to the power of the exponent
-    * provided.
-    *
-    * @public
-    * @param {Decimal|Number|String} exponent
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'raise',
-			value: function raise(exponent) {
-				assert.argumentIsRequired(exponent, 'exponent', Number);
-
-				return new Decimal(this._big.pow(exponent));
-			}
-
-			/**
-    * Returns a new {@link Decimal} with a value resulting from a rounding
-    * operation on the current value.
-    *
-    * @public
-    * @param {Number} places - The number of decimal places to retain.
-    * @param {RoundingMode=} mode - The strategy to use for rounding.
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'round',
-			value: function round(places, mode) {
-				assert.argumentIsRequired(places, 'places', Number);
-				assert.argumentIsOptional(mode, 'mode', RoundingMode, 'RoundingMode');
-
-				var modeToUse = mode || RoundingMode.NORMAL;
-
-				return new Decimal(this._big.round(places, modeToUse.value));
-			}
-
-			/**
-    * Returns a new {@link Decimal} instance having the absolute value of
-    * the current instance's value.
-    *
-    * @public
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'absolute',
-			value: function absolute() {
-				return new Decimal(this._big.abs());
-			}
-
-			/**
-    * Returns a new {@link Decimal} instance the opposite sign as the
-    * current instance's value.
-    *
-    * @public
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'opposite',
-			value: function opposite() {
-				return this.multiply(-1);
-			}
-
-			/**
-    * Returns a Boolean value, indicating if the current instance's value is
-    * equal to zero (or approximately equal to zero).
-    *
-    * @public
-    * @param {Boolean=} approximate
-    * @param {Number=} places
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsZero',
-			value: function getIsZero(approximate, places) {
-				assert.argumentIsOptional(approximate, 'approximate', Boolean);
-				assert.argumentIsOptional(places, 'places', Number);
-
-				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(places || Big.DP, RoundingMode.NORMAL).getIsZero();
-			}
-
-			/**
-    * Returns true if the current instance is positive; otherwise false.
-    *
-    * @public
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsPositive',
-			value: function getIsPositive() {
-				return this._big.gt(zero);
-			}
-
-			/**
-    * Returns true if the current instance is negative; otherwise false.
-    *
-    * @public
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsNegative',
-			value: function getIsNegative() {
-				return this._big.lt(zero);
-			}
-
-			/**
-    * Returns true if the current instance is greater than the value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsGreaterThan',
-			value: function getIsGreaterThan(other) {
-				return this._big.gt(getBig(other));
-			}
-
-			/**
-    * Returns true if the current instance is greater than or equal to the value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsGreaterThanOrEqual',
-			value: function getIsGreaterThanOrEqual(other) {
-				return this._big.gte(getBig(other));
-			}
-
-			/**
-    * Returns true if the current instance is less than the value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsLessThan',
-			value: function getIsLessThan(other) {
-				return this._big.lt(getBig(other));
-			}
-
-			/**
-    * Returns true if the current instance is less than or equal to the value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsLessThanOrEqual',
-			value: function getIsLessThanOrEqual(other) {
-				return this._big.lte(getBig(other));
-			}
-
-			/**
-    * Returns true if the current instance is equal to the value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsEqual',
-			value: function getIsEqual(other) {
-				return this._big.eq(getBig(other));
-			}
-
-			/**
-    * Returns true is close to another value.
-    *
-    * @public
-    * @param {Decimal|Number|String} other - The value to compare.
-    * @param {Number} places - The significant digits.
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsApproximate',
-			value: function getIsApproximate(other, places) {
-				if (places === 0) {
-					return this.getIsEqual(other);
-				}
-
-				var difference = this.subtract(other).absolute();
-				var tolerance = Decimal.ONE.divide(new Decimal(10).raise(places));
-
-				return difference.getIsLessThan(tolerance);
-			}
-
-			/**
-    * Returns true if the current instance is an integer (i.e. has no decimal
-    * component).
-    *
-    * @public
-    * @return {Boolean}
-    */
-
-		}, {
-			key: 'getIsInteger',
-			value: function getIsInteger() {
-				return this.getIsEqual(this.round(0));
-			}
-
-			/**
-    * Returns the number of decimal places used.
-    *
-    * @public
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'getDecimalPlaces',
-			value: function getDecimalPlaces() {
-				var matches = this.toFixed().match(/-?\d*\.(\d*)/);
-
-				var returnVal = void 0;
-
-				if (matches === null) {
-					returnVal = 0;
-				} else {
-					returnVal = matches[1].length;
-				}
-
-				return returnVal;
-			}
-
-			/**
-    * Emits a floating point value that approximates the value of the current
-    * instance.
-    *
-    * @public
-    * @param {Number=} places
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'toFloat',
-			value: function toFloat(places) {
-				assert.argumentIsOptional(places, 'places', Number);
-
-				// Accepting places might be a mistake here; perhaps
-				// the consumer should be forced to use the round
-				// function.
-
-				return parseFloat(this._big.toFixed(places || 16));
-			}
-
-			/**
-    * Returns a string-based representation of the instance's value.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'toFixed',
-			value: function toFixed() {
-				return this._big.toFixed();
-			}
-
-			/**
-    * Returns the JSON representation.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'toJSON',
-			value: function toJSON() {
-				return this.toFixed();
-			}
-
-			/**
-    * Clones a {@link Decimal} instance.
-    *
-    * @public
-    * @static
-    * @param {Decimal} value
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Decimal]';
-			}
-		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Decimal, 'Decimal');
-
-				return new Decimal(value._big);
-			}
-
-			/**
-    * Parses the value emitted by {@link Decimal#toJSON}.
-    *
-    * @public
-    * @param {String} value
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'parse',
-			value: function parse(value) {
-				return new Decimal(value);
-			}
-
-			/**
-    * Returns an instance with the value of zero.
-    *
-    * @public
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'getIsZero',
-
-
-			/**
-    * Runs {@link Decimal#getIsZero} and returns the result.
-    *
-    * @public
-    * @param {Decimal} instance
-    * @returns {Boolean}
-    */
-			value: function getIsZero(instance) {
-				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
-
-				return instance.getIsZero();
-			}
-
-			/**
-    * Runs {@link Decimal#getIsZero} and returns the inverse.
-    *
-    * @public
-    * @param {Decimal} instance
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsNotZero',
-			value: function getIsNotZero(instance) {
-				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
-
-				return !instance.getIsZero();
-			}
-
-			/**
-    * Runs {@link Decimal#getIsPositive} and returns the result.
-    *
-    * @public
-    * @param {Decimal} instance
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsPositive',
-			value: function getIsPositive(instance) {
-				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
-
-				return instance.getIsPositive();
-			}
-
-			/**
-    * Checks an instance to see if its negative or zero.
-    *
-    * @public
-    * @param {Decimal} instance
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsNotPositive',
-			value: function getIsNotPositive(instance) {
-				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
-
-				return instance.getIsNegative() || instance.getIsZero();
-			}
-
-			/**
-    * Runs {@link Decimal#getIsNegative} and returns the result.
-    *
-    * @public
-    * @param {Decimal} instance
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsNegative',
-			value: function getIsNegative(instance) {
-				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
-
-				return instance.getIsNegative();
-			}
-
-			/**
-    * Checks an instance to see if its positive or zero.
-    *
-    * @public
-    * @param {Decimal} instance
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'getIsNotNegative',
-			value: function getIsNotNegative(instance) {
-				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
-
-				return instance.getIsPositive() || instance.getIsZero();
-			}
-
-			/**
-    * A comparator function for {@link Decimal} instances.
-    *
-    * @public
-    * @param {Decimal} a
-    * @param {Decimal} b
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'compareDecimals',
-			value: function compareDecimals(a, b) {
-				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
-				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
-
-				if (a._big.gt(b._big)) {
-					return 1;
-				} else if (a._big.lt(b._big)) {
-					return -1;
-				} else {
-					return 0;
-				}
-			}
-		}, {
-			key: 'ZERO',
-			get: function get() {
-				return decimalZero;
-			}
-
-			/**
-    * Returns an instance with the value of one.
-    *
-    * @public
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'ONE',
-			get: function get() {
-				return decimalOne;
-			}
-
-			/**
-    * Returns an instance with the value of one.
-    *
-    * @public
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'NEGATIVE_ONE',
-			get: function get() {
-				return decimalNegativeOne;
-			}
-
-			/**
-    * Return the {@link RoundingMode} enumeration.
-    *
-    * @public
-    * @returns {RoundingMode}
-    */
-
-		}, {
-			key: 'ROUNDING_MODE',
-			get: function get() {
-				return RoundingMode;
-			}
-		}]);
-
-		return Decimal;
-	}();
-
-	var zero = new Big(0);
-	var positiveOne = new Big(1);
-	var negativeOne = new Big(-1);
-
-	var decimalZero = new Decimal(zero);
-	var decimalOne = new Decimal(positiveOne);
-	var decimalNegativeOne = new Decimal(negativeOne);
-
-	function getBig(value) {
-		if (value instanceof Big) {
-			return value;
-		} else if (value instanceof Decimal) {
-			return value._big;
-		} else {
-			return new Big(value);
-		}
-	}
-
-	/**
-  * An enumeration of strategies for rouding a {@link Decimal} instance.
-  *
-  * @public
-  * @inner
-  * @extends {Enum}
-  */
-
-	var RoundingMode = function (_Enum) {
-		_inherits(RoundingMode, _Enum);
-
-		function RoundingMode(value, description) {
-			_classCallCheck(this, RoundingMode);
-
-			var _this = _possibleConstructorReturn(this, (RoundingMode.__proto__ || Object.getPrototypeOf(RoundingMode)).call(this, value.toString(), description));
-
-			_this._value = value;
-			return _this;
-		}
-
-		/**
-   * The code used by the Big.js library.
-   *
-   * @ignore
-   * @returns {Number}
-   */
-
-
-		_createClass(RoundingMode, [{
-			key: 'toString',
-			value: function toString() {
-				return '[RoundingMode]';
-			}
-		}, {
-			key: 'value',
-			get: function get() {
-				return this._value;
-			}
-
-			/**
-    * Rounds away from zero.
-    *
-    * @public
-    * @returns {RoundingMode}
-    */
-
-		}], [{
-			key: 'UP',
-			get: function get() {
-				return up;
-			}
-
-			/**
-    * Rounds towards zero.
-    *
-    * @public
-    * @returns {RoundingMode}
-    */
-
-		}, {
-			key: 'DOWN',
-			get: function get() {
-				return down;
-			}
-
-			/**
-    * Rounds towards nearest neighbor. If equidistant, rounds away from zero.
-    *
-    * @public
-    * @returns {RoundingMode}
-    */
-
-		}, {
-			key: 'NORMAL',
-			get: function get() {
-				return normal;
-			}
-		}]);
-
-		return RoundingMode;
-	}(Enum);
-
-	var up = new RoundingMode(3, 'up');
-	var down = new RoundingMode(0, 'down');
-	var normal = new RoundingMode(1, 'normal');
-
-	return Decimal;
-}();
-
-},{"./Enum":24,"./assert":29,"./is":33,"big.js":42}],23:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./assert');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * An object that has an end-of-life process.
-  *
-  * @public
-  * @interface
-  */
-
-	var Disposable = function () {
-		function Disposable() {
-			_classCallCheck(this, Disposable);
-
-			this._disposed = false;
-		}
-
-		/**
-   * Invokes end-of-life logic. Once this function has been
-   * invoked, further interaction with the object is not
-   * recommended.
-   *
-   * @public
-   */
-
-
-		_createClass(Disposable, [{
-			key: 'dispose',
-			value: function dispose() {
-				if (this._disposed) {
-					return;
-				}
-
-				this._disposed = true;
-
-				this._onDispose();
-			}
-
-			/**
-    * @protected
-    * @abstract
-    * @ignore
-    */
-
-		}, {
-			key: '_onDispose',
-			value: function _onDispose() {
-				return;
-			}
-
-			/**
-    * Returns true if the {@link Disposable#dispose} function has been invoked.
-    *
-    * @public
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsDisposed',
-			value: function getIsDisposed() {
-				return this._disposed || false;
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Disposable]';
-			}
-
-			/**
-    * Creates and returns a {@link Disposable} object with end-of-life logic
-    * delegated to a function.
-    *
-    * @public
-    * @param disposeAction {Function}
-    * @returns {Disposable}
-    */
-
-		}], [{
-			key: 'fromAction',
-			value: function fromAction(disposeAction) {
-				assert.argumentIsRequired(disposeAction, 'disposeAction', Function);
-
-				return new DisposableAction(disposeAction);
-			}
-
-			/**
-    * Creates and returns a {@link Disposable} object whose end-of-life
-    * logic does nothing.
-    *
-    * @public
-    * @returns {Disposable}
-    */
-
-		}, {
-			key: 'getEmpty',
-			value: function getEmpty() {
-				return Disposable.fromAction(function () {
-					return;
-				});
-			}
-		}]);
-
-		return Disposable;
-	}();
-
-	var DisposableAction = function (_Disposable) {
-		_inherits(DisposableAction, _Disposable);
-
-		function DisposableAction(disposeAction) {
-			_classCallCheck(this, DisposableAction);
-
-			var _this = _possibleConstructorReturn(this, (DisposableAction.__proto__ || Object.getPrototypeOf(DisposableAction)).call(this, disposeAction));
-
-			_this._disposeAction = disposeAction;
-			return _this;
-		}
-
-		_createClass(DisposableAction, [{
-			key: '_onDispose',
-			value: function _onDispose() {
-				this._disposeAction();
-				this._disposeAction = null;
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[DisposableAction]';
-			}
-		}]);
-
-		return DisposableAction;
-	}(Disposable);
-
-	return Disposable;
-}();
-
-},{"./assert":29}],24:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./assert');
-
-module.exports = function () {
-	'use strict';
-
-	var types = new Map();
-
-	/**
-  * An enumeration. Must be inherited. Do not instantiate directly.
-  * Also, this class uses the ES6 Map, therefore a polyfill must
-  * be supplied.
-  *
-  * @public
-  * @interface
-  * @param {String} code - The unique code of the enumeration item.
-  * @param {String} description - A description of the enumeration item.
-  */
-
-	var Enum = function () {
-		function Enum(code, description) {
-			_classCallCheck(this, Enum);
-
-			assert.argumentIsRequired(code, 'code', String);
-			assert.argumentIsRequired(description, 'description', String);
-
-			this._code = code;
-			this._description = description;
-
-			var c = this.constructor;
-
-			if (!types.has(c)) {
-				types.set(c, []);
-			}
-
-			var existing = Enum.fromCode(c, code);
-
-			if (existing === null) {
-				types.get(c).push(this);
-			}
-		}
-
-		/**
-   * The unique code.
-   *
-   * @public
-   * @returns {String}
-   */
-
-
-		_createClass(Enum, [{
-			key: 'equals',
-
-
-			/**
-    * Returns true if the provided {@link Enum} argument is equal
-    * to the instance.
-    *
-    * @public
-    * @param {Enum} other
-    * @returns {boolean}
-    */
-			value: function equals(other) {
-				return other === this || other instanceof Enum && other.constructor === this.constructor && other.code === this.code;
-			}
-
-			/**
-    * Returns the JSON representation.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'toJSON',
-			value: function toJSON() {
-				return this.code;
-			}
-
-			/**
-    * Looks up a enumeration item; given the enumeration type and the enumeration
-    * item's value. If no matching item can be found, a null value is returned.
-    *
-    * @public
-    * @param {Function} type - The enumeration type.
-    * @param {String} code - The enumeration item's code.
-    * @returns {*|null}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Enum]';
-			}
-		}, {
-			key: 'code',
-			get: function get() {
-				return this._code;
-			}
-
-			/**
-    * The description.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'description',
-			get: function get() {
-				return this._description;
-			}
-		}], [{
-			key: 'fromCode',
-			value: function fromCode(type, code) {
-				return Enum.getItems(type).find(function (x) {
-					return x.code === code;
-				}) || null;
-			}
-
-			/**
-    * Returns all of the enumeration's items (given an enumeration type).
-    *
-    * @public
-    * @param {Function} type - The enumeration to list.
-    * @returns {Array}
-    */
-
-		}, {
-			key: 'getItems',
-			value: function getItems(type) {
-				return types.get(type) || [];
-			}
-		}]);
-
-		return Enum;
-	}();
-
-	return Enum;
-}();
-
-},{"./assert":29}],25:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./assert'),
-    is = require('./is');
-
-var Decimal = require('./Decimal'),
-    Currency = require('./Currency');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A structure for storing money amounts.
-  *
-  * @public
-  * @param {Decimal|Number|String} - A amount, which can be parsed as a {@link Decimal}
-  * @param {Currency} - The currency.
-  */
-
-	var Money = function () {
-		function Money(value, currency) {
-			_classCallCheck(this, Money);
-
-			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
-
-			this._decimal = getDecimal(value);
-			this._currency = currency;
-		}
-
-		/**
-   * The currency amount.
-   *
-   * @public
-   * @returns {Decimal}
-   */
-
-
-		_createClass(Money, [{
-			key: 'toAmount',
-			value: function toAmount(places, mode) {
-				return new Money(this._decimal.round(getPlaces(places), mode), this._currency);
-			}
-
-			/**
-    * Returns the JSON representation.
-    *
-    * @public
-    * @returns {Object}
-    */
-
-		}, {
-			key: 'toJSON',
-			value: function toJSON() {
-				return {
-					decimal: this._decimal,
-					currency: this._currency
-				};
-			}
-			/**
-    * Parses the value emitted by {@link Decimal#toJSON}.
-    *
-    * @public
-    * @param {Object} value
-    * @returns {Money}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Money]';
-			}
-		}, {
-			key: 'decimal',
-			get: function get() {
-				return this._decimal;
-			}
-
-			/**
-    * The currency.
-    *
-    * @public
-    * @returns {Currency}
-    */
-
-		}, {
-			key: 'currency',
-			get: function get() {
-				return this._currency;
-			}
-		}], [{
-			key: 'parse',
-			value: function parse(value) {
-				return new Money(value.decimal, value.currency);
-			}
-		}]);
-
-		return Money;
-	}();
-
-	function getDecimal(value) {
-		if (value instanceof Decimal) {
-			return value;
-		} else {
-			return new Decimal(value);
-		}
-	}
-
-	function getPlaces(value) {
-		if (is.integer(value) && !(value < 0)) {
-			return value;
-		} else {
-			return 2;
-		}
-	}
-
-	return Money;
-}();
-
-},{"./Currency":20,"./Decimal":22,"./assert":29,"./is":33}],26:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./assert'),
-    memoize = require('./memoize');
-
-var Currency = require('./Currency'),
-    Decimal = require('./Decimal');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A component that represents an exchange rate, composed of a {@link Decimal}
-  * value and two currencies -- a quote (i.e. the numerator) currency and a
-  * base (i.e. denominator) currency.
-  *
-  * @public
-  * @param {Number|String|Decimal} value - The rate
-  * @param {Currency} numerator - The quote currency
-  * @param {Currency} denominator - The base currency
-  */
-
-	var Rate = function () {
-		function Rate(value, numerator, denominator) {
-			_classCallCheck(this, Rate);
-
-			assert.argumentIsRequired(numerator, 'numerator', Currency, 'Currency');
-			assert.argumentIsRequired(denominator, 'denominator', Currency, 'Currency');
-
-			if (numerator === denominator) {
-				throw new Error('A rate cannot use two identical currencies.');
-			}
-
-			var decimal = getDecimal(value);
-
-			if (!decimal.getIsPositive()) {
-				throw new Error('Rate value must be positive.');
-			}
-
-			this._decimal = decimal;
-			this._numerator = numerator;
-			this._denominator = denominator;
-		}
-
-		/**
-   * The rate.
-   *
-   * @public
-   * @returns {Decimal}
-   */
-
-
-		_createClass(Rate, [{
-			key: 'invert',
-
-
-			/**
-    * Returns the equivalent rate with the numerator and denominator (i.e. the qoute and base)
-    * currencies.
-    *
-    * @public
-    * @returns {Rate}
-    */
-			value: function invert() {
-				return new Rate(Decimal.ONE.divide(this._decimal), this._denominator, this._numerator);
-			}
-
-			/**
-    * Formats the currency pair as a string (e.g. "EURUSD" or "^EURUSD").
-    *
-    * @public
-    * @param {Boolean=} useCarat - If true, a carat is used as a prefix to the resulting string.
-    * @returns {string}
-    */
-
-		}, {
-			key: 'formatPair',
-			value: function formatPair(useCarat) {
-				assert.argumentIsOptional(useCarat, 'useCarat', Boolean);
-
-				return '' + (useCarat ? '^' : '') + this._numerator + this._denominator;
-			}
-
-			/**
-    * Creates a {@link Rate} instance, when given a value
-    *
-    * @public
-    * @param {Number|String|Decimal} value - The rate.
-    * @param {String} symbol - A string that can be parsed as a currency pair.
-    * @returns {Rate}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Rate]';
-			}
-		}, {
-			key: 'decimal',
-			get: function get() {
-				return this._decimal;
-			}
-
-			/**
-    * The numerator (i.e. quote) currency. In other words,
-    * this is EUR of the EURUSD pair.
-    *
-    * @public
-    * @returns {Currency}
-    */
-
-		}, {
-			key: 'numerator',
-			get: function get() {
-				return this._numerator;
-			}
-
-			/**
-    * The quote (i.e. numerator) currency. In other words,
-    * this is EUR of the EURUSD pair.
-    *
-    * @public
-    * @returns {Currency}
-    */
-
-		}, {
-			key: 'quote',
-			get: function get() {
-				return this._numerator;
-			}
-
-			/**
-    * The denominator (i.e. base) currency. In other words,
-    * this is USD of the EURUSD pair.
-    *
-    * @public
-    * @returns {Currency}
-    */
-
-		}, {
-			key: 'denominator',
-			get: function get() {
-				return this._denominator;
-			}
-
-			/**
-    * The base (i.e. denominator) currency. In other words,
-    * this is USD of the EURUSD pair.
-    *
-    * @public
-    * @returns {Currency}
-    */
-
-		}, {
-			key: 'base',
-			get: function get() {
-				return this._denominator;
-			}
-		}], [{
-			key: 'fromPair',
-			value: function fromPair(value, symbol) {
-				assert.argumentIsRequired(symbol, 'symbol', String);
-
-				var pair = parsePair(symbol);
-
-				return new Rate(value, Currency.parse(pair.numerator), Currency.parse(pair.denominator));
-			}
-
-			/**
-    * Given a {@link Decimal} value in a known currency, output
-    * a {@link Decimal} converted to an alternate currency.
-    *
-    * @public
-    * @param {Decimal} amount - The amount to convert.
-    * @param {Currency} currency - The currency of the amount.
-    * @param {Currency} desiredCurrency - The currency to convert to.
-    * @param {...Rate} rates - A list of exchange rates to be used for the conversion.
-    * @returns {Decimal}
-    */
-
-		}, {
-			key: 'convert',
-			value: function convert(amount, currency, desiredCurrency) {
-				assert.argumentIsRequired(amount, 'amount', Decimal, 'Decimal');
-				assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
-				assert.argumentIsRequired(desiredCurrency, 'desiredCurrency', Currency, 'Currency');
-				//assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
-
-				var converted = void 0;
-
-				if (currency === desiredCurrency) {
-					converted = amount;
-				} else {
-					var numerator = desiredCurrency;
-					var denominator = currency;
-
-					for (var _len = arguments.length, rates = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-						rates[_key - 3] = arguments[_key];
-					}
-
-					var rate = rates.find(function (r) {
-						return r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator;
-					});
-
-					if (rate) {
-						if (rate.numerator === denominator) {
-							rate = rate.invert();
-						}
-					}
-
-					if (!rate) {
-						throw new Error('Unable to perform conversion, given the rates provided.');
-					}
-
-					converted = amount.multiply(rate.decimal);
-				}
-
-				return converted;
-			}
-		}]);
-
-		return Rate;
-	}();
-
-	var pairExpression = /^\^?([A-Z]{3})([A-Z]{3})$/;
-
-	function getDecimal(value) {
-		if (value instanceof Decimal) {
-			return value;
-		} else {
-			return new Decimal(value);
-		}
-	}
-
-	var parsePair = memoize.simple(function (symbol) {
-		var match = symbol.match(pairExpression);
-
-		if (match === null) {
-			throw new Error('The "pair" argument cannot be parsed.');
-		}
-
-		return {
-			numerator: match[2],
-			denominator: match[1]
-		};
-	});
-
-	return Rate;
-}();
-
-},{"./Currency":20,"./Decimal":22,"./assert":29,"./memoize":34}],27:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./assert'),
-    is = require('./is');
-
-var moment = require('moment-timezone');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A data structure encapsulates (and lazy loads) a moment (see https://momentjs.com/).
-  *
-  * @public
-  * @param {Number} timestamp
-  * @param {String=} timezone
-  */
-
-	var Timestamp = function () {
-		function Timestamp(timestamp, timezone) {
-			_classCallCheck(this, Timestamp);
-
-			assert.argumentIsValid(timestamp, 'timestamp', is.large, 'is an integer');
-			assert.argumentIsOptional(timezone, 'timezone', String);
-
-			this._timestamp = timestamp;
-			this._timezone = timezone || null;
-
-			this._moment = null;
-		}
-
-		/**
-   * The timestamp.
-   *
-   * @public
-   * @returns {Number}
-   */
-
-
-		_createClass(Timestamp, [{
-			key: 'toJSON',
-
-
-			/**
-    * Returns the JSON representation.
-    *
-    * @public
-    * @returns {Number}
-    */
-			value: function toJSON() {
-				return this.timestamp;
-			}
-
-			/**
-    * Clones a {@link Timestamp} instance.
-    *
-    * @public
-    * @static
-    * @param {Timestamp} value
-    * @returns {Timestamp}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Timestamp]';
-			}
-		}, {
-			key: 'timestamp',
-			get: function get() {
-				return this._timestamp;
-			}
-
-			/**
-    * The moment instance.
-    *
-    * @public
-    * @returns {moment}
-    */
-
-		}, {
-			key: 'moment',
-			get: function get() {
-				if (this._moment === null) {
-					this._moment = moment(this._timestamp);
-
-					if (this._timezone !== null) {
-						this.moment.tz(this._timezone);
-					}
-				}
-
-				return this._moment;
-			}
-		}], [{
-			key: 'clone',
-			value: function clone(value) {
-				assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
-
-				return new Timestamp(value._timestamp, value._timezone);
-			}
-
-			/**
-    * Parses the value emitted by {@link Timestamp#toJSON}.
-    *
-    * @public
-    * @param {Number} value
-    * @returns {Timestamp}
-    */
-
-		}, {
-			key: 'parse',
-			value: function parse(value) {
-				return new Timestamp(value);
-			}
-
-			/**
-    * Returns a new {@link Timestamp} instance, representing the current moment.
-    *
-    * @public
-    * @returns {Timestamp}
-    */
-
-		}, {
-			key: 'now',
-			value: function now() {
-				return new Timestamp(new Date().getTime());
-			}
-		}]);
-
-		return Timestamp;
-	}();
-
-	return Timestamp;
-}();
-
-},{"./assert":29,"./is":33,"moment-timezone":44}],28:[function(require,module,exports){
-'use strict';
-
-var assert = require('./assert'),
-    is = require('./is');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * Utilities for working with arrays.
-  *
-  * @public
-  * @module lang/array
-  */
-
-	return {
-		/**
-   * Returns the unique items from an array, where the unique
-   * key is determined via a strict equality check.
-   *
-   * @static
-   * @param {Array} a
-   * @returns {Array}
-   */
-		unique: function unique(a) {
-			assert.argumentIsArray(a, 'a');
-
-			return this.uniqueBy(a, function (item) {
-				return item;
-			});
-		},
-
-
-		/**
-   * Returns the unique items from an array, where the unique
-   * key is determined by a delegate.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Function} keySelector - A function that returns a unique key for an item.
-   * @returns {Array}
-   */
-		uniqueBy: function uniqueBy(a, keySelector) {
-			assert.argumentIsArray(a, 'a');
-
-			return a.filter(function (item, index, array) {
-				var key = keySelector(item);
-
-				return array.findIndex(function (candidate) {
-					return key === keySelector(candidate);
-				}) === index;
-			});
-		},
-
-
-		/**
-   * Splits array into groups and returns an object (where the properties have
-   * arrays). Unlike the indexBy function, there can be many items which share
-   * the same key.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Function} keySelector - A function that returns a unique key for an item.
-   * @returns {Object}
-   */
-		groupBy: function groupBy(a, keySelector) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsRequired(keySelector, 'keySelector', Function);
-
-			return a.reduce(function (groups, item) {
-				var key = keySelector(item);
-
-				if (!groups.hasOwnProperty(key)) {
-					groups[key] = [];
-				}
-
-				groups[key].push(item);
-
-				return groups;
-			}, {});
-		},
-
-
-		/**
-   * Splits array into groups and returns an array of arrays where the items of each
-   * nested array share a common key.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Function} keySelector - A function that returns a unique key for an item.
-   * @returns {Array}
-   */
-		batchBy: function batchBy(a, keySelector) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsRequired(keySelector, 'keySelector', Function);
-
-			var currentKey = null;
-			var currentBatch = null;
-
-			return a.reduce(function (batches, item) {
-				var key = keySelector(item);
-
-				if (currentBatch === null || currentKey !== key) {
-					currentKey = key;
-
-					currentBatch = [];
-					batches.push(currentBatch);
-				}
-
-				currentBatch.push(item);
-
-				return batches;
-			}, []);
-		},
-
-
-		/**
-   * Splits array into groups and returns an object (where the properties are items from the
-   * original array). Unlike the groupBy, only one item can have a given key value.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Function} keySelector - A function that returns a unique key for an item.
-   * @returns {Object}
-   */
-		indexBy: function indexBy(a, keySelector) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsRequired(keySelector, 'keySelector', Function);
-
-			return a.reduce(function (map, item) {
-				var key = keySelector(item);
-
-				if (map.hasOwnProperty(key)) {
-					throw new Error('Unable to index array. A duplicate key exists.');
-				}
-
-				map[key] = item;
-
-				return map;
-			}, {});
-		},
-
-
-		/**
-   * Returns a new array containing all but the first item.
-   *
-   * @static
-   * @param {Array} a
-   * @returns {Array}
-   */
-		dropLeft: function dropLeft(a) {
-			assert.argumentIsArray(a, 'a');
-
-			var returnRef = Array.from(a);
-
-			if (returnRef.length !== 0) {
-				returnRef.shift();
-			}
-
-			return returnRef;
-		},
-
-
-		/**
-   * Returns a new array containing all but the last item.
-   *
-   * @static
-   * @param {Array} a
-   * @returns {Array}
-   */
-		dropRight: function dropRight(a) {
-			assert.argumentIsArray(a, 'a');
-
-			var returnRef = Array.from(a);
-
-			if (returnRef.length !== 0) {
-				returnRef.pop();
-			}
-
-			return returnRef;
-		},
-
-
-		/**
-   * Returns the first item from an array, or an undefined value, if the
-   * array is empty.
-   *
-   * @static
-   * @param {Array} a
-   * @returns {*|undefined}
-   */
-		first: function first(a) {
-			assert.argumentIsArray(a, 'a');
-
-			var returnRef = void 0;
-
-			if (a.length !== 0) {
-				returnRef = a[0];
-			} else {
-				returnRef = undefined;
-			}
-
-			return returnRef;
-		},
-
-
-		/**
-   * Returns the last item from an array, or an undefined value, if the
-   * array is empty.
-   *
-   * @static
-   * @param {Array} a
-   * @returns {*|undefined}
-   */
-		last: function last(a) {
-			assert.argumentIsArray(a, 'a');
-
-			var returnRef = void 0;
-
-			if (a.length !== 0) {
-				returnRef = a[a.length - 1];
-			} else {
-				returnRef = undefined;
-			}
-
-			return returnRef;
-		},
-
-
-		/**
-   * Returns a copy of an array, replacing any item that is itself an array
-   * with the item's items.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Boolean=} recursive - If true, all nested arrays will be flattened.
-   * @returns {Array}
-   */
-		flatten: function flatten(a, recursive) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsOptional(recursive, 'recursive', Boolean);
-
-			var empty = [];
-
-			var flat = empty.concat.apply(empty, a);
-
-			if (recursive && flat.some(function (x) {
-				return is.array(x);
-			})) {
-				flat = this.flatten(flat, true);
-			}
-
-			return flat;
-		},
-
-
-		/**
-   * Breaks an array into smaller arrays, returning an array of arrays.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Number} size - The maximum number of items per partition.
-   * @param {Array<Array>}
-   */
-		partition: function partition(a, size) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsOptional(size, 'size', Number);
-
-			var copy = a.slice(0);
-			var partitions = [];
-
-			while (copy.length !== 0) {
-				partitions.push(copy.splice(0, size));
-			}
-
-			return partitions;
-		},
-
-
-		/**
-   * Set difference operation (using strict equality).
-   *
-   * @static
-   * @param {Array} a
-   * @param {Array} b
-   * @returns {Array}
-   */
-		difference: function difference(a, b) {
-			return this.differenceBy(a, b, function (item) {
-				return item;
-			});
-		},
-
-
-		/**
-   * Set difference operation, where the uniqueness is determined by a delegate.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Array} b
-   * @param {Function} keySelector - A function that returns a unique key for an item.
-   * @returns {Array}
-   */
-		differenceBy: function differenceBy(a, b, keySelector) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsArray(b, 'b');
-			assert.argumentIsRequired(keySelector, 'keySelector', Function);
-
-			var returnRef = [];
-
-			a.forEach(function (candidate) {
-				var exclude = b.some(function (comparison) {
-					return keySelector(candidate) === keySelector(comparison);
-				});
-
-				if (!exclude) {
-					returnRef.push(candidate);
-				}
-			});
-
-			return returnRef;
-		},
-
-
-		/**
-   * Set symmetric difference operation (using strict equality). In
-   * other words, this is the union of the differences between the
-   * sets.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Array} b
-   * @returns {Array}
-   */
-		differenceSymmetric: function differenceSymmetric(a, b) {
-			return this.differenceSymmetricBy(a, b, function (item) {
-				return item;
-			});
-		},
-
-
-		/**
-   * Set symmetric difference operation, where the uniqueness is determined by a delegate.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Array} b
-   * @param {Function} keySelector - A function that returns a unique key for an item.
-   * @returns {Array}
-   */
-		differenceSymmetricBy: function differenceSymmetricBy(a, b, keySelector) {
-			return this.unionBy(this.differenceBy(a, b, keySelector), this.differenceBy(b, a, keySelector), keySelector);
-		},
-
-
-		/**
-   * Set union operation (using strict equality).
-   *
-   * @static
-   * @param {Array} a
-   * @param {Array} b
-   * @returns {Array}
-   */
-		union: function union(a, b) {
-			return this.unionBy(a, b, function (item) {
-				return item;
-			});
-		},
-
-
-		/**
-   * Set union operation, where the uniqueness is determined by a delegate.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Array} b
-   * @param {Function} keySelector - A function that returns a unique key for an item.
-   * @returns {Array}
-   */
-		unionBy: function unionBy(a, b, keySelector) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsArray(b, 'b');
-			assert.argumentIsRequired(keySelector, 'keySelector', Function);
-
-			var returnRef = a.slice();
-
-			b.forEach(function (candidate) {
-				var exclude = returnRef.some(function (comparison) {
-					return keySelector(candidate) === keySelector(comparison);
-				});
-
-				if (!exclude) {
-					returnRef.push(candidate);
-				}
-			});
-
-			return returnRef;
-		},
-
-
-		/**
-   * Set intersection operation (using strict equality).
-   *
-   * @static
-   * @param {Array} a
-   * @param {Array} b
-   * @returns {Array}
-   */
-		intersection: function intersection(a, b) {
-			return this.intersectionBy(a, b, function (item) {
-				return item;
-			});
-		},
-
-
-		/**
-   * Set intersection operation, where the uniqueness is determined by a delegate.
-   *
-   * @static
-   * @param {Array} a
-   * @param {Array} b
-   * @param {Function} keySelector - A function that returns a unique key for an item.
-   * @returns {Array}
-   */
-		intersectionBy: function intersectionBy(a, b, keySelector) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsArray(b, 'b');
-
-			var returnRef = [];
-
-			a.forEach(function (candidate) {
-				var include = b.some(function (comparison) {
-					return keySelector(candidate) === comparison;
-				});
-
-				if (include) {
-					returnRef.push(candidate);
-				}
-			});
-
-			return returnRef;
-		},
-
-
-		/**
-   * Removes the first item from an array which matches a predicate.
-   *
-   * @static
-   * @public
-   * @param {Array} a
-   * @param {Function} predicate
-   * @returns {Boolean}
-   */
-		remove: function remove(a, predicate) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsRequired(predicate, 'predicate', Function);
-
-			var index = a.findIndex(predicate);
-			var found = !(index < 0);
-
-			if (found) {
-				a.splice(index, 1);
-			}
-
-			return found;
-		},
-
-
-		/**
-   * Inserts an item into an array using a binary search is used to determine the
-   * proper point for insertion and returns the same array.
-   *
-   * @static
-   * @public
-   * @param {Array} a
-   * @param {*} item
-   * @param {Function} comparator
-   * @returns {Array}
-   */
-		insert: function insert(a, item, comparator) {
-			assert.argumentIsArray(a, 'a');
-			assert.argumentIsRequired(comparator, 'comparator', Function);
-
-			if (a.length === 0 || !(comparator(item, a[a.length - 1]) < 0)) {
-				a.push(item);
-			} else if (comparator(item, a[0]) < 0) {
-				a.unshift(item);
-			} else {
-				a.splice(binarySearch(a, item, comparator, 0, a.length - 1), 0, item);
-			}
-
-			return a;
-		}
-	};
-
-	function binarySearch(array, item, comparator, start, end) {
-		var size = end - start;
-
-		var midpointIndex = start + Math.floor(size / 2);
-		var midpointItem = array[midpointIndex];
-
-		var comparison = comparator(item, midpointItem) > 0;
-
-		if (size < 2) {
-			if (comparison > 0) {
-				var finalIndex = array.length - 1;
-
-				if (end === finalIndex && comparator(item, array[finalIndex]) > 0) {
-					return end + 1;
-				} else {
-					return end;
-				}
-			} else {
-				return start;
-			}
-		} else if (comparison > 0) {
-			return binarySearch(array, item, comparator, midpointIndex, end);
-		} else {
-			return binarySearch(array, item, comparator, start, midpointIndex);
-		}
-	}
-}();
-
-},{"./assert":29,"./is":33}],29:[function(require,module,exports){
-'use strict';
-
-var is = require('./is');
-
-module.exports = function () {
-	'use strict';
-
-	function checkArgumentType(variable, variableName, type, typeDescription, index) {
-		if (type === String) {
-			if (!is.string(variable)) {
-				throwInvalidTypeError(variableName, 'string', index);
-			}
-		} else if (type === Number) {
-			if (!is.number(variable)) {
-				throwInvalidTypeError(variableName, 'number', index);
-			}
-		} else if (type === Function) {
-			if (!is.fn(variable)) {
-				throwInvalidTypeError(variableName, 'function', index);
-			}
-		} else if (type === Boolean) {
-			if (!is.boolean(variable)) {
-				throwInvalidTypeError(variableName, 'boolean', index);
-			}
-		} else if (type === Date) {
-			if (!is.date(variable)) {
-				throwInvalidTypeError(variableName, 'date', index);
-			}
-		} else if (type === Array) {
-			if (!is.array(variable)) {
-				throwInvalidTypeError(variableName, 'array', index);
-			}
-		} else if (!(variable instanceof (type || Object))) {
-			throwInvalidTypeError(variableName, typeDescription, index);
-		}
-	}
-
-	function throwInvalidTypeError(variableName, typeDescription, index) {
-		var message = void 0;
-
-		if (typeof index === 'number') {
-			message = 'The argument [ ' + (variableName || 'unspecified') + ' ], at index [ ' + index.toString() + ' ] must be a [ ' + (typeDescription || 'unknown') + ' ]';
-		} else {
-			message = 'The argument [ ' + (variableName || 'unspecified') + ' ] must be a [ ' + (typeDescription || 'Object') + ' ]';
-		}
-
-		throw new Error(message);
-	}
-
-	function throwCustomValidationError(variableName, predicateDescription) {
-		throw new Error('The argument [ ' + (variableName || 'unspecified') + ' ] failed a validation check [ ' + (predicateDescription || 'No description available') + ' ]');
-	}
-
-	/**
-  * Utilities checking arguments.
-  *
-  * @public
-  * @module lang/assert
-  */
-	return {
-		/**
-   * Throws an error if an argument doesn't conform to the desired specification (as
-   * determined by a type check).
-   *
-   * @static
-   * @param {*} variable - The value to check.
-   * @param {String} variableName - The name of the value (used for formatting an error message).
-   * @param {*} type - The expected type of the argument.
-   * @param {String=} typeDescription - The description of the expected type (used for formatting an error message).
-   */
-		argumentIsRequired: function argumentIsRequired(variable, variableName, type, typeDescription) {
-			checkArgumentType(variable, variableName, type, typeDescription);
-		},
-
-
-		/**
-   * A relaxed version of the "argumentIsRequired" function that will not throw if
-   * the value is undefined or null.
-   *
-   * @static
-   * @param {*} variable - The value to check.
-   * @param {String} variableName - The name of the value (used for formatting an error message).
-   * @param {*} type - The expected type of the argument.
-   * @param {String=} typeDescription - The description of the expected type (used for formatting an error message).
-   */
-		argumentIsOptional: function argumentIsOptional(variable, variableName, type, typeDescription, predicate, predicateDescription) {
-			if (variable === null || variable === undefined) {
-				return;
-			}
-
-			checkArgumentType(variable, variableName, type, typeDescription);
-
-			if (is.fn(predicate) && !predicate(variable)) {
-				throwCustomValidationError(variableName, predicateDescription);
-			}
-		},
-		argumentIsArray: function argumentIsArray(variable, variableName, itemConstraint, itemConstraintDescription) {
-			this.argumentIsRequired(variable, variableName, Array);
-
-			if (itemConstraint) {
-				var itemValidator = void 0;
-
-				if (typeof itemConstraint === 'function' && itemConstraint !== Function) {
-					itemValidator = function itemValidator(value, index) {
-						return itemConstraint.prototype !== undefined && value instanceof itemConstraint || itemConstraint(value, variableName + '[' + index + ']');
-					};
-				} else {
-					itemValidator = function itemValidator(value, index) {
-						return checkArgumentType(value, variableName, itemConstraint, itemConstraintDescription, index);
-					};
-				}
-
-				variable.forEach(function (v, i) {
-					itemValidator(v, i);
-				});
-			}
-		},
-
-
-		/**
-   * Throws an error if an argument doesn't conform to the desired specification
-   * (as determined by a predicate).
-   *
-   * @static
-   * @param {*} variable - The value to check.
-   * @param {String} variableName - The name of the value (used for formatting an error message).
-   * @param {Function=} predicate - A function used to validate the item (beyond type checking).
-   * @param {String=} predicateDescription - A description of the assertion made by the predicate (e.g. "is an integer") that is used for formatting an error message.
-   */
-		argumentIsValid: function argumentIsValid(variable, variableName, predicate, predicateDescription) {
-			if (!predicate(variable)) {
-				throwCustomValidationError(variableName, predicateDescription);
-			}
-		},
-		areEqual: function areEqual(a, b, descriptionA, descriptionB) {
-			if (a !== b) {
-				throw new Error('The objects must be equal [' + (descriptionA || a.toString()) + '] and [' + (descriptionB || b.toString()) + ']');
-			}
-		},
-		areNotEqual: function areNotEqual(a, b, descriptionA, descriptionB) {
-			if (a === b) {
-				throw new Error('The objects cannot be equal [' + (descriptionA || a.toString()) + '] and [' + (descriptionB || b.toString()) + ']');
-			}
-		}
-	};
-}();
-
-},{"./is":33}],30:[function(require,module,exports){
-'use strict';
-
-var assert = require('./assert'),
-    is = require('./is');
-
-module.exports = function () {
-	'use strict';
-
-	function getPropertyNameArray(propertyNames) {
-		var separator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '.';
-
-		var returnRef = void 0;
-
-		if (is.array(propertyNames)) {
-			returnRef = propertyNames;
-		} else {
-			returnRef = propertyNames.split(separator);
-		}
-
-		return returnRef;
-	}
-
-	function getPropertyTarget(target, propertyNameArray, create) {
-		var returnRef = void 0;
-
-		var propertyTarget = target;
-
-		for (var i = 0; i < propertyNameArray.length - 1; i++) {
-			var propertyName = propertyNameArray[i];
-
-			if (propertyTarget.hasOwnProperty(propertyName) && !is.null(propertyTarget[propertyName]) && !is.undefined(propertyTarget[propertyName])) {
-				propertyTarget = propertyTarget[propertyName];
-			} else if (create) {
-				propertyTarget = propertyTarget[propertyName] = {};
-			} else {
-				propertyTarget = null;
-
-				break;
-			}
-		}
-
-		return propertyTarget;
-	}
-
-	function last(array) {
-		if (array.length !== 0) {
-			return array[array.length - 1];
-		} else {
-			return null;
-		}
-	}
-
-	/**
-  * Utilities for reading and writing "complex" properties to
-  * objects. For example, the property "name.first" reads the
-  * "first" property on the "name" object of the target.
-  *
-  * @public
-  * @module lang/attributes
-  */
-	return {
-		/**
-   * Checks to see if an attribute exists on the target object.
-   *
-   * @public
-   * @static
-   * @param {Object} target - The object to check for existence of the property.
-   * @param {String|String[]} propertyNames - The property to check -- either a string with separators, or an array of strings (already split by separator).
-   * @param {String=} separator - The separator (defaults to a period character).
-   * @returns {boolean}
-   */
-		has: function has(target, propertyNames, separator) {
-			assert.argumentIsRequired(target, 'target', Object);
-
-			if (is.array(propertyNames)) {
-				assert.argumentIsArray(propertyNames, 'propertyNames', String);
-			} else {
-				assert.argumentIsRequired(propertyNames, 'propertyNames', String);
-			}
-
-			var propertyNameArray = getPropertyNameArray(propertyNames, separator);
-			var propertyTarget = getPropertyTarget(target, propertyNameArray, false);
-
-			return propertyTarget !== null && propertyTarget.hasOwnProperty(last(propertyNameArray));
-		},
-
-
-		/**
-   * Returns a value from the target object. If the property doesn't exist; undefined
-   * is returned.
-   *
-   * @public
-   * @static
-   * @param {Object} target - The object to read from.
-   * @param {String|String[]} propertyNames - The property to read -- either a string with separators, or an array of strings (already split by separator).
-   * @param {String=} separator - The separator (defaults to a period character).
-   * @returns {*}
-   */
-		read: function read(target, propertyNames, separator) {
-			assert.argumentIsRequired(target, 'target', Object);
-
-			if (is.array(propertyNames)) {
-				assert.argumentIsArray(propertyNames, 'propertyNames', String);
-			} else {
-				assert.argumentIsRequired(propertyNames, 'propertyNames', String);
-			}
-
-			var propertyNameArray = getPropertyNameArray(propertyNames, separator);
-			var propertyTarget = getPropertyTarget(target, propertyNameArray, false);
-
-			var returnRef = void 0;
-
-			if (propertyTarget) {
-				var propertyName = last(propertyNameArray);
-
-				returnRef = propertyTarget[propertyName];
-			} else {
-				returnRef = undefined;
-			}
-
-			return returnRef;
-		},
-
-
-		/**
-   * Writes a value to the target object.
-   *
-   * @public
-   * @static
-   * @param {Object} target - The object to write to.
-   * @param {String|String[]} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
-   * @param {*} value - The value to assign.
-   * @param {String=} separator - The separator (defaults to a period character).
-   */
-		write: function write(target, propertyNames, value, separator) {
-			assert.argumentIsRequired(target, 'target', Object);
-
-			if (is.array(propertyNames)) {
-				assert.argumentIsArray(propertyNames, 'propertyNames', String);
-			} else {
-				assert.argumentIsRequired(propertyNames, 'propertyNames', String);
-			}
-
-			var propertyNameArray = getPropertyNameArray(propertyNames, separator);
-			var propertyTarget = getPropertyTarget(target, propertyNameArray, true);
-
-			var propertyName = last(propertyNameArray);
-
-			propertyTarget[propertyName] = value;
-		},
-
-
-		/**
-   * Erases a property from the target object.
-   *
-   * @public
-   * @static
-   * @param {Object} target - The object to erase a property from.
-   * @param {String|String} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
-   * @param {String=} separator - The separator (defaults to a period character).
-   */
-		erase: function erase(target, propertyNames, separator) {
-			if (!this.has(target, propertyNames)) {
-				return;
-			}
-
-			var propertyNameArray = getPropertyNameArray(propertyNames, separator);
-			var propertyTarget = getPropertyTarget(target, propertyNameArray, true);
-
-			var propertyName = last(propertyNameArray);
-
-			delete propertyTarget[propertyName];
-		}
-	};
-}();
-
-},{"./assert":29,"./is":33}],31:[function(require,module,exports){
-'use strict';
-
-module.exports = function () {
-	'use strict';
-
-	return {
-		/**
-   * Formats a number into a string for display purposes.
-   */
-		numberToString: function numberToString(value, digits, thousandsSeparator, useParenthesis) {
-			if (value === '' || value === undefined || value === null || isNaN(value)) {
-				return '';
-			}
-
-			var applyParenthesis = value < 0 && useParenthesis === true;
-
-			if (applyParenthesis) {
-				value = 0 - value;
-			}
-
-			var returnRef = value.toFixed(digits);
-
-			if (thousandsSeparator && !(value > -1000 && value < 1000)) {
-				var length = returnRef.length;
-				var negative = value < 0;
-
-				var found = digits === 0;
-				var counter = 0;
-
-				var buffer = [];
-
-				for (var i = length - 1; !(i < 0); i--) {
-					if (counter === 3 && !(negative && i === 0)) {
-						buffer.unshift(thousandsSeparator);
-
-						counter = 0;
-					}
-
-					var character = returnRef.charAt(i);
-
-					buffer.unshift(character);
-
-					if (found) {
-						counter = counter + 1;
-					} else if (character === '.') {
-						found = true;
-					}
-				}
-
-				if (applyParenthesis) {
-					buffer.unshift('(');
-					buffer.push(')');
-				}
-
-				returnRef = buffer.join('');
-			} else if (applyParenthesis) {
-				returnRef = '(' + returnRef + ')';
-			}
-
-			return returnRef;
-		}
-	};
-}();
-
-},{}],32:[function(require,module,exports){
-'use strict';
-
-module.exports = function () {
-	'use strict';
-
-	function tautology(x) {
-		return x;
-	}
-
-	function empty() {
-		return;
-	}
-
-	/**
-  * Utilities for working with functions.
-  *
-  * @public
-  * @module lang/functions
-  */
-	return {
-		/**
-   * A function that returns the first argument passed.
-   *
-   * @static
-   * @returns {Function}
-   */
-		getTautology: function getTautology() {
-			return tautology;
-		},
-
-
-		/**
-   * A function with no return value.
-   *
-   * @static
-   * @returns {Function}
-   */
-		getEmpty: function getEmpty() {
-			return empty;
-		}
-	};
-}();
-
-},{}],33:[function(require,module,exports){
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * Utilities for interrogating variables (e.g. checking data types).
-  *
-  * @public
-  * @module lang/is
-  */
-
-	return {
-		/**
-   * Returns true, if the argument is a number. NaN will return false.
-   *
-   * @static
-   * @public
-   * @param {*} candidate {*}
-   * @returns {boolean}
-   */
-		number: function number(candidate) {
-			return typeof candidate === 'number' && !isNaN(candidate);
-		},
-
-
-		/**
-   * Returns true, if the argument is NaN.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		nan: function nan(candidate) {
-			return typeof candidate === 'number' && isNaN(candidate);
-		},
-
-
-		/**
-   * Returns true, if the argument is a valid 32-bit integer.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		integer: function integer(candidate) {
-			return typeof candidate === 'number' && !isNaN(candidate) && (candidate | 0) === candidate;
-		},
-
-
-		/**
-   * Returns true, if the argument is a valid integer (which can exceed 32 bits); however,
-   * the check can fail above the value of Number.MAX_SAFE_INTEGER.
-   *
-   * @static
-   * @public
-   * @param {*) candidate
-   * @returns {boolean}
-   */
-		large: function large(candidate) {
-			return typeof candidate === 'number' && !isNaN(candidate) && isFinite(candidate) && Math.floor(candidate) === candidate;
-		},
-
-
-		/**
-   * Returns true, if the argument is a number that is positive.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		positive: function positive(candidate) {
-			return this.number(candidate) && candidate > 0;
-		},
-
-
-		/**
-   * Returns true, if the argument is a number that is negative.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		negative: function negative(candidate) {
-			return this.number(candidate) && candidate < 0;
-		},
-
-
-		/**
-   * Returns true, if the argument is a string.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		string: function string(candidate) {
-			return typeof candidate === 'string';
-		},
-
-
-		/**
-   * Returns true, if the argument is a JavaScript Date instance.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		date: function date(candidate) {
-			return candidate instanceof Date;
-		},
-
-
-		/**
-   * Returns true, if the argument is a function.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		fn: function fn(candidate) {
-			return typeof candidate === 'function';
-		},
-
-
-		/**
-   * Returns true, if the argument is an array.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		array: function array(candidate) {
-			return Array.isArray(candidate);
-		},
-
-
-		/**
-   * Returns true, if the argument is a Boolean value.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		boolean: function boolean(candidate) {
-			return typeof candidate === 'boolean';
-		},
-
-
-		/**
-   * Returns true, if the argument is an object.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		object: function object(candidate) {
-			return (typeof candidate === 'undefined' ? 'undefined' : _typeof(candidate)) === 'object' && candidate !== null;
-		},
-
-
-		/**
-   * Returns true, if the argument is a null value.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		null: function _null(candidate) {
-			return candidate === null;
-		},
-
-
-		/**
-   * Returns true, if the argument is an undefined value.
-   *
-   * @static
-   * @public
-   * @param {*} candidate
-   * @returns {boolean}
-   */
-		undefined: function (_undefined) {
-			function undefined(_x) {
-				return _undefined.apply(this, arguments);
-			}
-
-			undefined.toString = function () {
-				return _undefined.toString();
-			};
-
-			return undefined;
-		}(function (candidate) {
-			return candidate === undefined;
-		}),
-
-
-		/**
-   * Given two classes, determines if the "child" class extends
-   * the "parent" class (without instantiation).
-   *
-   * @param {Function} parent
-   * @param {Function} child
-   * @returns {Boolean}
-   */
-		extension: function extension(parent, child) {
-			return this.fn(parent) && this.fn(child) && child.prototype instanceof parent;
-		}
-	};
-}();
-
-},{}],34:[function(require,module,exports){
-'use strict';
-
-var assert = require('./assert'),
-    is = require('./is');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * Utilities for caching results of function invocations (a.k.a. memoization).
-  *
-  * @public
-  * @module lang/memoize
-  */
-
-	return {
-		/**
-   * Memoizes a function that accepts a single argument only. Furthermore,
-   * the parameter's toString function must return a unique value.
-   *
-   * @static
-   * @public
-   * @param {Function} fn - The function to memoize. This function should accept one parameters whose "toString" function outputs a unique value.
-   */
-		simple: function simple(fn) {
-			var cache = {};
-
-			return function (x) {
-				if (cache.hasOwnProperty(x)) {
-					return cache[x];
-				} else {
-					return cache[x] = fn(x);
-				}
-			};
-		},
-
-
-		/**
-   * Wraps a function. The resulting function will call the wrapped function
-   * once and cache the result. If a specific duration is supplied, the
-   * cache will be dropped after the duration expires and the wrapped
-   * function will be invoked again.
-   *
-   * @public
-   * @param {Function} fn
-   * @param {Number} duration
-   * @returns {Function}
-   */
-		cache: function cache(fn, duration) {
-			assert.argumentIsRequired(fn, 'fn', Function);
-			assert.argumentIsOptional(duration, 'duration', Number);
-
-			var durationToUse = duration || 0;
-
-			var executionTime = null;
-			var cacheResult = null;
-
-			return function () {
-				var currentTime = new Date().getTime();
-
-				if (executionTime === null || durationToUse > 0 && currentTime > executionTime + durationToUse) {
-					executionTime = currentTime;
-
-					cacheResult = fn();
-				}
-
-				return cacheResult;
-			};
-		}
-	};
-}();
-
-},{"./assert":29,"./is":33}],35:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var assert = require('./../lang/assert'),
-    Disposable = require('./../lang/Disposable');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * An implementation of the observer pattern.
-  *
-  * @param {*} sender - The object which owns the event.
-  * @extends {Disposable}
-  */
-
-	var Event = function (_Disposable) {
-		_inherits(Event, _Disposable);
-
-		function Event(sender) {
-			_classCallCheck(this, Event);
-
-			var _this = _possibleConstructorReturn(this, (Event.__proto__ || Object.getPrototypeOf(Event)).call(this));
-
-			_this._sender = sender || null;
-
-			_this._observers = [];
-			return _this;
-		}
-
-		/**
-   * Registers an event handler which will receive a notification when
-   * {@link Event#fire} is called.
-   *
-   * @public
-   * @param {Function} handler - The function which will be called each time the event fires. The first argument will be the event data. The second argument will be the event owner (i.e. sender).
-   * @returns {Disposable}
-   */
-
-
-		_createClass(Event, [{
-			key: 'register',
-			value: function register(handler) {
-				var _this2 = this;
-
-				assert.argumentIsRequired(handler, 'handler', Function);
-
-				addRegistration.call(this, handler);
-
-				return Disposable.fromAction(function () {
-					if (_this2.getIsDisposed()) {
-						return;
-					}
-
-					removeRegistration.call(_this2, handler);
-				});
-			}
-
-			/**
-    * Removes registration for an event handler. That is, the handler will
-    * no longer be called if the event fires.
-    *
-    * @public
-    * @param {Function} handler
-    */
-
-		}, {
-			key: 'unregister',
-			value: function unregister(handler) {
-				assert.argumentIsRequired(handler, 'handler', Function);
-
-				removeRegistration.call(this, handler);
-			}
-
-			/**
-    * Removes all handlers from the event.
-    *
-    * @public
-    */
-
-		}, {
-			key: 'clear',
-			value: function clear() {
-				this._observers = [];
-			}
-
-			/**
-    * Triggers the event, calling all previously registered handlers.
-    *
-    * @public
-    * @param {*) data - The data to pass each handler.
-    */
-
-		}, {
-			key: 'fire',
-			value: function fire(data) {
-				var observers = this._observers;
-
-				for (var i = 0; i < observers.length; i++) {
-					var observer = observers[i];
-
-					observer(data, this._sender);
-				}
-			}
-
-			/**
-    * Returns true, if no handlers are currently registered.
-    *
-    * @returns {boolean}
-    */
-
-		}, {
-			key: 'getIsEmpty',
-			value: function getIsEmpty() {
-				return this._observers.length === 0;
-			}
-		}, {
-			key: '_onDispose',
-			value: function _onDispose() {
-				this._observers = null;
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Event]';
-			}
-		}]);
-
-		return Event;
-	}(Disposable);
-
-	function addRegistration(handler) {
-		var copiedObservers = this._observers.slice();
-
-		copiedObservers.push(handler);
-
-		this._observers = copiedObservers;
-	}
-
-	function removeRegistration(handler) {
-		var indicesToRemove = [];
-
-		for (var i = 0; i < this._observers.length; i++) {
-			var candidate = this._observers[i];
-
-			if (candidate === handler) {
-				indicesToRemove.push(i);
-			}
-		}
-
-		if (indicesToRemove.length > 0) {
-			var copiedObservers = this._observers.slice();
-
-			for (var j = indicesToRemove.length - 1; !(j < 0); j--) {
-				copiedObservers.splice(indicesToRemove[j], 1);
-			}
-
-			this._observers = copiedObservers;
-		}
-	}
-
-	return Event;
-}();
-
-},{"./../lang/Disposable":23,"./../lang/assert":29}],36:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Currency = require('./../../lang/Currency'),
-    Money = require('./../../lang/Money');
-
-var DataType = require('./DataType'),
-    Field = require('./Field');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A complex object built from many {@link Field} instances.
-  *
-  * @public
-  * @param {String} name
-  * @param {Array<Field>} componentType
-  */
-
-	var Component = function () {
-		function Component(name, fields, reviver) {
-			_classCallCheck(this, Component);
-
-			this._name = name;
-			this._fields = fields || [];
-			this._reviver = reviver;
-		}
-
-		/**
-   * Name of the component.
-   *
-   * @public
-   * @returns {String}
-   */
-
-
-		_createClass(Component, [{
-			key: 'toString',
-			value: function toString() {
-				return '[Component (name=' + this._name + ')]';
-			}
-		}, {
-			key: 'name',
-			get: function get() {
-				return this._name;
-			}
-
-			/**
-    * Type of the component.
-    *
-    * @public
-    * @returns {ComponentType}
-    */
-
-		}, {
-			key: 'fields',
-			get: function get() {
-				return this._fields;
-			}
-
-			/**
-    * The reviver used to rebuild the entire component.
-    *
-    * @returns {Function}
-    */
-
-		}, {
-			key: 'reviver',
-			get: function get() {
-				return this._reviver;
-			}
-
-			/**
-    * The builds a {@link Component} for {@link Money}.
-    *
-    * @public
-    * @returns {Component}
-    */
-
-		}], [{
-			key: 'forMoney',
-			value: function forMoney(name) {
-				return new Component(name, [new Field('decimal', DataType.DECIMAL), new Field('currency', DataType.forEnum(Currency, 'Currency'))], function (x) {
-					return Money.parse(x);
-				});
-			}
-		}]);
-
-		return Component;
-	}();
-
-	return Component;
-}();
-
-},{"./../../lang/Currency":20,"./../../lang/Money":25,"./DataType":37,"./Field":38}],37:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var moment = require('moment');
-
-var AdHoc = require('./../../lang/AdHoc'),
-    assert = require('./../../lang/assert'),
-    Day = require('./../../lang/Day'),
-    Decimal = require('./../../lang/Decimal'),
-    Enum = require('./../../lang/Enum'),
-    is = require('./../../lang/is'),
-    Timestamp = require('./../../lang/Timestamp');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * The formal definition of a data type which is used by an {@link Field}.
-  *
-  * @public
-  * @param {String} description
-  * @param {Function=} enumerationType
-  */
-
-	var DataType = function () {
-		function DataType(description, enumerationType, reviver, validator, builder) {
-			_classCallCheck(this, DataType);
-
-			assert.argumentIsRequired(description, 'description', String);
-			assert.argumentIsOptional(enumerationType, 'enumerationType', Function);
-
-			assert.argumentIsOptional(reviver, 'reviver', Function);
-			assert.argumentIsOptional(validator, 'validator', Function);
-			assert.argumentIsOptional(builder, 'builder', Function);
-
-			if (enumerationType) {
-				assert.argumentIsValid(enumerationType, 'enumerationType', extendsEnumeration, 'is an enumeration');
-			}
-
-			this._description = description;
-			this._enumerationType = enumerationType || null;
-
-			var reviverToUse = void 0;
-
-			if (reviver) {
-				reviverToUse = reviver;
-			} else if (enumerationType) {
-				reviverToUse = function reviverToUse(x) {
-					return Enum.fromCode(enumerationType, x);
-				};
-			} else {
-				reviverToUse = function reviverToUse(x) {
-					return x;
-				};
-			}
-
-			this._reviver = reviverToUse;
-
-			var validatorToUse = void 0;
-
-			if (validator) {
-				validatorToUse = validator;
-			} else {
-				validatorToUse = function validatorToUse(candidate) {
-					return true;
-				};
-			}
-
-			this._validator = validatorToUse;
-
-			var builderToUse = void 0;
-
-			if (builder) {
-				builderToUse = builder;
-			} else {
-				builderToUse = function builderToUse(data) {
-					return data;
-				};
-			}
-
-			this._builder = builderToUse;
-		}
-
-		/**
-   * A function that converts data into the desired format.
-   *
-   * @public
-   * @param {*} data
-   * @returns {*}
-   */
-
-
-		_createClass(DataType, [{
-			key: 'convert',
-			value: function convert(data) {
-				return this._builder(data);
-			}
-
-			/**
-    * Description of the data type.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[DataType (description=' + this._description + ')]';
-			}
-		}, {
-			key: 'description',
-			get: function get() {
-				return this._description;
-			}
-
-			/**
-    * The {@Enumeration} type, if applicable.
-    *
-    * @public
-    * @returns {Function|null}
-    */
-
-		}, {
-			key: 'enumerationType',
-			get: function get() {
-				return this._enumerationType;
-			}
-
-			/**
-    * A function which "revives" a value after serialization to JSON.
-    *
-    * @public
-    * @returns {Function}
-    */
-
-		}, {
-			key: 'reviver',
-			get: function get() {
-				return this._reviver;
-			}
-
-			/**
-    * A function validates data, returning true or false.
-    *
-    * @public
-    * @returns {Function}
-    */
-
-		}, {
-			key: 'validator',
-			get: function get() {
-				return this._validator;
-			}
-
-			/**
-    * Return a {@link DataType} instance for use with an {@link @Enum}.
-    *
-    * @public
-    * @param {Function} enumerationType - A class that extends {@link Enum}
-    * @param description - The description
-    * @returns {DataType}
-    */
-
-		}], [{
-			key: 'forEnum',
-			value: function forEnum(enumerationType, description) {
-				return new DataType(description, enumerationType, null, function (x) {
-					return x instanceof enumerationType;
-				}, getBuilder(getEnumerationBuilder(enumerationType)));
-			}
-
-			/**
-    * References a string.
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'STRING',
-			get: function get() {
-				return dataTypeString;
-			}
-
-			/**
-    * References a number.
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'NUMBER',
-			get: function get() {
-				return dataTypeNumber;
-			}
-
-			/**
-    * References a Boolean value.
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'BOOLEAN',
-			get: function get() {
-				return dataTypeBoolean;
-			}
-
-			/**
-    * References an object (serialized as JSON).
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'OBJECT',
-			get: function get() {
-				return dataTypeObject;
-			}
-
-			/**
-    * References an array.
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'ARRAY',
-			get: function get() {
-				return dataTypeArray;
-			}
-
-			/**
-    * References a {@link Decimal} instance.
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'DECIMAL',
-			get: function get() {
-				return dataTypeDecimal;
-			}
-
-			/**
-    * References a {@link Day} instance.
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'DAY',
-			get: function get() {
-				return dataTypeDay;
-			}
-
-			/**
-    * References a {@link Timestamp} instance.
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'TIMESTAMP',
-			get: function get() {
-				return dataTypeTimestamp;
-			}
-
-			/**
-    * References a {@link Timestamp} instance.
-    *
-    * @public
-    * @static
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'AD_HOC',
-			get: function get() {
-				return dataTypeAdHoc;
-			}
-		}]);
-
-		return DataType;
-	}();
-
-	function extendsEnumeration(EnumerationType) {
-		return is.extension(Enum, EnumerationType);
-	}
-
-	var dataTypeString = new DataType('String', null, null, is.string);
-	var dataTypeNumber = new DataType('Number', null, null, is.number);
-	var dataTypeBoolean = new DataType('Boolean', null, null, is.boolean);
-	var dataTypeObject = new DataType('Object', null, null, is.object);
-	var dataTypeArray = new DataType('Array', null, null, is.array);
-
-	var dataTypeDecimal = new DataType('Decimal', null, function (x) {
-		return Decimal.parse(x);
-	}, function (x) {
-		return x instanceof Decimal;
-	}, getBuilder(buildDecimal));
-	var dataTypeDay = new DataType('Day', null, function (x) {
-		return Day.parse(x);
-	}, function (x) {
-		return x instanceof Day;
-	}, getBuilder(buildDay));
-	var dataTypeTimestamp = new DataType('Timestamp', null, function (x) {
-		return Timestamp.parse(x);
-	}, function (x) {
-		return x instanceof Timestamp;
-	}, getBuilder(buildTimestamp));
-	var dataTypeAdHoc = new DataType('AdHoc', null, function (x) {
-		return AdHoc.parse(x);
-	}, function (x) {
-		return x instanceof AdHoc;
-	}, getBuilder(buildAdHoc));
-
-	var dataTypes = [dataTypeString, dataTypeNumber, dataTypeBoolean, dataTypeObject, dataTypeArray, dataTypeDecimal, dataTypeDay, dataTypeTimestamp, dataTypeAdHoc];
-
-	function getBuilder(builder) {
-		return function (data) {
-			try {
-				return builder(data);
-			} catch (e) {
-				return data;
-			}
-		};
-	}
-
-	function buildDecimal(data) {
-		return new Decimal(data);
-	}
-
-	function buildDay(data) {
-		if (data instanceof Day) {
-			return new Day(data.year, data.month, data.day);
-		} else if (is.date(data)) {
-			return Day.fromDate(data);
-		} else if (is.string(data)) {
-			return Day.parse(data);
-		} else if (data instanceof moment) {
-			return new Day(data.year(), data.month() + 1, data.date());
-		} else {
-			return data;
-		}
-	}
-
-	function buildTimestamp(data) {
-		return new Timestamp(data);
-	}
-
-	function buildAdHoc(data) {
-		if (data instanceof AdHoc) {
-			return new AdHoc(data.data);
-		} else if (is.object(data)) {
-			return new AdHoc(data);
-		}
-	}
-
-	function getEnumerationBuilder(enumerationType) {
-		return function (data) {
-			if (is.string(data)) {
-				return Enum.fromCode(enumerationType, data);
-			} else {
-				return data;
-			}
-		};
-	}
-
-	return DataType;
-}();
-
-},{"./../../lang/AdHoc":19,"./../../lang/Day":21,"./../../lang/Decimal":22,"./../../lang/Enum":24,"./../../lang/Timestamp":27,"./../../lang/assert":29,"./../../lang/is":33,"moment":46}],38:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A simple field.
-  *
-  * @public
-  * @param {String} name
-  * @param {DataType} dataType
-  * @param {Boolean} optional
-  */
-
-	var Field = function () {
-		function Field(name, dataType, optional) {
-			_classCallCheck(this, Field);
-
-			this._name = name;
-			this._dataType = dataType;
-			this._optional = optional || false;
-		}
-
-		/**
-   * Name of the field.
-   *
-   * @public
-   * @returns {String}
-   */
-
-
-		_createClass(Field, [{
-			key: 'toString',
-			value: function toString() {
-				return '[Field (name=' + this._name + ')]';
-			}
-		}, {
-			key: 'name',
-			get: function get() {
-				return this._name;
-			}
-
-			/**
-    * Type of the field.
-    *
-    * @public
-    * @returns {DataType}
-    */
-
-		}, {
-			key: 'dataType',
-			get: function get() {
-				return this._dataType;
-			}
-
-			/**
-    * Indicates if the field can be omitted without violating the schema.
-    *
-    * @public
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'optional',
-			get: function get() {
-				return this._optional;
-			}
-		}]);
-
-		return Field;
-	}();
-
-	return Field;
-}();
-
-},{}],39:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var attributes = require('./../../lang/attributes'),
-    functions = require('./../../lang/functions'),
-    is = require('./../../lang/is');
-
-var LinkedList = require('./../../collections/LinkedList'),
-    Tree = require('./../../collections/Tree');
-
-var Component = require('./Component'),
-    Field = require('./Field');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A schema definition, can be used for serialization and deserialization.
-  *
-  * @public
-  * @param {String} name - The name of the schema
-  * @param {Array<Field>} fields
-  * @param {Array<Component>} components
-  * @param {Boolean=} strict
-  */
-
-	var Schema = function () {
-		function Schema(name, fields, components, strict) {
-			_classCallCheck(this, Schema);
-
-			this._name = name;
-
-			this._fields = fields || [];
-			this._components = components || [];
-
-			this._strict = is.boolean(strict) && strict;
-
-			this._revivers = getReviverItems(this._fields, this._components);
-		}
-
-		/**
-   * Accepts data and returns a new object which (should) conform to
-   * the schema.
+const assert = require('./assert');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * A serialization container for ad hoc data where internal data is serialized
+   * as an escaped JSON string.
    *
    * @public
    * @param {Object} data
-   * @returns {Object}
+   */
+
+  class AdHoc {
+    constructor(data) {
+      this._data = data || {};
+    }
+    /**
+     * The data.
+     * 
+     * @public
+     * @returns {Object}
+     */
+
+
+    get data() {
+      return this._data;
+    }
+    /**
+     * The data.
+     *
+     * @public
+     * @param {Object} data
+     */
+
+
+    set data(data) {
+      assert.argumentIsRequired(data, 'data', Object);
+      this._data = data;
+    }
+
+    toJSON() {
+      return JSON.stringify(this._data);
+    }
+    /**
+     * Given a code, returns the enumeration item.
+     *
+     * @public
+     * @param {String} code
+     * @returns {AdHoc}
+     */
+
+
+    static parse(serialized) {
+      return new AdHoc(JSON.parse(serialized));
+    }
+
+    toString() {
+      return '[AdHoc]';
+    }
+
+  }
+
+  return AdHoc;
+})();
+
+},{"./assert":29}],20:[function(require,module,exports){
+const assert = require('./assert'),
+      Enum = require('./Enum'),
+      is = require('./is');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * An enumeration for currency types.
+   *
+   * @public
+   * @param {String} code - Currency code (e.g. "USD")
+   * @param {String} description - The description (e.g. "US Dollar")
+   * @param {Number} precision - The number of decimal places possible for by a real world transaction.
+   * @extends {Enum}
+   */
+
+  class Currency extends Enum {
+    constructor(code, description, precision, alternateDescription) {
+      super(code, description);
+      assert.argumentIsRequired(precision, 'precision', Number);
+      assert.argumentIsValid(precision, 'precision', is.integer, 'is an integer');
+      assert.argumentIsOptional(alternateDescription, 'alternateDescription', String);
+      this._precision = precision;
+      this._alternateDescription = alternateDescription || description;
+    }
+    /**
+     * The maximum number of decimal places supported by a real world transaction.
+     *
+     * @public
+     * @returns {Number}
+     */
+
+
+    get precision() {
+      return this._precision;
+    }
+    /**
+     * An alternate human-readable description.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    get alternateDescription() {
+      return this._alternateDescription;
+    }
+    /**
+     * Given a code, returns the enumeration item.
+     *
+     * @public
+     * @param {String} code
+     * @returns {Currency|null}
+     */
+
+
+    static parse(code) {
+      return Enum.fromCode(Currency, code);
+    }
+    /**
+     * The Canadian Dollar.
+     *
+     * @public
+     * @returns {Currency}
+     */
+
+
+    static get CAD() {
+      return cad;
+    }
+    /**
+     * The Euro.
+     *
+     * @public
+     * @returns {Currency}
+     */
+
+
+    static get EUR() {
+      return eur;
+    }
+    /**
+     * The US Dollar.
+     *
+     * @public
+     * @returns {Currency}
+     */
+
+
+    static get USD() {
+      return usd;
+    }
+
+    toString() {
+      return `[Currency (code=${this.code})]`;
+    }
+
+  }
+
+  const cad = new Currency('CAD', 'Canadian Dollar', 2, 'CAD$');
+  const eur = new Currency('EUR', 'Euro', 2, 'EUR');
+  const usd = new Currency('USD', 'US Dollar', 2, 'US$');
+  return Currency;
+})();
+
+},{"./Enum":24,"./assert":29,"./is":33}],21:[function(require,module,exports){
+const assert = require('./assert'),
+      ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder'),
+      comparators = require('./../collections/sorting/comparators'),
+      is = require('./is');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * A data structure that represents a day (year, month, and day)
+   * without consideration for time or timezone.
+   *
+   * @public
+   * @param {Number} year
+   * @param {Number} month
+   * @param {Number} day
+   */
+
+  class Day {
+    constructor(year, month, day) {
+      if (!Day.validate(year, month, day)) {
+        throw new Error(`Unable to instantiate Day, input is invalid [${year}], [${month}], [${day}]`);
+      }
+
+      this._year = year;
+      this._month = month;
+      this._day = day;
+    }
+    /**
+     * Calculates a new {@link Day} in the future (or past).
+     *
+     * @public
+     * @param {Number} days - The number of days to add (negative numbers can be used for subtraction).
+     * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+     * @returns {Day}
+     */
+
+
+    addDays(days, inverse) {
+      assert.argumentIsRequired(days, 'days', Number);
+      assert.argumentIsOptional(inverse, inverse, Boolean);
+      assert.argumentIsValid(days, 'days', is.large, 'is an integer');
+      let totalDaysToShift;
+
+      if (is.boolean(inverse) && inverse) {
+        totalDaysToShift = days * -1;
+      } else {
+        totalDaysToShift = days;
+      }
+
+      const positive = is.positive(totalDaysToShift);
+      let shiftedDay = this._day;
+      let shiftedMonth = this._month;
+      let shiftedYear = this._year;
+
+      while (totalDaysToShift !== 0) {
+        let monthDaysAvailable;
+        let monthDaysToShift;
+
+        if (positive) {
+          monthDaysAvailable = Day.getDaysInMonth(shiftedYear, shiftedMonth) - shiftedDay;
+          monthDaysToShift = Math.min(totalDaysToShift, monthDaysAvailable);
+        } else {
+          monthDaysAvailable = 1 - shiftedDay;
+          monthDaysToShift = Math.max(totalDaysToShift, monthDaysAvailable);
+        }
+
+        totalDaysToShift = totalDaysToShift - monthDaysToShift;
+
+        if (totalDaysToShift === 0) {
+          shiftedDay = shiftedDay + monthDaysToShift;
+        } else if (positive) {
+          shiftedMonth++;
+
+          if (shiftedMonth > 12) {
+            shiftedYear++;
+            shiftedMonth = 1;
+          }
+
+          shiftedDay = 0;
+        } else {
+          shiftedMonth--;
+
+          if (shiftedMonth < 1) {
+            shiftedYear--;
+            shiftedMonth = 12;
+          }
+
+          shiftedDay = Day.getDaysInMonth(shiftedYear, shiftedMonth) + 1;
+        }
+      }
+
+      return new Day(shiftedYear, shiftedMonth, shiftedDay);
+    }
+    /**
+     * Calculates a new {@link Day} in the past (or future).
+     *
+     * @public
+     * @param {Number} days - The number of days to subtract (negative numbers can be used for addition).
+     * @returns {Day}
+     */
+
+
+    subtractDays(days) {
+      return this.addDays(days, true);
+    }
+    /**
+     * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
+     * the month and the new month has fewer days than the current month, days will be subtracted
+     * as necessary (e.g. adding one month to March 31 will return April 30).
+     *
+     * @public
+     * @param {Number} months - The number of months to add (negative numbers can be used for subtraction).
+     * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+     * @returns {Day}
+     */
+
+
+    addMonths(months, inverse) {
+      assert.argumentIsRequired(months, 'months', Number);
+      assert.argumentIsOptional(inverse, inverse, Boolean);
+      assert.argumentIsValid(months, 'months', is.large, 'is an integer');
+      let totalMonthsToShift;
+
+      if (is.boolean(inverse) && inverse) {
+        totalMonthsToShift = months * -1;
+      } else {
+        totalMonthsToShift = months;
+      }
+
+      const monthsToShift = totalMonthsToShift % 12;
+      const yearsToShift = (totalMonthsToShift - monthsToShift) / 12;
+      let shiftedYear = this.year + yearsToShift;
+      let shiftedMonth = this.month + monthsToShift;
+      let shiftedDay = this.day;
+
+      if (shiftedMonth > 12) {
+        shiftedYear = shiftedYear + 1;
+        shiftedMonth = shiftedMonth - 12;
+      }
+
+      if (shiftedMonth < 1) {
+        shiftedYear = shiftedYear - 1;
+        shiftedMonth = shiftedMonth + 12;
+      }
+
+      while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
+        shiftedDay = shiftedDay - 1;
+      }
+
+      return new Day(shiftedYear, shiftedMonth, shiftedDay);
+    }
+    /**
+     * Calculates a new {@link Day} in the past (or future).
+     *
+     * @public
+     * @param {Number} months - The number of months to subtract (negative numbers can be used for addition).
+     * @returns {Day}
+     */
+
+
+    subtractMonths(months) {
+      return this.addMonths(months, true);
+    }
+    /**
+     * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
+     * the month and the new month has fewer days than the current month, days will be subtracted
+     * as necessary (e.g. adding one year to February 29 will return February 28).
+     *
+     * @public
+     * @param {Number} years - The number of years to add (negative numbers can be used for subtraction).
+     * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+     * @returns {Day}
+     */
+
+
+    addYears(years, inverse) {
+      assert.argumentIsRequired(years, 'years', Number);
+      assert.argumentIsOptional(inverse, inverse, Boolean);
+      assert.argumentIsValid(years, 'years', is.large, 'is an integer');
+      let yearsToShift;
+
+      if (is.boolean(inverse) && inverse) {
+        yearsToShift = years * -1;
+      } else {
+        yearsToShift = years;
+      }
+
+      let shiftedYear = this.year + yearsToShift;
+      let shiftedMonth = this.month;
+      let shiftedDay = this.day;
+
+      while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
+        shiftedDay = shiftedDay - 1;
+      }
+
+      return new Day(shiftedYear, shiftedMonth, shiftedDay);
+    }
+    /**
+     * Calculates a new {@link Day} in the past (or future).
+     *
+     * @public
+     * @param {Number} years - The number of years to subtract (negative numbers can be used for addition).
+     * @returns {Day}
+     */
+
+
+    subtractYears(years) {
+      return this.addYears(years, true);
+    }
+    /**
+     * Returns a new {@link Day} instance for the start of the month referenced by the current instance.
+     *
+     * @public
+     * @returns {Day}
+     */
+
+
+    getStartOfMonth() {
+      return new Day(this.year, this.month, 1);
+    }
+    /**
+     * Returns a new instance for the {@link Day} end of the month referenced by the current instance.
+     *
+     * @public
+     * @returns {Day}
+     */
+
+
+    getEndOfMonth() {
+      return new Day(this.year, this.month, Day.getDaysInMonth(this.year, this.month));
+    }
+    /**
+     * Indicates if another {@link Day} occurs before the current instance.
+     *
+     * @public
+     * @param {Day} other
+     * @returns {boolean}
+     */
+
+
+    getIsBefore(other) {
+      return Day.compareDays(this, other) < 0;
+    }
+    /**
+     * Indicates if another {@link Day} occurs after the current instance.
+     *
+     * @public
+     * @param {Day} other
+     * @returns {boolean}
+     */
+
+
+    getIsAfter(other) {
+      return Day.compareDays(this, other) > 0;
+    }
+    /**
+     * Indicates the current day falls between two other days, inclusive
+     * of the range boundaries.
+     *
+     * @public
+     * @param {Day=} first
+     * @param {Day=} last
+     * @param {boolean=} exclusive
+     * @returns {boolean}
+     */
+
+
+    getIsContained(first, last) {
+      assert.argumentIsOptional(first, 'first', Day, 'Day');
+      assert.argumentIsOptional(last, 'last', Day, 'Day');
+      let notAfter;
+      let notBefore;
+
+      if (first && last && first.getIsAfter(last)) {
+        notBefore = false;
+        notAfter = false;
+      } else {
+        notAfter = !(last instanceof Day) || !this.getIsAfter(last);
+        notBefore = !(first instanceof Day) || !this.getIsBefore(first);
+      }
+
+      return notAfter && notBefore;
+    }
+    /**
+     * Indicates if another {@link Day} occurs after the current instance.
+     *
+     * @public
+     * @param {Day} other
+     * @returns {boolean}
+     */
+
+
+    getIsEqual(other) {
+      return Day.compareDays(this, other) === 0;
+    }
+    /**
+     * The year.
+     *
+     * @public
+     * @returns {Number}
+     */
+
+
+    get year() {
+      return this._year;
+    }
+    /**
+     * The month of the year (January is one, December is twelve).
+     *
+     * @public
+     * @returns {Number}
+     */
+
+
+    get month() {
+      return this._month;
+    }
+    /**
+     * The day of the month.
+     *
+     * @public
+     * @returns {Number}
+     */
+
+
+    get day() {
+      return this._day;
+    }
+    /**
+     * Outputs the date as the formatted string: {year}-{month}-{day}.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    format() {
+      return `${leftPad(this._year, 4, '0')}-${leftPad(this._month, 2, '0')}-${leftPad(this._day, 2, '0')}`;
+    }
+    /**
+     * Returns the JSON representation.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    toJSON() {
+      return this.format();
+    }
+    /**
+     * Clones a {@link Day} instance.
+     *
+     * @public
+     * @static
+     * @param {Day} value
+     * @returns {Day}
+     */
+
+
+    static clone(value) {
+      assert.argumentIsRequired(value, 'value', Day, 'Day');
+      return new Day(value.year, value.month, value.day);
+    }
+    /**
+     * Converts a string (which matches the output of {@link Day#format}) into
+     * a {@link Day} instance.
+     *
+     * @public
+     * @static
+     * @param {String} value
+     * @returns {Day}
+     */
+
+
+    static parse(value) {
+      assert.argumentIsRequired(value, 'value', String);
+      const match = value.match(dayRegex);
+
+      if (match === null) {
+        throw new Error(`Unable to parse value as Day [ ${value} ]`);
+      }
+
+      return new Day(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+    }
+    /**
+     * Creates a {@link Day} from the year, month, and day properties (in local time)
+     * of the {@link Date} argument.
+     *
+     * @public
+     * @static
+     * @param {Date} date
+     * @returns {Day}
+     */
+
+
+    static fromDate(date) {
+      assert.argumentIsRequired(date, 'date', Date);
+      return new Day(date.getFullYear(), date.getMonth() + 1, date.getDate());
+    }
+    /**
+     * Creates a {@link Day} from the year, month, and day properties (in UTC)
+     * of the {@link Date} argument.
+     *
+     * @public
+     * @static
+     * @param {Date} date
+     * @returns {Day}
+     */
+
+
+    static fromDateUtc(date) {
+      assert.argumentIsRequired(date, 'date', Date);
+      return new Day(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+    }
+    /**
+     * Returns a {@link Day} instance using today's local date.
+     *
+     * @static
+     * @public
+     * @returns {Day}
+     */
+
+
+    static getToday() {
+      return Day.fromDate(new Date());
+    }
+    /**
+     * Returns true if the year, month, and day combination is valid; otherwise false.
+     *
+     * @public
+     * @static
+     * @param {Number} year
+     * @param {Number} month
+     * @param {Number} day
+     * @returns {Boolean}
+     */
+
+
+    static validate(year, month, day) {
+      return is.integer(year) && is.integer(month) && is.integer(day) && !(month < 1) && !(month > 12) && !(day < 1) && !(day > Day.getDaysInMonth(year, month));
+    }
+    /**
+     * Returns the number of days in a given month.
+     *
+     * @public
+     * @static
+     * @param {number} year - The year number (e.g. 2017)
+     * @param {number} month - The month number (e.g. 2 is February)
+     */
+
+
+    static getDaysInMonth(year, month) {
+      switch (month) {
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12:
+          {
+            return 31;
+          }
+
+        case 4:
+        case 6:
+        case 9:
+        case 11:
+          {
+            return 30;
+          }
+
+        case 2:
+          {
+            if (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) {
+              return 29;
+            } else {
+              return 28;
+            }
+          }
+      }
+    }
+    /**
+     * A comparator function for {@link Day} instances.
+     *
+     * @public
+     * @static
+     * @param {Day} a
+     * @param {Day} b
+     * @returns {Number}
+     */
+
+
+    static compareDays(a, b) {
+      assert.argumentIsRequired(a, 'a', Day, 'Day');
+      assert.argumentIsRequired(b, 'b', Day, 'Day');
+      return comparator(a, b);
+    }
+
+    toString() {
+      return '[Day]';
+    }
+
+  }
+
+  const dayRegex = /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/;
+
+  function leftPad(value, digits, character) {
+    let string = value.toString();
+    let padding = digits - string.length;
+    return `${character.repeat(padding)}${string}`;
+  }
+
+  const comparator = ComparatorBuilder.startWith((a, b) => comparators.compareNumbers(a.year, b.year)).thenBy((a, b) => comparators.compareNumbers(a.month, b.month)).thenBy((a, b) => comparators.compareNumbers(a.day, b.day)).toComparator();
+  return Day;
+})();
+
+},{"./../collections/sorting/ComparatorBuilder":16,"./../collections/sorting/comparators":17,"./assert":29,"./is":33}],22:[function(require,module,exports){
+const assert = require('./assert'),
+      Enum = require('./Enum'),
+      is = require('./is');
+
+const Big = require('big.js');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * An immutable object that allows for arbitrary-precision calculations.
+   *
+   * @public
+   * @param {Decimal|Number|String} value - The value.
+   */
+
+  class Decimal {
+    constructor(value) {
+      this._big = getBig(value);
+    }
+    /**
+     * Returns a new {@link Decimal} instance that is the sum of the
+     * current instance's value and the value supplied.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to add.
+     * @returns {Decimal}
+     */
+
+
+    add(other) {
+      return new Decimal(this._big.plus(getBig(other)));
+    }
+    /**
+     * Returns a new {@link Decimal} instance with a value that results
+     * from the subtraction of the value supplied from the current instance's
+     * value.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to subtract.
+     * @returns {Decimal}
+     */
+
+
+    subtract(other) {
+      return new Decimal(this._big.minus(getBig(other)));
+    }
+    /**
+     * Returns a new {@link Decimal} instance that is the product of the
+     * current instance's value and the value supplied.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to add.
+     * @returns {Decimal}
+     */
+
+
+    multiply(other) {
+      return new Decimal(this._big.times(getBig(other)));
+    }
+    /**
+     * Returns a new {@link Decimal} instance with a value that results
+     * from the division of the current instance's value by the value
+     * supplied.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to subtract.
+     * @returns {Decimal}
+     */
+
+
+    divide(other) {
+      return new Decimal(this._big.div(getBig(other)));
+    }
+    /**
+     * Returns a new {@link Decimal} instance with a value that results
+     * from raising the current instance to the power of the exponent
+     * provided.
+     *
+     * @public
+     * @param {Decimal|Number|String} exponent
+     * @returns {Decimal}
+     */
+
+
+    raise(exponent) {
+      assert.argumentIsRequired(exponent, 'exponent', Number);
+      return new Decimal(this._big.pow(exponent));
+    }
+    /**
+     * Returns a new {@link Decimal} with a value resulting from a rounding
+     * operation on the current value.
+     *
+     * @public
+     * @param {Number} places - The number of decimal places to retain.
+     * @param {RoundingMode=} mode - The strategy to use for rounding.
+     * @returns {Decimal}
+     */
+
+
+    round(places, mode) {
+      assert.argumentIsRequired(places, 'places', Number);
+      assert.argumentIsOptional(mode, 'mode', RoundingMode, 'RoundingMode');
+      const modeToUse = mode || RoundingMode.NORMAL;
+      return new Decimal(this._big.round(places, modeToUse.value));
+    }
+    /**
+     * Returns a new {@link Decimal} instance having the absolute value of
+     * the current instance's value.
+     *
+     * @public
+     * @returns {Decimal}
+     */
+
+
+    absolute() {
+      return new Decimal(this._big.abs());
+    }
+    /**
+     * Returns a new {@link Decimal} instance the opposite sign as the
+     * current instance's value.
+     *
+     * @public
+     * @returns {Decimal}
+     */
+
+
+    opposite() {
+      return this.multiply(-1);
+    }
+    /**
+     * Returns a Boolean value, indicating if the current instance's value is
+     * equal to zero (or approximately equal to zero).
+     *
+     * @public
+     * @param {Boolean=} approximate
+     * @param {Number=} places
+     * @returns {Boolean}
+     */
+
+
+    getIsZero(approximate, places) {
+      assert.argumentIsOptional(approximate, 'approximate', Boolean);
+      assert.argumentIsOptional(places, 'places', Number);
+      return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(places || Big.DP, RoundingMode.NORMAL).getIsZero();
+    }
+    /**
+     * Returns true if the current instance is positive; otherwise false.
+     *
+     * @public
+     * @returns {Boolean}
+     */
+
+
+    getIsPositive() {
+      return this._big.gt(zero);
+    }
+    /**
+     * Returns true if the current instance is negative; otherwise false.
+     *
+     * @public
+     * @returns {Boolean}
+     */
+
+
+    getIsNegative() {
+      return this._big.lt(zero);
+    }
+    /**
+     * Returns true if the current instance is greater than the value.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to compare.
+     * @returns {Boolean}
+     */
+
+
+    getIsGreaterThan(other) {
+      return this._big.gt(getBig(other));
+    }
+    /**
+     * Returns true if the current instance is greater than or equal to the value.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to compare.
+     * @returns {Boolean}
+     */
+
+
+    getIsGreaterThanOrEqual(other) {
+      return this._big.gte(getBig(other));
+    }
+    /**
+     * Returns true if the current instance is less than the value.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to compare.
+     * @returns {Boolean}
+     */
+
+
+    getIsLessThan(other) {
+      return this._big.lt(getBig(other));
+    }
+    /**
+     * Returns true if the current instance is less than or equal to the value.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to compare.
+     * @returns {Boolean}
+     */
+
+
+    getIsLessThanOrEqual(other) {
+      return this._big.lte(getBig(other));
+    }
+    /**
+     * Returns true if the current instance is equal to the value.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to compare.
+     * @returns {Boolean}
+     */
+
+
+    getIsEqual(other) {
+      return this._big.eq(getBig(other));
+    }
+    /**
+     * Returns true is close to another value.
+     *
+     * @public
+     * @param {Decimal|Number|String} other - The value to compare.
+     * @param {Number} places - The significant digits.
+     * @returns {Boolean}
+     */
+
+
+    getIsApproximate(other, places) {
+      if (places === 0) {
+        return this.getIsEqual(other);
+      }
+
+      const difference = this.subtract(other).absolute();
+      const tolerance = Decimal.ONE.divide(new Decimal(10).raise(places));
+      return difference.getIsLessThan(tolerance);
+    }
+    /**
+     * Returns true if the current instance is an integer (i.e. has no decimal
+     * component).
+     *
+     * @public
+     * @return {Boolean}
+     */
+
+
+    getIsInteger() {
+      return this.getIsEqual(this.round(0));
+    }
+    /**
+     * Returns the number of decimal places used.
+     *
+     * @public
+     * @returns {Number}
+     */
+
+
+    getDecimalPlaces() {
+      const matches = this.toFixed().match(/-?\d*\.(\d*)/);
+      let returnVal;
+
+      if (matches === null) {
+        returnVal = 0;
+      } else {
+        returnVal = matches[1].length;
+      }
+
+      return returnVal;
+    }
+    /**
+     * Emits a floating point value that approximates the value of the current
+     * instance.
+     *
+     * @public
+     * @param {Number=} places
+     * @returns {Number}
+     */
+
+
+    toFloat(places) {
+      assert.argumentIsOptional(places, 'places', Number); // Accepting places might be a mistake here; perhaps
+      // the consumer should be forced to use the round
+      // function.
+
+      return parseFloat(this._big.toFixed(places || 16));
+    }
+    /**
+     * Returns a string-based representation of the instance's value.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    toFixed() {
+      return this._big.toFixed();
+    }
+    /**
+     * Returns the JSON representation.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    toJSON() {
+      return this.toFixed();
+    }
+    /**
+     * Clones a {@link Decimal} instance.
+     *
+     * @public
+     * @static
+     * @param {Decimal} value
+     * @returns {Decimal}
+     */
+
+
+    static clone(value) {
+      assert.argumentIsRequired(value, 'value', Decimal, 'Decimal');
+      return new Decimal(value._big);
+    }
+    /**
+     * Parses the value emitted by {@link Decimal#toJSON}.
+     *
+     * @public
+     * @param {String} value
+     * @returns {Decimal}
+     */
+
+
+    static parse(value) {
+      return new Decimal(value);
+    }
+    /**
+     * Returns an instance with the value of zero.
+     *
+     * @public
+     * @returns {Decimal}
+     */
+
+
+    static get ZERO() {
+      return decimalZero;
+    }
+    /**
+     * Returns an instance with the value of one.
+     *
+     * @public
+     * @returns {Decimal}
+     */
+
+
+    static get ONE() {
+      return decimalOne;
+    }
+    /**
+     * Returns an instance with the value of one.
+     *
+     * @public
+     * @returns {Decimal}
+     */
+
+
+    static get NEGATIVE_ONE() {
+      return decimalNegativeOne;
+    }
+    /**
+     * Return the {@link RoundingMode} enumeration.
+     *
+     * @public
+     * @returns {RoundingMode}
+     */
+
+
+    static get ROUNDING_MODE() {
+      return RoundingMode;
+    }
+    /**
+     * Runs {@link Decimal#getIsZero} and returns the result.
+     *
+     * @public
+     * @param {Decimal} instance
+     * @returns {Boolean}
+     */
+
+
+    static getIsZero(instance) {
+      assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+      return instance.getIsZero();
+    }
+    /**
+     * Runs {@link Decimal#getIsZero} and returns the inverse.
+     *
+     * @public
+     * @param {Decimal} instance
+     * @returns {Boolean}
+     */
+
+
+    static getIsNotZero(instance) {
+      assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+      return !instance.getIsZero();
+    }
+    /**
+     * Runs {@link Decimal#getIsPositive} and returns the result.
+     *
+     * @public
+     * @param {Decimal} instance
+     * @returns {Boolean}
+     */
+
+
+    static getIsPositive(instance) {
+      assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+      return instance.getIsPositive();
+    }
+    /**
+     * Checks an instance to see if its negative or zero.
+     *
+     * @public
+     * @param {Decimal} instance
+     * @returns {Boolean}
+     */
+
+
+    static getIsNotPositive(instance) {
+      assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+      return instance.getIsNegative() || instance.getIsZero();
+    }
+    /**
+     * Runs {@link Decimal#getIsNegative} and returns the result.
+     *
+     * @public
+     * @param {Decimal} instance
+     * @returns {Boolean}
+     */
+
+
+    static getIsNegative(instance) {
+      assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+      return instance.getIsNegative();
+    }
+    /**
+     * Checks an instance to see if its positive or zero.
+     *
+     * @public
+     * @param {Decimal} instance
+     * @returns {Boolean}
+     */
+
+
+    static getIsNotNegative(instance) {
+      assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+      return instance.getIsPositive() || instance.getIsZero();
+    }
+    /**
+     * A comparator function for {@link Decimal} instances.
+     *
+     * @public
+     * @param {Decimal} a
+     * @param {Decimal} b
+     * @returns {Number}
+     */
+
+
+    static compareDecimals(a, b) {
+      assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
+      assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
+
+      if (a._big.gt(b._big)) {
+        return 1;
+      } else if (a._big.lt(b._big)) {
+        return -1;
+      } else {
+        return 0;
+      }
+    }
+
+    toString() {
+      return '[Decimal]';
+    }
+
+  }
+
+  const zero = new Big(0);
+  const positiveOne = new Big(1);
+  const negativeOne = new Big(-1);
+  const decimalZero = new Decimal(zero);
+  const decimalOne = new Decimal(positiveOne);
+  const decimalNegativeOne = new Decimal(negativeOne);
+
+  function getBig(value) {
+    if (value instanceof Big) {
+      return value;
+    } else if (value instanceof Decimal) {
+      return value._big;
+    } else {
+      return new Big(value);
+    }
+  }
+  /**
+   * An enumeration of strategies for rouding a {@link Decimal} instance.
+   *
+   * @public
+   * @inner
+   * @extends {Enum}
    */
 
 
-		_createClass(Schema, [{
-			key: 'format',
-			value: function format(data) {
-				var returnRef = {};
-
-				this._fields.forEach(function (field) {
-					formatField(returnRef, field, data);
-				});
-
-				this._components.forEach(function (component) {
-					component.fields.forEach(function (field) {
-						formatField(returnRef, field, data);
-					});
-				});
-
-				return returnRef;
-			}
-
-			/**
-    * Name of the table.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'validate',
+  class RoundingMode extends Enum {
+    constructor(value, description) {
+      super(value.toString(), description);
+      this._value = value;
+    }
+    /**
+     * The code used by the Big.js library.
+     *
+     * @ignore
+     * @returns {Number}
+     */
 
 
-			/**
-    * Returns true, if an object complies with the schema.
-    *
-    * @public
-    * @param {*} candidate
-    */
-			value: function validate(candidate) {
-				var returnVal = is.object(candidate);
+    get value() {
+      return this._value;
+    }
+    /**
+     * Rounds away from zero.
+     *
+     * @public
+     * @returns {RoundingMode}
+     */
 
-				return false;
-			}
 
-			/**
-    * Generates a function suitable for use by {@link JSON.parse}.
-    *
-    * @public
-    * @returns {Function}
-    */
+    static get UP() {
+      return up;
+    }
+    /**
+     * Rounds towards zero.
+     *
+     * @public
+     * @returns {RoundingMode}
+     */
 
-		}, {
-			key: 'getReviver',
-			value: function getReviver() {
-				var head = this._revivers;
-				var node = null;
 
-				var advance = function advance(key) {
-					if (node === null) {
-						node = head;
-					} else {
-						node = node.getNext();
-					}
+    static get DOWN() {
+      return down;
+    }
+    /**
+     * Rounds towards nearest neighbor. If equidistant, rounds away from zero.
+     *
+     * @public
+     * @returns {RoundingMode}
+     */
 
-					var item = node.getValue();
 
-					if (key !== item.name) {
-						if (item.reset || key === '' && node === head) {
-							node = null;
-						} else if (item.optional) {
-							item = advance(key);
-						} else {
-							throw new SchemaError(key, item.name, 'Schema parsing is using strict mode, unexpected key found [ found: ' + key + ', expected: ' + item.name + ' ]');
-						}
-					}
+    static get NORMAL() {
+      return normal;
+    }
 
-					return item;
-				};
+    toString() {
+      return '[RoundingMode]';
+    }
 
-				return function (key, value) {
-					var item = advance(key);
+  }
 
-					if (key === '') {
-						return value;
-					} else {
-						return item.reviver(value);
-					}
-				};
-			}
+  const up = new RoundingMode(3, 'up');
+  const down = new RoundingMode(0, 'down');
+  const normal = new RoundingMode(1, 'normal');
+  return Decimal;
+})();
 
-			/**
-    * Returns a function that will generate a *new* reviver function
-    * (see {@link Schema#getReviver}.
-    *
-    * @public
-    * @returns {Function}
-    */
+},{"./Enum":24,"./assert":29,"./is":33,"big.js":42}],23:[function(require,module,exports){
+const assert = require('./assert');
 
-		}, {
-			key: 'getReviverFactory',
-			value: function getReviverFactory() {
-				var _this = this;
+module.exports = (() => {
+  'use strict';
+  /**
+   * An object that has an end-of-life process.
+   *
+   * @public
+   * @interface
+   */
 
-				return function () {
-					return _this.getReviver();
-				};
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Schema (name=' + this._name + ')]';
-			}
-		}, {
-			key: 'name',
-			get: function get() {
-				return this._name;
-			}
+  class Disposable {
+    constructor() {
+      this._disposed = false;
+    }
+    /**
+     * Invokes end-of-life logic. Once this function has been
+     * invoked, further interaction with the object is not
+     * recommended.
+     *
+     * @public
+     */
 
-			/**
-    * The fields of the table.
-    *
-    * @public
-    * @returns {Array<Field>}
-    */
 
-		}, {
-			key: 'fields',
-			get: function get() {
-				return [].concat(_toConsumableArray(this._fields));
-			}
+    dispose() {
+      if (this._disposed) {
+        return;
+      }
 
-			/**
-    * The components of the table.
-    *
-    * @public
-    * @returns {Array<Component>}
-    */
+      this._disposed = true;
 
-		}, {
-			key: 'components',
-			get: function get() {
-				return [].concat(_toConsumableArray(this._components));
-			}
+      this._onDispose();
+    }
+    /**
+     * @protected
+     * @abstract
+     * @ignore
+     */
 
-			/**
-    * If true, only the explicitly defined fields and components will
-    * be serialized.
-    *
-    * @public
-    * @returns {boolean}
-    */
 
-		}, {
-			key: 'strict',
-			get: function get() {
-				return this._strict;
-			}
-		}]);
+    _onDispose() {
+      return;
+    }
+    /**
+     * Returns true if the {@link Disposable#dispose} function has been invoked.
+     *
+     * @public
+     * @returns {boolean}
+     */
 
-		return Schema;
-	}();
 
-	var SchemaError = function (_Error) {
-		_inherits(SchemaError, _Error);
+    getIsDisposed() {
+      return this._disposed || false;
+    }
 
-		function SchemaError(key, name, message) {
-			_classCallCheck(this, SchemaError);
+    toString() {
+      return '[Disposable]';
+    }
+    /**
+     * Creates and returns a {@link Disposable} object with end-of-life logic
+     * delegated to a function.
+     *
+     * @public
+     * @param disposeAction {Function}
+     * @returns {Disposable}
+     */
 
-			var _this2 = _possibleConstructorReturn(this, (SchemaError.__proto__ || Object.getPrototypeOf(SchemaError)).call(this, message));
 
-			_this2.key = key;
-			_this2.name = name;
-			return _this2;
-		}
+    static fromAction(disposeAction) {
+      assert.argumentIsRequired(disposeAction, 'disposeAction', Function);
+      return new DisposableAction(disposeAction);
+    }
+    /**
+     * Creates and returns a {@link Disposable} object whose end-of-life
+     * logic does nothing.
+     *
+     * @public
+     * @returns {Disposable}
+     */
 
-		_createClass(SchemaError, [{
-			key: 'toString',
-			value: function toString() {
-				return '[SchemaError]';
-			}
-		}]);
 
-		return SchemaError;
-	}(Error);
+    static getEmpty() {
+      return Disposable.fromAction(() => {
+        return;
+      });
+    }
 
-	var ReviverItem = function () {
-		function ReviverItem(name, reviver, optional, reset) {
-			_classCallCheck(this, ReviverItem);
+  }
 
-			this._name = name;
-			this._reviver = reviver || functions.getTautology();
-			this._optional = is.boolean(optional) && optional;
-			this._reset = is.boolean(reset) && reset;
-		}
+  class DisposableAction extends Disposable {
+    constructor(disposeAction) {
+      super(disposeAction);
+      this._disposeAction = disposeAction;
+    }
 
-		_createClass(ReviverItem, [{
-			key: 'name',
-			get: function get() {
-				return this._name;
-			}
-		}, {
-			key: 'reviver',
-			get: function get() {
-				return this._reviver;
-			}
-		}, {
-			key: 'optional',
-			get: function get() {
-				return this._optional;
-			}
-		}, {
-			key: 'reset',
-			get: function get() {
-				return this._reset;
-			}
-		}]);
+    _onDispose() {
+      this._disposeAction();
 
-		return ReviverItem;
-	}();
+      this._disposeAction = null;
+    }
 
-	function getReviverItems(fields, components) {
-		var root = new Tree(new ReviverItem(null, null, false, true));
+    toString() {
+      return '[DisposableAction]';
+    }
 
-		// 2017/08/26, BRI. The Field and Component types could inherit a common
-		// type, allowing the following duplication to be avoided with polymorphism.
+  }
 
-		fields.forEach(function (field) {
-			var names = field.name.split('.');
+  return Disposable;
+})();
 
-			var node = root;
+},{"./assert":29}],24:[function(require,module,exports){
+const assert = require('./assert');
 
-			names.forEach(function (name, i) {
-				if (names.length === i + 1) {
-					node.addChild(new ReviverItem(name, field.dataType.reviver, field.optional));
-				} else {
-					var child = node.findChild(function (n) {
-						return n.name === name;
-					});
+module.exports = (() => {
+  'use strict';
 
-					if (!child) {
-						child = node.addChild(new ReviverItem(name));
-					}
+  const types = new Map();
+  /**
+   * An enumeration. Must be inherited. Do not instantiate directly.
+   * Also, this class uses the ES6 Map, therefore a polyfill must
+   * be supplied.
+   *
+   * @public
+   * @interface
+   * @param {String} code - The unique code of the enumeration item.
+   * @param {String} description - A description of the enumeration item.
+   */
 
-					node = child;
-				}
-			});
-		});
+  class Enum {
+    constructor(code, description) {
+      assert.argumentIsRequired(code, 'code', String);
+      assert.argumentIsRequired(description, 'description', String);
+      this._code = code;
+      this._description = description;
+      const c = this.constructor;
 
-		components.forEach(function (component) {
-			var node = root;
+      if (!types.has(c)) {
+        types.set(c, []);
+      }
 
-			var names = component.name.split('.');
+      const existing = Enum.fromCode(c, code);
 
-			names.forEach(function (name, i) {
-				if (names.length === i + 1) {
-					node = node.addChild(new ReviverItem(name, component.reviver));
-				} else {
-					var child = node.findChild(function (n) {
-						return n.name === name;
-					});
+      if (existing === null) {
+        types.get(c).push(this);
+      }
+    }
+    /**
+     * The unique code.
+     *
+     * @public
+     * @returns {String}
+     */
 
-					if (!child) {
-						child = node.addChild(new ReviverItem(name));
-					}
 
-					node = child;
-				}
-			});
+    get code() {
+      return this._code;
+    }
+    /**
+     * The description.
+     *
+     * @public
+     * @returns {String}
+     */
 
-			component.fields.forEach(function (f) {
-				return node.addChild(new ReviverItem(f.name, f.dataType.reviver));
-			});
-		});
 
-		var head = null;
-		var current = null;
+    get description() {
+      return this._description;
+    }
+    /**
+     * Returns true if the provided {@link Enum} argument is equal
+     * to the instance.
+     *
+     * @public
+     * @param {Enum} other
+     * @returns {boolean}
+     */
 
-		var addItemToList = function addItemToList(item, node) {
-			var itemToUse = item;
 
-			if (!node.getIsLeaf()) {
-				var required = node.search(function (i, n) {
-					return n.getIsLeaf() && !i.optional;
-				}, true, false) !== null;
+    equals(other) {
+      return other === this || other instanceof Enum && other.constructor === this.constructor && other.code === this.code;
+    }
+    /**
+     * Returns the JSON representation.
+     *
+     * @public
+     * @returns {String}
+     */
 
-				if (!required) {
-					itemToUse = new ReviverItem(item.name, item.reviver, true, item.reset);
-				}
-			} else {
-				itemToUse = item;
-			}
 
-			if (current === null) {
-				current = head = new LinkedList(itemToUse);
-			} else {
-				current = current.insert(itemToUse);
-			}
-		};
+    toJSON() {
+      return this.code;
+    }
+    /**
+     * Looks up a enumeration item; given the enumeration type and the enumeration
+     * item's value. If no matching item can be found, a null value is returned.
+     *
+     * @public
+     * @param {Function} type - The enumeration type.
+     * @param {String} code - The enumeration item's code.
+     * @returns {*|null}
+     */
 
-		root.walk(addItemToList, false, true);
 
-		return head;
-	}
+    static fromCode(type, code) {
+      return Enum.getItems(type).find(x => x.code === code) || null;
+    }
+    /**
+     * Returns all of the enumeration's items (given an enumeration type).
+     *
+     * @public
+     * @param {Function} type - The enumeration to list.
+     * @returns {Array}
+     */
 
-	function formatField(target, field, data) {
-		if (attributes.has(data, field.name)) {
-			attributes.write(target, field.name, field.dataType.convert(attributes.read(data, field.name)));
-		}
-	}
 
-	return Schema;
-}();
+    static getItems(type) {
+      return types.get(type) || [];
+    }
+
+    toString() {
+      return '[Enum]';
+    }
+
+  }
+
+  return Enum;
+})();
+
+},{"./assert":29}],25:[function(require,module,exports){
+const assert = require('./assert'),
+      is = require('./is');
+
+const Decimal = require('./Decimal'),
+      Currency = require('./Currency');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * A structure for storing money amounts.
+   *
+   * @public
+   * @param {Decimal|Number|String} - A amount, which can be parsed as a {@link Decimal}
+   * @param {Currency} - The currency.
+   */
+
+  class Money {
+    constructor(value, currency) {
+      assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+      this._decimal = getDecimal(value);
+      this._currency = currency;
+    }
+    /**
+     * The currency amount.
+     *
+     * @public
+     * @returns {Decimal}
+     */
+
+
+    get decimal() {
+      return this._decimal;
+    }
+    /**
+     * The currency.
+     *
+     * @public
+     * @returns {Currency}
+     */
+
+
+    get currency() {
+      return this._currency;
+    }
+
+    toAmount(places, mode) {
+      return new Money(this._decimal.round(getPlaces(places), mode), this._currency);
+    }
+    /**
+     * Returns the JSON representation.
+     *
+     * @public
+     * @returns {Object}
+     */
+
+
+    toJSON() {
+      return {
+        decimal: this._decimal,
+        currency: this._currency
+      };
+    }
+    /**
+     * Parses the value emitted by {@link Decimal#toJSON}.
+     *
+     * @public
+     * @param {Object} value
+     * @returns {Money}
+     */
+
+
+    static parse(value) {
+      return new Money(value.decimal, value.currency);
+    }
+
+    toString() {
+      return `[Money]`;
+    }
+
+  }
+
+  function getDecimal(value) {
+    if (value instanceof Decimal) {
+      return value;
+    } else {
+      return new Decimal(value);
+    }
+  }
+
+  function getPlaces(value) {
+    if (is.integer(value) && !(value < 0)) {
+      return value;
+    } else {
+      return 2;
+    }
+  }
+
+  return Money;
+})();
+
+},{"./Currency":20,"./Decimal":22,"./assert":29,"./is":33}],26:[function(require,module,exports){
+const assert = require('./assert'),
+      memoize = require('./memoize');
+
+const Currency = require('./Currency'),
+      Decimal = require('./Decimal');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * A component that represents an exchange rate, composed of a {@link Decimal}
+   * value and two currencies -- a quote (i.e. the numerator) currency and a
+   * base (i.e. denominator) currency.
+   *
+   * @public
+   * @param {Number|String|Decimal} value - The rate
+   * @param {Currency} numerator - The quote currency
+   * @param {Currency} denominator - The base currency
+   */
+
+  class Rate {
+    constructor(value, numerator, denominator) {
+      assert.argumentIsRequired(numerator, 'numerator', Currency, 'Currency');
+      assert.argumentIsRequired(denominator, 'denominator', Currency, 'Currency');
+
+      if (numerator === denominator) {
+        throw new Error('A rate cannot use two identical currencies.');
+      }
+
+      const decimal = getDecimal(value);
+
+      if (!decimal.getIsPositive()) {
+        throw new Error('Rate value must be positive.');
+      }
+
+      this._decimal = decimal;
+      this._numerator = numerator;
+      this._denominator = denominator;
+    }
+    /**
+     * The rate.
+     *
+     * @public
+     * @returns {Decimal}
+     */
+
+
+    get decimal() {
+      return this._decimal;
+    }
+    /**
+     * The numerator (i.e. quote) currency. In other words,
+     * this is EUR of the EURUSD pair.
+     *
+     * @public
+     * @returns {Currency}
+     */
+
+
+    get numerator() {
+      return this._numerator;
+    }
+    /**
+     * The quote (i.e. numerator) currency. In other words,
+     * this is EUR of the EURUSD pair.
+     *
+     * @public
+     * @returns {Currency}
+     */
+
+
+    get quote() {
+      return this._numerator;
+    }
+    /**
+     * The denominator (i.e. base) currency. In other words,
+     * this is USD of the EURUSD pair.
+     *
+     * @public
+     * @returns {Currency}
+     */
+
+
+    get denominator() {
+      return this._denominator;
+    }
+    /**
+     * The base (i.e. denominator) currency. In other words,
+     * this is USD of the EURUSD pair.
+     *
+     * @public
+     * @returns {Currency}
+     */
+
+
+    get base() {
+      return this._denominator;
+    }
+    /**
+     * Returns the equivalent rate with the numerator and denominator (i.e. the qoute and base)
+     * currencies.
+     *
+     * @public
+     * @returns {Rate}
+     */
+
+
+    invert() {
+      return new Rate(Decimal.ONE.divide(this._decimal), this._denominator, this._numerator);
+    }
+    /**
+     * Formats the currency pair as a string (e.g. "EURUSD" or "^EURUSD").
+     *
+     * @public
+     * @param {Boolean=} useCarat - If true, a carat is used as a prefix to the resulting string.
+     * @returns {string}
+     */
+
+
+    formatPair(useCarat) {
+      assert.argumentIsOptional(useCarat, 'useCarat', Boolean);
+      return `${useCarat ? '^' : ''}${this._numerator}${this._denominator}`;
+    }
+    /**
+     * Creates a {@link Rate} instance, when given a value
+     *
+     * @public
+     * @param {Number|String|Decimal} value - The rate.
+     * @param {String} symbol - A string that can be parsed as a currency pair.
+     * @returns {Rate}
+     */
+
+
+    static fromPair(value, symbol) {
+      assert.argumentIsRequired(symbol, 'symbol', String);
+      const pair = parsePair(symbol);
+      return new Rate(value, Currency.parse(pair.numerator), Currency.parse(pair.denominator));
+    }
+    /**
+     * Given a {@link Decimal} value in a known currency, output
+     * a {@link Decimal} converted to an alternate currency.
+     *
+     * @public
+     * @param {Decimal} amount - The amount to convert.
+     * @param {Currency} currency - The currency of the amount.
+     * @param {Currency} desiredCurrency - The currency to convert to.
+     * @param {...Rate} rates - A list of exchange rates to be used for the conversion.
+     * @returns {Decimal}
+     */
+
+
+    static convert(amount, currency, desiredCurrency, ...rates) {
+      assert.argumentIsRequired(amount, 'amount', Decimal, 'Decimal');
+      assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+      assert.argumentIsRequired(desiredCurrency, 'desiredCurrency', Currency, 'Currency'); //assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
+
+      let converted;
+
+      if (currency === desiredCurrency) {
+        converted = amount;
+      } else {
+        const numerator = desiredCurrency;
+        const denominator = currency;
+        let rate = rates.find(r => r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator);
+
+        if (rate) {
+          if (rate.numerator === denominator) {
+            rate = rate.invert();
+          }
+        }
+
+        if (!rate) {
+          throw new Error('Unable to perform conversion, given the rates provided.');
+        }
+
+        converted = amount.multiply(rate.decimal);
+      }
+
+      return converted;
+    }
+
+    toString() {
+      return `[Rate]`;
+    }
+
+  }
+
+  const pairExpression = /^\^?([A-Z]{3})([A-Z]{3})$/;
+
+  function getDecimal(value) {
+    if (value instanceof Decimal) {
+      return value;
+    } else {
+      return new Decimal(value);
+    }
+  }
+
+  const parsePair = memoize.simple(symbol => {
+    const match = symbol.match(pairExpression);
+
+    if (match === null) {
+      throw new Error('The "pair" argument cannot be parsed.');
+    }
+
+    return {
+      numerator: match[2],
+      denominator: match[1]
+    };
+  });
+  return Rate;
+})();
+
+},{"./Currency":20,"./Decimal":22,"./assert":29,"./memoize":34}],27:[function(require,module,exports){
+const assert = require('./assert'),
+      is = require('./is');
+
+const moment = require('moment-timezone');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * A data structure encapsulates (and lazy loads) a moment (see https://momentjs.com/).
+   *
+   * @public
+   * @param {Number} timestamp
+   * @param {String=} timezone
+   */
+
+  class Timestamp {
+    constructor(timestamp, timezone) {
+      assert.argumentIsValid(timestamp, 'timestamp', is.large, 'is an integer');
+      assert.argumentIsOptional(timezone, 'timezone', String);
+      this._timestamp = timestamp;
+      this._timezone = timezone || null;
+      this._moment = null;
+    }
+    /**
+     * The timestamp.
+     *
+     * @public
+     * @returns {Number}
+     */
+
+
+    get timestamp() {
+      return this._timestamp;
+    }
+    /**
+     * The moment instance.
+     *
+     * @public
+     * @returns {moment}
+     */
+
+
+    get moment() {
+      if (this._moment === null) {
+        this._moment = moment(this._timestamp);
+
+        if (this._timezone !== null) {
+          this.moment.tz(this._timezone);
+        }
+      }
+
+      return this._moment;
+    }
+    /**
+     * Returns the JSON representation.
+     *
+     * @public
+     * @returns {Number}
+     */
+
+
+    toJSON() {
+      return this.timestamp;
+    }
+    /**
+     * Clones a {@link Timestamp} instance.
+     *
+     * @public
+     * @static
+     * @param {Timestamp} value
+     * @returns {Timestamp}
+     */
+
+
+    static clone(value) {
+      assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
+      return new Timestamp(value._timestamp, value._timezone);
+    }
+    /**
+     * Parses the value emitted by {@link Timestamp#toJSON}.
+     *
+     * @public
+     * @param {Number} value
+     * @returns {Timestamp}
+     */
+
+
+    static parse(value) {
+      return new Timestamp(value);
+    }
+    /**
+     * Returns a new {@link Timestamp} instance, representing the current moment.
+     *
+     * @public
+     * @returns {Timestamp}
+     */
+
+
+    static now() {
+      return new Timestamp(new Date().getTime());
+    }
+
+    toString() {
+      return '[Timestamp]';
+    }
+
+  }
+
+  return Timestamp;
+})();
+
+},{"./assert":29,"./is":33,"moment-timezone":44}],28:[function(require,module,exports){
+const assert = require('./assert'),
+      is = require('./is');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * Utilities for working with arrays.
+   *
+   * @public
+   * @module lang/array
+   */
+
+  return {
+    /**
+     * Returns the unique items from an array, where the unique
+     * key is determined via a strict equality check.
+     *
+     * @static
+     * @param {Array} a
+     * @returns {Array}
+     */
+    unique(a) {
+      assert.argumentIsArray(a, 'a');
+      return this.uniqueBy(a, item => item);
+    },
+
+    /**
+     * Returns the unique items from an array, where the unique
+     * key is determined by a delegate.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Function} keySelector - A function that returns a unique key for an item.
+     * @returns {Array}
+     */
+    uniqueBy(a, keySelector) {
+      assert.argumentIsArray(a, 'a');
+      return a.filter((item, index, array) => {
+        const key = keySelector(item);
+        return array.findIndex(candidate => key === keySelector(candidate)) === index;
+      });
+    },
+
+    /**
+     * Splits array into groups and returns an object (where the properties have
+     * arrays). Unlike the indexBy function, there can be many items which share
+     * the same key.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Function} keySelector - A function that returns a unique key for an item.
+     * @returns {Object}
+     */
+    groupBy(a, keySelector) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsRequired(keySelector, 'keySelector', Function);
+      return a.reduce((groups, item) => {
+        const key = keySelector(item);
+
+        if (!groups.hasOwnProperty(key)) {
+          groups[key] = [];
+        }
+
+        groups[key].push(item);
+        return groups;
+      }, {});
+    },
+
+    /**
+     * Splits array into groups and returns an array of arrays where the items of each
+     * nested array share a common key.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Function} keySelector - A function that returns a unique key for an item.
+     * @returns {Array}
+     */
+    batchBy(a, keySelector) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsRequired(keySelector, 'keySelector', Function);
+      let currentKey = null;
+      let currentBatch = null;
+      return a.reduce((batches, item) => {
+        const key = keySelector(item);
+
+        if (currentBatch === null || currentKey !== key) {
+          currentKey = key;
+          currentBatch = [];
+          batches.push(currentBatch);
+        }
+
+        currentBatch.push(item);
+        return batches;
+      }, []);
+    },
+
+    /**
+     * Splits array into groups and returns an object (where the properties are items from the
+     * original array). Unlike the groupBy, only one item can have a given key value.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Function} keySelector - A function that returns a unique key for an item.
+     * @returns {Object}
+     */
+    indexBy(a, keySelector) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsRequired(keySelector, 'keySelector', Function);
+      return a.reduce((map, item) => {
+        const key = keySelector(item);
+
+        if (map.hasOwnProperty(key)) {
+          throw new Error('Unable to index array. A duplicate key exists.');
+        }
+
+        map[key] = item;
+        return map;
+      }, {});
+    },
+
+    /**
+     * Returns a new array containing all but the first item.
+     *
+     * @static
+     * @param {Array} a
+     * @returns {Array}
+     */
+    dropLeft(a) {
+      assert.argumentIsArray(a, 'a');
+      let returnRef = Array.from(a);
+
+      if (returnRef.length !== 0) {
+        returnRef.shift();
+      }
+
+      return returnRef;
+    },
+
+    /**
+     * Returns a new array containing all but the last item.
+     *
+     * @static
+     * @param {Array} a
+     * @returns {Array}
+     */
+    dropRight(a) {
+      assert.argumentIsArray(a, 'a');
+      let returnRef = Array.from(a);
+
+      if (returnRef.length !== 0) {
+        returnRef.pop();
+      }
+
+      return returnRef;
+    },
+
+    /**
+     * Returns the first item from an array, or an undefined value, if the
+     * array is empty.
+     *
+     * @static
+     * @param {Array} a
+     * @returns {*|undefined}
+     */
+    first(a) {
+      assert.argumentIsArray(a, 'a');
+      let returnRef;
+
+      if (a.length !== 0) {
+        returnRef = a[0];
+      } else {
+        returnRef = undefined;
+      }
+
+      return returnRef;
+    },
+
+    /**
+     * Returns the last item from an array, or an undefined value, if the
+     * array is empty.
+     *
+     * @static
+     * @param {Array} a
+     * @returns {*|undefined}
+     */
+    last(a) {
+      assert.argumentIsArray(a, 'a');
+      let returnRef;
+
+      if (a.length !== 0) {
+        returnRef = a[a.length - 1];
+      } else {
+        returnRef = undefined;
+      }
+
+      return returnRef;
+    },
+
+    /**
+     * Returns a copy of an array, replacing any item that is itself an array
+     * with the item's items.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Boolean=} recursive - If true, all nested arrays will be flattened.
+     * @returns {Array}
+     */
+    flatten(a, recursive) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsOptional(recursive, 'recursive', Boolean);
+      const empty = [];
+      let flat = empty.concat.apply(empty, a);
+
+      if (recursive && flat.some(x => is.array(x))) {
+        flat = this.flatten(flat, true);
+      }
+
+      return flat;
+    },
+
+    /**
+     * Breaks an array into smaller arrays, returning an array of arrays.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Number} size - The maximum number of items per partition.
+     * @param {Array<Array>}
+     */
+    partition(a, size) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsOptional(size, 'size', Number);
+      const copy = a.slice(0);
+      const partitions = [];
+
+      while (copy.length !== 0) {
+        partitions.push(copy.splice(0, size));
+      }
+
+      return partitions;
+    },
+
+    /**
+     * Set difference operation (using strict equality).
+     *
+     * @static
+     * @param {Array} a
+     * @param {Array} b
+     * @returns {Array}
+     */
+    difference(a, b) {
+      return this.differenceBy(a, b, item => item);
+    },
+
+    /**
+     * Set difference operation, where the uniqueness is determined by a delegate.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Array} b
+     * @param {Function} keySelector - A function that returns a unique key for an item.
+     * @returns {Array}
+     */
+    differenceBy(a, b, keySelector) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsArray(b, 'b');
+      assert.argumentIsRequired(keySelector, 'keySelector', Function);
+      const returnRef = [];
+      a.forEach(candidate => {
+        const candidateKey = keySelector(candidate);
+        const exclude = b.some(comparison => candidateKey === keySelector(comparison));
+
+        if (!exclude) {
+          returnRef.push(candidate);
+        }
+      });
+      return returnRef;
+    },
+
+    /**
+     * Set symmetric difference operation (using strict equality). In
+     * other words, this is the union of the differences between the
+     * sets.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Array} b
+     * @returns {Array}
+     */
+    differenceSymmetric(a, b) {
+      return this.differenceSymmetricBy(a, b, item => item);
+    },
+
+    /**
+     * Set symmetric difference operation, where the uniqueness is determined by a delegate.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Array} b
+     * @param {Function} keySelector - A function that returns a unique key for an item.
+     * @returns {Array}
+     */
+    differenceSymmetricBy(a, b, keySelector) {
+      return this.unionBy(this.differenceBy(a, b, keySelector), this.differenceBy(b, a, keySelector), keySelector);
+    },
+
+    /**
+     * Set union operation (using strict equality).
+     *
+     * @static
+     * @param {Array} a
+     * @param {Array} b
+     * @returns {Array}
+     */
+    union(a, b) {
+      return this.unionBy(a, b, item => item);
+    },
+
+    /**
+     * Set union operation, where the uniqueness is determined by a delegate.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Array} b
+     * @param {Function} keySelector - A function that returns a unique key for an item.
+     * @returns {Array}
+     */
+    unionBy(a, b, keySelector) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsArray(b, 'b');
+      assert.argumentIsRequired(keySelector, 'keySelector', Function);
+      const returnRef = a.slice();
+      b.forEach(candidate => {
+        const candidateKey = keySelector(candidate);
+        const exclude = returnRef.some(comparison => candidateKey === keySelector(comparison));
+
+        if (!exclude) {
+          returnRef.push(candidate);
+        }
+      });
+      return returnRef;
+    },
+
+    /**
+     * Set intersection operation (using strict equality).
+     *
+     * @static
+     * @param {Array} a
+     * @param {Array} b
+     * @returns {Array}
+     */
+    intersection(a, b) {
+      return this.intersectionBy(a, b, item => item);
+    },
+
+    /**
+     * Set intersection operation, where the uniqueness is determined by a delegate.
+     *
+     * @static
+     * @param {Array} a
+     * @param {Array} b
+     * @param {Function} keySelector - A function that returns a unique key for an item.
+     * @returns {Array}
+     */
+    intersectionBy(a, b, keySelector) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsArray(b, 'b');
+      const returnRef = [];
+      a.forEach(candidate => {
+        const candidateKey = keySelector(candidate);
+        const include = b.some(comparison => candidateKey === keySelector(comparison));
+
+        if (include) {
+          returnRef.push(candidate);
+        }
+      });
+      return returnRef;
+    },
+
+    /**
+     * Removes the first item from an array which matches a predicate.
+     *
+     * @static
+     * @public
+     * @param {Array} a
+     * @param {Function} predicate
+     * @returns {Boolean}
+     */
+    remove(a, predicate) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsRequired(predicate, 'predicate', Function);
+      const index = a.findIndex(predicate);
+      const found = !(index < 0);
+
+      if (found) {
+        a.splice(index, 1);
+      }
+
+      return found;
+    },
+
+    /**
+     * Inserts an item into an array using a binary search is used to determine the
+     * proper point for insertion and returns the same array.
+     *
+     * @static
+     * @public
+     * @param {Array} a
+     * @param {*} item
+     * @param {Function} comparator
+     * @returns {Array}
+     */
+    insert(a, item, comparator) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsRequired(comparator, 'comparator', Function);
+
+      if (a.length === 0 || !(comparator(item, a[a.length - 1]) < 0)) {
+        a.push(item);
+      } else if (comparator(item, a[0]) < 0) {
+        a.unshift(item);
+      } else {
+        a.splice(binarySearch(a, item, comparator, 0, a.length - 1), 0, item);
+      }
+
+      return a;
+    }
+
+  };
+
+  function binarySearch(array, item, comparator, start, end) {
+    const size = end - start;
+    const midpointIndex = start + Math.floor(size / 2);
+    const midpointItem = array[midpointIndex];
+    const comparison = comparator(item, midpointItem) > 0;
+
+    if (size < 2) {
+      if (comparison > 0) {
+        const finalIndex = array.length - 1;
+
+        if (end === finalIndex && comparator(item, array[finalIndex]) > 0) {
+          return end + 1;
+        } else {
+          return end;
+        }
+      } else {
+        return start;
+      }
+    } else if (comparison > 0) {
+      return binarySearch(array, item, comparator, midpointIndex, end);
+    } else {
+      return binarySearch(array, item, comparator, start, midpointIndex);
+    }
+  }
+})();
+
+},{"./assert":29,"./is":33}],29:[function(require,module,exports){
+const is = require('./is');
+
+module.exports = (() => {
+  'use strict';
+
+  function checkArgumentType(variable, variableName, type, typeDescription, index) {
+    if (type === String) {
+      if (!is.string(variable)) {
+        throwInvalidTypeError(variableName, 'string', index);
+      }
+    } else if (type === Number) {
+      if (!is.number(variable)) {
+        throwInvalidTypeError(variableName, 'number', index);
+      }
+    } else if (type === Function) {
+      if (!is.fn(variable)) {
+        throwInvalidTypeError(variableName, 'function', index);
+      }
+    } else if (type === Boolean) {
+      if (!is.boolean(variable)) {
+        throwInvalidTypeError(variableName, 'boolean', index);
+      }
+    } else if (type === Date) {
+      if (!is.date(variable)) {
+        throwInvalidTypeError(variableName, 'date', index);
+      }
+    } else if (type === Array) {
+      if (!is.array(variable)) {
+        throwInvalidTypeError(variableName, 'array', index);
+      }
+    } else if (!(variable instanceof (type || Object))) {
+      throwInvalidTypeError(variableName, typeDescription, index);
+    }
+  }
+
+  function throwInvalidTypeError(variableName, typeDescription, index) {
+    let message;
+
+    if (typeof index === 'number') {
+      message = `The argument [ ${variableName || 'unspecified'} ], at index [ ${index.toString()} ] must be a [ ${typeDescription || 'unknown'} ]`;
+    } else {
+      message = `The argument [ ${variableName || 'unspecified'} ] must be a [ ${typeDescription || 'Object'} ]`;
+    }
+
+    throw new Error(message);
+  }
+
+  function throwCustomValidationError(variableName, predicateDescription) {
+    throw new Error(`The argument [ ${variableName || 'unspecified'} ] failed a validation check [ ${predicateDescription || 'No description available'} ]`);
+  }
+  /**
+   * Utilities checking arguments.
+   *
+   * @public
+   * @module lang/assert
+   */
+
+
+  return {
+    /**
+     * Throws an error if an argument doesn't conform to the desired specification (as
+     * determined by a type check).
+     *
+     * @static
+     * @param {*} variable - The value to check.
+     * @param {String} variableName - The name of the value (used for formatting an error message).
+     * @param {*} type - The expected type of the argument.
+     * @param {String=} typeDescription - The description of the expected type (used for formatting an error message).
+     */
+    argumentIsRequired(variable, variableName, type, typeDescription) {
+      checkArgumentType(variable, variableName, type, typeDescription);
+    },
+
+    /**
+     * A relaxed version of the "argumentIsRequired" function that will not throw if
+     * the value is undefined or null.
+     *
+     * @static
+     * @param {*} variable - The value to check.
+     * @param {String} variableName - The name of the value (used for formatting an error message).
+     * @param {*} type - The expected type of the argument.
+     * @param {String=} typeDescription - The description of the expected type (used for formatting an error message).
+     */
+    argumentIsOptional(variable, variableName, type, typeDescription, predicate, predicateDescription) {
+      if (variable === null || variable === undefined) {
+        return;
+      }
+
+      checkArgumentType(variable, variableName, type, typeDescription);
+
+      if (is.fn(predicate) && !predicate(variable)) {
+        throwCustomValidationError(variableName, predicateDescription);
+      }
+    },
+
+    argumentIsArray(variable, variableName, itemConstraint, itemConstraintDescription) {
+      this.argumentIsRequired(variable, variableName, Array);
+
+      if (itemConstraint) {
+        let itemValidator;
+
+        if (typeof itemConstraint === 'function' && itemConstraint !== Function) {
+          itemValidator = (value, index) => itemConstraint.prototype !== undefined && value instanceof itemConstraint || itemConstraint(value, `${variableName}[${index}]`);
+        } else {
+          itemValidator = (value, index) => checkArgumentType(value, variableName, itemConstraint, itemConstraintDescription, index);
+        }
+
+        variable.forEach((v, i) => {
+          itemValidator(v, i);
+        });
+      }
+    },
+
+    /**
+     * Throws an error if an argument doesn't conform to the desired specification
+     * (as determined by a predicate).
+     *
+     * @static
+     * @param {*} variable - The value to check.
+     * @param {String} variableName - The name of the value (used for formatting an error message).
+     * @param {Function=} predicate - A function used to validate the item (beyond type checking).
+     * @param {String=} predicateDescription - A description of the assertion made by the predicate (e.g. "is an integer") that is used for formatting an error message.
+     */
+    argumentIsValid(variable, variableName, predicate, predicateDescription) {
+      if (!predicate(variable)) {
+        throwCustomValidationError(variableName, predicateDescription);
+      }
+    },
+
+    areEqual(a, b, descriptionA, descriptionB) {
+      if (a !== b) {
+        throw new Error(`The objects must be equal [${descriptionA || a.toString()}] and [${descriptionB || b.toString()}]`);
+      }
+    },
+
+    areNotEqual(a, b, descriptionA, descriptionB) {
+      if (a === b) {
+        throw new Error(`The objects cannot be equal [${descriptionA || a.toString()}] and [${descriptionB || b.toString()}]`);
+      }
+    }
+
+  };
+})();
+
+},{"./is":33}],30:[function(require,module,exports){
+const assert = require('./assert'),
+      is = require('./is');
+
+module.exports = (() => {
+  'use strict';
+
+  function getPropertyNameArray(propertyNames, separator = '.') {
+    let returnRef;
+
+    if (is.array(propertyNames)) {
+      returnRef = propertyNames;
+    } else {
+      returnRef = propertyNames.split(separator);
+    }
+
+    return returnRef;
+  }
+
+  function getPropertyTarget(target, propertyNameArray, create) {
+    let returnRef;
+    let propertyTarget = target;
+
+    for (let i = 0; i < propertyNameArray.length - 1; i++) {
+      let propertyName = propertyNameArray[i];
+
+      if (propertyTarget.hasOwnProperty(propertyName) && !is.null(propertyTarget[propertyName]) && !is.undefined(propertyTarget[propertyName])) {
+        propertyTarget = propertyTarget[propertyName];
+      } else if (create) {
+        propertyTarget = propertyTarget[propertyName] = {};
+      } else {
+        propertyTarget = null;
+        break;
+      }
+    }
+
+    return propertyTarget;
+  }
+
+  function last(array) {
+    if (array.length !== 0) {
+      return array[array.length - 1];
+    } else {
+      return null;
+    }
+  }
+  /**
+   * Utilities for reading and writing "complex" properties to
+   * objects. For example, the property "name.first" reads the
+   * "first" property on the "name" object of the target.
+   *
+   * @public
+   * @module lang/attributes
+   */
+
+
+  return {
+    /**
+     * Checks to see if an attribute exists on the target object.
+     *
+     * @public
+     * @static
+     * @param {Object} target - The object to check for existence of the property.
+     * @param {String|String[]} propertyNames - The property to check -- either a string with separators, or an array of strings (already split by separator).
+     * @param {String=} separator - The separator (defaults to a period character).
+     * @returns {boolean}
+     */
+    has(target, propertyNames, separator) {
+      assert.argumentIsRequired(target, 'target', Object);
+
+      if (is.array(propertyNames)) {
+        assert.argumentIsArray(propertyNames, 'propertyNames', String);
+      } else {
+        assert.argumentIsRequired(propertyNames, 'propertyNames', String);
+      }
+
+      const propertyNameArray = getPropertyNameArray(propertyNames, separator);
+      const propertyTarget = getPropertyTarget(target, propertyNameArray, false);
+      return propertyTarget !== null && propertyTarget.hasOwnProperty(last(propertyNameArray));
+    },
+
+    /**
+     * Returns a value from the target object. If the property doesn't exist; undefined
+     * is returned.
+     *
+     * @public
+     * @static
+     * @param {Object} target - The object to read from.
+     * @param {String|String[]} propertyNames - The property to read -- either a string with separators, or an array of strings (already split by separator).
+     * @param {String=} separator - The separator (defaults to a period character).
+     * @returns {*}
+     */
+    read(target, propertyNames, separator) {
+      assert.argumentIsRequired(target, 'target', Object);
+
+      if (is.array(propertyNames)) {
+        assert.argumentIsArray(propertyNames, 'propertyNames', String);
+      } else {
+        assert.argumentIsRequired(propertyNames, 'propertyNames', String);
+      }
+
+      const propertyNameArray = getPropertyNameArray(propertyNames, separator);
+      const propertyTarget = getPropertyTarget(target, propertyNameArray, false);
+      let returnRef;
+
+      if (propertyTarget) {
+        const propertyName = last(propertyNameArray);
+        returnRef = propertyTarget[propertyName];
+      } else {
+        returnRef = undefined;
+      }
+
+      return returnRef;
+    },
+
+    /**
+     * Writes a value to the target object.
+     *
+     * @public
+     * @static
+     * @param {Object} target - The object to write to.
+     * @param {String|String[]} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+     * @param {*} value - The value to assign.
+     * @param {String=} separator - The separator (defaults to a period character).
+     */
+    write(target, propertyNames, value, separator) {
+      assert.argumentIsRequired(target, 'target', Object);
+
+      if (is.array(propertyNames)) {
+        assert.argumentIsArray(propertyNames, 'propertyNames', String);
+      } else {
+        assert.argumentIsRequired(propertyNames, 'propertyNames', String);
+      }
+
+      const propertyNameArray = getPropertyNameArray(propertyNames, separator);
+      const propertyTarget = getPropertyTarget(target, propertyNameArray, true);
+      const propertyName = last(propertyNameArray);
+      propertyTarget[propertyName] = value;
+    },
+
+    /**
+     * Erases a property from the target object.
+     *
+     * @public
+     * @static
+     * @param {Object} target - The object to erase a property from.
+     * @param {String|String} propertyNames - The property to write -- either a string with separators, or an array of strings (already split by separator).
+     * @param {String=} separator - The separator (defaults to a period character).
+     */
+    erase(target, propertyNames, separator) {
+      if (!this.has(target, propertyNames)) {
+        return;
+      }
+
+      const propertyNameArray = getPropertyNameArray(propertyNames, separator);
+      const propertyTarget = getPropertyTarget(target, propertyNameArray, true);
+      const propertyName = last(propertyNameArray);
+      delete propertyTarget[propertyName];
+    }
+
+  };
+})();
+
+},{"./assert":29,"./is":33}],31:[function(require,module,exports){
+module.exports = (() => {
+  'use strict';
+
+  return {
+    /**
+     * Formats a number into a string for display purposes.
+     */
+    numberToString(value, digits, thousandsSeparator, useParenthesis) {
+      if (value === '' || value === undefined || value === null || isNaN(value)) {
+        return '';
+      }
+
+      const applyParenthesis = value < 0 && useParenthesis === true;
+
+      if (applyParenthesis) {
+        value = 0 - value;
+      }
+
+      let returnRef = value.toFixed(digits);
+
+      if (thousandsSeparator && !(value > -1000 && value < 1000)) {
+        const length = returnRef.length;
+        const negative = value < 0;
+        let found = digits === 0;
+        let counter = 0;
+        const buffer = [];
+
+        for (let i = length - 1; !(i < 0); i--) {
+          if (counter === 3 && !(negative && i === 0)) {
+            buffer.unshift(thousandsSeparator);
+            counter = 0;
+          }
+
+          const character = returnRef.charAt(i);
+          buffer.unshift(character);
+
+          if (found) {
+            counter = counter + 1;
+          } else if (character === '.') {
+            found = true;
+          }
+        }
+
+        if (applyParenthesis) {
+          buffer.unshift('(');
+          buffer.push(')');
+        }
+
+        returnRef = buffer.join('');
+      } else if (applyParenthesis) {
+        returnRef = '(' + returnRef + ')';
+      }
+
+      return returnRef;
+    }
+
+  };
+})();
+
+},{}],32:[function(require,module,exports){
+module.exports = (() => {
+  'use strict';
+
+  function tautology(x) {
+    return x;
+  }
+
+  function empty() {
+    return;
+  }
+  /**
+   * Utilities for working with functions.
+   *
+   * @public
+   * @module lang/functions
+   */
+
+
+  return {
+    /**
+     * A function that returns the first argument passed.
+     *
+     * @static
+     * @returns {Function}
+     */
+    getTautology() {
+      return tautology;
+    },
+
+    /**
+     * A function with no return value.
+     *
+     * @static
+     * @returns {Function}
+     */
+    getEmpty() {
+      return empty;
+    }
+
+  };
+})();
+
+},{}],33:[function(require,module,exports){
+module.exports = (() => {
+  'use strict';
+  /**
+   * Utilities for interrogating variables (e.g. checking data types).
+   *
+   * @public
+   * @module lang/is
+   */
+
+  return {
+    /**
+     * Returns true, if the argument is a number. NaN will return false.
+     *
+     * @static
+     * @public
+     * @param {*} candidate {*}
+     * @returns {boolean}
+     */
+    number(candidate) {
+      return typeof candidate === 'number' && !isNaN(candidate);
+    },
+
+    /**
+     * Returns true, if the argument is NaN.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    nan(candidate) {
+      return typeof candidate === 'number' && isNaN(candidate);
+    },
+
+    /**
+     * Returns true, if the argument is a valid 32-bit integer.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    integer(candidate) {
+      return typeof candidate === 'number' && !isNaN(candidate) && (candidate | 0) === candidate;
+    },
+
+    /**
+     * Returns true, if the argument is a valid integer (which can exceed 32 bits); however,
+     * the check can fail above the value of Number.MAX_SAFE_INTEGER.
+     *
+     * @static
+     * @public
+     * @param {*) candidate
+     * @returns {boolean}
+     */
+    large(candidate) {
+      return typeof candidate === 'number' && !isNaN(candidate) && isFinite(candidate) && Math.floor(candidate) === candidate;
+    },
+
+    /**
+     * Returns true, if the argument is a number that is positive.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    positive(candidate) {
+      return this.number(candidate) && candidate > 0;
+    },
+
+    /**
+     * Returns true, if the argument is a number that is negative.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    negative(candidate) {
+      return this.number(candidate) && candidate < 0;
+    },
+
+    /**
+     * Returns true, if the argument is a string.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    string(candidate) {
+      return typeof candidate === 'string';
+    },
+
+    /**
+     * Returns true, if the argument is a JavaScript Date instance.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    date(candidate) {
+      return candidate instanceof Date;
+    },
+
+    /**
+     * Returns true, if the argument is a function.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    fn(candidate) {
+      return typeof candidate === 'function';
+    },
+
+    /**
+     * Returns true, if the argument is an array.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    array(candidate) {
+      return Array.isArray(candidate);
+    },
+
+    /**
+     * Returns true, if the argument is a Boolean value.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    boolean(candidate) {
+      return typeof candidate === 'boolean';
+    },
+
+    /**
+     * Returns true, if the argument is an object.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    object(candidate) {
+      return typeof candidate === 'object' && candidate !== null;
+    },
+
+    /**
+     * Returns true, if the argument is a null value.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    null(candidate) {
+      return candidate === null;
+    },
+
+    /**
+     * Returns true, if the argument is an undefined value.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    undefined(candidate) {
+      return candidate === undefined;
+    },
+
+    /**
+     * Given two classes, determines if the "child" class extends
+     * the "parent" class (without instantiation).
+     *
+     * @param {Function} parent
+     * @param {Function} child
+     * @returns {Boolean}
+     */
+    extension(parent, child) {
+      return this.fn(parent) && this.fn(child) && child.prototype instanceof parent;
+    }
+
+  };
+})();
+
+},{}],34:[function(require,module,exports){
+const assert = require('./assert');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * Utilities for caching results of function invocations (a.k.a. memoization).
+   *
+   * @public
+   * @module lang/memoize
+   */
+
+  return {
+    /**
+     * Memoizes a function that accepts a single argument only. Furthermore,
+     * the parameter's toString function must return a unique value.
+     *
+     * @static
+     * @public
+     * @param {Function} fn - The function to memoize. This function should accept one parameters whose "toString" function outputs a unique value.
+     */
+    simple(fn) {
+      const cache = {};
+      return x => {
+        if (cache.hasOwnProperty(x)) {
+          return cache[x];
+        } else {
+          return cache[x] = fn(x);
+        }
+      };
+    },
+
+    /**
+     * Wraps a function. The resulting function will call the wrapped function
+     * once and cache the result. If a specific duration is supplied, the
+     * cache will be dropped after the duration expires and the wrapped
+     * function will be invoked again.
+     *
+     * @public
+     * @param {Function} fn
+     * @param {Number} duration
+     * @returns {Function}
+     */
+    cache(fn, duration) {
+      assert.argumentIsRequired(fn, 'fn', Function);
+      assert.argumentIsOptional(duration, 'duration', Number);
+      const durationToUse = duration || 0;
+      let executionTime = null;
+      let cacheResult = null;
+      return () => {
+        const currentTime = new Date().getTime();
+
+        if (executionTime === null || durationToUse > 0 && currentTime > executionTime + durationToUse) {
+          executionTime = currentTime;
+          cacheResult = fn();
+        }
+
+        return cacheResult;
+      };
+    }
+
+  };
+})();
+
+},{"./assert":29}],35:[function(require,module,exports){
+const assert = require('./../lang/assert'),
+      Disposable = require('./../lang/Disposable');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * An implementation of the observer pattern.
+   *
+   * @param {*} sender - The object which owns the event.
+   * @extends {Disposable}
+   */
+
+  class Event extends Disposable {
+    constructor(sender) {
+      super();
+      this._sender = sender || null;
+      this._observers = [];
+    }
+    /**
+     * Registers an event handler which will receive a notification when
+     * {@link Event#fire} is called.
+     *
+     * @public
+     * @param {Function} handler - The function which will be called each time the event fires. The first argument will be the event data. The second argument will be the event owner (i.e. sender).
+     * @returns {Disposable}
+     */
+
+
+    register(handler) {
+      assert.argumentIsRequired(handler, 'handler', Function);
+      addRegistration.call(this, handler);
+      return Disposable.fromAction(() => {
+        if (this.getIsDisposed()) {
+          return;
+        }
+
+        removeRegistration.call(this, handler);
+      });
+    }
+    /**
+     * Removes registration for an event handler. That is, the handler will
+     * no longer be called if the event fires.
+     *
+     * @public
+     * @param {Function} handler
+     */
+
+
+    unregister(handler) {
+      assert.argumentIsRequired(handler, 'handler', Function);
+      removeRegistration.call(this, handler);
+    }
+    /**
+     * Removes all handlers from the event.
+     *
+     * @public
+     */
+
+
+    clear() {
+      this._observers = [];
+    }
+    /**
+     * Triggers the event, calling all previously registered handlers.
+     *
+     * @public
+     * @param {*) data - The data to pass each handler.
+     */
+
+
+    fire(data) {
+      let observers = this._observers;
+
+      for (let i = 0; i < observers.length; i++) {
+        let observer = observers[i];
+        observer(data, this._sender);
+      }
+    }
+    /**
+     * Returns true, if no handlers are currently registered.
+     *
+     * @returns {boolean}
+     */
+
+
+    getIsEmpty() {
+      return this._observers.length === 0;
+    }
+
+    _onDispose() {
+      this._observers = null;
+    }
+
+    toString() {
+      return '[Event]';
+    }
+
+  }
+
+  function addRegistration(handler) {
+    let copiedObservers = this._observers.slice();
+
+    copiedObservers.push(handler);
+    this._observers = copiedObservers;
+  }
+
+  function removeRegistration(handler) {
+    const indicesToRemove = [];
+
+    for (let i = 0; i < this._observers.length; i++) {
+      let candidate = this._observers[i];
+
+      if (candidate === handler) {
+        indicesToRemove.push(i);
+      }
+    }
+
+    if (indicesToRemove.length > 0) {
+      const copiedObservers = this._observers.slice();
+
+      for (let j = indicesToRemove.length - 1; !(j < 0); j--) {
+        copiedObservers.splice(indicesToRemove[j], 1);
+      }
+
+      this._observers = copiedObservers;
+    }
+  }
+
+  return Event;
+})();
+
+},{"./../lang/Disposable":23,"./../lang/assert":29}],36:[function(require,module,exports){
+const Currency = require('./../../lang/Currency'),
+      Money = require('./../../lang/Money');
+
+const DataType = require('./DataType'),
+      Field = require('./Field');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * A complex object built from many {@link Field} instances.
+   *
+   * @public
+   * @param {String} name
+   * @param {Array<Field>} componentType
+   */
+
+  class Component {
+    constructor(name, fields, reviver) {
+      this._name = name;
+      this._fields = fields || [];
+      this._reviver = reviver;
+    }
+    /**
+     * Name of the component.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    get name() {
+      return this._name;
+    }
+    /**
+     * Type of the component.
+     *
+     * @public
+     * @returns {ComponentType}
+     */
+
+
+    get fields() {
+      return this._fields;
+    }
+    /**
+     * The reviver used to rebuild the entire component.
+     *
+     * @returns {Function}
+     */
+
+
+    get reviver() {
+      return this._reviver;
+    }
+    /**
+     * The builds a {@link Component} for {@link Money}.
+     *
+     * @public
+     * @returns {Component}
+     */
+
+
+    static forMoney(name) {
+      return new Component(name, [new Field('decimal', DataType.DECIMAL), new Field('currency', DataType.forEnum(Currency, 'Currency'))], x => Money.parse(x));
+    }
+
+    toString() {
+      return `[Component (name=${this._name})]`;
+    }
+
+  }
+
+  return Component;
+})();
+
+},{"./../../lang/Currency":20,"./../../lang/Money":25,"./DataType":37,"./Field":38}],37:[function(require,module,exports){
+const moment = require('moment');
+
+const AdHoc = require('./../../lang/AdHoc'),
+      assert = require('./../../lang/assert'),
+      Day = require('./../../lang/Day'),
+      Decimal = require('./../../lang/Decimal'),
+      Enum = require('./../../lang/Enum'),
+      is = require('./../../lang/is'),
+      Timestamp = require('./../../lang/Timestamp');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * The formal definition of a data type which is used by an {@link Field}.
+   *
+   * @public
+   * @param {String} description
+   * @param {Function=} enumerationType
+   */
+
+  class DataType {
+    constructor(description, enumerationType, reviver, validator, builder) {
+      assert.argumentIsRequired(description, 'description', String);
+      assert.argumentIsOptional(enumerationType, 'enumerationType', Function);
+      assert.argumentIsOptional(reviver, 'reviver', Function);
+      assert.argumentIsOptional(validator, 'validator', Function);
+      assert.argumentIsOptional(builder, 'builder', Function);
+
+      if (enumerationType) {
+        assert.argumentIsValid(enumerationType, 'enumerationType', extendsEnumeration, 'is an enumeration');
+      }
+
+      this._description = description;
+      this._enumerationType = enumerationType || null;
+      let reviverToUse;
+
+      if (reviver) {
+        reviverToUse = reviver;
+      } else if (enumerationType) {
+        reviverToUse = x => Enum.fromCode(enumerationType, x);
+      } else {
+        reviverToUse = x => x;
+      }
+
+      this._reviver = reviverToUse;
+      let validatorToUse;
+
+      if (validator) {
+        validatorToUse = validator;
+      } else {
+        validatorToUse = candidate => true;
+      }
+
+      this._validator = validatorToUse;
+      let builderToUse;
+
+      if (builder) {
+        builderToUse = builder;
+      } else {
+        builderToUse = data => data;
+      }
+
+      this._builder = builderToUse;
+    }
+    /**
+     * A function that converts data into the desired format.
+     *
+     * @public
+     * @param {*} data
+     * @returns {*}
+     */
+
+
+    convert(data) {
+      return this._builder(data);
+    }
+    /**
+     * Description of the data type.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    get description() {
+      return this._description;
+    }
+    /**
+     * The {@Enumeration} type, if applicable.
+     *
+     * @public
+     * @returns {Function|null}
+     */
+
+
+    get enumerationType() {
+      return this._enumerationType;
+    }
+    /**
+     * A function which "revives" a value after serialization to JSON.
+     *
+     * @public
+     * @returns {Function}
+     */
+
+
+    get reviver() {
+      return this._reviver;
+    }
+    /**
+     * A function validates data, returning true or false.
+     *
+     * @public
+     * @returns {Function}
+     */
+
+
+    get validator() {
+      return this._validator;
+    }
+    /**
+     * Return a {@link DataType} instance for use with an {@link @Enum}.
+     *
+     * @public
+     * @param {Function} enumerationType - A class that extends {@link Enum}
+     * @param description - The description
+     * @returns {DataType}
+     */
+
+
+    static forEnum(enumerationType, description) {
+      return new DataType(description, enumerationType, null, x => x instanceof enumerationType, getBuilder(getEnumerationBuilder(enumerationType)));
+    }
+    /**
+     * References a string.
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get STRING() {
+      return dataTypeString;
+    }
+    /**
+     * References a number.
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get NUMBER() {
+      return dataTypeNumber;
+    }
+    /**
+     * References a Boolean value.
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get BOOLEAN() {
+      return dataTypeBoolean;
+    }
+    /**
+     * References an object (serialized as JSON).
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get OBJECT() {
+      return dataTypeObject;
+    }
+    /**
+     * References an array.
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get ARRAY() {
+      return dataTypeArray;
+    }
+    /**
+     * References a {@link Decimal} instance.
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get DECIMAL() {
+      return dataTypeDecimal;
+    }
+    /**
+     * References a {@link Day} instance.
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get DAY() {
+      return dataTypeDay;
+    }
+    /**
+     * References a {@link Timestamp} instance.
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get TIMESTAMP() {
+      return dataTypeTimestamp;
+    }
+    /**
+     * References a {@link Timestamp} instance.
+     *
+     * @public
+     * @static
+     * @returns {DataType}
+     */
+
+
+    static get AD_HOC() {
+      return dataTypeAdHoc;
+    }
+
+    toString() {
+      return `[DataType (description=${this._description})]`;
+    }
+
+  }
+
+  function extendsEnumeration(EnumerationType) {
+    return is.extension(Enum, EnumerationType);
+  }
+
+  const dataTypeString = new DataType('String', null, null, is.string);
+  const dataTypeNumber = new DataType('Number', null, null, is.number);
+  const dataTypeBoolean = new DataType('Boolean', null, null, is.boolean);
+  const dataTypeObject = new DataType('Object', null, null, is.object);
+  const dataTypeArray = new DataType('Array', null, null, is.array);
+  const dataTypeDecimal = new DataType('Decimal', null, x => Decimal.parse(x), x => x instanceof Decimal, getBuilder(buildDecimal));
+  const dataTypeDay = new DataType('Day', null, x => Day.parse(x), x => x instanceof Day, getBuilder(buildDay));
+  const dataTypeTimestamp = new DataType('Timestamp', null, x => Timestamp.parse(x), x => x instanceof Timestamp, getBuilder(buildTimestamp));
+  const dataTypeAdHoc = new DataType('AdHoc', null, x => AdHoc.parse(x), x => x instanceof AdHoc, getBuilder(buildAdHoc));
+
+  function getBuilder(builder) {
+    return data => {
+      try {
+        return builder(data);
+      } catch (e) {
+        return data;
+      }
+    };
+  }
+
+  function buildDecimal(data) {
+    return new Decimal(data);
+  }
+
+  function buildDay(data) {
+    if (data instanceof Day) {
+      return new Day(data.year, data.month, data.day);
+    } else if (is.date(data)) {
+      return Day.fromDate(data);
+    } else if (is.string(data)) {
+      return Day.parse(data);
+    } else if (data instanceof moment) {
+      return new Day(data.year(), data.month() + 1, data.date());
+    } else {
+      return data;
+    }
+  }
+
+  function buildTimestamp(data) {
+    return new Timestamp(data);
+  }
+
+  function buildAdHoc(data) {
+    if (data instanceof AdHoc) {
+      return new AdHoc(data.data);
+    } else if (is.object(data)) {
+      return new AdHoc(data);
+    }
+  }
+
+  function getEnumerationBuilder(enumerationType) {
+    return data => {
+      if (is.string(data)) {
+        return Enum.fromCode(enumerationType, data);
+      } else {
+        return data;
+      }
+    };
+  }
+
+  return DataType;
+})();
+
+},{"./../../lang/AdHoc":19,"./../../lang/Day":21,"./../../lang/Decimal":22,"./../../lang/Enum":24,"./../../lang/Timestamp":27,"./../../lang/assert":29,"./../../lang/is":33,"moment":46}],38:[function(require,module,exports){
+module.exports = (() => {
+  'use strict';
+  /**
+   * A simple field.
+   *
+   * @public
+   * @param {String} name
+   * @param {DataType} dataType
+   * @param {Boolean} optional
+   */
+
+  class Field {
+    constructor(name, dataType, optional) {
+      this._name = name;
+      this._dataType = dataType;
+      this._optional = optional || false;
+    }
+    /**
+     * Name of the field.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    get name() {
+      return this._name;
+    }
+    /**
+     * Type of the field.
+     *
+     * @public
+     * @returns {DataType}
+     */
+
+
+    get dataType() {
+      return this._dataType;
+    }
+    /**
+     * Indicates if the field can be omitted without violating the schema.
+     *
+     * @public
+     * @returns {Boolean}
+     */
+
+
+    get optional() {
+      return this._optional;
+    }
+
+    toString() {
+      return `[Field (name=${this._name})]`;
+    }
+
+  }
+
+  return Field;
+})();
+
+},{}],39:[function(require,module,exports){
+const attributes = require('./../../lang/attributes'),
+      functions = require('./../../lang/functions'),
+      is = require('./../../lang/is');
+
+const LinkedList = require('./../../collections/LinkedList'),
+      Tree = require('./../../collections/Tree');
+
+const Component = require('./Component'),
+      Field = require('./Field');
+
+module.exports = (() => {
+  'use strict';
+  /**
+   * A schema definition, can be used for serialization and deserialization.
+   *
+   * @public
+   * @param {String} name - The name of the schema
+   * @param {Array<Field>} fields
+   * @param {Array<Component>} components
+   * @param {Boolean=} strict
+   */
+
+  class Schema {
+    constructor(name, fields, components, strict) {
+      this._name = name;
+      this._fields = fields || [];
+      this._components = components || [];
+      this._strict = is.boolean(strict) && strict;
+      this._revivers = getReviverItems(this._fields, this._components);
+    }
+    /**
+     * Accepts data and returns a new object which (should) conform to
+     * the schema.
+     *
+     * @public
+     * @param {Object} data
+     * @returns {Object}
+     */
+
+
+    format(data) {
+      const returnRef = {};
+
+      this._fields.forEach(field => {
+        formatField(returnRef, field, data);
+      });
+
+      this._components.forEach(component => {
+        component.fields.forEach(field => {
+          formatField(returnRef, field, data);
+        });
+      });
+
+      return returnRef;
+    }
+    /**
+     * Name of the table.
+     *
+     * @public
+     * @returns {String}
+     */
+
+
+    get name() {
+      return this._name;
+    }
+    /**
+     * The fields of the table.
+     *
+     * @public
+     * @returns {Array<Field>}
+     */
+
+
+    get fields() {
+      return [...this._fields];
+    }
+    /**
+     * The components of the table.
+     *
+     * @public
+     * @returns {Array<Component>}
+     */
+
+
+    get components() {
+      return [...this._components];
+    }
+    /**
+     * If true, only the explicitly defined fields and components will
+     * be serialized.
+     *
+     * @public
+     * @returns {boolean}
+     */
+
+
+    get strict() {
+      return this._strict;
+    }
+    /**
+     * Returns true, if an object complies with the schema.
+     *
+     * @public
+     * @param {*} candidate
+     * @returns {Boolean}
+     */
+
+
+    validate(candidate) {
+      return !getCandidateIsInvalid(candidate) && this.getInvalidFields(candidate).length === 0;
+    }
+    /**
+     * Returns an array of {@link Field} objects from the schema for which the
+     * candidate object does not comply with.
+     *
+     * @public
+     * @param {*} candidate
+     * @returns {Field[]}
+     */
+
+
+    getInvalidFields(candidate) {
+      if (getCandidateIsInvalid(candidate)) {
+        return this.fields.filter(f => !f.optional);
+      }
+
+      return this.fields.reduce((problems, field) => {
+        let check = !field.optional || attributes.has(candidate, field.name);
+
+        if (check) {
+          const valid = field.dataType.validator.call(this, attributes.read(candidate, field.name));
+
+          if (!valid) {
+            problems.push(field);
+          }
+        }
+
+        return problems;
+      }, []);
+    }
+    /**
+     * Generates a function suitable for use by {@link JSON.parse}.
+     *
+     * @public
+     * @returns {Function}
+     */
+
+
+    getReviver() {
+      let head = this._revivers;
+      let node = null;
+
+      const advance = key => {
+        if (node === null) {
+          node = head;
+        } else {
+          node = node.getNext();
+        }
+
+        let item = node.getValue();
+
+        if (key !== item.name) {
+          if (item.reset || key === '' && node === head) {
+            node = null;
+          } else if (item.optional) {
+            item = advance(key);
+          } else {
+            throw new SchemaError(key, item.name, `Schema parsing is using strict mode, unexpected key found [ found: ${key}, expected: ${item.name} ]`);
+          }
+        }
+
+        return item;
+      };
+
+      return (key, value) => {
+        const item = advance(key);
+
+        if (key === '') {
+          return value;
+        } else {
+          return item.reviver(value);
+        }
+      };
+    }
+    /**
+     * Returns a function that will generate a *new* reviver function
+     * (see {@link Schema#getReviver}.
+     *
+     * @public
+     * @returns {Function}
+     */
+
+
+    getReviverFactory() {
+      return () => this.getReviver();
+    }
+
+    toString() {
+      return `[Schema (name=${this._name})]`;
+    }
+
+  }
+
+  class SchemaError extends Error {
+    constructor(key, name, message) {
+      super(message);
+      this.key = key;
+      this.name = name;
+    }
+
+    toString() {
+      return `[SchemaError]`;
+    }
+
+  }
+
+  class ReviverItem {
+    constructor(name, reviver, optional, reset) {
+      this._name = name;
+      this._reviver = reviver || functions.getTautology();
+      this._optional = is.boolean(optional) && optional;
+      this._reset = is.boolean(reset) && reset;
+    }
+
+    get name() {
+      return this._name;
+    }
+
+    get reviver() {
+      return this._reviver;
+    }
+
+    get optional() {
+      return this._optional;
+    }
+
+    get reset() {
+      return this._reset;
+    }
+
+  }
+
+  function getReviverItems(fields, components) {
+    const root = new Tree(new ReviverItem(null, null, false, true)); // 2017/08/26, BRI. The Field and Component types could inherit a common
+    // type, allowing the following duplication to be avoided with polymorphism.
+
+    fields.forEach(field => {
+      const names = field.name.split('.');
+      let node = root;
+      names.forEach((name, i) => {
+        if (names.length === i + 1) {
+          node.addChild(new ReviverItem(name, field.dataType.reviver, field.optional));
+        } else {
+          let child = node.findChild(n => n.name === name);
+
+          if (!child) {
+            child = node.addChild(new ReviverItem(name));
+          }
+
+          node = child;
+        }
+      });
+    });
+    components.forEach(component => {
+      let node = root;
+      const names = component.name.split('.');
+      names.forEach((name, i) => {
+        if (names.length === i + 1) {
+          node = node.addChild(new ReviverItem(name, component.reviver));
+        } else {
+          let child = node.findChild(n => n.name === name);
+
+          if (!child) {
+            child = node.addChild(new ReviverItem(name));
+          }
+
+          node = child;
+        }
+      });
+      component.fields.forEach(f => node.addChild(new ReviverItem(f.name, f.dataType.reviver)));
+    });
+    let head = null;
+    let current = null;
+
+    const addItemToList = (item, node) => {
+      let itemToUse = item;
+
+      if (!node.getIsLeaf()) {
+        const required = node.search((i, n) => n.getIsLeaf() && !i.optional, true, false) !== null;
+
+        if (!required) {
+          itemToUse = new ReviverItem(item.name, item.reviver, true, item.reset);
+        }
+      } else {
+        itemToUse = item;
+      }
+
+      if (current === null) {
+        current = head = new LinkedList(itemToUse);
+      } else {
+        current = current.insert(itemToUse);
+      }
+    };
+
+    root.walk(addItemToList, false, true);
+    return head;
+  }
+
+  function formatField(target, field, data) {
+    if (attributes.has(data, field.name)) {
+      attributes.write(target, field.name, field.dataType.convert(attributes.read(data, field.name)));
+    }
+  }
+
+  function getCandidateIsInvalid(candidate) {
+    return is.undefined(candidate) || is.null(candidate) || !is.object(candidate);
+  }
+
+  return Schema;
+})();
 
 },{"./../../collections/LinkedList":13,"./../../collections/Tree":15,"./../../lang/attributes":30,"./../../lang/functions":32,"./../../lang/is":33,"./Component":36,"./Field":38}],40:[function(require,module,exports){
-'use strict';
+const assert = require('./../../../lang/assert');
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+const Component = require('./../Component'),
+      DataType = require('./../DataType'),
+      Field = require('./../Field');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('./../../../lang/assert');
-
-var Component = require('./../Component'),
-    DataType = require('./../DataType'),
-    Field = require('./../Field');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A fluent interface for building a {@link Component} instance.
-  *
-  * @public
-  * @param {String} name - The name of the schema
-  */
-
-	var ComponentBuilder = function () {
-		function ComponentBuilder(name) {
-			_classCallCheck(this, ComponentBuilder);
-
-			this._component = new Component(name);
-		}
-
-		/**
-   * The {@link Schema} current schema instance.
+module.exports = (() => {
+  'use strict';
+  /**
+   * A fluent interface for building a {@link Component} instance.
    *
    * @public
-   * @returns {Component}
+   * @param {String} name - The name of the schema
    */
 
+  class ComponentBuilder {
+    constructor(name) {
+      this._component = new Component(name);
+    }
+    /**
+     * The {@link Schema} current schema instance.
+     *
+     * @public
+     * @returns {Component}
+     */
 
-		_createClass(ComponentBuilder, [{
-			key: 'withField',
+
+    get component() {
+      return this._component;
+    }
+    /**
+     * Adds a new {@link Field} to the schema and returns the current instance.
+     *
+     * @public
+     * @param {String} name
+     * @param {DataType} dataType
+     * @returns {ComponentBuilder}
+     */
 
 
-			/**
-    * Adds a new {@link Field} to the schema and returns the current instance.
-    *
-    * @public
-    * @param {String} name
-    * @param {DataType} dataType
-    * @returns {ComponentBuilder}
-    */
-			value: function withField(name, dataType) {
-				assert.argumentIsRequired(name, 'name', String);
-				assert.argumentIsRequired(dataType, 'dataType', DataType, 'DataType');
+    withField(name, dataType) {
+      assert.argumentIsRequired(name, 'name', String);
+      assert.argumentIsRequired(dataType, 'dataType', DataType, 'DataType');
 
-				var fields = this._component.fields.concat([new Field(name, dataType)]);
+      const fields = this._component.fields.concat([new Field(name, dataType)]);
 
-				this._component = new Component(this._component.name, fields, this._component.reviver);
+      this._component = new Component(this._component.name, fields, this._component.reviver);
+      return this;
+    }
+    /**
+     * Adds a "reviver" function for use with JSON.parse.
+     *
+     * @public
+     * @param {String} name
+     * @param {DataType} dataType
+     * @returns {ComponentBuilder}
+     */
 
-				return this;
-			}
 
-			/**
-    * Adds a "reviver" function for use with JSON.parse.
-    *
-    * @public
-    * @param {String} name
-    * @param {DataType} dataType
-    * @returns {ComponentBuilder}
-    */
+    withReviver(reviver) {
+      assert.argumentIsRequired(reviver, 'reviver', Function);
+      this._component = new Component(this._component.name, this._component.fields, reviver);
+      return this;
+    }
 
-		}, {
-			key: 'withReviver',
-			value: function withReviver(reviver) {
-				assert.argumentIsRequired(reviver, 'reviver', Function);
+    toString() {
+      return `[ComponentBuilder (name=${this._name})]`;
+    }
 
-				this._component = new Component(this._component.name, this._component.fields, reviver);
+  }
 
-				return this;
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[ComponentBuilder (name=' + this._name + ')]';
-			}
-		}, {
-			key: 'component',
-			get: function get() {
-				return this._component;
-			}
-		}]);
-
-		return ComponentBuilder;
-	}();
-
-	return ComponentBuilder;
-}();
+  return ComponentBuilder;
+})();
 
 },{"./../../../lang/assert":29,"./../Component":36,"./../DataType":37,"./../Field":38}],41:[function(require,module,exports){
-'use strict';
+const assert = require('./../../../lang/assert'),
+      is = require('./../../../lang/is');
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+const Component = require('./../Component'),
+      DataType = require('./../DataType'),
+      Field = require('./../Field'),
+      Schema = require('./../Schema');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+const ComponentBuilder = require('./ComponentBuilder');
 
-var assert = require('./../../../lang/assert'),
-    is = require('./../../../lang/is');
-
-var Component = require('./../Component'),
-    DataType = require('./../DataType'),
-    Field = require('./../Field'),
-    Schema = require('./../Schema');
-
-var ComponentBuilder = require('./ComponentBuilder');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A fluent interface for building a {@link Schema} instance.
-  *
-  * @public
-  * @param {String} name - The name of the schema
-  */
-
-	var SchemaBuilder = function () {
-		function SchemaBuilder(name) {
-			_classCallCheck(this, SchemaBuilder);
-
-			this._schema = new Schema(name);
-		}
-
-		/**
-   * The {@link Schema} current schema instance.
+module.exports = (() => {
+  'use strict';
+  /**
+   * A fluent interface for building a {@link Schema} instance.
    *
    * @public
-   * @returns {Schema}
+   * @param {String} name - The name of the schema
    */
 
+  class SchemaBuilder {
+    constructor(name) {
+      this._schema = new Schema(name);
+    }
+    /**
+     * The {@link Schema} current schema instance.
+     *
+     * @public
+     * @returns {Schema}
+     */
 
-		_createClass(SchemaBuilder, [{
-			key: 'withField',
+
+    get schema() {
+      return this._schema;
+    }
+    /**
+     * Adds a new {@link Field} to the schema and returns the current instance.
+     *
+     * @public
+     * @param {String} name - The name of the new field.
+     * @param {DataType} dataType - The type of the new field.
+     * @param {Boolean=} optional - If true, the field is not required and may be omitted.
+     * @returns {SchemaBuilder}
+     */
 
 
-			/**
-    * Adds a new {@link Field} to the schema and returns the current instance.
-    *
-    * @public
-    * @param {String} name - The name of the new field.
-    * @param {DataType} dataType - The type of the new field.
-    * @param {Boolean=} optional - If true, the field is not required and may be omitted.
-    * @returns {SchemaBuilder}
-    */
-			value: function withField(name, dataType, optional) {
-				assert.argumentIsRequired(name, 'name', String);
-				assert.argumentIsRequired(dataType, 'dataType', DataType, 'DataType');
-				assert.argumentIsOptional(optional, 'optional', Boolean);
+    withField(name, dataType, optional) {
+      assert.argumentIsRequired(name, 'name', String);
+      assert.argumentIsRequired(dataType, 'dataType', DataType, 'DataType');
+      assert.argumentIsOptional(optional, 'optional', Boolean);
+      const optionalToUse = is.boolean(optional) && optional;
 
-				var optionalToUse = is.boolean(optional) && optional;
-				var fields = this._schema.fields.concat([new Field(name, dataType, optionalToUse)]);
+      const fields = this._schema.fields.concat([new Field(name, dataType, optionalToUse)]);
 
-				this._schema = new Schema(this._schema.name, fields, this._schema.components, this._schema.strict);
+      this._schema = new Schema(this._schema.name, fields, this._schema.components, this._schema.strict);
+      return this;
+    }
+    /**
+     * Adds a new {@link Component} to the schema, using a {@link ComponentBuilder}
+     * and returns the current instance.
+     *
+     * @public
+     * @param {String} name - The name of the new component.
+     * @param {Function} callback - A callback to which the {@link ComponentBuilder} is passed synchronously.
+     * @returns {SchemaBuilder}
+     */
 
-				return this;
-			}
 
-			/**
-    * Adds a new {@link Component} to the schema, using a {@link ComponentBuilder}
-    * and returns the current instance.
-    *
-    * @public
-    * @param {String} name - The name of the new component.
-    * @param {Function} callback - A callback to which the {@link ComponentBuilder} is passed synchronously.
-    * @returns {SchemaBuilder}
-    */
+    withComponentBuilder(name, callback) {
+      assert.argumentIsRequired(name, 'name', String);
+      const componentBuilder = new ComponentBuilder(name);
+      callback(componentBuilder);
+      return this.withComponent(componentBuilder.component);
+    }
+    /**
+     * Adds a new {@link Component} to the schema and returns the current instance.
+     *
+     * @public
+     * @param {Component} component - The new component to add.
+     * @returns {SchemaBuilder}
+     */
 
-		}, {
-			key: 'withComponentBuilder',
-			value: function withComponentBuilder(name, callback) {
-				assert.argumentIsRequired(name, 'name', String);
 
-				var componentBuilder = new ComponentBuilder(name);
+    withComponent(component) {
+      assert.argumentIsRequired(component, 'component', Component, 'Component');
 
-				callback(componentBuilder);
+      const components = this._schema.components.concat([component]);
 
-				return this.withComponent(componentBuilder.component);
-			}
+      this._schema = new Schema(this._schema.name, this._schema.fields, components, this._schema.strict);
+      return this;
+    }
+    /**
+     * Creates a new {@link SchemaBuilder}.
+     *
+     * @public
+     * @param {String} name
+     * @returns {SchemaBuilder}
+     */
 
-			/**
-    * Adds a new {@link Component} to the schema and returns the current instance.
-    *
-    * @public
-    * @param {Component} component - The new component to add.
-    * @returns {SchemaBuilder}
-    */
 
-		}, {
-			key: 'withComponent',
-			value: function withComponent(component) {
-				assert.argumentIsRequired(component, 'component', Component, 'Component');
+    static withName(name) {
+      assert.argumentIsRequired(name, 'name', String);
+      return new SchemaBuilder(name);
+    }
 
-				var components = this._schema.components.concat([component]);
+    toString() {
+      return `[SchemaBuilder (name=${this._name})]`;
+    }
 
-				this._schema = new Schema(this._schema.name, this._schema.fields, components, this._schema.strict);
+  }
 
-				return this;
-			}
-
-			/**
-    * Creates a new {@link SchemaBuilder}.
-    *
-    * @public
-    * @param {String} name
-    * @returns {SchemaBuilder}
-    */
-
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[SchemaBuilder (name=' + this._name + ')]';
-			}
-		}, {
-			key: 'schema',
-			get: function get() {
-				return this._schema;
-			}
-		}], [{
-			key: 'withName',
-			value: function withName(name) {
-				assert.argumentIsRequired(name, 'name', String);
-
-				return new SchemaBuilder(name);
-			}
-		}]);
-
-		return SchemaBuilder;
-	}();
-
-	return SchemaBuilder;
-}();
+  return SchemaBuilder;
+})();
 
 },{"./../../../lang/assert":29,"./../../../lang/is":33,"./../Component":36,"./../DataType":37,"./../Field":38,"./../Schema":39,"./ComponentBuilder":40}],42:[function(require,module,exports){
 /*
@@ -11938,84 +10993,86 @@ module.exports = function () {
 
 },{}],43:[function(require,module,exports){
 module.exports={
-	"version": "2016j",
+	"version": "2019b",
 	"zones": [
 		"Africa/Abidjan|LMT GMT|g.8 0|01|-2ldXH.Q|48e5",
-		"Africa/Accra|LMT GMT GHST|.Q 0 -k|012121212121212121212121212121212121212121212121|-26BbX.8 6tzX.8 MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE|41e5",
-		"Africa/Nairobi|LMT EAT BEAT BEAUT|-2r.g -30 -2u -2J|01231|-1F3Cr.g 3Dzr.g okMu MFXJ|47e5",
+		"Africa/Accra|LMT GMT +0020|.Q 0 -k|012121212121212121212121212121212121212121212121|-26BbX.8 6tzX.8 MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE 1BAk MnE 1C0k MnE 1BAk MnE 1BAk MnE|41e5",
+		"Africa/Nairobi|LMT EAT +0230 +0245|-2r.g -30 -2u -2J|01231|-1F3Cr.g 3Dzr.g okMu MFXJ|47e5",
 		"Africa/Algiers|PMT WET WEST CET CEST|-9.l 0 -10 -10 -20|0121212121212121343431312123431213|-2nco9.l cNb9.l HA0 19A0 1iM0 11c0 1oo0 Wo0 1rc0 QM0 1EM0 UM0 DA0 Imo0 rd0 De0 9Xz0 1fb0 1ap0 16K0 2yo0 mEp0 hwL0 jxA0 11A0 dDd0 17b0 11B0 1cN0 2Dy0 1cN0 1fB0 1cL0|26e5",
 		"Africa/Lagos|LMT WAT|-d.A -10|01|-22y0d.A|17e6",
-		"Africa/Bissau|LMT WAT GMT|12.k 10 0|012|-2ldWV.E 2xonV.E|39e4",
+		"Africa/Bissau|LMT -01 GMT|12.k 10 0|012|-2ldX0 2xoo0|39e4",
 		"Africa/Maputo|LMT CAT|-2a.k -20|01|-2GJea.k|26e5",
 		"Africa/Cairo|EET EEST|-20 -30|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-1bIO0 vb0 1ip0 11z0 1iN0 1nz0 12p0 1pz0 10N0 1pz0 16p0 1jz0 s3d0 Vz0 1oN0 11b0 1oO0 10N0 1pz0 10N0 1pb0 10N0 1pb0 10N0 1pb0 10N0 1pz0 10N0 1pb0 10N0 1pb0 11d0 1oL0 11d0 1pb0 11d0 1oL0 11d0 1oL0 11d0 1oL0 11d0 1pb0 11d0 1oL0 11d0 1oL0 11d0 1oL0 11d0 1pb0 11d0 1oL0 11d0 1oL0 11d0 1oL0 11d0 1pb0 11d0 1oL0 11d0 1WL0 rd0 1Rz0 wp0 1pb0 11d0 1oL0 11d0 1oL0 11d0 1oL0 11d0 1pb0 11d0 1qL0 Xd0 1oL0 11d0 1oL0 11d0 1pb0 11d0 1oL0 11d0 1oL0 11d0 1ny0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 WL0 1qN0 Rb0 1wp0 On0 1zd0 Lz0 1EN0 Fb0 c10 8n0 8Nd0 gL0 e10 mn0|15e6",
-		"Africa/Casablanca|LMT WET WEST CET|u.k 0 -10 -10|0121212121212121213121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2gMnt.E 130Lt.E rb0 Dd0 dVb0 b6p0 TX0 EoB0 LL0 gnd0 rz0 43d0 AL0 1Nd0 XX0 1Cp0 pz0 dEp0 4mn0 SyN0 AL0 1Nd0 wn0 1FB0 Db0 1zd0 Lz0 1Nf0 wM0 co0 go0 1o00 s00 dA0 vc0 11A0 A00 e00 y00 11A0 uM0 e00 Dc0 11A0 s00 e00 IM0 WM0 mo0 gM0 LA0 WM0 jA0 e00 Rc0 11A0 e00 e00 U00 11A0 8o0 e00 11A0 11A0 5A0 e00 17c0 1fA0 1a00 1a00 1fA0 17c0 1io0 14o0 1lc0 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1lc0 14o0 1fA0|32e5",
-		"Africa/Ceuta|WET WEST CET CEST|0 -10 -10 -20|010101010101010101010232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-25KN0 11z0 drd0 18o0 3I00 17c0 1fA0 1a00 1io0 1a00 1y7p0 LL0 gnd0 rz0 43d0 AL0 1Nd0 XX0 1Cp0 pz0 dEp0 4VB0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|85e3",
-		"Africa/El_Aaiun|LMT WAT WET WEST|Q.M 10 0 -10|01232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-1rDz7.c 1GVA7.c 6L0 AL0 1Nd0 XX0 1Cp0 pz0 1cBB0 AL0 1Nd0 wn0 1FB0 Db0 1zd0 Lz0 1Nf0 wM0 co0 go0 1o00 s00 dA0 vc0 11A0 A00 e00 y00 11A0 uM0 e00 Dc0 11A0 s00 e00 IM0 WM0 mo0 gM0 LA0 WM0 jA0 e00 Rc0 11A0 e00 e00 U00 11A0 8o0 e00 11A0 11A0 5A0 e00 17c0 1fA0 1a00 1a00 1fA0 17c0 1io0 14o0 1lc0 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1lc0 14o0 1fA0|20e4",
+		"Africa/Casablanca|LMT +00 +01|u.k 0 -10|01212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212|-2gMnt.E 130Lt.E rb0 Dd0 dVb0 b6p0 TX0 EoB0 LL0 gnd0 rz0 43d0 AL0 1Nd0 XX0 1Cp0 pz0 dEp0 4mn0 SyN0 AL0 1Nd0 wn0 1FB0 Db0 1zd0 Lz0 1Nf0 wM0 co0 go0 1o00 s00 dA0 vc0 11A0 A00 e00 y00 11A0 uM0 e00 Dc0 11A0 s00 e00 IM0 WM0 mo0 gM0 LA0 WM0 jA0 e00 28M0 e00 2600 e00 28M0 e00 2600 gM0 2600 e00 28M0 e00 2600 gM0 2600 e00 28M0 e00 2600 e00 28M0 e00 2600 gM0 2600 e00 28M0 e00 2600 gM0 2600 e00 2600 gM0 2600 e00 28M0 e00 2600 gM0|32e5",
+		"Africa/Ceuta|WET WEST CET CEST|0 -10 -10 -20|010101010101010101010232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-25KN0 11z0 drd0 18p0 3HX0 17d0 1fz0 1a10 1io0 1a00 1y7o0 LL0 gnd0 rz0 43d0 AL0 1Nd0 XX0 1Cp0 pz0 dEp0 4VB0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|85e3",
+		"Africa/El_Aaiun|LMT -01 +00 +01|Q.M 10 0 -10|012323232323232323232323232323232323232323232323232323232323232323232323232323232323|-1rDz7.c 1GVA7.c 6L0 AL0 1Nd0 XX0 1Cp0 pz0 1cBB0 AL0 1Nd0 wn0 1FB0 Db0 1zd0 Lz0 1Nf0 wM0 co0 go0 1o00 s00 dA0 vc0 11A0 A00 e00 y00 11A0 uM0 e00 Dc0 11A0 s00 e00 IM0 WM0 mo0 gM0 LA0 WM0 jA0 e00 28M0 e00 2600 e00 28M0 e00 2600 gM0 2600 e00 28M0 e00 2600 gM0 2600 e00 28M0 e00 2600 e00 28M0 e00 2600 gM0 2600 e00 28M0 e00 2600 gM0 2600 e00 2600 gM0 2600 e00 28M0 e00 2600 gM0|20e4",
 		"Africa/Johannesburg|SAST SAST SAST|-1u -20 -30|012121|-2GJdu 1Ajdu 1cL0 1cN0 1cL0|84e5",
-		"Africa/Khartoum|LMT CAT CAST EAT|-2a.8 -20 -30 -30|01212121212121212121212121212121213|-1yW2a.8 1zK0a.8 16L0 1iN0 17b0 1jd0 17b0 1ip0 17z0 1i10 17X0 1hB0 18n0 1hd0 19b0 1gp0 19z0 1iN0 17b0 1ip0 17z0 1i10 18n0 1hd0 18L0 1gN0 19b0 1gp0 19z0 1iN0 17z0 1i10 17X0 yGd0|51e5",
-		"Africa/Monrovia|MMT LRT GMT|H.8 I.u 0|012|-23Lzg.Q 29s01.m|11e5",
+		"Africa/Juba|LMT CAT CAST EAT|-26.s -20 -30 -30|01212121212121212121212121212121213|-1yW26.s 1zK06.s 16L0 1iN0 17b0 1jd0 17b0 1ip0 17z0 1i10 17X0 1hB0 18n0 1hd0 19b0 1gp0 19z0 1iN0 17b0 1ip0 17z0 1i10 18n0 1hd0 18L0 1gN0 19b0 1gp0 19z0 1iN0 17z0 1i10 17X0 yGd0",
+		"Africa/Khartoum|LMT CAT CAST EAT|-2a.8 -20 -30 -30|012121212121212121212121212121212131|-1yW2a.8 1zK0a.8 16L0 1iN0 17b0 1jd0 17b0 1ip0 17z0 1i10 17X0 1hB0 18n0 1hd0 19b0 1gp0 19z0 1iN0 17b0 1ip0 17z0 1i10 18n0 1hd0 18L0 1gN0 19b0 1gp0 19z0 1iN0 17z0 1i10 17X0 yGd0 HjL0|51e5",
+		"Africa/Monrovia|MMT MMT GMT|H.8 I.u 0|012|-23Lzg.Q 28G01.m|11e5",
 		"Africa/Ndjamena|LMT WAT WAST|-10.c -10 -20|0121|-2le10.c 2J3c0.c Wn0|13e5",
+		"Africa/Sao_Tome|LMT GMT WAT|A.J 0 -10|0121|-2le00 4i6N0 2q00",
 		"Africa/Tripoli|LMT CET CEST EET|-Q.I -10 -20 -20|012121213121212121212121213123123|-21JcQ.I 1hnBQ.I vx0 4iP0 xx0 4eN0 Bb0 7ip0 U0n0 A10 1db0 1cN0 1db0 1dd0 1db0 1eN0 1bb0 1e10 1cL0 1c10 1db0 1dd0 1db0 1cN0 1db0 1q10 fAn0 1ep0 1db0 AKq0 TA0 1o00|11e5",
 		"Africa/Tunis|PMT CET CEST|-9.l -10 -20|0121212121212121212121212121212121|-2nco9.l 18pa9.l 1qM0 DA0 3Tc0 11B0 1ze0 WM0 7z0 3d0 14L0 1cN0 1f90 1ar0 16J0 1gXB0 WM0 1rA0 11c0 nwo0 Ko0 1cM0 1cM0 1rA0 10M0 zuM0 10N0 1aN0 1qM0 WM0 1qM0 11A0 1o00|20e5",
-		"Africa/Windhoek|SWAT SAST SAST CAT WAT WAST|-1u -20 -30 -20 -10 -20|012134545454545454545454545454545454545454545454545454545454545454545454545454545454545454545|-2GJdu 1Ajdu 1cL0 1SqL0 9NA0 11D0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 11B0 1nX0 11B0|32e4",
+		"Africa/Windhoek|+0130 SAST SAST CAT WAT|-1u -20 -30 -20 -10|01213434343434343434343434343434343434343434343434343|-2GJdu 1Ajdu 1cL0 1SqL0 9Io0 16P0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0|32e4",
 		"America/Adak|NST NWT NPT BST BDT AHST HST HDT|b0 a0 a0 b0 a0 a0 a0 90|012034343434343434343434343434343456767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676|-17SX0 8wW0 iB0 Qlb0 52O0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 cm0 10q0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|326",
-		"America/Anchorage|CAT CAWT CAPT AHST AHDT YST AKST AKDT|a0 90 90 a0 90 90 90 80|012034343434343434343434343434343456767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676|-17T00 8wX0 iA0 Qlb0 52O0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 cm0 10q0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|30e4",
+		"America/Anchorage|AST AWT APT AHST AHDT YST AKST AKDT|a0 90 90 a0 90 90 90 80|012034343434343434343434343434343456767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676|-17T00 8wX0 iA0 Qlb0 52O0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 cm0 10q0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|30e4",
 		"America/Port_of_Spain|LMT AST|46.4 40|01|-2kNvR.U|43e3",
-		"America/Araguaina|LMT BRT BRST|3c.M 30 20|0121212121212121212121212121212121212121212121212121|-2glwL.c HdKL.c 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 dMN0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 ny10 Lz0|14e4",
-		"America/Argentina/Buenos_Aires|CMT ART ARST ART ARST|4g.M 40 30 30 20|0121212121212121212121212121212121212121213434343434343234343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wp0 Rb0 1wp0 TX0 g0p0 10M0 j3c0 uL0 1qN0 WL0",
-		"America/Argentina/Catamarca|CMT ART ARST ART ARST WART|4g.M 40 30 30 20 40|0121212121212121212121212121212121212121213434343454343235343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wq0 Ra0 1wp0 TX0 g0p0 10M0 ako0 7B0 8zb0 uL0",
-		"America/Argentina/Cordoba|CMT ART ARST ART ARST WART|4g.M 40 30 30 20 40|0121212121212121212121212121212121212121213434343454343234343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wq0 Ra0 1wp0 TX0 g0p0 10M0 j3c0 uL0 1qN0 WL0",
-		"America/Argentina/Jujuy|CMT ART ARST ART ARST WART WARST|4g.M 40 30 30 20 40 30|01212121212121212121212121212121212121212134343456543432343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1ze0 TX0 1ld0 WK0 1wp0 TX0 g0p0 10M0 j3c0 uL0",
-		"America/Argentina/La_Rioja|CMT ART ARST ART ARST WART|4g.M 40 30 30 20 40|01212121212121212121212121212121212121212134343434534343235343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Qn0 qO0 16n0 Rb0 1wp0 TX0 g0p0 10M0 ako0 7B0 8zb0 uL0",
-		"America/Argentina/Mendoza|CMT ART ARST ART ARST WART WARST|4g.M 40 30 30 20 40 30|0121212121212121212121212121212121212121213434345656543235343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1u20 SL0 1vd0 Tb0 1wp0 TW0 g0p0 10M0 agM0 Op0 7TX0 uL0",
-		"America/Argentina/Rio_Gallegos|CMT ART ARST ART ARST WART|4g.M 40 30 30 20 40|0121212121212121212121212121212121212121213434343434343235343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wp0 Rb0 1wp0 TX0 g0p0 10M0 ako0 7B0 8zb0 uL0",
-		"America/Argentina/Salta|CMT ART ARST ART ARST WART|4g.M 40 30 30 20 40|01212121212121212121212121212121212121212134343434543432343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wq0 Ra0 1wp0 TX0 g0p0 10M0 j3c0 uL0",
-		"America/Argentina/San_Juan|CMT ART ARST ART ARST WART|4g.M 40 30 30 20 40|01212121212121212121212121212121212121212134343434534343235343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Qn0 qO0 16n0 Rb0 1wp0 TX0 g0p0 10M0 ak00 m10 8lb0 uL0",
-		"America/Argentina/San_Luis|CMT ART ARST ART ARST WART WARST|4g.M 40 30 30 20 40 30|01212121212121212121212121212121212121212134343456536353465653|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 XX0 1q20 SL0 AN0 kin0 10M0 ak00 m10 8lb0 8L0 jd0 1qN0 WL0 1qN0",
-		"America/Argentina/Tucuman|CMT ART ARST ART ARST WART|4g.M 40 30 30 20 40|012121212121212121212121212121212121212121343434345434323534343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wq0 Ra0 1wp0 TX0 g0p0 10M0 ako0 4N0 8BX0 uL0 1qN0 WL0",
-		"America/Argentina/Ushuaia|CMT ART ARST ART ARST WART|4g.M 40 30 30 20 40|0121212121212121212121212121212121212121213434343434343235343|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wp0 Rb0 1wp0 TX0 g0p0 10M0 ajA0 8p0 8zb0 uL0",
-		"America/Curacao|LMT ANT AST|4z.L 4u 40|012|-2kV7o.d 28KLS.d|15e4",
-		"America/Asuncion|AMT PYT PYT PYST|3O.E 40 30 30|012131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313|-1x589.k 1DKM9.k 3CL0 3Dd0 10L0 1pB0 10n0 1pB0 10n0 1pB0 1cL0 1dd0 1db0 1dd0 1cL0 1dd0 1cL0 1dd0 1cL0 1dd0 1db0 1dd0 1cL0 1dd0 1cL0 1dd0 1cL0 1dd0 1db0 1dd0 1cL0 1lB0 14n0 1dd0 1cL0 1fd0 WL0 1rd0 1aL0 1dB0 Xz0 1qp0 Xb0 1qN0 10L0 1rB0 TX0 1tB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 1cL0 WN0 1qL0 11B0 1nX0 1ip0 WL0 1qN0 WL0 1qN0 WL0 1tB0 TX0 1tB0 TX0 1tB0 19X0 1a10 1fz0 1a10 1fz0 1cN0 17b0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0|28e5",
+		"America/Araguaina|LMT -03 -02|3c.M 30 20|0121212121212121212121212121212121212121212121212121|-2glwL.c HdKL.c 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 dMN0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 ny10 Lz0|14e4",
+		"America/Argentina/Buenos_Aires|CMT -04 -03 -02|4g.M 40 30 20|01212121212121212121212121212121212121212123232323232323232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wp0 Rb0 1wp0 TX0 A4p0 uL0 1qN0 WL0",
+		"America/Argentina/Catamarca|CMT -04 -03 -02|4g.M 40 30 20|01212121212121212121212121212121212121212123232323132321232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wq0 Ra0 1wp0 TX0 rlB0 7B0 8zb0 uL0",
+		"America/Argentina/Cordoba|CMT -04 -03 -02|4g.M 40 30 20|01212121212121212121212121212121212121212123232323132323232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wq0 Ra0 1wp0 TX0 A4p0 uL0 1qN0 WL0",
+		"America/Argentina/Jujuy|CMT -04 -03 -02|4g.M 40 30 20|012121212121212121212121212121212121212121232323121323232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1ze0 TX0 1ld0 WK0 1wp0 TX0 A4p0 uL0",
+		"America/Argentina/La_Rioja|CMT -04 -03 -02|4g.M 40 30 20|012121212121212121212121212121212121212121232323231232321232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Qn0 qO0 16n0 Rb0 1wp0 TX0 rlB0 7B0 8zb0 uL0",
+		"America/Argentina/Mendoza|CMT -04 -03 -02|4g.M 40 30 20|01212121212121212121212121212121212121212123232312121321232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1u20 SL0 1vd0 Tb0 1wp0 TW0 ri10 Op0 7TX0 uL0",
+		"America/Argentina/Rio_Gallegos|CMT -04 -03 -02|4g.M 40 30 20|01212121212121212121212121212121212121212123232323232321232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wp0 Rb0 1wp0 TX0 rlB0 7B0 8zb0 uL0",
+		"America/Argentina/Salta|CMT -04 -03 -02|4g.M 40 30 20|012121212121212121212121212121212121212121232323231323232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wq0 Ra0 1wp0 TX0 A4p0 uL0",
+		"America/Argentina/San_Juan|CMT -04 -03 -02|4g.M 40 30 20|012121212121212121212121212121212121212121232323231232321232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Qn0 qO0 16n0 Rb0 1wp0 TX0 rld0 m10 8lb0 uL0",
+		"America/Argentina/San_Luis|CMT -04 -03 -02|4g.M 40 30 20|012121212121212121212121212121212121212121232323121212321212|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 XX0 1q20 SL0 AN0 vDb0 m10 8lb0 8L0 jd0 1qN0 WL0 1qN0",
+		"America/Argentina/Tucuman|CMT -04 -03 -02|4g.M 40 30 20|0121212121212121212121212121212121212121212323232313232123232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wq0 Ra0 1wp0 TX0 rlB0 4N0 8BX0 uL0 1qN0 WL0",
+		"America/Argentina/Ushuaia|CMT -04 -03 -02|4g.M 40 30 20|01212121212121212121212121212121212121212123232323232321232|-20UHH.c pKnH.c Mn0 1iN0 Tb0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 1C10 LX0 1C10 LX0 1C10 LX0 1C10 Mn0 MN0 2jz0 MN0 4lX0 u10 5Lb0 1pB0 Fnz0 u10 uL0 1vd0 SL0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 zvd0 Bz0 1tB0 TX0 1wp0 Rb0 1wp0 Rb0 1wp0 TX0 rkN0 8p0 8zb0 uL0",
+		"America/Curacao|LMT -0430 AST|4z.L 4u 40|012|-2kV7o.d 28KLS.d|15e4",
+		"America/Asuncion|AMT -04 -03|3O.E 40 30|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212|-1x589.k 1DKM9.k 3CL0 3Dd0 10L0 1pB0 10n0 1pB0 10n0 1pB0 1cL0 1dd0 1db0 1dd0 1cL0 1dd0 1cL0 1dd0 1cL0 1dd0 1db0 1dd0 1cL0 1dd0 1cL0 1dd0 1cL0 1dd0 1db0 1dd0 1cL0 1lB0 14n0 1dd0 1cL0 1fd0 WL0 1rd0 1aL0 1dB0 Xz0 1qp0 Xb0 1qN0 10L0 1rB0 TX0 1tB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 1cL0 WN0 1qL0 11B0 1nX0 1ip0 WL0 1qN0 WL0 1qN0 WL0 1tB0 TX0 1tB0 TX0 1tB0 19X0 1a10 1fz0 1a10 1fz0 1cN0 17b0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0|28e5",
 		"America/Atikokan|CST CDT CWT CPT EST|60 50 50 50 50|0101234|-25TQ0 1in0 Rnb0 3je0 8x30 iw0|28e2",
-		"America/Bahia|LMT BRT BRST|2y.4 30 20|01212121212121212121212121212121212121212121212121212121212121|-2glxp.U HdLp.U 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 l5B0 Rb0|27e5",
 		"America/Bahia_Banderas|LMT MST CST PST MDT CDT|71 70 60 80 60 50|0121212131414141414141414141414141414152525252525252525252525252525252525252525252525252525252|-1UQF0 deL0 8lc0 17c0 10M0 1dd0 otX0 gmN0 P2N0 13Vd0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nW0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|84e3",
+		"America/Bahia|LMT -03 -02|2y.4 30 20|01212121212121212121212121212121212121212121212121212121212121|-2glxp.U HdLp.U 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 l5B0 Rb0|27e5",
 		"America/Barbados|LMT BMT AST ADT|3W.t 3W.t 40 30|01232323232|-1Q0I1.v jsM0 1ODC1.v IL0 1ip0 17b0 1ip0 17b0 1ld0 13b0|28e4",
-		"America/Belem|LMT BRT BRST|3d.U 30 20|012121212121212121212121212121|-2glwK.4 HdKK.4 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0|20e5",
-		"America/Belize|LMT CST CHDT CDT|5Q.M 60 5u 50|01212121212121212121212121212121212121212121212121213131|-2kBu7.c fPA7.c Onu 1zcu Rbu 1wou Rbu 1wou Rbu 1zcu Onu 1zcu Onu 1zcu Rbu 1wou Rbu 1wou Rbu 1wou Rbu 1zcu Onu 1zcu Onu 1zcu Rbu 1wou Rbu 1wou Rbu 1zcu Onu 1zcu Onu 1zcu Onu 1zcu Rbu 1wou Rbu 1wou Rbu 1zcu Onu 1zcu Onu 1zcu Rbu 1wou Rbu 1f0Mu qn0 lxB0 mn0|57e3",
+		"America/Belem|LMT -03 -02|3d.U 30 20|012121212121212121212121212121|-2glwK.4 HdKK.4 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0|20e5",
+		"America/Belize|LMT CST -0530 CDT|5Q.M 60 5u 50|01212121212121212121212121212121212121212121212121213131|-2kBu7.c fPA7.c Onu 1zcu Rbu 1wou Rbu 1wou Rbu 1zcu Onu 1zcu Onu 1zcu Rbu 1wou Rbu 1wou Rbu 1wou Rbu 1zcu Onu 1zcu Onu 1zcu Rbu 1wou Rbu 1wou Rbu 1zcu Onu 1zcu Onu 1zcu Onu 1zcu Rbu 1wou Rbu 1wou Rbu 1zcu Onu 1zcu Onu 1zcu Rbu 1wou Rbu 1f0Mu qn0 lxB0 mn0|57e3",
 		"America/Blanc-Sablon|AST ADT AWT APT|40 30 30 30|010230|-25TS0 1in0 UGp0 8x50 iu0|11e2",
-		"America/Boa_Vista|LMT AMT AMST|42.E 40 30|0121212121212121212121212121212121|-2glvV.k HdKV.k 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 smp0 WL0 1tB0 2L0|62e2",
-		"America/Bogota|BMT COT COST|4U.g 50 40|0121|-2eb73.I 38yo3.I 2en0|90e5",
+		"America/Boa_Vista|LMT -04 -03|42.E 40 30|0121212121212121212121212121212121|-2glvV.k HdKV.k 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 smp0 WL0 1tB0 2L0|62e2",
+		"America/Bogota|BMT -05 -04|4U.g 50 40|0121|-2eb73.I 38yo3.I 2en0|90e5",
 		"America/Boise|PST PDT MST MWT MPT MDT|80 70 70 60 60 60|0101023425252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252|-261q0 1nX0 11B0 1nX0 8C10 JCL0 8x20 ix0 QwN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 Dd0 1Kn0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|21e4",
 		"America/Cambridge_Bay|-00 MST MWT MPT MDDT MDT CST CDT EST|0 70 60 60 50 60 60 50 50|0123141515151515151515151515151515151515151515678651515151515151515151515151515151515151515151515151515151515151515151515151|-21Jc0 RO90 8x20 ix0 LCL0 1fA0 zgO0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11A0 1nX0 2K0 WQ0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|15e2",
-		"America/Campo_Grande|LMT AMT AMST|3C.s 40 30|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212|-2glwl.w HdLl.w 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 1C10 Lz0 1Ip0 HX0 1zd0 On0 1HB0 IL0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10 Lz0 1C10 On0 1zd0 Rb0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0|77e4",
+		"America/Campo_Grande|LMT -04 -03|3C.s 40 30|01212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2glwl.w HdLl.w 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 1C10 Lz0 1Ip0 HX0 1zd0 On0 1HB0 IL0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1HB0 FX0|77e4",
 		"America/Cancun|LMT CST EST EDT CDT|5L.4 60 50 40 50|0123232341414141414141414141414141414141412|-1UQG0 2q2o0 yLB0 1lb0 14p0 1lb0 14p0 Lz0 xB0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 Dd0|63e4",
-		"America/Caracas|CMT VET VET|4r.E 4u 40|01212|-2kV7w.k 28KM2.k 1IwOu kqo0|29e5",
-		"America/Cayenne|LMT GFT GFT|3t.k 40 30|012|-2mrwu.E 2gWou.E|58e3",
+		"America/Caracas|CMT -0430 -04|4r.E 4u 40|01212|-2kV7w.k 28KM2.k 1IwOu kqo0|29e5",
+		"America/Cayenne|LMT -04 -03|3t.k 40 30|012|-2mrwu.E 2gWou.E|58e3",
 		"America/Panama|CMT EST|5j.A 50|01|-2uduE.o|15e5",
 		"America/Chicago|CST CDT EST CWT CPT|60 50 50 50 50|01010101010101010101010101010101010102010101010103401010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261s0 1nX0 11B0 1nX0 1wp0 TX0 WN0 1qL0 1cN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 11B0 1Hz0 14p0 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 RB0 8x30 iw0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|92e5",
 		"America/Chihuahua|LMT MST CST CDT MDT|74.k 70 60 50 60|0121212323241414141414141414141414141414141414141414141414141414141414141414141414141414141|-1UQF0 deL0 8lc0 17c0 10M0 1dd0 2zQN0 1lb0 14p0 1lb0 14q0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|81e4",
 		"America/Costa_Rica|SJMT CST CDT|5A.d 60 50|0121212121|-1Xd6n.L 2lu0n.L Db0 1Kp0 Db0 pRB0 15b0 1kp0 mL0|12e5",
 		"America/Creston|MST PST|70 80|010|-29DR0 43B0|53e2",
-		"America/Cuiaba|LMT AMT AMST|3I.k 40 30|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212|-2glwf.E HdLf.E 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 4a10 HX0 1zd0 On0 1HB0 IL0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10 Lz0 1C10 On0 1zd0 Rb0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0|54e4",
-		"America/Danmarkshavn|LMT WGT WGST GMT|1e.E 30 20 0|01212121212121212121212121212121213|-2a5WJ.k 2z5fJ.k 19U0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 DC0|8",
-		"America/Dawson|YST YDT YWT YPT YDDT PST PDT|90 80 80 80 70 80 70|0101023040565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565|-25TN0 1in0 1o10 13V0 Ser0 8x00 iz0 LCL0 1fA0 jrA0 fNd0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|13e2",
+		"America/Cuiaba|LMT -04 -03|3I.k 40 30|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2glwf.E HdLf.E 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 4a10 HX0 1zd0 On0 1HB0 IL0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1HB0 FX0|54e4",
+		"America/Danmarkshavn|LMT -03 -02 GMT|1e.E 30 20 0|01212121212121212121212121212121213|-2a5WJ.k 2z5fJ.k 19U0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 DC0|8",
 		"America/Dawson_Creek|PST PDT PWT PPT MST|80 70 70 70 70|0102301010101010101010101010101010101010101010101010101014|-25TO0 1in0 UGp0 8x10 iy0 3NB0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 ML0|12e3",
+		"America/Dawson|YST YDT YWT YPT YDDT PST PDT|90 80 80 80 70 80 70|0101023040565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565|-25TN0 1in0 1o10 13V0 Ser0 8x00 iz0 LCL0 1fA0 jrA0 fNd0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|13e2",
 		"America/Denver|MST MDT MWT MPT|70 60 60 60|01010101023010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261r0 1nX0 11B0 1nX0 11B0 1qL0 WN0 mn0 Ord0 8x20 ix0 LCN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|26e5",
-		"America/Detroit|LMT CST EST EWT EPT EDT|5w.b 60 50 40 40 40|01234252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252|-2Cgir.N peqr.N 156L0 8x40 iv0 6fd0 11z0 Jy10 SL0 dnB0 1cL0 s10 1Vz0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|37e5",
+		"America/Detroit|LMT CST EST EWT EPT EDT|5w.b 60 50 40 40 40|012342525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252|-2Cgir.N peqr.N 156L0 8x40 iv0 6fd0 11z0 XQp0 1cL0 s10 1Vz0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|37e5",
 		"America/Edmonton|LMT MST MDT MWT MPT|7x.Q 70 60 60 60|01212121212121341212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2yd4q.8 shdq.8 1in0 17d0 hz0 2dB0 1fz0 1a10 11z0 1qN0 WL0 1qN0 11z0 IGN0 8x20 ix0 3NB0 11z0 LFB0 1cL0 3Cp0 1cL0 66N0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|10e5",
-		"America/Eirunepe|LMT ACT ACST AMT|4D.s 50 40 40|0121212121212121212121212121212131|-2glvk.w HdLk.w 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 dPB0 On0 yTd0 d5X0|31e3",
+		"America/Eirunepe|LMT -05 -04|4D.s 50 40|0121212121212121212121212121212121|-2glvk.w HdLk.w 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 dPB0 On0 yTd0 d5X0|31e3",
 		"America/El_Salvador|LMT CST CDT|5U.M 60 50|012121|-1XiG3.c 2Fvc3.c WL0 1qN0 WL0|11e5",
 		"America/Tijuana|LMT MST PST PDT PWT PPT|7M.4 70 80 70 70 70|012123245232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-1UQE0 4PX0 8mM0 8lc0 SN0 1cL0 pHB0 83r0 zI0 5O10 1Rz0 cOO0 11A0 1o00 11A0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 BUp0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 U10 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|20e5",
 		"America/Fort_Nelson|PST PDT PWT PPT MST|80 70 70 70 70|01023010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010104|-25TO0 1in0 UGp0 8x10 iy0 3NB0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0|39e2",
 		"America/Fort_Wayne|CST CDT CWT CPT EST EDT|60 50 50 50 50 40|010101023010101010101010101040454545454545454545454545454545454545454545454545454545454545454545454|-261s0 1nX0 11B0 1nX0 QI10 Db0 RB0 8x30 iw0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 5Tz0 1o10 qLb0 1cL0 1cN0 1cL0 1qhd0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
-		"America/Fortaleza|LMT BRT BRST|2y 30 20|0121212121212121212121212121212121212121|-2glxq HdLq 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 nsp0 WL0 1tB0 5z0 2mN0 On0|34e5",
+		"America/Fortaleza|LMT -03 -02|2y 30 20|0121212121212121212121212121212121212121|-2glxq HdLq 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 nsp0 WL0 1tB0 5z0 2mN0 On0|34e5",
 		"America/Glace_Bay|LMT AST ADT AWT APT|3X.M 40 30 30 30|012134121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2IsI0.c CwO0.c 1in0 UGp0 8x50 iu0 iq10 11z0 Jg10 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|19e3",
-		"America/Godthab|LMT WGT WGST|3q.U 30 20|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2a5Ux.4 2z5dx.4 19U0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|17e3",
+		"America/Godthab|LMT -03 -02|3q.U 30 20|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2a5Ux.4 2z5dx.4 19U0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|17e3",
 		"America/Goose_Bay|NST NDT NST NDT NWT NPT AST ADT ADDT|3u.Q 2u.Q 3u 2u 2u 2u 40 30 20|010232323232323245232323232323232323232323232323232323232326767676767676767676767676767676767676767676768676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676|-25TSt.8 1in0 DXb0 2HbX.8 WL0 1qN0 WL0 1qN0 WL0 1tB0 TX0 1tB0 WL0 1qN0 WL0 1qN0 7UHu itu 1tB0 WL0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1tB0 WL0 1ld0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 S10 g0u 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14n1 1lb0 14p0 1nW0 11C0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zcX Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|76e2",
-		"America/Grand_Turk|KMT EST EDT AST|57.b 50 40 40|0121212121212121212121212121212121212121212121212121212121212121212121212123|-2l1uQ.N 2HHBQ.N 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|37e2",
+		"America/Grand_Turk|KMT EST EDT AST|57.a 50 40 40|01212121212121212121212121212121212121212121212121212121212121212121212121232121212121212121212121212121212121212121|-2l1uQ.O 2HHBQ.O 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 5Ip0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|37e2",
 		"America/Guatemala|LMT CST CDT|62.4 60 50|0121212121|-24KhV.U 2efXV.U An0 mtd0 Nz0 ifB0 17b0 zDB0 11z0|13e5",
-		"America/Guayaquil|QMT ECT|5e 50|01|-1yVSK|27e5",
-		"America/Guyana|LMT GBGT GYT GYT GYT|3Q.E 3J 3J 30 40|01234|-2dvU7.k 24JzQ.k mlc0 Bxbf|80e4",
+		"America/Guayaquil|QMT -05 -04|5e 50 40|0121|-1yVSK 2uILK rz0|27e5",
+		"America/Guyana|LMT -0345 -03 -04|3Q.E 3J 30 40|0123|-2dvU7.k 2r6LQ.k Bxbf|80e4",
 		"America/Halifax|LMT AST ADT AWT APT|4e.o 40 30 30 30|0121212121212121212121212121212121212121212121212134121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2IsHJ.A xzzJ.A 1db0 3I30 1in0 3HX0 IL0 1E10 ML0 1yN0 Pb0 1Bd0 Mn0 1Bd0 Rz0 1w10 Xb0 1w10 LX0 1w10 Xb0 1w10 Lz0 1C10 Jz0 1E10 OL0 1yN0 Un0 1qp0 Xb0 1qp0 11X0 1w10 Lz0 1HB0 LX0 1C10 FX0 1w10 Xb0 1qp0 Xb0 1BB0 LX0 1td0 Xb0 1qp0 Xb0 Rf0 8x50 iu0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 3Qp0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 3Qp0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 6i10 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|39e4",
 		"America/Havana|HMT CST CDT|5t.A 50 40|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-1Meuu.o 72zu.o ML0 sld0 An0 1Nd0 Db0 1Nd0 An0 6Ep0 An0 1Nd0 An0 JDd0 Mn0 1Ap0 On0 1fd0 11X0 1qN0 WL0 1wp0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 14n0 1ld0 14L0 1kN0 15b0 1kp0 1cL0 1cN0 1fz0 1a10 1fz0 1fB0 11z0 14p0 1nX0 11B0 1nX0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 14n0 1ld0 14n0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 1a10 1in0 1a10 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 17c0 1o00 11A0 1qM0 11A0 1o00 11A0 1o00 14o0 1lc0 14o0 1lc0 11A0 6i00 Rc0 1wo0 U00 1tA0 Rc0 1wo0 U00 1wo0 U00 1zc0 U00 1qM0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0|21e5",
 		"America/Hermosillo|LMT MST CST PST MDT|7n.Q 70 60 80 60|0121212131414141|-1UQF0 deL0 8lc0 17c0 10M0 1dd0 otX0 gmN0 P2N0 13Vd0 1lb0 14p0 1lb0 14p0 1lb0|64e4",
@@ -12028,54 +11085,55 @@ module.exports={
 		"America/Indiana/Winamac|CST CDT CWT CPT EST EDT|60 50 50 50 50 40|01010230101010101010101010101010101010454541054545454545454545454545454545454545454545454545454545454545454|-261s0 1nX0 11B0 1nX0 SgN0 8x30 iw0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 1fz0 1cN0 1cL0 1cN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 jrz0 1cL0 1cN0 1cL0 1qhd0 1o00 Rd0 1za0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
 		"America/Inuvik|-00 PST PDDT MST MDT|0 80 60 70 60|0121343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343|-FnA0 tWU0 1fA0 wPe0 2pz0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|35e2",
 		"America/Iqaluit|-00 EWT EPT EST EDDT EDT CST CDT|0 40 40 50 30 40 60 50|01234353535353535353535353535353535353535353567353535353535353535353535353535353535353535353535353535353535353535353535353|-16K00 7nX0 iv0 LCL0 1fA0 zgO0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11C0 1nX0 11A0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|67e2",
-		"America/Jamaica|KMT EST EDT|57.b 50 40|0121212121212121212121|-2l1uQ.N 2uM1Q.N 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0|94e4",
+		"America/Jamaica|KMT EST EDT|57.a 50 40|0121212121212121212121|-2l1uQ.O 2uM1Q.O 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0|94e4",
 		"America/Juneau|PST PWT PPT PDT YDT YST AKST AKDT|80 70 70 70 80 90 90 80|01203030303030303030303030403030356767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676|-17T20 8x10 iy0 Vo10 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cM0 1cM0 1cL0 1cN0 1fz0 1a10 1fz0 co0 10q0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|33e3",
 		"America/Kentucky/Louisville|CST CDT CWT CPT EST EDT|60 50 50 50 50 40|0101010102301010101010101010101010101454545454545414545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454|-261s0 1nX0 11B0 1nX0 3Fd0 Nb0 LPd0 11z0 RB0 8x30 iw0 Bb0 10N0 2bB0 8in0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 xz0 gso0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1VA0 LA0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
 		"America/Kentucky/Monticello|CST CDT CWT CPT EST EDT|60 50 50 50 50 40|0101023010101010101010101010101010101010101010101010101010101010101010101454545454545454545454545454545454545454545454545454545454545454545454545454|-261s0 1nX0 11B0 1nX0 SgN0 8x30 iw0 SWp0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11A0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
-		"America/La_Paz|CMT BOST BOT|4w.A 3w.A 40|012|-1x37r.o 13b0|19e5",
-		"America/Lima|LMT PET PEST|58.A 50 40|0121212121212121|-2tyGP.o 1bDzP.o zX0 1aN0 1cL0 1cN0 1cL0 1PrB0 zX0 1O10 zX0 6Gp0 zX0 98p0 zX0|11e6",
+		"America/La_Paz|CMT BST -04|4w.A 3w.A 40|012|-1x37r.o 13b0|19e5",
+		"America/Lima|LMT -05 -04|58.A 50 40|0121212121212121|-2tyGP.o 1bDzP.o zX0 1aN0 1cL0 1cN0 1cL0 1PrB0 zX0 1O10 zX0 6Gp0 zX0 98p0 zX0|11e6",
 		"America/Los_Angeles|PST PDT PWT PPT|80 70 70 70|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261q0 1nX0 11B0 1nX0 SgN0 8x10 iy0 5Wp1 1VaX 3dA0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1a00 1fA0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|15e6",
-		"America/Maceio|LMT BRT BRST|2m.Q 30 20|012121212121212121212121212121212121212121|-2glxB.8 HdLB.8 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 dMN0 Lz0 8Q10 WL0 1tB0 5z0 2mN0 On0|93e4",
+		"America/Maceio|LMT -03 -02|2m.Q 30 20|012121212121212121212121212121212121212121|-2glxB.8 HdLB.8 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 dMN0 Lz0 8Q10 WL0 1tB0 5z0 2mN0 On0|93e4",
 		"America/Managua|MMT CST EST CDT|5J.c 60 50 50|0121313121213131|-1quie.M 1yAMe.M 4mn0 9Up0 Dz0 1K10 Dz0 s3F0 1KH0 DB0 9In0 k8p0 19X0 1o30 11y0|22e5",
-		"America/Manaus|LMT AMT AMST|40.4 40 30|01212121212121212121212121212121|-2glvX.U HdKX.U 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 dPB0 On0|19e5",
+		"America/Manaus|LMT -04 -03|40.4 40 30|01212121212121212121212121212121|-2glvX.U HdKX.U 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 dPB0 On0|19e5",
 		"America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4",
 		"America/Matamoros|LMT CST CDT|6E 60 50|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-1UQG0 2FjC0 1nX0 i6p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 U10 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|45e4",
 		"America/Mazatlan|LMT MST CST PST MDT|75.E 70 60 80 60|0121212131414141414141414141414141414141414141414141414141414141414141414141414141414141414141|-1UQF0 deL0 8lc0 17c0 10M0 1dd0 otX0 gmN0 P2N0 13Vd0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|44e4",
 		"America/Menominee|CST CDT CWT CPT EST|60 50 50 50 50|01010230101041010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261s0 1nX0 11B0 1nX0 SgN0 8x30 iw0 1o10 11z0 LCN0 1fz0 6410 9Jb0 1cM0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|85e2",
 		"America/Merida|LMT CST EST CDT|5W.s 60 50 50|0121313131313131313131313131313131313131313131313131313131313131313131313131313131313131|-1UQG0 2q2o0 2hz0 wu30 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|11e5",
-		"America/Metlakatla|PST PWT PPT PDT AKST AKDT|80 70 70 70 90 80|0120303030303030303030303030303030454545454545454545454545454545454545454545454|-17T20 8x10 iy0 Vo10 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1hU10 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|14e2",
+		"America/Metlakatla|PST PWT PPT PDT AKST AKDT|80 70 70 70 90 80|01203030303030303030303030303030304545450454545454545454545454545454545454545454|-17T20 8x10 iy0 Vo10 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1hU10 Rd0 1zb0 Op0 1zb0 Op0 1zb0 uM0 jB0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|14e2",
 		"America/Mexico_City|LMT MST CST CDT CWT|6A.A 70 60 50 50|012121232324232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-1UQF0 deL0 8lc0 17c0 10M0 1dd0 gEn0 TX0 3xd0 Jb0 6zB0 SL0 e5d0 17b0 1Pff0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|20e6",
-		"America/Miquelon|LMT AST PMST PMDT|3I.E 40 30 20|012323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-2mKkf.k 2LTAf.k gQ10 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|61e2",
+		"America/Miquelon|LMT AST -03 -02|3I.E 40 30 20|012323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-2mKkf.k 2LTAf.k gQ10 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|61e2",
 		"America/Moncton|EST AST ADT AWT APT|50 40 30 30 30|012121212121212121212134121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2IsH0 CwN0 1in0 zAo0 An0 1Nd0 An0 1Nd0 An0 1Nd0 An0 1Nd0 An0 1Nd0 An0 1K10 Lz0 1zB0 NX0 1u10 Wn0 S20 8x50 iu0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 3Cp0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14n1 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 ReX 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|64e3",
 		"America/Monterrey|LMT CST CDT|6F.g 60 50|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-1UQG0 2FjC0 1nX0 i6p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|41e5",
-		"America/Montevideo|MMT UYT UYHST UYST UYT UYHST|3I.I 3u 30 20 30 2u|012121212121212121212121213434343434345454543453434343434343434343434343434343434343434|-20UIf.g 8jzJ.g 1cLu 1dcu 1cLu 1dcu 1cLu ircu 11zu 1o0u 11zu 1o0u 11zu 1qMu WLu 1qMu WLu 1qMu WLu 1qMu 11zu 1o0u 11zu NAu 11bu 2iMu zWu Dq10 19X0 pd0 jz0 cm10 19X0 1fB0 1on0 11d0 1oL0 1nB0 1fzu 1aou 1fzu 1aou 1fzu 3nAu Jb0 3MN0 1SLu 4jzu 2PB0 Lb0 3Dd0 1pb0 ixd0 An0 1MN0 An0 1wp0 On0 1wp0 Rb0 1zd0 On0 1wp0 Rb0 s8p0 1fB0 1ip0 11z0 1ld0 14n0 1o10 11z0 1o10 11z0 1o10 14n0 1ld0 14n0 1ld0 14n0 1o10 11z0 1o10 11z0 1o10 11z0|17e5",
+		"America/Montevideo|LMT MMT -04 -03 -0330 -0230 -02 -0130|3I.P 3I.P 40 30 3u 2u 20 1u|012343434343434343434343435353636353636375363636363636363636363636363636363636363636363|-2tRUf.9 sVc0 8jcf.9 1db0 1dcu 1cLu 1dcu 1cLu ircu 11zu 1o0u 11zu 1o0u 11zu 1o0u 11zu 1qMu WLu 1qMu WLu 1fAu 1cLu 1o0u 11zu NAu 3jXu zXu Dq0u 19Xu pcu jz0 cm10 19X0 6tB0 1fbu 3o0u jX0 4vB0 xz0 3Cp0 mmu 1a10 IMu Db0 4c10 uL0 1Nd0 An0 1SN0 uL0 mp0 28L0 iPB0 un0 1SN0 xz0 1zd0 Lz0 1zd0 Rb0 1zd0 On0 1wp0 Rb0 s8p0 1fB0 1ip0 11z0 1ld0 14n0 1o10 11z0 1o10 11z0 1o10 14n0 1ld0 14n0 1ld0 14n0 1o10 11z0 1o10 11z0 1o10 11z0|17e5",
 		"America/Toronto|EST EDT EWT EPT|50 40 40 40|01010101010101010101010101010101010101010101012301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-25TR0 1in0 11Wu 1nzu 1fD0 WJ0 1wr0 Nb0 1Ap0 On0 1zd0 On0 1wp0 TX0 1tB0 TX0 1tB0 TX0 1tB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 4kM0 8x40 iv0 1o10 11z0 1nX0 11z0 1o10 11z0 1o10 1qL0 11D0 1nX0 11B0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|65e5",
 		"America/Nassau|LMT EST EDT|59.u 50 40|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2kNuO.u 26XdO.u 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|24e4",
 		"America/New_York|EST EDT EWT EPT|50 40 40 40|01010101010101010101010101010101010101010101010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261t0 1nX0 11B0 1nX0 11B0 1qL0 1a10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 RB0 8x40 iv0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|21e6",
 		"America/Nipigon|EST EDT EWT EPT|50 40 40 40|010123010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-25TR0 1in0 Rnb0 3je0 8x40 iv0 19yN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|16e2",
 		"America/Nome|NST NWT NPT BST BDT YST AKST AKDT|b0 a0 a0 b0 a0 90 90 80|012034343434343434343434343434343456767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676|-17SX0 8wW0 iB0 Qlb0 52O0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 cl0 10q0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|38e2",
-		"America/Noronha|LMT FNT FNST|29.E 20 10|0121212121212121212121212121212121212121|-2glxO.k HdKO.k 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 nsp0 WL0 1tB0 2L0 2pB0 On0|30e2",
+		"America/Noronha|LMT -02 -01|29.E 20 10|0121212121212121212121212121212121212121|-2glxO.k HdKO.k 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 nsp0 WL0 1tB0 2L0 2pB0 On0|30e2",
 		"America/North_Dakota/Beulah|MST MDT MWT MPT CST CDT|70 60 60 60 60 50|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101014545454545454545454545454545454545454545454545454545454|-261r0 1nX0 11B0 1nX0 SgN0 8x20 ix0 QwN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Oo0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
 		"America/North_Dakota/Center|MST MDT MWT MPT CST CDT|70 60 60 60 60 50|010102301010101010101010101010101010101010101010101010101014545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454|-261r0 1nX0 11B0 1nX0 SgN0 8x20 ix0 QwN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14o0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
 		"America/North_Dakota/New_Salem|MST MDT MWT MPT CST CDT|70 60 60 60 60 50|010102301010101010101010101010101010101010101010101010101010101010101010101010101454545454545454545454545454545454545454545454545454545454545454545454|-261r0 1nX0 11B0 1nX0 SgN0 8x20 ix0 QwN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14o0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
 		"America/Ojinaga|LMT MST CST CDT MDT|6V.E 70 60 50 60|0121212323241414141414141414141414141414141414141414141414141414141414141414141414141414141|-1UQF0 deL0 8lc0 17c0 10M0 1dd0 2zQN0 1lb0 14p0 1lb0 14q0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 U10 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|23e3",
 		"America/Pangnirtung|-00 AST AWT APT ADDT ADT EDT EST CST CDT|0 40 30 30 20 30 40 50 60 50|012314151515151515151515151515151515167676767689767676767676767676767676767676767676767676767676767676767676767676767676767|-1XiM0 PnG0 8x50 iu0 LCL0 1fA0 zgO0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1o00 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11C0 1nX0 11A0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|14e2",
-		"America/Paramaribo|LMT PMT PMT NEGT SRT SRT|3E.E 3E.Q 3E.A 3u 3u 30|012345|-2nDUj.k Wqo0.c qanX.I 1dmLN.o lzc0|24e4",
+		"America/Paramaribo|LMT PMT PMT -0330 -03|3E.E 3E.Q 3E.A 3u 30|01234|-2nDUj.k Wqo0.c qanX.I 1yVXN.o|24e4",
 		"America/Phoenix|MST MDT MWT|70 60 60|01010202010|-261r0 1nX0 11B0 1nX0 SgN0 4Al1 Ap0 1db0 SWqX 1cL0|42e5",
-		"America/Port-au-Prince|PPMT EST EDT|4N 50 40|01212121212121212121212121212121212121212121|-28RHb 2FnMb 19X0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14q0 1o00 11A0 1o00 11A0 1o00 14o0 1lc0 14o0 1lc0 14o0 1o00 11A0 1o00 11A0 1o00 14o0 1lc0 14o0 1lc0 i6n0 1nX0 11B0 1nX0 d430 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|23e5",
-		"America/Rio_Branco|LMT ACT ACST AMT|4v.c 50 40 40|01212121212121212121212121212131|-2glvs.M HdLs.M 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 NBd0 d5X0|31e4",
-		"America/Porto_Velho|LMT AMT AMST|4f.A 40 30|012121212121212121212121212121|-2glvI.o HdKI.o 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0|37e4",
+		"America/Port-au-Prince|PPMT EST EDT|4N 50 40|01212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-28RHb 2FnMb 19X0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14q0 1o00 11A0 1o00 11A0 1o00 14o0 1lc0 14o0 1lc0 14o0 1o00 11A0 1o00 11A0 1o00 14o0 1lc0 14o0 1lc0 i6n0 1nX0 11B0 1nX0 d430 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 3iN0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|23e5",
+		"America/Rio_Branco|LMT -05 -04|4v.c 50 40|01212121212121212121212121212121|-2glvs.M HdLs.M 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 NBd0 d5X0|31e4",
+		"America/Porto_Velho|LMT -04 -03|4f.A 40 30|012121212121212121212121212121|-2glvI.o HdKI.o 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0|37e4",
 		"America/Puerto_Rico|AST AWT APT|40 30 30|0120|-17lU0 7XT0 iu0|24e5",
+		"America/Punta_Arenas|SMT -05 -04 -03|4G.K 50 40 30|0102021212121212121232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323|-2q2jh.e fJAh.e 5knG.K 1Vzh.e jRAG.K 1pbh.e 11d0 1oL0 11d0 1oL0 11d0 1oL0 11d0 1pb0 11d0 nHX0 op0 blz0 ko0 Qeo0 WL0 1zd0 On0 1ip0 11z0 1o10 11z0 1qN0 WL0 1ld0 14n0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 1cL0 1cN0 11z0 1o10 11z0 1qN0 WL0 1fB0 19X0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1ip0 1fz0 1fB0 11z0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1o10 19X0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0",
 		"America/Rainy_River|CST CDT CWT CPT|60 50 50 50|010123010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-25TQ0 1in0 Rnb0 3je0 8x30 iw0 19yN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|842",
 		"America/Rankin_Inlet|-00 CST CDDT CDT EST|0 60 40 50 50|012131313131313131313131313131313131313131313431313131313131313131313131313131313131313131313131313131313131313131313131|-vDc0 keu0 1fA0 zgO0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|26e2",
-		"America/Recife|LMT BRT BRST|2j.A 30 20|0121212121212121212121212121212121212121|-2glxE.o HdLE.o 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 nsp0 WL0 1tB0 2L0 2pB0 On0|33e5",
+		"America/Recife|LMT -03 -02|2j.A 30 20|0121212121212121212121212121212121212121|-2glxE.o HdLE.o 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 nsp0 WL0 1tB0 2L0 2pB0 On0|33e5",
 		"America/Regina|LMT MST MDT MWT MPT CST|6W.A 70 60 60 60 60|012121212121212121212121341212121212121212121212121215|-2AD51.o uHe1.o 1in0 s2L0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 66N0 1cL0 1cN0 19X0 1fB0 1cL0 1fB0 1cL0 1cN0 1cL0 M30 8x20 ix0 1ip0 1cL0 1ip0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 3NB0 1cL0 1cN0|19e4",
 		"America/Resolute|-00 CST CDDT CDT EST|0 60 40 50 50|012131313131313131313131313131313131313131313431313131313431313131313131313131313131313131313131313131313131313131313131|-SnA0 GWS0 1fA0 zgO0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|229",
-		"America/Santarem|LMT AMT AMST BRT|3C.M 40 30 30|0121212121212121212121212121213|-2glwl.c HdLl.c 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 NBd0|21e4",
-		"America/Santiago|SMT CLT CLT CLST CLST|4G.K 50 40 40 30|010203131313131212421242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424|-2q2jh.e fJAh.e 5knG.K 1Vzh.e jRAG.K 1pbh.e 11d0 1oL0 11d0 1oL0 11d0 1oL0 11d0 1pb0 11d0 nHX0 op0 9Bz0 jb0 1oN0 ko0 Qeo0 WL0 1zd0 On0 1ip0 11z0 1o10 11z0 1qN0 WL0 1ld0 14n0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 1cL0 1cN0 11z0 1o10 11z0 1qN0 WL0 1fB0 19X0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1ip0 1fz0 1fB0 11z0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1o10 19X0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|62e5",
-		"America/Santo_Domingo|SDMT EST EDT EHDT AST|4E 50 40 4u 40|01213131313131414|-1ttjk 1lJMk Mn0 6sp0 Lbu 1Cou yLu 1RAu wLu 1QMu xzu 1Q0u xXu 1PAu 13jB0 e00|29e5",
-		"America/Sao_Paulo|LMT BRT BRST|36.s 30 20|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212|-2glwR.w HdKR.w 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 pTd0 PX0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 1C10 Lz0 1Ip0 HX0 1zd0 On0 1HB0 IL0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10 Lz0 1C10 On0 1zd0 Rb0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0|20e6",
-		"America/Scoresbysund|LMT CGT CGST EGST EGT|1r.Q 20 10 0 10|0121343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434|-2a5Ww.8 2z5ew.8 1a00 1cK0 1cL0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|452",
+		"America/Santarem|LMT -04 -03|3C.M 40 30|0121212121212121212121212121212|-2glwl.c HdLl.c 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 NBd0|21e4",
+		"America/Santiago|SMT -05 -04 -03|4G.K 50 40 30|010202121212121212321232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323|-2q2jh.e fJAh.e 5knG.K 1Vzh.e jRAG.K 1pbh.e 11d0 1oL0 11d0 1oL0 11d0 1oL0 11d0 1pb0 11d0 nHX0 op0 9Bz0 jb0 1oN0 ko0 Qeo0 WL0 1zd0 On0 1ip0 11z0 1o10 11z0 1qN0 WL0 1ld0 14n0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 1cL0 1cN0 11z0 1o10 11z0 1qN0 WL0 1fB0 19X0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1ip0 1fz0 1fB0 11z0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1o10 19X0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1zb0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0|62e5",
+		"America/Santo_Domingo|SDMT EST EDT -0430 AST|4E 50 40 4u 40|01213131313131414|-1ttjk 1lJMk Mn0 6sp0 Lbu 1Cou yLu 1RAu wLu 1QMu xzu 1Q0u xXu 1PAu 13jB0 e00|29e5",
+		"America/Sao_Paulo|LMT -03 -02|36.s 30 20|01212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2glwR.w HdKR.w 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 pTd0 PX0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 1C10 Lz0 1Ip0 HX0 1zd0 On0 1HB0 IL0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1HB0 FX0|20e6",
+		"America/Scoresbysund|LMT -02 -01 +00|1r.Q 20 10 0|0121323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-2a5Ww.8 2z5ew.8 1a00 1cK0 1cL0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|452",
 		"America/Sitka|PST PWT PPT PDT YST AKST AKDT|80 70 70 70 90 90 80|01203030303030303030303030303030345656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565|-17T20 8x10 iy0 Vo10 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 co0 10q0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|90e2",
 		"America/St_Johns|NST NDT NST NDT NWT NPT NDDT|3u.Q 2u.Q 3u 2u 2u 2u 1u|01010101010101010101010101010101010102323232323232324523232323232323232323232323232323232323232323232323232323232323232323232323232323232326232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-28oit.8 14L0 1nB0 1in0 1gm0 Dz0 1JB0 1cL0 1cN0 1cL0 1fB0 19X0 1fB0 19X0 1fB0 19X0 1fB0 19X0 1fB0 1cL0 1cN0 1cL0 1fB0 19X0 1fB0 19X0 1fB0 19X0 1fB0 19X0 1fB0 1cL0 1fB0 19X0 1fB0 19X0 10O0 eKX.8 19X0 1iq0 WL0 1qN0 WL0 1qN0 WL0 1tB0 TX0 1tB0 WL0 1qN0 WL0 1qN0 7UHu itu 1tB0 WL0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1tB0 WL0 1ld0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14n1 1lb0 14p0 1nW0 11C0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zcX Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|11e4",
 		"America/Swift_Current|LMT MST MDT MWT MPT CST|7b.k 70 60 60 60 60|012134121212121212121215|-2AD4M.E uHdM.E 1in0 UGp0 8x20 ix0 1o10 17b0 1ip0 11z0 1o10 11z0 1o10 11z0 isN0 1cL0 3Cp0 1cL0 1cN0 11z0 1qN0 WL0 pMp0|16e3",
@@ -12087,140 +11145,128 @@ module.exports={
 		"America/Winnipeg|CST CDT CWT CPT|60 50 50 50|010101023010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2aIi0 WL0 3ND0 1in0 Jap0 Rb0 aCN0 8x30 iw0 1tB0 11z0 1ip0 11z0 1o10 11z0 1o10 11z0 1rd0 10L0 1op0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 1cL0 1cN0 11z0 6i10 WL0 6i10 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1a00 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1a00 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 14o0 1lc0 14o0 1o00 11A0 1o00 11A0 1o00 14o0 1lc0 14o0 1lc0 14o0 1o00 11A0 1o00 11A0 1o00 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1o00 11A0 1o00 11A0 1o00 14o0 1lc0 14o0 1lc0 14o0 1o00 11A0 1o00 11A0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|66e4",
 		"America/Yakutat|YST YWT YPT YDT AKST AKDT|90 80 80 80 90 80|01203030303030303030303030303030304545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454|-17T10 8x00 iz0 Vo10 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 cn0 10q0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|642",
 		"America/Yellowknife|-00 MST MWT MPT MDDT MDT|0 70 60 60 50 60|012314151515151515151515151515151515151515151515151515151515151515151515151515151515151515151515151515151515151515151515151|-1pdA0 hix0 8x20 ix0 LCL0 1fA0 zgO0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|19e3",
-		"Antarctica/Casey|-00 +08 +11|0 -80 -b0|0121212|-2q00 1DjS0 T90 40P0 KL0 blz0|10",
+		"Antarctica/Casey|-00 +08 +11|0 -80 -b0|01212121|-2q00 1DjS0 T90 40P0 KL0 blz0 3m10|10",
 		"Antarctica/Davis|-00 +07 +05|0 -70 -50|01012121|-vyo0 iXt0 alj0 1D7v0 VB0 3Wn0 KN0|70",
 		"Antarctica/DumontDUrville|-00 +10|0 -a0|0101|-U0o0 cfq0 bFm0|80",
-		"Antarctica/Macquarie|AEST AEDT -00 MIST|-a0 -b0 0 -b0|0102010101010101010101010101010101010101010101010101010101010101010101010101010101010101013|-29E80 19X0 4SL0 1ayy0 Lvs0 1cM0 1o00 Rc0 1wo0 Rc0 1wo0 U00 1wo0 LA0 1C00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 11A0 1qM0 WM0 1qM0 Oo0 1zc0 Oo0 1zc0 Oo0 1wo0 WM0 1tA0 WM0 1tA0 U00 1tA0 U00 1tA0 11A0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 11A0 1o00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1cM0 1a00 1io0 1cM0 1cM0 1cM0 1cM0 1cM0|1",
+		"Antarctica/Macquarie|AEST AEDT -00 +11|-a0 -b0 0 -b0|0102010101010101010101010101010101010101010101010101010101010101010101010101010101010101013|-29E80 19X0 4SL0 1ayy0 Lvs0 1cM0 1o00 Rc0 1wo0 Rc0 1wo0 U00 1wo0 LA0 1C00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 11A0 1qM0 WM0 1qM0 Oo0 1zc0 Oo0 1zc0 Oo0 1wo0 WM0 1tA0 WM0 1tA0 U00 1tA0 U00 1tA0 11A0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 11A0 1o00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1cM0 1a00 1io0 1cM0 1cM0 1cM0 1cM0 1cM0|1",
 		"Antarctica/Mawson|-00 +06 +05|0 -60 -50|012|-CEo0 2fyk0|60",
 		"Pacific/Auckland|NZMT NZST NZST NZDT|-bu -cu -c0 -d0|01020202020202020202020202023232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323|-1GCVu Lz0 1tB0 11zu 1o0u 11zu 1o0u 11zu 1o0u 14nu 1lcu 14nu 1lcu 1lbu 11Au 1nXu 11Au 1nXu 11Au 1nXu 11Au 1nXu 11Au 1qLu WMu 1qLu 11Au 1n1bu IM0 1C00 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1qM0 14o0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1io0 17c0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1io0 17c0 1io0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|14e5",
-		"Antarctica/Palmer|-00 ARST ART ART ARST CLT CLST|0 30 40 30 20 40 30|0121212121234356565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656565656|-cao0 nD0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 jsN0 14N0 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 1cL0 1cN0 11z0 1o10 11z0 1qN0 WL0 1fB0 19X0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1ip0 1fz0 1fB0 11z0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1o10 19X0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|40",
+		"Antarctica/Palmer|-00 -03 -04 -02|0 30 40 20|0121212121213121212121212121212121212121212121212121212121212121212121212121212121|-cao0 nD0 1vd0 SL0 1vd0 17z0 1cN0 1fz0 1cN0 1cL0 1cN0 asn0 Db0 jsN0 14N0 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 1cL0 1cN0 11z0 1o10 11z0 1qN0 WL0 1fB0 19X0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1ip0 1fz0 1fB0 11z0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1o10 19X0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0|40",
 		"Antarctica/Rothera|-00 -03|0 30|01|gOo0|130",
 		"Antarctica/Syowa|-00 +03|0 -30|01|-vs00|20",
 		"Antarctica/Troll|-00 +00 +02|0 0 -20|01212121212121212121212121212121212121212121212121212121212121212121|1puo0 hd0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|40",
 		"Antarctica/Vostok|-00 +06|0 -60|01|-tjA0|25",
 		"Europe/Oslo|CET CEST|-10 -20|010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2awM0 Qm0 W6o0 5pf0 WM0 1fA0 1cM0 1cM0 1cM0 1cM0 wJc0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1qM0 WM0 zpc0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|62e4",
-		"Asia/Riyadh|LMT AST|-36.Q -30|01|-TvD6.Q|57e5",
+		"Asia/Riyadh|LMT +03|-36.Q -30|01|-TvD6.Q|57e5",
 		"Asia/Almaty|LMT +05 +06 +07|-57.M -50 -60 -70|012323232323232323232321232323232323232323232323232|-1Pc57.M eUo7.M 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0|15e5",
 		"Asia/Amman|LMT EET EEST|-2n.I -20 -30|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-1yW2n.I 1HiMn.I KL0 1oN0 11b0 1oN0 11b0 1pd0 1dz0 1cp0 11b0 1op0 11b0 fO10 1db0 1e10 1cL0 1cN0 1cL0 1cN0 1fz0 1pd0 10n0 1ld0 14n0 1hB0 15b0 1ip0 19X0 1cN0 1cL0 1cN0 17b0 1ld0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1So0 y00 1fc0 1dc0 1co0 1dc0 1cM0 1cM0 1cM0 1o00 11A0 1lc0 17c0 1cM0 1cM0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 4bX0 Dd0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0|25e5",
 		"Asia/Anadyr|LMT +12 +13 +14 +11|-bN.U -c0 -d0 -e0 -b0|01232121212121212121214121212121212121212121212121212121212141|-1PcbN.U eUnN.U 23CL0 1db0 2q10 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 2sp0 WM0|13e3",
 		"Asia/Aqtau|LMT +04 +05 +06|-3l.4 -40 -50 -60|012323232323232323232123232312121212121212121212|-1Pc3l.4 eUnl.4 24PX0 2pX0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cN0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0|15e4",
 		"Asia/Aqtobe|LMT +04 +05 +06|-3M.E -40 -50 -60|0123232323232323232321232323232323232323232323232|-1Pc3M.E eUnM.E 23CL0 3Db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0|27e4",
 		"Asia/Ashgabat|LMT +04 +05 +06|-3R.w -40 -50 -60|0123232323232323232323212|-1Pc3R.w eUnR.w 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0|41e4",
-		"Asia/Atyrau|LMT +04 +05 +06|-3r.I -40 -50 -60|01232323232323232323212323232323232321212121212|-1Pc3r.I eUnr.I 24PX0 2pX0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 2sp0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0",
-		"Asia/Baghdad|BMT AST ADT|-2V.A -30 -40|012121212121212121212121212121212121212121212121212121|-26BeV.A 2ACnV.A 11b0 1cp0 1dz0 1dd0 1db0 1cN0 1cp0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1de0 1dc0 1dc0 1dc0 1cM0 1dc0 1cM0 1dc0 1cM0 1dc0 1dc0 1dc0 1cM0 1dc0 1cM0 1dc0 1cM0 1dc0 1dc0 1dc0 1cM0 1dc0 1cM0 1dc0 1cM0 1dc0 1dc0 1dc0 1cM0 1dc0 1cM0 1dc0 1cM0 1dc0|66e5",
-		"Asia/Qatar|LMT GST AST|-3q.8 -40 -30|012|-21Jfq.8 27BXq.8|96e4",
+		"Asia/Atyrau|LMT +03 +05 +06 +04|-3r.I -30 -50 -60 -40|01232323232323232323242323232323232324242424242|-1Pc3r.I eUor.I 24PW0 2pX0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 2sp0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0",
+		"Asia/Baghdad|BMT +03 +04|-2V.A -30 -40|012121212121212121212121212121212121212121212121212121|-26BeV.A 2ACnV.A 11b0 1cp0 1dz0 1dd0 1db0 1cN0 1cp0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1de0 1dc0 1dc0 1dc0 1cM0 1dc0 1cM0 1dc0 1cM0 1dc0 1dc0 1dc0 1cM0 1dc0 1cM0 1dc0 1cM0 1dc0 1dc0 1dc0 1cM0 1dc0 1cM0 1dc0 1cM0 1dc0 1dc0 1dc0 1cM0 1dc0 1cM0 1dc0 1cM0 1dc0|66e5",
+		"Asia/Qatar|LMT +04 +03|-3q.8 -40 -30|012|-21Jfq.8 27BXq.8|96e4",
 		"Asia/Baku|LMT +03 +04 +05|-3j.o -30 -40 -50|01232323232323232323232123232323232323232323232323232323232323232|-1Pc3j.o 1jUoj.o WCL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 1cM0 9Je0 1o00 11z0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00|27e5",
-		"Asia/Bangkok|BMT ICT|-6G.4 -70|01|-218SG.4|15e6",
+		"Asia/Bangkok|BMT +07|-6G.4 -70|01|-218SG.4|15e6",
 		"Asia/Barnaul|LMT +06 +07 +08|-5z -60 -70 -80|0123232323232323232323212323232321212121212121212121212121212121212|-21S5z pCnz 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 p90 LE0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3rd0",
 		"Asia/Beirut|EET EEST|-20 -30|010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-21aq0 1on0 1410 1db0 19B0 1in0 1ip0 WL0 1lQp0 11b0 1oN0 11b0 1oN0 11b0 1pd0 11b0 1oN0 11b0 q6N0 En0 1oN0 11b0 1oN0 11b0 1oN0 11b0 1pd0 11b0 1oN0 11b0 1op0 11b0 dA10 17b0 1iN0 17b0 1iN0 17b0 1iN0 17b0 1vB0 SL0 1mp0 13z0 1iN0 17b0 1iN0 17b0 1jd0 12n0 1a10 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0|22e5",
 		"Asia/Bishkek|LMT +05 +06 +07|-4W.o -50 -60 -70|012323232323232323232321212121212121212121212121212|-1Pc4W.o eUnW.o 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2e00 1tX0 17b0 1ip0 17b0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1cPu 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0|87e4",
-		"Asia/Brunei|LMT BNT BNT|-7D.E -7u -80|012|-1KITD.E gDc9.E|42e4",
-		"Asia/Kolkata|HMT BURT IST IST|-5R.k -6u -5u -6u|01232|-18LFR.k 1unn.k HB0 7zX0|15e6",
+		"Asia/Brunei|LMT +0730 +08|-7D.E -7u -80|012|-1KITD.E gDc9.E|42e4",
+		"Asia/Kolkata|MMT IST +0630|-5l.a -5u -6u|012121|-2zOtl.a 1r2LP.a 1un0 HB0 7zX0|15e6",
 		"Asia/Chita|LMT +08 +09 +10|-7x.Q -80 -90 -a0|012323232323232323232321232323232323232323232323232323232323232312|-21Q7x.Q pAnx.Q 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3re0|33e4",
-		"Asia/Choibalsan|LMT ULAT ULAT CHOST CHOT CHOT CHOST|-7C -70 -80 -a0 -90 -80 -90|0123434343434343434343434343434343434343434343456565656565656565656565656565656565656565656565|-2APHC 2UkoC cKn0 1da0 1dd0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 6hD0 11z0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 3Db0 h1f0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|38e3",
-		"Asia/Shanghai|CST CDT|-80 -90|01010101010101010|-1c1I0 LX0 16p0 1jz0 1Myp0 Rb0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0|23e6",
+		"Asia/Choibalsan|LMT +07 +08 +10 +09|-7C -70 -80 -a0 -90|0123434343434343434343434343434343434343434343424242|-2APHC 2UkoC cKn0 1da0 1dd0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 6hD0 11z0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 3Db0 h1f0 1cJ0 1cP0 1cJ0|38e3",
+		"Asia/Shanghai|CST CDT|-80 -90|010101010101010101010101010|-1c2w0 Rz0 11d0 1wL0 A10 8HX0 1G10 Tz0 1ip0 1jX0 1cN0 11b0 1oN0 aL0 1tU30 Rb0 1o10 11z0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0|23e6",
 		"Asia/Colombo|MMT +0530 +06 +0630|-5j.w -5u -60 -6u|01231321|-2zOtj.w 1rFbN.w 1zzu 7Apu 23dz0 11zu n3cu|22e5",
-		"Asia/Dhaka|HMT BURT IST DACT BDT BDST|-5R.k -6u -5u -60 -60 -70|01213454|-18LFR.k 1unn.k HB0 m6n0 LqMu 1x6n0 1i00|16e6",
+		"Asia/Dhaka|HMT +0630 +0530 +06 +07|-5R.k -6u -5u -60 -70|0121343|-18LFR.k 1unn.k HB0 m6n0 2kxbu 1i00|16e6",
 		"Asia/Damascus|LMT EET EEST|-2p.c -20 -30|01212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-21Jep.c Hep.c 17b0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1xRB0 11X0 1oN0 10L0 1pB0 11b0 1oN0 10L0 1mp0 13X0 1oN0 11b0 1pd0 11b0 1oN0 11b0 1oN0 11b0 1oN0 11b0 1pd0 11b0 1oN0 11b0 1oN0 11b0 1oN0 11b0 1pd0 11b0 1oN0 Nb0 1AN0 Nb0 bcp0 19X0 1gp0 19X0 3ld0 1xX0 Vd0 1Bz0 Sp0 1vX0 10p0 1dz0 1cN0 1cL0 1db0 1db0 1g10 1an0 1ap0 1db0 1fd0 1db0 1cN0 1db0 1dd0 1db0 1cp0 1dz0 1c10 1dX0 1cN0 1db0 1dd0 1db0 1cN0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1db0 1cN0 1db0 1cN0 19z0 1fB0 1qL0 11B0 1on0 Wp0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0|26e5",
-		"Asia/Dili|LMT TLT JST TLT WITA|-8m.k -80 -90 -90 -80|012343|-2le8m.k 1dnXm.k 8HA0 1ew00 Xld0|19e4",
-		"Asia/Dubai|LMT GST|-3F.c -40|01|-21JfF.c|39e5",
+		"Asia/Dili|LMT +08 +09|-8m.k -80 -90|01212|-2le8m.k 1dnXm.k 1nfA0 Xld0|19e4",
+		"Asia/Dubai|LMT +04|-3F.c -40|01|-21JfF.c|39e5",
 		"Asia/Dushanbe|LMT +05 +06 +07|-4z.c -50 -60 -70|012323232323232323232321|-1Pc4z.c eUnz.c 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2hB0|76e4",
-		"Asia/Famagusta|LMT EET EEST +03|-2f.M -20 -30 -30|01212121212121212121212121212121212121212121212121212121212121212121212121212121212123|-1Vc2f.M 2a3cf.M 1cL0 1qp0 Xz0 19B0 19X0 1fB0 1db0 1cp0 1cL0 1fB0 19X0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1o30 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 15U0",
-		"Asia/Gaza|EET EEST IST IDT|-20 -30 -20 -30|010101010101010101010101010101012323232323232323232323232320101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-1c2q0 5Rb0 10r0 1px0 10N0 1pz0 16p0 1jB0 16p0 1jx0 pBd0 Vz0 1oN0 11b0 1oO0 10N0 1pz0 10N0 1pb0 10N0 1pb0 10N0 1pb0 10N0 1pz0 10N0 1pb0 10N0 1pb0 11d0 1oL0 dW0 hfB0 Db0 1fB0 Rb0 npB0 11z0 1C10 IL0 1s10 10n0 1o10 WL0 1zd0 On0 1ld0 11z0 1o10 14n0 1o10 14n0 1nd0 12n0 1nd0 Xz0 1q10 12n0 M10 C00 17c0 1io0 17c0 1io0 17c0 1o00 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 17c0 1io0 18N0 1bz0 19z0 1gp0 1610 1iL0 11z0 1o10 14o0 1lA1 SKX 1xd1 MKX 1AN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0|18e5",
-		"Asia/Hebron|EET EEST IST IDT|-20 -30 -20 -30|01010101010101010101010101010101232323232323232323232323232010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-1c2q0 5Rb0 10r0 1px0 10N0 1pz0 16p0 1jB0 16p0 1jx0 pBd0 Vz0 1oN0 11b0 1oO0 10N0 1pz0 10N0 1pb0 10N0 1pb0 10N0 1pb0 10N0 1pz0 10N0 1pb0 10N0 1pb0 11d0 1oL0 dW0 hfB0 Db0 1fB0 Rb0 npB0 11z0 1C10 IL0 1s10 10n0 1o10 WL0 1zd0 On0 1ld0 11z0 1o10 14n0 1o10 14n0 1nd0 12n0 1nd0 Xz0 1q10 12n0 M10 C00 17c0 1io0 17c0 1io0 17c0 1o00 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 17c0 1io0 18N0 1bz0 19z0 1gp0 1610 1iL0 12L0 1mN0 14o0 1lc0 Tb0 1xd1 MKX bB0 cn0 1cN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1qL0|25e4",
-		"Asia/Ho_Chi_Minh|LMT PLMT ICT IDT JST|-76.E -76.u -70 -80 -90|0123423232|-2yC76.E bK00.a 1h7b6.u 5lz0 18o0 3Oq0 k5b0 aW00 BAM0|90e5",
-		"Asia/Hong_Kong|LMT HKT HKST JST|-7A.G -80 -90 -90|0121312121212121212121212121212121212121212121212121212121212121212121|-2CFHA.G 1sEP6.G 1cL0 ylu 93X0 1qQu 1tX0 Rd0 1In0 NB0 1cL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1kL0 14N0 1nX0 U10 1tz0 U10 1wn0 Rd0 1wn0 U10 1tz0 U10 1tz0 U10 1tz0 U10 1wn0 Rd0 1wn0 Rd0 1wn0 U10 1tz0 U10 1tz0 17d0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 s10 1Vz0 1cN0 1cL0 1cN0 1cL0 6fd0 14n0|73e5",
-		"Asia/Hovd|LMT HOVT HOVT HOVST|-66.A -60 -70 -80|012323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-2APG6.A 2Uko6.A cKn0 1db0 1dd0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 6hD0 11z0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 kEp0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|81e3",
+		"Asia/Famagusta|LMT EET EEST +03|-2f.M -20 -30 -30|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212312121212121212121212121212121212121212121|-1Vc2f.M 2a3cf.M 1cL0 1qp0 Xz0 19B0 19X0 1fB0 1db0 1cp0 1cL0 1fB0 19X0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1o30 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 15U0 2Ks0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00",
+		"Asia/Gaza|EET EEST IST IDT|-20 -30 -20 -30|0101010101010101010101010101010123232323232323232323232323232320101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-1c2q0 5Rb0 10r0 1px0 10N0 1pz0 16p0 1jB0 16p0 1jx0 pBd0 Vz0 1oN0 11b0 1oO0 10N0 1pz0 10N0 1pb0 10N0 1pb0 10N0 1pb0 10N0 1pz0 10N0 1pb0 10N0 1pb0 11d0 1oL0 dW0 hfB0 Db0 1fB0 Rb0 bXd0 gM0 8Q00 IM0 1wM0 11z0 1C10 IL0 1s10 10n0 1o10 WL0 1zd0 On0 1ld0 11z0 1o10 14n0 1o10 14n0 1nd0 12n0 1nd0 Xz0 1q10 12n0 M10 C00 17c0 1io0 17c0 1io0 17c0 1o00 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 17c0 1io0 18N0 1bz0 19z0 1gp0 1610 1iL0 11z0 1o10 14o0 1lA1 SKX 1xd1 MKX 1AN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1qL0 WN0 1qL0 WN0 1qL0 11c0 1oo0 11c0 1rc0 Wo0 1rc0 Wo0 1rc0 11c0 1oo0 11c0 1oo0 11c0 1oo0 11c0 1rc0 Wo0 1rc0 11c0 1oo0 11c0 1oo0 11c0 1oo0 11c0 1oo0 11c0 1rc0 Wo0 1rc0 11c0 1oo0 11c0 1oo0 11c0 1oo0 11c0 1rc0|18e5",
+		"Asia/Hebron|EET EEST IST IDT|-20 -30 -20 -30|010101010101010101010101010101012323232323232323232323232323232010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-1c2q0 5Rb0 10r0 1px0 10N0 1pz0 16p0 1jB0 16p0 1jx0 pBd0 Vz0 1oN0 11b0 1oO0 10N0 1pz0 10N0 1pb0 10N0 1pb0 10N0 1pb0 10N0 1pz0 10N0 1pb0 10N0 1pb0 11d0 1oL0 dW0 hfB0 Db0 1fB0 Rb0 bXd0 gM0 8Q00 IM0 1wM0 11z0 1C10 IL0 1s10 10n0 1o10 WL0 1zd0 On0 1ld0 11z0 1o10 14n0 1o10 14n0 1nd0 12n0 1nd0 Xz0 1q10 12n0 M10 C00 17c0 1io0 17c0 1io0 17c0 1o00 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 17c0 1io0 18N0 1bz0 19z0 1gp0 1610 1iL0 12L0 1mN0 14o0 1lc0 Tb0 1xd1 MKX bB0 cn0 1cN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1qL0 WN0 1qL0 WN0 1qL0 11c0 1oo0 11c0 1rc0 Wo0 1rc0 Wo0 1rc0 11c0 1oo0 11c0 1oo0 11c0 1oo0 11c0 1rc0 Wo0 1rc0 11c0 1oo0 11c0 1oo0 11c0 1oo0 11c0 1oo0 11c0 1rc0 Wo0 1rc0 11c0 1oo0 11c0 1oo0 11c0 1oo0 11c0 1rc0|25e4",
+		"Asia/Ho_Chi_Minh|LMT PLMT +07 +08 +09|-76.E -76.u -70 -80 -90|0123423232|-2yC76.E bK00.a 1h7b6.u 5lz0 18o0 3Oq0 k5b0 aW00 BAM0|90e5",
+		"Asia/Hong_Kong|LMT HKT HKST HKT JST|-7A.G -80 -90 -8u -90|0123412121212121212121212121212121212121212121212121212121212121212121|-2CFH0 1taO0 Hc0 xUu 9tBu 11z0 1tDu Rc0 1wo0 11A0 1cM0 11A0 1o00 11A0 1o00 11A0 1o00 14o0 1o00 11A0 1nX0 U10 1tz0 U10 1wn0 Rd0 1wn0 U10 1tz0 U10 1tz0 U10 1tz0 U10 1wn0 Rd0 1wn0 Rd0 1wn0 U10 1tz0 U10 1tz0 17d0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 s10 1Vz0 1cN0 1cL0 1cN0 1cL0 6fd0 14n0|73e5",
+		"Asia/Hovd|LMT +06 +07 +08|-66.A -60 -70 -80|012323232323232323232323232323232323232323232323232|-2APG6.A 2Uko6.A cKn0 1db0 1dd0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 6hD0 11z0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 kEp0 1cJ0 1cP0 1cJ0|81e3",
 		"Asia/Irkutsk|IMT +07 +08 +09|-6V.5 -70 -80 -90|01232323232323232323232123232323232323232323232323232323232323232|-21zGV.5 pjXV.5 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|60e4",
 		"Europe/Istanbul|IMT EET EEST +04 +03|-1U.U -20 -30 -40 -30|012121212121212121212121212121212121212121212121212121234343434342121212121212121212121212121212121212121212121212121212121212124|-2ogNU.U dzzU.U 11b0 8tB0 1on0 1410 1db0 19B0 1in0 3Rd0 Un0 1oN0 11b0 zSp0 CL0 mN0 1Vz0 1gN0 1pz0 5Rd0 1fz0 1yp0 ML0 1kp0 17b0 1ip0 17b0 1fB0 19X0 1jB0 18L0 1ip0 17z0 qdd0 xX0 3S10 Tz0 dA10 11z0 1o10 11z0 1qN0 11z0 1ze0 11B0 WM0 1qO0 WI0 1nX0 1rB0 10L0 11B0 1in0 17d0 1in0 2pX0 19E0 1fU0 16Q0 1iI0 16Q0 1iI0 1Vd0 pb0 3Kp0 14o0 1de0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1a00 1fA0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WO0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 Xc0 1qo0 WM0 1qM0 11A0 1o00 1200 1nA0 11A0 1tA0 U00 15w0|13e6",
-		"Asia/Jakarta|BMT JAVT WIB JST WIB WIB|-77.c -7k -7u -90 -80 -70|01232425|-1Q0Tk luM0 mPzO 8vWu 6kpu 4PXu xhcu|31e6",
-		"Asia/Jayapura|LMT WIT ACST|-9m.M -90 -9u|0121|-1uu9m.M sMMm.M L4nu|26e4",
-		"Asia/Jerusalem|JMT IST IDT IDDT|-2k.E -20 -30 -40|01212121212132121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-26Bek.E SyMk.E 5Rb0 10r0 1px0 10N0 1pz0 16p0 1jB0 16p0 1jx0 3LB0 Em0 or0 1cn0 1dB0 16n0 10O0 1ja0 1tC0 14o0 1cM0 1a00 11A0 1Na0 An0 1MP0 AJ0 1Kp0 LC0 1oo0 Wl0 EQN0 Db0 1fB0 Rb0 npB0 11z0 1C10 IL0 1s10 10n0 1o10 WL0 1zd0 On0 1ld0 11z0 1o10 14n0 1o10 14n0 1nd0 12n0 1nd0 Xz0 1q10 12n0 1hB0 1dX0 1ep0 1aL0 1eN0 17X0 1nf0 11z0 1tB0 19W0 1e10 17b0 1ep0 1gL0 18N0 1fz0 1eN0 17b0 1gq0 1gn0 19d0 1dz0 1c10 17X0 1hB0 1gn0 19d0 1dz0 1c10 17X0 1kp0 1dz0 1c10 1aL0 1eN0 1oL0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0|81e4",
-		"Asia/Kabul|AFT AFT|-40 -4u|01|-10Qs0|46e5",
+		"Asia/Jakarta|BMT +0720 +0730 +09 +08 WIB|-77.c -7k -7u -90 -80 -70|01232425|-1Q0Tk luM0 mPzO 8vWu 6kpu 4PXu xhcu|31e6",
+		"Asia/Jayapura|LMT +09 +0930 WIT|-9m.M -90 -9u -90|0123|-1uu9m.M sMMm.M L4nu|26e4",
+		"Asia/Jerusalem|JMT IST IDT IDDT|-2k.E -20 -30 -40|012121212121321212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-26Bek.E SyMk.E 5Rb0 10r0 1px0 10N0 1pz0 16p0 1jB0 16p0 1jx0 3LB0 Em0 or0 1cn0 1dB0 16n0 10O0 1ja0 1tC0 14o0 1cM0 1a00 11A0 1Na0 An0 1MP0 AJ0 1Kp0 LC0 1oo0 Wl0 EQN0 Db0 1fB0 Rb0 bXd0 gM0 8Q00 IM0 1wM0 11z0 1C10 IL0 1s10 10n0 1o10 WL0 1zd0 On0 1ld0 11z0 1o10 14n0 1o10 14n0 1nd0 12n0 1nd0 Xz0 1q10 12n0 1hB0 1dX0 1ep0 1aL0 1eN0 17X0 1nf0 11z0 1tB0 19W0 1e10 17b0 1ep0 1gL0 18N0 1fz0 1eN0 17b0 1gq0 1gn0 19d0 1dz0 1c10 17X0 1hB0 1gn0 19d0 1dz0 1c10 17X0 1kp0 1dz0 1c10 1aL0 1eN0 1oL0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0|81e4",
+		"Asia/Kabul|+04 +0430|-40 -4u|01|-10Qs0|46e5",
 		"Asia/Kamchatka|LMT +11 +12 +13|-ay.A -b0 -c0 -d0|012323232323232323232321232323232323232323232323232323232323212|-1SLKy.A ivXy.A 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 2sp0 WM0|18e4",
-		"Asia/Karachi|LMT IST IST KART PKT PKST|-4s.c -5u -6u -50 -50 -60|012134545454|-2xoss.c 1qOKW.c 7zX0 eup0 LqMu 1fy00 1cL0 dK10 11b0 1610 1jX0|24e6",
-		"Asia/Urumqi|LMT XJT|-5O.k -60|01|-1GgtO.k|32e5",
-		"Asia/Kathmandu|LMT IST NPT|-5F.g -5u -5J|012|-21JhF.g 2EGMb.g|12e5",
+		"Asia/Karachi|LMT +0530 +0630 +05 PKT PKST|-4s.c -5u -6u -50 -50 -60|012134545454|-2xoss.c 1qOKW.c 7zX0 eup0 LqMu 1fy00 1cL0 dK10 11b0 1610 1jX0|24e6",
+		"Asia/Urumqi|LMT +06|-5O.k -60|01|-1GgtO.k|32e5",
+		"Asia/Kathmandu|LMT +0530 +0545|-5F.g -5u -5J|012|-21JhF.g 2EGMb.g|12e5",
 		"Asia/Khandyga|LMT +08 +09 +10 +11|-92.d -80 -90 -a0 -b0|0123232323232323232323212323232323232323232323232343434343434343432|-21Q92.d pAp2.d 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 qK0 yN0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 17V0 7zD0|66e2",
 		"Asia/Krasnoyarsk|LMT +06 +07 +08|-6b.q -60 -70 -80|01232323232323232323232123232323232323232323232323232323232323232|-21Hib.q prAb.q 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|10e5",
-		"Asia/Kuala_Lumpur|SMT MALT MALST MALT MALT JST MYT|-6T.p -70 -7k -7k -7u -90 -80|01234546|-2Bg6T.p 17anT.p 7hXE dM00 17bO 8Fyu 1so1u|71e5",
-		"Asia/Kuching|LMT BORT BORT BORTST JST MYT|-7l.k -7u -80 -8k -90 -80|01232323232323232425|-1KITl.k gDbP.k 6ynu AnE 1O0k AnE 1NAk AnE 1NAk AnE 1NAk AnE 1O0k AnE 1NAk AnE pAk 8Fz0 1so10|13e4",
-		"Asia/Macau|LMT MOT MOST CST|-7y.k -80 -90 -80|0121212121212121212121212121212121212121213|-2le7y.k 1XO34.k 1wn0 Rd0 1wn0 R9u 1wqu U10 1tz0 TVu 1tz0 17gu 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cJu 1cL0 1cN0 1fz0 1cN0 1cOu 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cJu 1cL0 1cN0 1fz0 1cN0 1cL0 KEp0|57e4",
+		"Asia/Kuala_Lumpur|SMT +07 +0720 +0730 +09 +08|-6T.p -70 -7k -7u -90 -80|0123435|-2Bg6T.p 17anT.p l5XE 17bO 8Fyu 1so1u|71e5",
+		"Asia/Kuching|LMT +0730 +08 +0820 +09|-7l.k -7u -80 -8k -90|0123232323232323242|-1KITl.k gDbP.k 6ynu AnE 1O0k AnE 1NAk AnE 1NAk AnE 1NAk AnE 1O0k AnE 1NAk AnE pAk 8Fz0|13e4",
+		"Asia/Macau|LMT CST +09 +10 CDT|-7y.a -80 -90 -a0 -90|012323214141414141414141414141414141414141414141414141414141414141414141|-2CFHy.a 1uqKy.a PX0 1kn0 15B0 11b0 4Qq0 1oM0 11c0 1ko0 1u00 11A0 1cM0 11c0 1o00 11A0 1o00 11A0 1oo0 1400 1o00 11A0 1o00 U00 1tA0 U00 1wo0 Rc0 1wru U10 1tz0 U10 1tz0 U10 1tz0 U10 1wn0 Rd0 1wn0 Rd0 1wn0 U10 1tz0 U10 1tz0 17d0 1cK0 1cO0 1cK0 1cO0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 s10 1Vz0 1cN0 1cL0 1cN0 1cL0 6fd0 14n0|57e4",
 		"Asia/Magadan|LMT +10 +11 +12|-a3.c -a0 -b0 -c0|012323232323232323232321232323232323232323232323232323232323232312|-1Pca3.c eUo3.c 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3Cq0|95e3",
-		"Asia/Makassar|LMT MMT WITA JST|-7V.A -7V.A -80 -90|01232|-21JjV.A vfc0 myLV.A 8ML0|15e5",
-		"Asia/Manila|PHT PHST JST|-80 -90 -90|010201010|-1kJI0 AL0 cK10 65X0 mXB0 vX0 VK10 1db0|24e6",
+		"Asia/Makassar|LMT MMT +08 +09 WITA|-7V.A -7V.A -80 -90 -80|01234|-21JjV.A vfc0 myLV.A 8ML0|15e5",
+		"Asia/Manila|PST PDT JST|-80 -90 -90|010201010|-1kJI0 AL0 cK10 65X0 mXB0 vX0 VK10 1db0|24e6",
 		"Asia/Nicosia|LMT EET EEST|-2d.s -20 -30|01212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-1Vc2d.s 2a3cd.s 1cL0 1qp0 Xz0 19B0 19X0 1fB0 1db0 1cp0 1cL0 1fB0 19X0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1o30 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|32e4",
 		"Asia/Novokuznetsk|LMT +06 +07 +08|-5M.M -60 -70 -80|012323232323232323232321232323232323232323232323232323232323212|-1PctM.M eULM.M 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 2sp0 WM0|55e4",
 		"Asia/Novosibirsk|LMT +06 +07 +08|-5v.E -60 -70 -80|0123232323232323232323212323212121212121212121212121212121212121212|-21Qnv.E pAFv.E 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 ml0 Os0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 4eN0|15e5",
 		"Asia/Omsk|LMT +05 +06 +07|-4R.u -50 -60 -70|01232323232323232323232123232323232323232323232323232323232323232|-224sR.u pMLR.u 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|12e5",
-		"Asia/Oral|LMT +04 +05 +06|-3p.o -40 -50 -60|01232323232323232121212121212121212121212121212|-1Pc3p.o eUnp.o 23CL0 3Db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1fA0 1cM0 1cM0 IM0 1EM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0|27e4",
-		"Asia/Pontianak|LMT PMT WIB JST WIB WITA WIB|-7h.k -7h.k -7u -90 -80 -80 -70|012324256|-2ua7h.k XE00 munL.k 8Rau 6kpu 4PXu xhcu Wqnu|23e4",
-		"Asia/Pyongyang|LMT KST JCST JST KST|-8n -8u -90 -90 -90|012341|-2um8n 97XR 12FXu jdA0 2Onc0|29e5",
-		"Asia/Qyzylorda|LMT +04 +05 +06|-4l.Q -40 -50 -60|0123232323232323232323232323232323232323232323|-1Pc4l.Q eUol.Q 23CL0 3Db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 3ao0 1EM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0|73e4",
-		"Asia/Rangoon|RMT BURT JST MMT|-6o.E -6u -90 -6u|0123|-21Jio.E SmnS.E 7j9u|48e5",
+		"Asia/Oral|LMT +03 +05 +06 +04|-3p.o -30 -50 -60 -40|01232323232323232424242424242424242424242424242|-1Pc3p.o eUop.o 23CK0 3Db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1fA0 1cM0 1cM0 IM0 1EM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0|27e4",
+		"Asia/Pontianak|LMT PMT +0730 +09 +08 WITA WIB|-7h.k -7h.k -7u -90 -80 -80 -70|012324256|-2ua7h.k XE00 munL.k 8Rau 6kpu 4PXu xhcu Wqnu|23e4",
+		"Asia/Pyongyang|LMT KST JST KST|-8n -8u -90 -90|012313|-2um8n 97XR 1lTzu 2Onc0 6BA0|29e5",
+		"Asia/Qostanay|LMT +04 +05 +06|-4e.s -40 -50 -60|012323232323232323232123232323232323232323232323|-1Pc4e.s eUoe.s 23CL0 3Db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0",
+		"Asia/Qyzylorda|LMT +04 +05 +06|-4l.Q -40 -50 -60|01232323232323232323232323232323232323232323232|-1Pc4l.Q eUol.Q 23CL0 3Db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 3ao0 1EM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 zQl0|73e4",
+		"Asia/Rangoon|RMT +0630 +09|-6o.L -6u -90|0121|-21Jio.L SmnS.L 7j9u|48e5",
 		"Asia/Sakhalin|LMT +09 +11 +12 +10|-9u.M -90 -b0 -c0 -a0|01232323232323232323232423232323232424242424242424242424242424242|-2AGVu.M 1BoMu.M 1qFa0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 2pB0 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3rd0|58e4",
 		"Asia/Samarkand|LMT +04 +05 +06|-4r.R -40 -50 -60|01232323232323232323232|-1Pc4r.R eUor.R 23CL0 3Db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0|36e4",
-		"Asia/Seoul|LMT KST JCST JST KST KDT KDT|-8r.Q -8u -90 -90 -90 -9u -a0|01234151515151515146464|-2um8r.Q 97XV.Q 12FXu jjA0 kKo0 2I0u OL0 1FB0 Rb0 1qN0 TX0 1tB0 TX0 1tB0 TX0 1tB0 TX0 2ap0 12FBu 11A0 1o00 11A0|23e6",
-		"Asia/Singapore|SMT MALT MALST MALT MALT JST SGT SGT|-6T.p -70 -7k -7k -7u -90 -7u -80|012345467|-2Bg6T.p 17anT.p 7hXE dM00 17bO 8Fyu Mspu DTA0|56e5",
+		"Asia/Seoul|LMT KST JST KST KDT KDT|-8r.Q -8u -90 -90 -9u -a0|0123141414141414135353|-2um8r.Q 97XV.Q 1m1zu kKo0 2I0u OL0 1FB0 Rb0 1qN0 TX0 1tB0 TX0 1tB0 TX0 1tB0 TX0 2ap0 12FBu 11A0 1o00 11A0|23e6",
 		"Asia/Srednekolymsk|LMT +10 +11 +12|-ae.Q -a0 -b0 -c0|01232323232323232323232123232323232323232323232323232323232323232|-1Pcae.Q eUoe.Q 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|35e2",
-		"Asia/Taipei|JWST JST CST CDT|-80 -90 -80 -90|01232323232323232323232323232323232323232|-1iw80 joM0 1yo0 Tz0 1ip0 1jX0 1cN0 11b0 1oN0 11b0 1oN0 11b0 1oN0 11b0 10N0 1BX0 10p0 1pz0 10p0 1pz0 10p0 1db0 1dd0 1db0 1cN0 1db0 1cN0 1db0 1cN0 1db0 1BB0 ML0 1Bd0 ML0 uq10 1db0 1cN0 1db0 97B0 AL0|74e5",
+		"Asia/Taipei|CST JST CDT|-80 -90 -90|01020202020202020202020202020202020202020|-1iw80 joM0 1yo0 Tz0 1ip0 1jX0 1cN0 11b0 1oN0 11b0 1oN0 11b0 1oN0 11b0 10N0 1BX0 10p0 1pz0 10p0 1pz0 10p0 1db0 1dd0 1db0 1cN0 1db0 1cN0 1db0 1cN0 1db0 1BB0 ML0 1Bd0 ML0 uq10 1db0 1cN0 1db0 97B0 AL0|74e5",
 		"Asia/Tashkent|LMT +05 +06 +07|-4B.b -50 -60 -70|012323232323232323232321|-1Pc4B.b eUnB.b 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0|23e5",
 		"Asia/Tbilisi|TBMT +03 +04 +05|-2X.b -30 -40 -50|0123232323232323232323212121232323232323232323212|-1Pc2X.b 1jUnX.b WCL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 1cK0 1cL0 1cN0 1cL0 1cN0 2pz0 1cL0 1fB0 3Nz0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 An0 Os0 WM0|11e5",
-		"Asia/Tehran|LMT TMT IRST IRST IRDT IRDT|-3p.I -3p.I -3u -40 -50 -4u|01234325252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252|-2btDp.I 1d3c0 1huLT.I TXu 1pz0 sN0 vAu 1cL0 1dB0 1en0 pNB0 UL0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 64p0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0|14e6",
-		"Asia/Thimphu|LMT IST BTT|-5W.A -5u -60|012|-Su5W.A 1BGMs.A|79e3",
-		"Asia/Tokyo|JCST JST JDT|-90 -90 -a0|0121212121|-1iw90 pKq0 QL0 1lB0 13X0 1zB0 NX0 1zB0 NX0|38e6",
+		"Asia/Tehran|LMT TMT +0330 +04 +05 +0430|-3p.I -3p.I -3u -40 -50 -4u|01234325252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252|-2btDp.I 1d3c0 1huLT.I TXu 1pz0 sN0 vAu 1cL0 1dB0 1en0 pNB0 UL0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 64p0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0|14e6",
+		"Asia/Thimphu|LMT +0530 +06|-5W.A -5u -60|012|-Su5W.A 1BGMs.A|79e3",
+		"Asia/Tokyo|JST JDT|-90 -a0|010101010|-QJJ0 Rb0 1ld0 14n0 1zd0 On0 1zd0 On0|38e6",
 		"Asia/Tomsk|LMT +06 +07 +08|-5D.P -60 -70 -80|0123232323232323232323212323232323232323232323212121212121212121212|-21NhD.P pxzD.P 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 co0 1bB0 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3Qp0|10e5",
-		"Asia/Ulaanbaatar|LMT ULAT ULAT ULAST|-77.w -70 -80 -90|012323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-2APH7.w 2Uko7.w cKn0 1db0 1dd0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 6hD0 11z0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 kEp0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|12e5",
+		"Asia/Ulaanbaatar|LMT +07 +08 +09|-77.w -70 -80 -90|012323232323232323232323232323232323232323232323232|-2APH7.w 2Uko7.w cKn0 1db0 1dd0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 6hD0 11z0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 kEp0 1cJ0 1cP0 1cJ0|12e5",
 		"Asia/Ust-Nera|LMT +08 +09 +12 +11 +10|-9w.S -80 -90 -c0 -b0 -a0|012343434343434343434345434343434343434343434343434343434343434345|-21Q9w.S pApw.S 23CL0 1d90 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 17V0 7zD0|65e2",
 		"Asia/Vladivostok|LMT +09 +10 +11|-8L.v -90 -a0 -b0|01232323232323232323232123232323232323232323232323232323232323232|-1SJIL.v itXL.v 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|60e4",
 		"Asia/Yakutsk|LMT +08 +09 +10|-8C.W -80 -90 -a0|01232323232323232323232123232323232323232323232323232323232323232|-21Q8C.W pAoC.W 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|28e4",
 		"Asia/Yekaterinburg|LMT PMT +04 +05 +06|-42.x -3J.5 -40 -50 -60|012343434343434343434343234343434343434343434343434343434343434343|-2ag42.x 7mQh.s qBvJ.5 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|14e5",
 		"Asia/Yerevan|LMT +03 +04 +05|-2W -30 -40 -50|0123232323232323232323212121212323232323232323232323232323232|-1Pc2W 1jUnW WCL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 4RX0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0|13e5",
-		"Atlantic/Azores|HMT AZOT AZOST AZOMT AZOT AZOST WET|1S.w 20 10 0 10 0 0|01212121212121212121212121212121212121212121232123212321232121212121212121212121212121212121212121454545454545454545454545454545456545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454|-2ldW5.s aPX5.s Sp0 LX0 1vc0 Tc0 1uM0 SM0 1vc0 Tc0 1vc0 SM0 1vc0 6600 1co0 3E00 17c0 1fA0 1a00 1io0 1a00 1io0 17c0 3I00 17c0 1cM0 1cM0 3Fc0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Dc0 1tA0 1cM0 1dc0 1400 gL0 IM0 s10 U00 dX0 Rc0 pd0 Rc0 gL0 Oo0 pd0 Rc0 gL0 Oo0 pd0 14o0 1cM0 1cP0 1cM0 1cM0 1cM0 1cM0 1cM0 3Co0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 qIl0 1cM0 1fA0 1cM0 1cM0 1cN0 1cL0 1cN0 1cM0 1cM0 1cM0 1cM0 1cN0 1cL0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cL0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|25e4",
+		"Atlantic/Azores|HMT -02 -01 +00 WET|1S.w 20 10 0 0|01212121212121212121212121212121212121212121232123212321232121212121212121212121212121212121212121232323232323232323232323232323234323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-2ldW0 aPX0 Sp0 LX0 1vc0 Tc0 1uM0 SM0 1vc0 Tc0 1vc0 SM0 1vc0 6600 1co0 3E00 17c0 1fA0 1a00 1io0 1a00 1io0 17c0 3I00 17c0 1cM0 1cM0 3Fc0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Dc0 1tA0 1cM0 1dc0 1400 gL0 IM0 s10 U00 dX0 Rc0 pd0 Rc0 gL0 Oo0 pd0 Rc0 gL0 Oo0 pd0 14o0 1cM0 1cP0 1cM0 1cM0 1cM0 1cM0 1cM0 3Co0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 qIl0 1cM0 1fA0 1cM0 1cM0 1cN0 1cL0 1cN0 1cM0 1cM0 1cM0 1cM0 1cN0 1cL0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cL0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|25e4",
 		"Atlantic/Bermuda|LMT AST ADT|4j.i 40 30|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-1BnRE.G 1LTbE.G 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|65e3",
-		"Atlantic/Canary|LMT CANT WET WEST|11.A 10 0 -10|01232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-1UtaW.o XPAW.o 1lAK0 1a10 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|54e4",
-		"Atlantic/Cape_Verde|LMT CVT CVST CVT|1y.4 20 10 10|01213|-2xomp.U 1qOMp.U 7zX0 1djf0|50e4",
+		"Atlantic/Canary|LMT -01 WET WEST|11.A 10 0 -10|01232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232|-1UtaW.o XPAW.o 1lAK0 1a10 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|54e4",
+		"Atlantic/Cape_Verde|LMT -02 -01|1y.4 20 10|01212|-2ldW0 1eEo0 7zX0 1djf0|50e4",
 		"Atlantic/Faroe|LMT WET WEST|r.4 0 -10|01212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2uSnw.U 2Wgow.U 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|49e3",
-		"Atlantic/Madeira|FMT MADT MADST MADMT WET WEST|17.A 10 0 -10 0 -10|01212121212121212121212121212121212121212121232123212321232121212121212121212121212121212121212121454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454|-2ldWQ.o aPWQ.o Sp0 LX0 1vc0 Tc0 1uM0 SM0 1vc0 Tc0 1vc0 SM0 1vc0 6600 1co0 3E00 17c0 1fA0 1a00 1io0 1a00 1io0 17c0 3I00 17c0 1cM0 1cM0 3Fc0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Dc0 1tA0 1cM0 1dc0 1400 gL0 IM0 s10 U00 dX0 Rc0 pd0 Rc0 gL0 Oo0 pd0 Rc0 gL0 Oo0 pd0 14o0 1cM0 1cP0 1cM0 1cM0 1cM0 1cM0 1cM0 3Co0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 qIl0 1cM0 1fA0 1cM0 1cM0 1cN0 1cL0 1cN0 1cM0 1cM0 1cM0 1cM0 1cN0 1cL0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|27e4",
-		"Atlantic/Reykjavik|LMT IST ISST GMT|1s 10 0 0|012121212121212121212121212121212121212121212121212121212121212121213|-2uWmw mfaw 1Bd0 ML0 1LB0 Cn0 1LB0 3fX0 C10 HrX0 1cO0 LB0 1EL0 LA0 1C00 Oo0 1wo0 Rc0 1wo0 Rc0 1wo0 Rc0 1zc0 Oo0 1zc0 14o0 1lc0 14o0 1lc0 14o0 1o00 11A0 1lc0 14o0 1o00 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1o00 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1o00 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1o00 14o0|12e4",
-		"Atlantic/South_Georgia|GST|20|0||30",
-		"Atlantic/Stanley|SMT FKT FKST FKT FKST|3P.o 40 30 30 20|0121212121212134343212121212121212121212121212121212121212121212121212|-2kJw8.A 12bA8.A 19X0 1fB0 19X0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1fB0 Cn0 1Cc10 WL0 1qL0 U10 1tz0 U10 1qM0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1tz0 U10 1tz0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1tz0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qN0 U10 1wn0 Rd0 1wn0 U10 1tz0 U10 1tz0 U10 1tz0 U10 1tz0 U10 1wn0 U10 1tz0 U10 1tz0 U10|21e2",
+		"Atlantic/Madeira|FMT -01 +00 +01 WET WEST|17.A 10 0 -10 0 -10|01212121212121212121212121212121212121212121232123212321232121212121212121212121212121212121212121454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454|-2ldX0 aPX0 Sp0 LX0 1vc0 Tc0 1uM0 SM0 1vc0 Tc0 1vc0 SM0 1vc0 6600 1co0 3E00 17c0 1fA0 1a00 1io0 1a00 1io0 17c0 3I00 17c0 1cM0 1cM0 3Fc0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Dc0 1tA0 1cM0 1dc0 1400 gL0 IM0 s10 U00 dX0 Rc0 pd0 Rc0 gL0 Oo0 pd0 Rc0 gL0 Oo0 pd0 14o0 1cM0 1cP0 1cM0 1cM0 1cM0 1cM0 1cM0 3Co0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 qIl0 1cM0 1fA0 1cM0 1cM0 1cN0 1cL0 1cN0 1cM0 1cM0 1cM0 1cM0 1cN0 1cL0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|27e4",
+		"Atlantic/Reykjavik|LMT -01 +00 GMT|1s 10 0 0|012121212121212121212121212121212121212121212121212121212121212121213|-2uWmw mfaw 1Bd0 ML0 1LB0 Cn0 1LB0 3fX0 C10 HrX0 1cO0 LB0 1EL0 LA0 1C00 Oo0 1wo0 Rc0 1wo0 Rc0 1wo0 Rc0 1zc0 Oo0 1zc0 14o0 1lc0 14o0 1lc0 14o0 1o00 11A0 1lc0 14o0 1o00 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1o00 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1o00 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1lc0 14o0 1o00 14o0|12e4",
+		"Atlantic/South_Georgia|-02|20|0||30",
+		"Atlantic/Stanley|SMT -04 -03 -02|3P.o 40 30 20|012121212121212323212121212121212121212121212121212121212121212121212|-2kJw8.A 12bA8.A 19X0 1fB0 19X0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1fB0 Cn0 1Cc10 WL0 1qL0 U10 1tz0 2mN0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1tz0 U10 1tz0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1tz0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qL0 WN0 1qN0 U10 1wn0 Rd0 1wn0 U10 1tz0 U10 1tz0 U10 1tz0 U10 1tz0 U10 1wn0 U10 1tz0 U10 1tz0 U10|21e2",
 		"Australia/Sydney|AEST AEDT|-a0 -b0|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101|-293lX xcX 10jd0 yL0 1cN0 1cL0 1fB0 19X0 17c10 LA0 1C00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 14o0 1o00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 U00 1qM0 WM0 1tA0 WM0 1tA0 U00 1tA0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 11A0 1o00 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 WM0 1qM0 14o0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|40e5",
 		"Australia/Adelaide|ACST ACDT|-9u -au|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101|-293lt xcX 10jd0 yL0 1cN0 1cL0 1fB0 19X0 17c10 LA0 1C00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 U00 1qM0 WM0 1tA0 WM0 1tA0 U00 1tA0 U00 1tA0 Oo0 1zc0 WM0 1qM0 Rc0 1zc0 U00 1tA0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 WM0 1qM0 14o0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|11e5",
 		"Australia/Brisbane|AEST AEDT|-a0 -b0|01010101010101010|-293lX xcX 10jd0 yL0 1cN0 1cL0 1fB0 19X0 17c10 LA0 H1A0 Oo0 1zc0 Oo0 1zc0 Oo0|20e5",
 		"Australia/Broken_Hill|ACST ACDT|-9u -au|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101|-293lt xcX 10jd0 yL0 1cN0 1cL0 1fB0 19X0 17c10 LA0 1C00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 14o0 1o00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 U00 1qM0 WM0 1tA0 WM0 1tA0 U00 1tA0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 WM0 1qM0 14o0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|18e3",
 		"Australia/Currie|AEST AEDT|-a0 -b0|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101|-29E80 19X0 10jd0 yL0 1cN0 1cL0 1fB0 19X0 17c10 LA0 1C00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 11A0 1qM0 WM0 1qM0 Oo0 1zc0 Oo0 1zc0 Oo0 1wo0 WM0 1tA0 WM0 1tA0 U00 1tA0 U00 1tA0 11A0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 11A0 1o00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1cM0 1a00 1io0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|746",
 		"Australia/Darwin|ACST ACDT|-9u -au|010101010|-293lt xcX 10jd0 yL0 1cN0 1cL0 1fB0 19X0|12e4",
-		"Australia/Eucla|ACWST ACWDT|-8J -9J|0101010101010101010|-293kI xcX 10jd0 yL0 1cN0 1cL0 1gSp0 Oo0 l5A0 Oo0 iJA0 G00 zU00 IM0 1qM0 11A0 1o00 11A0|368",
+		"Australia/Eucla|+0845 +0945|-8J -9J|0101010101010101010|-293kI xcX 10jd0 yL0 1cN0 1cL0 1gSp0 Oo0 l5A0 Oo0 iJA0 G00 zU00 IM0 1qM0 11A0 1o00 11A0|368",
 		"Australia/Hobart|AEST AEDT|-a0 -b0|010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101|-29E80 19X0 10jd0 yL0 1cN0 1cL0 1fB0 19X0 VfB0 1cM0 1o00 Rc0 1wo0 Rc0 1wo0 U00 1wo0 LA0 1C00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 11A0 1qM0 WM0 1qM0 Oo0 1zc0 Oo0 1zc0 Oo0 1wo0 WM0 1tA0 WM0 1tA0 U00 1tA0 U00 1tA0 11A0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 11A0 1o00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1cM0 1a00 1io0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|21e4",
-		"Australia/Lord_Howe|AEST LHST LHDT LHDT|-a0 -au -bu -b0|0121212121313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313|raC0 1zdu Rb0 1zd0 On0 1zd0 On0 1zd0 On0 1zd0 TXu 1qMu WLu 1tAu WLu 1tAu TXu 1tAu Onu 1zcu Onu 1zcu Onu 1zcu Rbu 1zcu Onu 1zcu Onu 1zcu 11zu 1o0u 11zu 1o0u 11zu 1o0u 11zu 1qMu WLu 11Au 1nXu 1qMu 11zu 1o0u 11zu 1o0u 11zu 1qMu WLu 1qMu 11zu 1o0u WLu 1qMu 14nu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1fzu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu|347",
+		"Australia/Lord_Howe|AEST +1030 +1130 +11|-a0 -au -bu -b0|0121212121313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313|raC0 1zdu Rb0 1zd0 On0 1zd0 On0 1zd0 On0 1zd0 TXu 1qMu WLu 1tAu WLu 1tAu TXu 1tAu Onu 1zcu Onu 1zcu Onu 1zcu Rbu 1zcu Onu 1zcu Onu 1zcu 11zu 1o0u 11zu 1o0u 11zu 1o0u 11zu 1qMu WLu 11Au 1nXu 1qMu 11zu 1o0u 11zu 1o0u 11zu 1qMu WLu 1qMu 11zu 1o0u WLu 1qMu 14nu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1fzu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu|347",
 		"Australia/Lindeman|AEST AEDT|-a0 -b0|010101010101010101010|-293lX xcX 10jd0 yL0 1cN0 1cL0 1fB0 19X0 17c10 LA0 H1A0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0|10",
 		"Australia/Melbourne|AEST AEDT|-a0 -b0|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101|-293lX xcX 10jd0 yL0 1cN0 1cL0 1fB0 19X0 17c10 LA0 1C00 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 U00 1qM0 WM0 1qM0 11A0 1tA0 U00 1tA0 U00 1tA0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 11A0 1o00 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 WM0 1qM0 14o0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|39e5",
 		"Australia/Perth|AWST AWDT|-80 -90|0101010101010101010|-293jX xcX 10jd0 yL0 1cN0 1cL0 1gSp0 Oo0 l5A0 Oo0 iJA0 G00 zU00 IM0 1qM0 11A0 1o00 11A0|18e5",
 		"CET|CET CEST|-10 -20|01010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2aFe0 11d0 1iO0 11A0 1o00 11A0 Qrc0 6i00 WM0 1fA0 1cM0 1cM0 1cM0 16M0 1gMM0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00",
+		"Pacific/Easter|EMT -07 -06 -05|7h.s 70 60 50|012121212121212121212121212123232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323|-1uSgG.w 1s4IG.w WL0 1zd0 On0 1ip0 11z0 1o10 11z0 1qN0 WL0 1ld0 14n0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 2pA0 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 1cL0 1cN0 11z0 1o10 11z0 1qN0 WL0 1fB0 19X0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1ip0 1fz0 1fB0 11z0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1o10 19X0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1zb0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0|30e2",
 		"CST6CDT|CST CDT CWT CPT|60 50 50 50|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261s0 1nX0 11B0 1nX0 SgN0 8x30 iw0 QwN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
-		"Pacific/Easter|EMT EAST EASST EAST EASST|7h.s 70 60 60 50|0121212121212121212121212121234343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434|-1uSgG.w 1s4IG.w WL0 1zd0 On0 1ip0 11z0 1o10 11z0 1qN0 WL0 1ld0 14n0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 1cL0 1cN0 11z0 1o10 11z0 1qN0 WL0 1fB0 19X0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1ip0 1fz0 1fB0 11z0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1o10 19X0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Dd0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|30e2",
 		"EET|EET EEST|-20 -30|010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|hDB0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00",
+		"Europe/Dublin|DMT IST GMT BST IST|p.l -y.D 0 -10 -10|01232323232324242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242|-2ax9y.D Rc0 1fzy.D 14M0 1fc0 1g00 1co0 1dc0 1co0 1oo0 1400 1dc0 19A0 1io0 1io0 WM0 1o00 14o0 1o00 17c0 1io0 17c0 1fA0 1a00 1lc0 17c0 1io0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1cM0 1io0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1a00 1io0 1qM0 Dc0 g600 14o0 1wo0 17c0 1io0 11A0 1o00 17c0 1fA0 1a00 1fA0 1cM0 1fA0 1a00 17c0 1fA0 1a00 1io0 17c0 1lc0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1a00 1a00 1qM0 WM0 1qM0 11A0 1o00 WM0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1tA0 IM0 90o0 U00 1tA0 U00 1tA0 U00 1tA0 U00 1tA0 WM0 1qM0 WM0 1qM0 WM0 1tA0 U00 1tA0 U00 1tA0 11z0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 14o0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|12e5",
 		"EST|EST|50|0|",
 		"EST5EDT|EST EDT EWT EPT|50 40 40 40|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261t0 1nX0 11B0 1nX0 SgN0 8x40 iv0 QwN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
-		"Europe/Dublin|DMT IST GMT BST IST|p.l -y.D 0 -10 -10|01232323232324242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242|-2ax9y.D Rc0 1fzy.D 14M0 1fc0 1g00 1co0 1dc0 1co0 1oo0 1400 1dc0 19A0 1io0 1io0 WM0 1o00 14o0 1o00 17c0 1io0 17c0 1fA0 1a00 1lc0 17c0 1io0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1cM0 1io0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1a00 1io0 1qM0 Dc0 g5X0 14p0 1wn0 17d0 1io0 11A0 1o00 17c0 1fA0 1a00 1fA0 1cM0 1fA0 1a00 17c0 1fA0 1a00 1io0 17c0 1lc0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1a00 1a00 1qM0 WM0 1qM0 11A0 1o00 WM0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1tA0 IM0 90o0 U00 1tA0 U00 1tA0 U00 1tA0 U00 1tA0 WM0 1qM0 WM0 1qM0 WM0 1tA0 U00 1tA0 U00 1tA0 11z0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 14o0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|12e5",
-		"Etc/GMT+0|GMT|0|0|",
-		"Etc/GMT+1|-01|10|0|",
-		"Etc/GMT+10|-10|a0|0|",
-		"Etc/GMT+11|-11|b0|0|",
-		"Etc/GMT+12|-12|c0|0|",
-		"Etc/GMT+2|-02|20|0|",
-		"Etc/GMT+3|-03|30|0|",
-		"Etc/GMT+4|-04|40|0|",
-		"Etc/GMT+5|-05|50|0|",
-		"Etc/GMT+6|-06|60|0|",
-		"Etc/GMT+7|-07|70|0|",
-		"Etc/GMT+8|-08|80|0|",
-		"Etc/GMT+9|-09|90|0|",
+		"Etc/GMT-0|GMT|0|0|",
 		"Etc/GMT-1|+01|-10|0|",
-		"Etc/GMT-10|+10|-a0|0|",
+		"Pacific/Port_Moresby|+10|-a0|0||25e4",
 		"Etc/GMT-11|+11|-b0|0|",
-		"Etc/GMT-12|+12|-c0|0|",
+		"Pacific/Tarawa|+12|-c0|0||29e3",
 		"Etc/GMT-13|+13|-d0|0|",
 		"Etc/GMT-14|+14|-e0|0|",
 		"Etc/GMT-2|+02|-20|0|",
@@ -12228,19 +11274,29 @@ module.exports={
 		"Etc/GMT-4|+04|-40|0|",
 		"Etc/GMT-5|+05|-50|0|",
 		"Etc/GMT-6|+06|-60|0|",
-		"Etc/GMT-7|+07|-70|0|",
+		"Indian/Christmas|+07|-70|0||21e2",
 		"Etc/GMT-8|+08|-80|0|",
-		"Etc/GMT-9|+09|-90|0|",
-		"Etc/UCT|UCT|0|0|",
+		"Pacific/Palau|+09|-90|0||21e3",
+		"Etc/GMT+1|-01|10|0|",
+		"Etc/GMT+10|-10|a0|0|",
+		"Etc/GMT+11|-11|b0|0|",
+		"Etc/GMT+12|-12|c0|0|",
+		"Etc/GMT+3|-03|30|0|",
+		"Etc/GMT+4|-04|40|0|",
+		"Etc/GMT+5|-05|50|0|",
+		"Etc/GMT+6|-06|60|0|",
+		"Etc/GMT+7|-07|70|0|",
+		"Etc/GMT+8|-08|80|0|",
+		"Etc/GMT+9|-09|90|0|",
 		"Etc/UTC|UTC|0|0|",
-		"Europe/Amsterdam|AMT NST NEST NET CEST CET|-j.w -1j.w -1k -k -20 -10|010101010101010101010101010101010101010101012323234545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545|-2aFcj.w 11b0 1iP0 11A0 1io0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1co0 1io0 1yo0 Pc0 1a00 1fA0 1Bc0 Mo0 1tc0 Uo0 1tA0 U00 1uo0 W00 1s00 VA0 1so0 Vc0 1sM0 UM0 1wo0 Rc0 1u00 Wo0 1rA0 W00 1s00 VA0 1sM0 UM0 1w00 fV0 BCX.w 1tA0 U00 1u00 Wo0 1sm0 601k WM0 1fA0 1cM0 1cM0 1cM0 16M0 1gMM0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|16e5",
+		"Europe/Amsterdam|AMT NST +0120 +0020 CEST CET|-j.w -1j.w -1k -k -20 -10|010101010101010101010101010101010101010101012323234545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545|-2aFcj.w 11b0 1iP0 11A0 1io0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1co0 1io0 1yo0 Pc0 1a00 1fA0 1Bc0 Mo0 1tc0 Uo0 1tA0 U00 1uo0 W00 1s00 VA0 1so0 Vc0 1sM0 UM0 1wo0 Rc0 1u00 Wo0 1rA0 W00 1s00 VA0 1sM0 UM0 1w00 fV0 BCX.w 1tA0 U00 1u00 Wo0 1sm0 601k WM0 1fA0 1cM0 1cM0 1cM0 16M0 1gMM0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|16e5",
 		"Europe/Andorra|WET CET CEST|0 -10 -20|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-UBA0 1xIN0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|79e3",
-		"Europe/Astrakhan|LMT +03 +04 +05|-3c.c -30 -40 -50|012323232323232323212121212121212121212121212121212121212121212|-1Pcrc.c eUMc.c 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1fA0 1cM0 3Co0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3rd0",
+		"Europe/Astrakhan|LMT +03 +04 +05|-3c.c -30 -40 -50|012323232323232323212121212121212121212121212121212121212121212|-1Pcrc.c eUMc.c 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1fA0 1cM0 3Co0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3rd0|10e5",
 		"Europe/Athens|AMT EET EEST CEST CET|-1y.Q -20 -30 -20 -10|012123434121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2a61x.Q CNbx.Q mn0 kU10 9b0 3Es0 Xa0 1fb0 1dd0 k3X0 Nz0 SCp0 1vc0 SO0 1cM0 1a00 1ao0 1fc0 1a10 1fG0 1cg0 1dX0 1bX0 1cQ0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|35e5",
 		"Europe/London|GMT BST BDST|0 -10 -20|0101010101010101010101010101010101010101010101010121212121210101210101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2axa0 Rc0 1fA0 14M0 1fc0 1g00 1co0 1dc0 1co0 1oo0 1400 1dc0 19A0 1io0 1io0 WM0 1o00 14o0 1o00 17c0 1io0 17c0 1fA0 1a00 1lc0 17c0 1io0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1cM0 1io0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1a00 1io0 1qM0 Dc0 2Rz0 Dc0 1zc0 Oo0 1zc0 Rc0 1wo0 17c0 1iM0 FA0 xB0 1fA0 1a00 14o0 bb0 LA0 xB0 Rc0 1wo0 11A0 1o00 17c0 1fA0 1a00 1fA0 1cM0 1fA0 1a00 17c0 1fA0 1a00 1io0 17c0 1lc0 17c0 1fA0 1a00 1io0 17c0 1io0 17c0 1fA0 1a00 1a00 1qM0 WM0 1qM0 11A0 1o00 WM0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1tA0 IM0 90o0 U00 1tA0 U00 1tA0 U00 1tA0 U00 1tA0 WM0 1qM0 WM0 1qM0 WM0 1tA0 U00 1tA0 U00 1tA0 11z0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 14o0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|10e6",
 		"Europe/Belgrade|CET CEST|-10 -20|01010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-19RC0 3IP0 WM0 1fA0 1cM0 1cM0 1rc0 Qo0 1vmo0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|12e5",
 		"Europe/Berlin|CET CEST CEMT|-10 -20 -30|01010101010101210101210101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2aFe0 11d0 1iO0 11A0 1o00 11A0 Qrc0 6i00 WM0 1fA0 1cM0 1cM0 1cM0 kL0 Nc0 m10 WM0 1ao0 1cp0 dX0 jz0 Dd0 1io0 17c0 1fA0 1a00 1ehA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|41e5",
-		"Europe/Prague|CET CEST|-10 -20|010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2aFe0 11d0 1iO0 11A0 1o00 11A0 Qrc0 6i00 WM0 1fA0 1cM0 16M0 1lc0 1tA0 17A0 11c0 1io0 17c0 1io0 17c0 1fc0 1ao0 1bNc0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|13e5",
+		"Europe/Prague|CET CEST GMT|-10 -20 0|01010101010101010201010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2aFe0 11d0 1iO0 11A0 1o00 11A0 Qrc0 6i00 WM0 1fA0 1cM0 1cM0 1cM0 1cM0 1qM0 11c0 mp0 xA0 mn0 17c0 1io0 17c0 1fc0 1ao0 1bNc0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|13e5",
 		"Europe/Brussels|WET CET CEST WEST|0 -10 -20 -10|0121212103030303030303030303030303030303030303030303212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2ehc0 3zX0 11c0 1iO0 11A0 1o00 11A0 my0 Ic0 1qM0 Rc0 1EM0 UM0 1u00 10o0 1io0 1io0 17c0 1a00 1fA0 1cM0 1cM0 1io0 17c0 1fA0 1a00 1io0 1a30 1io0 17c0 1fA0 1a00 1io0 17c0 1cM0 1cM0 1a00 1io0 1cM0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Dc0 y00 5Wn0 WM0 1fA0 1cM0 16M0 1iM0 16M0 1C00 Uo0 1eeo0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|21e5",
 		"Europe/Bucharest|BMT EET EEST|-1I.o -20 -30|0121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-1xApI.o 20LI.o RA0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1Axc0 On0 1fA0 1a10 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cK0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cL0 1cN0 1cL0 1fB0 1nX0 11E0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|19e5",
 		"Europe/Budapest|CET CEST|-10 -20|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2aFe0 11d0 1iO0 11A0 1ip0 17b0 1op0 1tb0 Q2m0 3Ne0 WM0 1fA0 1cM0 1cM0 1oJ0 1dc0 1030 1fA0 1cM0 1cM0 1cM0 1cM0 1fA0 1a00 1iM0 1fA0 8Ha0 Rb0 1wN0 Rb0 1BB0 Lz0 1C20 LB0 SNX0 1a10 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|17e5",
@@ -12252,9 +11308,9 @@ module.exports={
 		"Europe/Kaliningrad|CET CEST CET CEST MSK MSD EEST EET +03|-10 -20 -20 -30 -30 -40 -30 -20 -30|0101010101010232454545454545454546767676767676767676767676767676767676767676787|-2aFe0 11d0 1iO0 11A0 1o00 11A0 Qrc0 6i00 WM0 1fA0 1cM0 1cM0 Am0 Lb0 1en0 op0 1pNz0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cN0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|44e4",
 		"Europe/Kiev|KMT EET MSK CEST CET MSD EEST|-22.4 -20 -30 -20 -10 -40 -30|0123434252525252525252525256161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161|-1Pc22.4 eUo2.4 rnz0 2Hg0 WM0 1fA0 da0 1v4m0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 Db0 3220 1cK0 1cL0 1cN0 1cL0 1cN0 1cL0 1cQ0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|34e5",
 		"Europe/Kirov|LMT +03 +04 +05|-3i.M -30 -40 -50|01232323232323232321212121212121212121212121212121212121212121|-22WM0 qH90 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1fA0 1cM0 3Co0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|48e4",
-		"Europe/Lisbon|LMT WET WEST WEMT CET CEST|A.J 0 -10 -20 -10 -20|012121212121212121212121212121212121212121212321232123212321212121212121212121212121212121212121214121212121212121212121212121212124545454212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2ldXn.f aPWn.f Sp0 LX0 1vc0 Tc0 1uM0 SM0 1vc0 Tc0 1vc0 SM0 1vc0 6600 1co0 3E00 17c0 1fA0 1a00 1io0 1a00 1io0 17c0 3I00 17c0 1cM0 1cM0 3Fc0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Dc0 1tA0 1cM0 1dc0 1400 gL0 IM0 s10 U00 dX0 Rc0 pd0 Rc0 gL0 Oo0 pd0 Rc0 gL0 Oo0 pd0 14o0 1cM0 1cP0 1cM0 1cM0 1cM0 1cM0 1cM0 3Co0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 pvy0 1cM0 1cM0 1fA0 1cM0 1cM0 1cN0 1cL0 1cN0 1cM0 1cM0 1cM0 1cM0 1cN0 1cL0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|27e5",
+		"Europe/Lisbon|LMT WET WEST WEMT CET CEST|A.J 0 -10 -20 -10 -20|012121212121212121212121212121212121212121212321232123212321212121212121212121212121212121212121214121212121212121212121212121212124545454212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2le00 aPX0 Sp0 LX0 1vc0 Tc0 1uM0 SM0 1vc0 Tc0 1vc0 SM0 1vc0 6600 1co0 3E00 17c0 1fA0 1a00 1io0 1a00 1io0 17c0 3I00 17c0 1cM0 1cM0 3Fc0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Dc0 1tA0 1cM0 1dc0 1400 gL0 IM0 s10 U00 dX0 Rc0 pd0 Rc0 gL0 Oo0 pd0 Rc0 gL0 Oo0 pd0 14o0 1cM0 1cP0 1cM0 1cM0 1cM0 1cM0 1cM0 3Co0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 pvy0 1cM0 1cM0 1fA0 1cM0 1cM0 1cN0 1cL0 1cN0 1cM0 1cM0 1cM0 1cM0 1cN0 1cL0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|27e5",
 		"Europe/Luxembourg|LMT CET CEST WET WEST WEST WET|-o.A -10 -20 0 -10 -20 -10|0121212134343434343434343434343434343434343434343434565651212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2DG0o.A t6mo.A TB0 1nX0 Up0 1o20 11A0 rW0 CM0 1qP0 R90 1EO0 UK0 1u20 10m0 1ip0 1in0 17e0 19W0 1fB0 1db0 1cp0 1in0 17d0 1fz0 1a10 1in0 1a10 1in0 17f0 1fA0 1a00 1io0 17c0 1cM0 1cM0 1a00 1io0 1cM0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Dc0 vA0 60L0 WM0 1fA0 1cM0 17c0 1io0 16M0 1C00 Uo0 1eeo0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|54e4",
-		"Europe/Madrid|WET WEST WEMT CET CEST|0 -10 -20 -10 -20|01010101010101010101010121212121234343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343|-28dd0 11A0 1go0 19A0 1co0 1dA0 b1A0 18o0 3I00 17c0 1fA0 1a00 1io0 1a00 1io0 17c0 iyo0 Rc0 18o0 1hc0 1io0 1a00 14o0 5aL0 MM0 1vc0 17A0 1i00 1bc0 1eo0 17d0 1in0 17A0 6hA0 10N0 XIL0 1a10 1in0 17d0 19X0 1cN0 1fz0 1a10 1fX0 1cp0 1cO0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|62e5",
+		"Europe/Madrid|WET WEST WEMT CET CEST|0 -10 -20 -10 -20|010101010101010101210343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343|-25Td0 19B0 1cL0 1dd0 b1z0 18p0 3HX0 17d0 1fz0 1a10 1io0 1a00 1in0 17d0 iIn0 Hd0 1cL0 bb0 1200 2s20 14n0 5aL0 Mp0 1vz0 17d0 1in0 17d0 1in0 17d0 1in0 17d0 6hX0 11B0 XHX0 1a10 1fz0 1a10 19X0 1cN0 1fz0 1a10 1fC0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|62e5",
 		"Europe/Malta|CET CEST|-10 -20|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2arB0 Lz0 1cN0 1db0 1410 1on0 Wp0 1qL0 17d0 1cL0 M3B0 5M20 WM0 1fA0 1co0 17c0 1iM0 16m0 1de0 1lc0 14m0 1lc0 WO0 1qM0 GTW0 On0 1C10 LA0 1C00 LA0 1EM0 LA0 1C00 LA0 1zc0 Oo0 1C00 Oo0 1co0 1cM0 1lA0 Xc0 1qq0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1iN0 19z0 1fB0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|42e4",
 		"Europe/Minsk|MMT EET MSK CEST CET MSD EEST +03|-1O -20 -30 -20 -10 -40 -30 -30|01234343252525252525252525261616161616161616161616161616161616161617|-1Pc1O eUnO qNX0 3gQ0 WM0 1fA0 1cM0 Al0 1tsn0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 3Fc0 1cN0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0|19e5",
 		"Europe/Monaco|PMT WET WEST WEMT CET CEST|-9.l 0 -10 -20 -10 -20|01212121212121212121212121212121212121212121212121232323232345454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454|-2nco9.l cNb9.l HA0 19A0 1iM0 11c0 1oo0 Wo0 1rc0 QM0 1EM0 UM0 1u00 10o0 1io0 1wo0 Rc0 1a00 1fA0 1cM0 1cM0 1io0 17c0 1fA0 1a00 1io0 1a00 1io0 17c0 1fA0 1a00 1io0 17c0 1cM0 1cM0 1a00 1io0 1cM0 1cM0 1a00 1fA0 1io0 17c0 1cM0 1cM0 1a00 1fA0 1io0 1qM0 Df0 2RV0 11z0 11B0 1ze0 WM0 1fA0 1cM0 1fa0 1aq0 16M0 1ekn0 1cL0 1fC0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|38e3",
@@ -12269,60 +11325,53 @@ module.exports={
 		"Europe/Stockholm|CET CEST|-10 -20|01010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2azC0 TB0 2yDe0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|15e5",
 		"Europe/Tallinn|TMT CET CEST EET MSK MSD EEST|-1D -10 -20 -20 -30 -40 -30|012103421212454545454545454546363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363|-26oND teD 11A0 1Ta0 4rXl KSLD 2FX0 2Jg0 WM0 1fA0 1cM0 18J0 1sTX0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cN0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o10 11A0 1qM0 5QM0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|41e4",
 		"Europe/Tirane|LMT CET CEST|-1j.k -10 -20|01212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2glBj.k 14pcj.k 5LC0 WM0 4M0 1fCK0 10n0 1op0 11z0 1pd0 11z0 1qN0 WL0 1qp0 Xb0 1qp0 Xb0 1qp0 11z0 1lB0 11z0 1qN0 11z0 1iN0 16n0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|42e4",
-		"Europe/Ulyanovsk|LMT +03 +04 +05 +02|-3d.A -30 -40 -50 -20|01232323232323232321214121212121212121212121212121212121212121212|-22WM0 qH90 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3rd0",
+		"Europe/Ulyanovsk|LMT +03 +04 +05 +02|-3d.A -30 -40 -50 -20|01232323232323232321214121212121212121212121212121212121212121212|-22WM0 qH90 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3rd0|13e5",
 		"Europe/Uzhgorod|CET CEST MSK MSD EET EEST|-10 -20 -30 -40 -20 -30|010101023232323232323232320454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454|-1cqL0 6i00 WM0 1fA0 1cM0 1ml0 1Cp0 1r3W0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1Q00 1Nf0 2pw0 1cL0 1cN0 1cL0 1cN0 1cL0 1cQ0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|11e4",
 		"Europe/Vienna|CET CEST|-10 -20|0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2aFe0 11d0 1iO0 11A0 1o00 11A0 3KM0 14o0 LA00 6i00 WM0 1fA0 1cM0 1cM0 1cM0 400 2qM0 1a00 1cM0 1cM0 1io0 17c0 1gHa0 19X0 1cP0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|18e5",
 		"Europe/Vilnius|WMT KMT CET EET MSK CEST MSD EEST|-1o -1z.A -10 -20 -30 -20 -40 -30|012324525254646464646464646473737373737373737352537373737373737373737373737373737373737373737373737373737373737373737373|-293do 6ILM.o 1Ooz.A zz0 Mfd0 29W0 3is0 WM0 1fA0 1cM0 LV0 1tgL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cN0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11B0 1o00 11A0 1qM0 8io0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|54e4",
-		"Europe/Volgograd|LMT +03 +04 +05|-2V.E -30 -40 -50|01232323232323232121212121212121212121212121212121212121212121|-21IqV.E psLV.E 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1cM0 1cM0 1fA0 1cM0 3Co0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0|10e5",
+		"Europe/Volgograd|LMT +03 +04 +05|-2V.E -30 -40 -50|012323232323232321212121212121212121212121212121212121212121212|-21IqV.E psLV.E 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 2pB0 1cM0 1cM0 1cM0 1fA0 1cM0 3Co0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 9Jd0|10e5",
 		"Europe/Warsaw|WMT CET CEST EET EEST|-1o -10 -20 -20 -30|012121234312121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2ctdo 1LXo 11d0 1iO0 11A0 1o00 11A0 1on0 11A0 6zy0 HWP0 5IM0 WM0 1fA0 1cM0 1dz0 1mL0 1en0 15B0 1aq0 1nA0 11A0 1io0 17c0 1fA0 1a00 iDX0 LA0 1cM0 1cM0 1C00 Oo0 1cM0 1cM0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1C00 LA0 uso0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cN0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|17e5",
-		"Europe/Zaporozhye|CUT EET MSK CEST CET MSD EEST|-2k -20 -30 -20 -10 -40 -30|01234342525252525252525252526161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161|-1Pc2k eUok rdb0 2RE0 WM0 1fA0 8m0 1v9a0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cK0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cQ0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|77e4",
+		"Europe/Zaporozhye|+0220 EET MSK CEST CET MSD EEST|-2k -20 -30 -20 -10 -40 -30|01234342525252525252525252526161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161|-1Pc2k eUok rdb0 2RE0 WM0 1fA0 8m0 1v9a0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cK0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cQ0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|77e4",
 		"HST|HST|a0|0|",
-		"Indian/Chagos|LMT IOT IOT|-4N.E -50 -60|012|-2xosN.E 3AGLN.E|30e2",
-		"Indian/Christmas|CXT|-70|0||21e2",
-		"Indian/Cocos|CCT|-6u|0||596",
+		"Indian/Chagos|LMT +05 +06|-4N.E -50 -60|012|-2xosN.E 3AGLN.E|30e2",
+		"Indian/Cocos|+0630|-6u|0||596",
 		"Indian/Kerguelen|-00 +05|0 -50|01|-MG00|130",
-		"Indian/Mahe|LMT SCT|-3F.M -40|01|-2yO3F.M|79e3",
-		"Indian/Maldives|MMT MVT|-4S -50|01|-olgS|35e4",
-		"Indian/Mauritius|LMT MUT MUST|-3O -40 -50|012121|-2xorO 34unO 14L0 12kr0 11z0|15e4",
-		"Indian/Reunion|LMT RET|-3F.Q -40|01|-2mDDF.Q|84e4",
-		"Pacific/Kwajalein|MHT KWAT MHT|-b0 c0 -c0|012|-AX0 W9X0|14e3",
+		"Indian/Mahe|LMT +04|-3F.M -40|01|-2yO3F.M|79e3",
+		"Indian/Maldives|MMT +05|-4S -50|01|-olgS|35e4",
+		"Indian/Mauritius|LMT +04 +05|-3O -40 -50|012121|-2xorO 34unO 14L0 12kr0 11z0|15e4",
+		"Indian/Reunion|LMT +04|-3F.Q -40|01|-2mDDF.Q|84e4",
+		"Pacific/Kwajalein|+11 +10 +09 -12 +12|-b0 -a0 -90 c0 -c0|012034|-1kln0 akp0 6Up0 12ry0 Wan0|14e3",
 		"MET|MET MEST|-10 -20|01010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-2aFe0 11d0 1iO0 11A0 1o00 11A0 Qrc0 6i00 WM0 1fA0 1cM0 1cM0 1cM0 16M0 1gMM0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00",
 		"MST|MST|70|0|",
 		"MST7MDT|MST MDT MWT MPT|70 60 60 60|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261r0 1nX0 11B0 1nX0 SgN0 8x20 ix0 QwN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
-		"Pacific/Chatham|CHAST CHAST CHADT|-cf -cJ -dJ|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212|-WqAf 1adef IM0 1C00 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1qM0 14o0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1io0 17c0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1io0 17c0 1io0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|600",
+		"Pacific/Chatham|+1215 +1245 +1345|-cf -cJ -dJ|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212|-WqAf 1adef IM0 1C00 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1qM0 14o0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1io0 17c0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1lc0 14o0 1lc0 14o0 1lc0 17c0 1io0 17c0 1io0 17c0 1io0 17c0 1io0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|600",
+		"Pacific/Apia|LMT -1130 -11 -10 +14 +13|bq.U bu b0 a0 -e0 -d0|01232345454545454545454545454545454545454545454545454545454|-2nDMx.4 1yW03.4 2rRbu 1ff0 1a00 CI0 AQ0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|37e3",
+		"Pacific/Bougainville|+10 +09 +11|-a0 -90 -b0|0102|-16Wy0 7CN0 2MQp0|18e4",
+		"Pacific/Chuuk|+10 +09|-a0 -90|01010|-2ewy0 axB0 RVX0 axd0|49e3",
+		"Pacific/Efate|LMT +11 +12|-bd.g -b0 -c0|0121212121212121212121|-2l9nd.g 2Szcd.g 1cL0 1oN0 10L0 1fB0 19X0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 Lz0 1Nd0 An0|66e3",
+		"Pacific/Enderbury|-12 -11 +13|c0 b0 -d0|012|nIc0 B7X0|1",
+		"Pacific/Fakaofo|-11 +13|b0 -d0|01|1Gfn0|483",
+		"Pacific/Fiji|LMT +12 +13|-bT.I -c0 -d0|0121212121212121212121212121212121212121212121212121212121212121|-2bUzT.I 3m8NT.I LA0 1EM0 IM0 nJc0 LA0 1o00 Rc0 1wo0 Ao0 1Nc0 Ao0 1Q00 xz0 1SN0 uM0 1SM0 uM0 1VA0 s00 1VA0 s00 1VA0 s00 1VA0 uM0 1SM0 uM0 1VA0 s00 1VA0 s00 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1VA0 s00 1VA0 s00 1VA0 s00 1VA0 uM0 1SM0 uM0 1VA0 s00 1VA0 s00 1VA0 s00 1VA0 s00 1VA0 uM0 1SM0 uM0|88e4",
+		"Pacific/Galapagos|LMT -05 -06|5W.o 50 60|01212|-1yVS1.A 2dTz1.A gNd0 rz0|25e3",
+		"Pacific/Gambier|LMT -09|8X.M 90|01|-2jof0.c|125",
+		"Pacific/Guadalcanal|LMT +11|-aD.M -b0|01|-2joyD.M|11e4",
+		"Pacific/Guam|GST +09 GDT ChST|-a0 -90 -b0 -a0|01020202020202020203|-18jK0 6pB0 AhB0 3QL0 g2p0 3p91 WOX rX0 1zd0 Rb0 1wp0 Rb0 5xd0 rX0 5sN0 zb1 1C0X On0 ULb0|17e4",
+		"Pacific/Honolulu|HST HDT HWT HPT HST|au 9u 9u 9u a0|0102304|-1thLu 8x0 lef0 8wWu iAu 46p0|37e4",
+		"Pacific/Kiritimati|-1040 -10 +14|aE a0 -e0|012|nIaE B7Xk|51e2",
+		"Pacific/Kosrae|+11 +09 +10 +12|-b0 -90 -a0 -c0|01021030|-2ewz0 axC0 HBy0 akp0 axd0 WOK0 1bdz0|66e2",
+		"Pacific/Majuro|+11 +09 +10 +12|-b0 -90 -a0 -c0|0102103|-2ewz0 axC0 HBy0 akp0 6RB0 12um0|28e3",
+		"Pacific/Marquesas|LMT -0930|9i 9u|01|-2joeG|86e2",
+		"Pacific/Pago_Pago|LMT SST|bm.M b0|01|-2nDMB.c|37e2",
+		"Pacific/Nauru|LMT +1130 +09 +12|-b7.E -bu -90 -c0|01213|-1Xdn7.E QCnB.E 7mqu 1lnbu|10e3",
+		"Pacific/Niue|-1120 -1130 -11|bk bu b0|012|-KfME 17y0a|12e2",
+		"Pacific/Norfolk|+1112 +1130 +1230 +11|-bc -bu -cu -b0|01213|-Kgbc W01G On0 1COp0|25e4",
+		"Pacific/Noumea|LMT +11 +12|-b5.M -b0 -c0|01212121|-2l9n5.M 2EqM5.M xX0 1PB0 yn0 HeP0 Ao0|98e3",
+		"Pacific/Pitcairn|-0830 -08|8u 80|01|18Vku|56",
+		"Pacific/Pohnpei|+11 +09 +10|-b0 -90 -a0|010210|-2ewz0 axC0 HBy0 akp0 axd0|34e3",
+		"Pacific/Rarotonga|-1030 -0930 -10|au 9u a0|012121212121212121212121212|lyWu IL0 1zcu Onu 1zcu Onu 1zcu Rbu 1zcu Onu 1zcu Onu 1zcu Onu 1zcu Onu 1zcu Onu 1zcu Rbu 1zcu Onu 1zcu Onu 1zcu Onu|13e3",
+		"Pacific/Tahiti|LMT -10|9W.g a0|01|-2joe1.I|18e4",
+		"Pacific/Tongatapu|+1220 +13 +14|-ck -d0 -e0|0121212121|-1aB0k 2n5dk 15A0 1wo0 xz0 1Q10 xz0 zWN0 s00|75e3",
 		"PST8PDT|PST PDT PWT PPT|80 70 70 70|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261q0 1nX0 11B0 1nX0 SgN0 8x10 iy0 QwN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
-		"Pacific/Apia|LMT WSST SST SDT WSDT WSST|bq.U bu b0 a0 -e0 -d0|01232345454545454545454545454545454545454545454545454545454|-2nDMx.4 1yW03.4 2rRbu 1ff0 1a00 CI0 AQ0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1io0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|37e3",
-		"Pacific/Bougainville|PGT JST BST|-a0 -90 -b0|0102|-16Wy0 7CN0 2MQp0|18e4",
-		"Pacific/Chuuk|CHUT|-a0|0||49e3",
-		"Pacific/Efate|LMT VUT VUST|-bd.g -b0 -c0|0121212121212121212121|-2l9nd.g 2Szcd.g 1cL0 1oN0 10L0 1fB0 19X0 1fB0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1fB0 Lz0 1Nd0 An0|66e3",
-		"Pacific/Enderbury|PHOT PHOT PHOT|c0 b0 -d0|012|nIc0 B8n0|1",
-		"Pacific/Fakaofo|TKT TKT|b0 -d0|01|1Gfn0|483",
-		"Pacific/Fiji|LMT FJT FJST|-bT.I -c0 -d0|0121212121212121212121212121212121212121212121212121212121212121|-2bUzT.I 3m8NT.I LA0 1EM0 IM0 nJc0 LA0 1o00 Rc0 1wo0 Ao0 1Nc0 Ao0 1Q00 xz0 1SN0 uM0 1SM0 uM0 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0 uM0 1VA0 s00 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0 uM0 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0 uM0 1VA0 s00 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0 uM0|88e4",
-		"Pacific/Funafuti|TVT|-c0|0||45e2",
-		"Pacific/Galapagos|LMT ECT GALT|5W.o 50 60|012|-1yVS1.A 2dTz1.A|25e3",
-		"Pacific/Gambier|LMT GAMT|8X.M 90|01|-2jof0.c|125",
-		"Pacific/Guadalcanal|LMT SBT|-aD.M -b0|01|-2joyD.M|11e4",
-		"Pacific/Guam|GST ChST|-a0 -a0|01|1fpq0|17e4",
-		"Pacific/Honolulu|HST HDT HST|au 9u a0|010102|-1thLu 8x0 lef0 8Pz0 46p0|37e4",
-		"Pacific/Kiritimati|LINT LINT LINT|aE a0 -e0|012|nIaE B8nk|51e2",
-		"Pacific/Kosrae|KOST KOST|-b0 -c0|010|-AX0 1bdz0|66e2",
-		"Pacific/Majuro|MHT MHT|-b0 -c0|01|-AX0|28e3",
-		"Pacific/Marquesas|LMT MART|9i 9u|01|-2joeG|86e2",
-		"Pacific/Pago_Pago|LMT NST BST SST|bm.M b0 b0 b0|0123|-2nDMB.c 2gVzB.c EyM0|37e2",
-		"Pacific/Nauru|LMT NRT JST NRT|-b7.E -bu -90 -c0|01213|-1Xdn7.E PvzB.E 5RCu 1ouJu|10e3",
-		"Pacific/Niue|NUT NUT NUT|bk bu b0|012|-KfME 17y0a|12e2",
-		"Pacific/Norfolk|NMT NFT NFST NFT|-bc -bu -cu -b0|01213|-Kgbc W01G On0 1COp0|25e4",
-		"Pacific/Noumea|LMT NCT NCST|-b5.M -b0 -c0|01212121|-2l9n5.M 2EqM5.M xX0 1PB0 yn0 HeP0 Ao0|98e3",
-		"Pacific/Palau|PWT|-90|0||21e3",
-		"Pacific/Pitcairn|PNT PST|8u 80|01|18Vku|56",
-		"Pacific/Pohnpei|PONT|-b0|0||34e3",
-		"Pacific/Port_Moresby|PGT|-a0|0||25e4",
-		"Pacific/Rarotonga|CKT CKHST CKT|au 9u a0|012121212121212121212121212|lyWu IL0 1zcu Onu 1zcu Onu 1zcu Rbu 1zcu Onu 1zcu Onu 1zcu Onu 1zcu Onu 1zcu Onu 1zcu Rbu 1zcu Onu 1zcu Onu 1zcu Onu|13e3",
-		"Pacific/Tahiti|LMT TAHT|9W.g a0|01|-2joe1.I|18e4",
-		"Pacific/Tarawa|GILT|-c0|0||29e3",
-		"Pacific/Tongatapu|+1220 +13 +14|-ck -d0 -e0|0121212121212121212121212121212121212121212121212121|-1aB0k 2n5dk 15A0 1wo0 xz0 1Q10 xz0 zWN0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0 uM0 1VA0 s00 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0 uM0 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0 uM0 1VA0 s00 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0 uM0|75e3",
-		"Pacific/Wake|WAKT|-c0|0||16e3",
-		"Pacific/Wallis|WFT|-c0|0||94",
 		"WET|WET WEST|0 -10|010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|hDB0 1a00 1fA0 1cM0 1cM0 1cM0 1fA0 1a00 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00"
 	],
 	"links": [
@@ -12334,13 +11383,11 @@ module.exports={
 		"Africa/Abidjan|Africa/Lome",
 		"Africa/Abidjan|Africa/Nouakchott",
 		"Africa/Abidjan|Africa/Ouagadougou",
-		"Africa/Abidjan|Africa/Sao_Tome",
 		"Africa/Abidjan|Africa/Timbuktu",
 		"Africa/Abidjan|Atlantic/St_Helena",
 		"Africa/Cairo|Egypt",
 		"Africa/Johannesburg|Africa/Maseru",
 		"Africa/Johannesburg|Africa/Mbabane",
-		"Africa/Khartoum|Africa/Juba",
 		"Africa/Lagos|Africa/Bangui",
 		"Africa/Lagos|Africa/Brazzaville",
 		"Africa/Lagos|Africa/Douala",
@@ -12420,7 +11467,6 @@ module.exports={
 		"America/Port_of_Spain|America/St_Vincent",
 		"America/Port_of_Spain|America/Tortola",
 		"America/Port_of_Spain|America/Virgin",
-		"America/Regina|Canada/East-Saskatchewan",
 		"America/Regina|Canada/Saskatchewan",
 		"America/Rio_Branco|America/Porto_Acre",
 		"America/Rio_Branco|Brazil/Acre",
@@ -12446,6 +11492,8 @@ module.exports={
 		"Asia/Jerusalem|Israel",
 		"Asia/Kathmandu|Asia/Katmandu",
 		"Asia/Kolkata|Asia/Calcutta",
+		"Asia/Kuala_Lumpur|Asia/Singapore",
+		"Asia/Kuala_Lumpur|Singapore",
 		"Asia/Macau|Asia/Macao",
 		"Asia/Makassar|Asia/Ujung_Pandang",
 		"Asia/Nicosia|Europe/Nicosia",
@@ -12458,7 +11506,6 @@ module.exports={
 		"Asia/Shanghai|Asia/Chungking",
 		"Asia/Shanghai|Asia/Harbin",
 		"Asia/Shanghai|PRC",
-		"Asia/Singapore|Singapore",
 		"Asia/Taipei|ROC",
 		"Asia/Tehran|Iran",
 		"Asia/Thimphu|Asia/Thimbu",
@@ -12467,6 +11514,7 @@ module.exports={
 		"Asia/Urumqi|Asia/Kashgar",
 		"Atlantic/Faroe|Atlantic/Faeroe",
 		"Atlantic/Reykjavik|Iceland",
+		"Atlantic/South_Georgia|Etc/GMT+2",
 		"Australia/Adelaide|Australia/South",
 		"Australia/Brisbane|Australia/Queensland",
 		"Australia/Broken_Hill|Australia/Yancowinna",
@@ -12478,18 +11526,19 @@ module.exports={
 		"Australia/Sydney|Australia/ACT",
 		"Australia/Sydney|Australia/Canberra",
 		"Australia/Sydney|Australia/NSW",
-		"Etc/GMT+0|Etc/GMT",
-		"Etc/GMT+0|Etc/GMT-0",
-		"Etc/GMT+0|Etc/GMT0",
-		"Etc/GMT+0|Etc/Greenwich",
-		"Etc/GMT+0|GMT",
-		"Etc/GMT+0|GMT+0",
-		"Etc/GMT+0|GMT-0",
-		"Etc/GMT+0|GMT0",
-		"Etc/GMT+0|Greenwich",
-		"Etc/UCT|UCT",
+		"Etc/GMT-0|Etc/GMT",
+		"Etc/GMT-0|Etc/GMT+0",
+		"Etc/GMT-0|Etc/GMT0",
+		"Etc/GMT-0|Etc/Greenwich",
+		"Etc/GMT-0|GMT",
+		"Etc/GMT-0|GMT+0",
+		"Etc/GMT-0|GMT-0",
+		"Etc/GMT-0|GMT0",
+		"Etc/GMT-0|Greenwich",
+		"Etc/UTC|Etc/UCT",
 		"Etc/UTC|Etc/Universal",
 		"Etc/UTC|Etc/Zulu",
+		"Etc/UTC|UCT",
 		"Etc/UTC|UTC",
 		"Etc/UTC|Universal",
 		"Etc/UTC|Zulu",
@@ -12519,6 +11568,7 @@ module.exports={
 		"Europe/Warsaw|Poland",
 		"Europe/Zurich|Europe/Busingen",
 		"Europe/Zurich|Europe/Vaduz",
+		"Indian/Christmas|Etc/GMT-7",
 		"Pacific/Auckland|Antarctica/McMurdo",
 		"Pacific/Auckland|Antarctica/South_Pole",
 		"Pacific/Auckland|NZ",
@@ -12533,7 +11583,13 @@ module.exports={
 		"Pacific/Pago_Pago|Pacific/Midway",
 		"Pacific/Pago_Pago|Pacific/Samoa",
 		"Pacific/Pago_Pago|US/Samoa",
-		"Pacific/Pohnpei|Pacific/Ponape"
+		"Pacific/Palau|Etc/GMT-9",
+		"Pacific/Pohnpei|Pacific/Ponape",
+		"Pacific/Port_Moresby|Etc/GMT-10",
+		"Pacific/Tarawa|Etc/GMT-12",
+		"Pacific/Tarawa|Pacific/Funafuti",
+		"Pacific/Tarawa|Pacific/Wake",
+		"Pacific/Tarawa|Pacific/Wallis"
 	]
 }
 },{}],44:[function(require,module,exports){
@@ -12542,7 +11598,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 },{"./data/packed/latest.json":43,"./moment-timezone":45}],45:[function(require,module,exports){
 //! moment-timezone.js
-//! version : 0.5.11
+//! version : 0.5.26
 //! Copyright (c) JS Foundation and other contributors
 //! license : MIT
 //! github.com/moment/moment-timezone
@@ -12551,10 +11607,10 @@ moment.tz.load(require('./data/packed/latest.json'));
 	"use strict";
 
 	/*global define*/
-	if (typeof define === 'function' && define.amd) {
-		define(['moment'], factory);                 // AMD
-	} else if (typeof module === 'object' && module.exports) {
+	if (typeof module === 'object' && module.exports) {
 		module.exports = factory(require('moment')); // Node
+	} else if (typeof define === 'function' && define.amd) {
+		define(['moment'], factory);                 // AMD
 	} else {
 		factory(root.moment);                        // Browser
 	}
@@ -12567,14 +11623,18 @@ moment.tz.load(require('./data/packed/latest.json'));
 	// 	return moment;
 	// }
 
-	var VERSION = "0.5.11",
+	var VERSION = "0.5.26",
 		zones = {},
 		links = {},
 		names = {},
 		guesses = {},
-		cachedGuess,
+		cachedGuess;
 
-		momentVersion = moment.version.split('.'),
+	if (!moment || typeof moment.version !== 'string') {
+		logError('Moment Timezone requires Moment.js. See https://momentjs.com/timezone/docs/#/use-it/browser/');
+	}
+
+	var momentVersion = moment.version.split('.'),
 		major = +momentVersion[0],
 		minor = +momentVersion[1];
 
@@ -12735,6 +11795,11 @@ moment.tz.load(require('./data/packed/latest.json'));
 		},
 
 		offset : function (mom) {
+			logError("zone.offset has been deprecated in favor of zone.utcOffset");
+			return this.offsets[this._index(mom)];
+		},
+
+		utcOffset : function (mom) {
 			return this.offsets[this._index(mom)];
 		}
 	};
@@ -12774,7 +11839,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	}
 
 	ZoneScore.prototype.scoreOffsetAt = function (offsetAt) {
-		this.offsetScore += Math.abs(this.zone.offset(offsetAt.at) - offsetAt.offset);
+		this.offsetScore += Math.abs(this.zone.utcOffset(offsetAt.at) - offsetAt.offset);
 		if (this.zone.abbr(offsetAt.at).replace(/[^A-Z]/g, '') !== offsetAt.abbr) {
 			this.abbrScore++;
 		}
@@ -12826,7 +11891,10 @@ moment.tz.load(require('./data/packed/latest.json'));
 		if (a.abbrScore !== b.abbrScore) {
 			return a.abbrScore - b.abbrScore;
 		}
-		return b.zone.population - a.zone.population;
+		if (a.zone.population !== b.zone.population) {
+			return b.zone.population - a.zone.population;
+		}
+		return b.zone.name.localeCompare(a.zone.name);
 	}
 
 	function addToGuesses (name, offsets) {
@@ -12868,7 +11936,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 		// use Intl API when available and returning valid time zone
 		try {
 			var intlName = Intl.DateTimeFormat().resolvedOptions().timeZone;
-			if (intlName){
+			if (intlName && intlName.length > 3) {
 				var name = names[normalizeName(intlName)];
 				if (name) {
 					return name;
@@ -12926,13 +11994,12 @@ moment.tz.load(require('./data/packed/latest.json'));
 			normalized = normalizeName(name);
 			zones[normalized] = packed[i];
 			names[normalized] = name;
-			if (split[5]) {
-				addToGuesses(normalized, split[2].split(' '));
-			}
+			addToGuesses(normalized, split[2].split(' '));
 		}
 	}
 
 	function getZone (name, caller) {
+
 		name = normalizeName(name);
 
 		var zone = zones[name];
@@ -13007,7 +12074,8 @@ moment.tz.load(require('./data/packed/latest.json'));
 	}
 
 	function needsOffset (m) {
-		return !!(m._a && (m._tzm === undefined));
+		var isUnixTimestamp = (m._f === 'X' || m._f === 'x');
+		return !!(m._a && (m._tzm === undefined) && !isUnixTimestamp);
 	}
 
 	function logError (message) {
@@ -13076,23 +12144,28 @@ moment.tz.load(require('./data/packed/latest.json'));
 			mom._z = zone;
 		}
 		if (mom._z) {
-			offset = mom._z.offset(mom);
+			offset = mom._z.utcOffset(mom);
 			if (Math.abs(offset) < 16) {
 				offset = offset / 60;
 			}
 			if (mom.utcOffset !== undefined) {
+				var z = mom._z;
 				mom.utcOffset(-offset, keepTime);
+				mom._z = z;
 			} else {
 				mom.zone(offset, keepTime);
 			}
 		}
 	};
 
-	fn.tz = function (name) {
+	fn.tz = function (name, keepTime) {
 		if (name) {
+			if (typeof name !== 'string') {
+				throw new Error('Time zone name must be a string, got ' + name + ' [' + typeof name + ']');
+			}
 			this._z = getZone(name);
 			if (this._z) {
-				moment.updateOffset(this);
+				moment.updateOffset(this, keepTime);
 			} else {
 				logError("Moment Timezone has no data for " + name + ". See http://momentjs.com/timezone/docs/#/data-loading/.");
 			}
@@ -13115,9 +12188,18 @@ moment.tz.load(require('./data/packed/latest.json'));
 		};
 	}
 
-	fn.zoneName = abbrWrap(fn.zoneName);
-	fn.zoneAbbr = abbrWrap(fn.zoneAbbr);
-	fn.utc      = resetZoneWrap(fn.utc);
+	function resetZoneWrap2 (old) {
+		return function () {
+			if (arguments.length > 0) this._z = null;
+			return old.apply(this, arguments);
+		};
+	}
+
+	fn.zoneName  = abbrWrap(fn.zoneName);
+	fn.zoneAbbr  = abbrWrap(fn.zoneAbbr);
+	fn.utc       = resetZoneWrap(fn.utc);
+	fn.local     = resetZoneWrap(fn.local);
+	fn.utcOffset = resetZoneWrap2(fn.utcOffset);
 
 	moment.tz.setDefault = function(name) {
 		if (major < 2 || (major === 2 && minor < 9)) {
@@ -18373,7 +17455,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and a year-to-date position summary ranges are processed for a transaction set that opened this year and has not yet closed (assuming its 2020)', () => {
+	describe('and a year-to-date position summary ranges are processed for a transaction set that opened last year and has not yet closed (assuming its 2020)', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -18387,7 +17469,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				}
 			];
 
-			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
+			ranges = PositionSummaryFrame.YTD.getRanges(transactions);;
 		});
 
 		it('should have one range', () => {

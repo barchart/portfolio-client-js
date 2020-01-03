@@ -418,7 +418,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and a year-to-date position summary ranges are processed for a transaction set that opened this year and has not yet closed (assuming its 2020)', () => {
+	describe('and a year-to-date position summary ranges are processed for a transaction set that opened last year and has not yet closed (assuming its 2020)', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -432,7 +432,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				}
 			];
 
-			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
+			ranges = PositionSummaryFrame.YTD.getRanges(transactions);;
 		});
 
 		it('should have one range', () => {
