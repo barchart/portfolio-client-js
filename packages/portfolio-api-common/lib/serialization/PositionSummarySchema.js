@@ -54,6 +54,18 @@ module.exports = (() => {
 			return client;
 		}
 
+		/**
+		 * Reduced schema that only includes frames and dates -- allowing consumer
+		 * to detect existence (or non-existence) of summary.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PositionSummarySchema}
+		 */
+		static get EXISTS() {
+			return exists;
+		}
+
 		toString() {
 			return '[PositionSummarySchema]';
 		}
@@ -108,6 +120,16 @@ module.exports = (() => {
 		.withField('period.income', DataType.DECIMAL)
 		.withField('period.realized', DataType.DECIMAL)
 		.withField('period.unrealized', DataType.DECIMAL)
+		.schema
+	);
+
+	const exists = new PositionSummarySchema(SchemaBuilder.withName('complete')
+		.withField('user', DataType.STRING)
+		.withField('portfolio', DataType.STRING)
+		.withField('position', DataType.STRING)
+		.withField('frame', DataType.forEnum(PositionSummaryFrame, 'PositionSummaryFrame'))
+		.withField('start.date', DataType.DAY)
+		.withField('end.date', DataType.DAY)
 		.schema
 	);
 
