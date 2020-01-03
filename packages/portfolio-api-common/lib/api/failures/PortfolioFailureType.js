@@ -285,14 +285,14 @@ module.exports = (() => {
 		}
 	}
 
-	const portfolioUpdateFailedNoPortfolio = new FailureType('PORTFOLIO_UPDATE_FAILED_NO_PORTFOLIO', 'Unable to update portfolio. The portfolio does not exist, has it been deleted?');
-	const portfolioDeleteFailedNoPortfolio = new FailureType('PORTFOLIO_DELETE_FAILED_NO_PORTFOLIO', 'Unable to delete portfolio. The portfolio does not exist, has it already been deleted?');
+	const portfolioUpdateFailedNoPortfolio = new FailureType('PORTFOLIO_UPDATE_FAILED_NO_PORTFOLIO', 'Unable to update portfolio. The portfolio does not exist, has it been deleted?', false);
+	const portfolioDeleteFailedNoPortfolio = new FailureType('PORTFOLIO_DELETE_FAILED_NO_PORTFOLIO', 'Unable to delete portfolio. The portfolio does not exist, has it already been deleted?', false);
 
-	const positionCreateFailedNoPortfolio = new FailureType('POSITION_CREATE_FAILED_NO_PORTFOLIO', 'Unable to create transaction. The portfolio does not exist, has it been deleted?');
-	const positionUpdateFailedNoPosition = new FailureType('POSITION_UPDATE_FAILED_NO_POSITION', 'Unable to update preferences for position. The position does not exist, has it been deleted?');
+	const positionCreateFailedNoPortfolio = new FailureType('POSITION_CREATE_FAILED_NO_PORTFOLIO', 'Unable to create transaction. The portfolio does not exist, has it been deleted?', false);
+	const positionUpdateFailedNoPosition = new FailureType('POSITION_UPDATE_FAILED_NO_POSITION', 'Unable to update preferences for position. The position does not exist, has it been deleted?', false);
 	const positionDeleteFailedPositionLocked = new FailureType('POSITION_DELETE_FAILED_POSITION_LOCKED', 'Unable to delete position, your {L|description} history is being recalculated. Please wait a minute or two and retry.');
 
-	const transactionCreateFailedNoPosition = new FailureType('TRANSACTION_CREATE_FAILED_NO_POSITION', 'Unable to create transaction. The referenced position does not exist. Has it been deleted?');
+	const transactionCreateFailedNoPosition = new FailureType('TRANSACTION_CREATE_FAILED_NO_POSITION', 'Unable to create transaction. The referenced position does not exist. Has it been deleted?', false);
 	const transactionCreateFailedOutOfSequence = new FailureType('TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE', 'Unable to process transaction, because the transaction date is out-of-sequence. In other words, it would occur before an existing transaction. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
 	const transactionCreateFailedInvalidDate = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DATE', 'Unable to process transaction with given date.');
 	const transactionCreateFailedTypeInvalidForInstrument = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_INSTRUMENT', 'Unable to process transaction, {L|transactionType.description} transactions cannot be used with {L|instrumentType.description} positions.');
