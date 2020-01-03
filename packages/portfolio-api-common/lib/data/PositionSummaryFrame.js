@@ -281,7 +281,7 @@ module.exports = (() => {
 			const currentYear = Day.getToday().year;
 
 			if (!last.snapshot.open.getIsZero() || last.date.year === currentYear) {
-				let end = new Day(currentYear.year, 12, 31);
+				let end = new Day(currentYear, 12, 31);
 				let start = end.subtractYears(1);
 
 				ranges.push(getRange(start, end));
