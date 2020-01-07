@@ -623,7 +623,6 @@ module.exports = (() => {
 			const last = array.last(transactions);
 
 			const firstDate = first.date;
-			const lastDate = last.date;
 
 			let lastYear;
 
@@ -682,13 +681,12 @@ module.exports = (() => {
 		const ranges = [ ];
 
 		if (transactions.length !== 0) {
-			const first = array.first(transactions);
 			const last = array.last(transactions);
 
 			const currentYear = Day.getToday().year;
 
 			if (!last.snapshot.open.getIsZero() || last.date.year === currentYear) {
-				let end = new Day(Day.getToday().year, 12, 31);
+				let end = new Day(currentYear, 12, 31);
 				let start = end.subtractYears(1);
 
 				ranges.push(getRange(start, end));
