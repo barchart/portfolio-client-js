@@ -352,7 +352,7 @@ module.exports = (() => {
 		static get DEBIT() {
 			return debit;
 		}
-  
+
 		/**
 		 * A system-generated transaction, indicating the security has stopped active trading.
 		 *
@@ -397,6 +397,17 @@ module.exports = (() => {
 			return income;
 		}
 
+		/**
+		 * A merger.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get MERGER() {
+			return merger;
+		}
+
 		toString() {
 			return '[TransactionType]';
 		}
@@ -413,6 +424,9 @@ module.exports = (() => {
 	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
 	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, false);
+
+	// Bryan: Not sure about closing.
+	const merger = new TransactionType('M', 'Merger', 'Merger', 1, false, false, false, false, true, false, true, false, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
 	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
