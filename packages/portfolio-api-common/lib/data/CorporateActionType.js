@@ -82,6 +82,17 @@ module.exports = (() => {
 		static get DELIST() {
 			return delist;
 		}
+
+		/**
+		 * A merging.
+		 *
+		 * @public
+		 * @static
+		 * @returns {CorporateActionType}
+		 */
+		static get MERGER() {
+			return merger;
+		}
 	}
 
 	const split = new CorporateActionType('SPLIT', 'Split', false);
@@ -90,6 +101,7 @@ module.exports = (() => {
 	const symbolChange = new CorporateActionType('SYMBOL_CHANGE', 'Symbol Change', false);
 	const nameChange = new CorporateActionType('NAME_CHANGE', 'Name Change', false);
 	const delist = new CorporateActionType('DELIST', 'Delist', false);
+	const merger = new CorporateActionType('MERGER', 'Merger', false);
 
 	return CorporateActionType;
 })();
