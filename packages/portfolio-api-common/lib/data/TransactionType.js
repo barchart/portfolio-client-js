@@ -398,14 +398,25 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A merger.
+		 * A merger opening.
 		 *
 		 * @public
 		 * @static
 		 * @returns {TransactionType}
 		 */
-		static get MERGER() {
-			return merger;
+		static get MERGER_OPEN() {
+			return mergerOpen;
+		}
+
+		/**
+		 * A merger closing.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get MERGER_CLOSE() {
+			return mergerClose;
 		}
 
 		toString() {
@@ -425,8 +436,8 @@ module.exports = (() => {
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
 	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, false);
 
-	// Bryan: Not sure about closing.
-	const merger = new TransactionType('M', 'Merger', 'Merger', 1, false, false, false, false, true, false, true, false, false);
+	const mergerOpen = new TransactionType('MO', 'Merger Open', 'Merger Open', 1, false, false, false, false, false, false, true, true, false);
+	const mergerClose = new TransactionType('MC', 'Merger Close', 'Merger Close', 1, false, false, false, false, true, false, true, false, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
 	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
