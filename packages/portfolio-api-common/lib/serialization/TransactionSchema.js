@@ -113,7 +113,7 @@ module.exports = (() => {
 		static get VALUATION() {
 			return valuation;
 		}
-		
+
 		static get DELIST() {
 			return delist;
 		}
@@ -162,6 +162,8 @@ module.exports = (() => {
 		.withField('split.denominator', DataType.DECIMAL, true)
 		.withField('split.effective', DataType.DAY, true)
 		.withField('split.reference', DataType.STRING, true)
+		.withField('merger.numerator', DataType.DECIMAL, true)
+		.withField('merger.denominator', DataType.DECIMAL, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
 		.withField('valuation.rate', DataType.DECIMAL, true)
@@ -201,6 +203,8 @@ module.exports = (() => {
 		.withField('split.denominator', DataType.DECIMAL, true)
 		.withField('split.effective', DataType.DAY, true)
 		.withField('split.reference', DataType.STRING, true)
+		.withField('merger.numerator', DataType.DECIMAL, true)
+		.withField('merger.denominator', DataType.DECIMAL, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
 		.withField('valuation.rate', DataType.DECIMAL, true)
@@ -326,7 +330,7 @@ module.exports = (() => {
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
-	
+
 	const delist = new TransactionSchema(SchemaBuilder.withName(TransactionType.DELIST.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
@@ -336,7 +340,7 @@ module.exports = (() => {
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
-  
+
   const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
