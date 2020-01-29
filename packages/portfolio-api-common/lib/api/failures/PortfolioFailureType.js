@@ -88,7 +88,7 @@ module.exports = (() => {
 		static get TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE() {
 			return transactionCreateFailedOutOfSequence;
 		}
-		
+
 		/**
 		 * The transaction date is invalid.
 		 * For example create opening transaction after delist date.
@@ -99,6 +99,18 @@ module.exports = (() => {
 		 */
 		static get TRANSACTION_CREATE_FAILED_INVALID_DATE() {
 			return transactionCreateFailedInvalidDate;
+		}
+
+		/**
+		 * The target instrument is invalid.
+		 * Can be used in Merger and Acquisition.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_TARGET_INSTRUMENT_MISSING() {
+			return transactionCreateFailedTargetInstrumentMissing;
 		}
 
 		/**
@@ -255,7 +267,7 @@ module.exports = (() => {
 		static get TRANSACTION_DELETE_FAILED_POSITION_LOCKED() {
 			return transactionDeleteFailedPositionLocked;
 		}
-		
+
 		/**
 		 * The transaction date is invalid.
 		 * For example edit opening transaction after delist date.
@@ -306,6 +318,7 @@ module.exports = (() => {
 	const transactionCreateFailedNoPosition = new FailureType('TRANSACTION_CREATE_FAILED_NO_POSITION', 'Unable to create transaction. The referenced position does not exist. Has it been deleted?', false);
 	const transactionCreateFailedOutOfSequence = new FailureType('TRANSACTION_CREATE_FAILED_OUT_OF_SEQUENCE', 'Unable to process transaction, because the transaction date is out-of-sequence. In other words, it would occur before an existing transaction. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
 	const transactionCreateFailedInvalidDate = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DATE', 'Unable to process transaction with given date.');
+	const transactionCreateFailedTargetInstrumentMissing = new FailureType('TRANSACTION_CREATE_FAILED_TARGET_INSTRUMENT_MISSING', 'Unable to create transaction. The target instrument does not exist.');
 	const transactionCreateFailedTypeInvalidForInstrument = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_INSTRUMENT', 'Unable to process transaction, {L|transactionType.description} transactions cannot be used with {L|instrumentType.description} positions.');
 	const transactionCreateFailedTypeInvalidForDirection = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_DIRECTION', 'Unable to process transaction, a {L|positionDirection.description} position would be created (i.e. you would have {L|positionDirection.sign} shares/units). {u|instrumentType.description} positions cannot have {L|positionDirection.description} positions.', false);
 	const transactionCreateFailedInvalidDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DIRECTION_SWITCH', 'Unable to process transaction, the transaction would switch the position from {L|currentDirection.description} to {L|proposedDirection.description} (i.e. {L|currentDirection.sign} to {L|proposedDirection.sign} shares/units). This is not allowed. Please close the current position (i.e. zero it out) and then enter a second transaction.', false);
