@@ -203,6 +203,7 @@ module.exports = (() => {
 		.withField('split.denominator', DataType.DECIMAL, true)
 		.withField('split.effective', DataType.DAY, true)
 		.withField('split.reference', DataType.STRING, true)
+		.withField('merger.reference', DataType.STRING, true)
 		.withField('merger.numerator', DataType.DECIMAL, true)
 		.withField('merger.denominator', DataType.DECIMAL, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
