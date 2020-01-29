@@ -186,7 +186,7 @@ module.exports = (() => {
 		static validateInitialTransactionType(transactionType) {
 			return transactionType.initial;
 		}
-		
+
 		/**
 		 * Determines if a position for a given instrument type can exist in
 		 * the given direction.
@@ -246,6 +246,8 @@ module.exports = (() => {
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_STOCK, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SPLIT, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.DELIST, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.MERGER_OPEN, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.MERGER_CLOSE, false);
 
 	associateTypes(InstrumentType.FUND, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.FUND, TransactionType.SELL, true, [ PositionDirection.LONG ]);
@@ -255,6 +257,8 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_REINVEST, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_FUND, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DELIST, false);
+	associateTypes(InstrumentType.FUND, TransactionType.MERGER_OPEN, false);
+	associateTypes(InstrumentType.FUND, TransactionType.MERGER_CLOSE, false);
 
 	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
