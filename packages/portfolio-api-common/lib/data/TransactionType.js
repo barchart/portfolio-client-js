@@ -436,7 +436,7 @@ module.exports = (() => {
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
 	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, false);
 
-	const mergerOpen = new TransactionType('MO', 'Merger Open', 'Merger Open', 1, false, false, false, false, false, false, true, true, false);
+	const mergerOpen = new TransactionType('MO', 'Merger Open', 'Merger Open', 1, false, false, false, true, false, false, true, true, false);
 	const mergerClose = new TransactionType('MC', 'Merger Close', 'Merger Close', 1, false, false, false, false, true, false, true, false, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
