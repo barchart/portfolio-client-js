@@ -179,6 +179,12 @@ module.exports = (() => {
 			return this._significant;
 		}
 
+		/**
+		 * Chain transactions cause another position to be created.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
 		get chain() {
 			return this._chain;
 		}
