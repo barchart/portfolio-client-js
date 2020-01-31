@@ -431,6 +431,28 @@ module.exports = (() => {
 			return mergerClose;
 		}
 
+		/**
+		 * A spinoff.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get SPINOFF() {
+			return spinoff;
+		}
+
+		/**
+		 * A spinoff opening.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get SPINOFF_OPEN() {
+			return spinoffOpen;
+		}
+
 		toString() {
 			return '[TransactionType]';
 		}
@@ -450,6 +472,8 @@ module.exports = (() => {
 
 	const mergerOpen = new TransactionType('MO', 'Merger Open', 'Merger Open', 1, false, false, false, true, false, false, true, true, true, false);
 	const mergerClose = new TransactionType('MC', 'Merger Close', 'Merger Close', 1, false, false, false, false, true, false, true, false, false, true);
+	const spinoff = new TransactionType('SPF', 'Spinoff', 'Spinoff', 1, false, false, false, false, false, false, true, false, false, true);
+	const spinoffOpen = new TransactionType('SPFO', 'Spinoff Open', 'Spinoff Open', 1, false, false, false, true, false, false, true, true, true, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false, false);
 	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false, false);

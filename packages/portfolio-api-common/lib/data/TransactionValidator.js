@@ -248,6 +248,8 @@ module.exports = (() => {
 	associateTypes(InstrumentType.EQUITY, TransactionType.DELIST, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.MERGER_OPEN, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.MERGER_CLOSE, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SPINOFF, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SPINOFF_OPEN, false);
 
 	associateTypes(InstrumentType.FUND, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.FUND, TransactionType.SELL, true, [ PositionDirection.LONG ]);
@@ -259,6 +261,8 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUND, TransactionType.DELIST, false);
 	associateTypes(InstrumentType.FUND, TransactionType.MERGER_OPEN, false);
 	associateTypes(InstrumentType.FUND, TransactionType.MERGER_CLOSE, false);
+	associateTypes(InstrumentType.FUND, TransactionType.SPINOFF, false);
+	associateTypes(InstrumentType.FUND, TransactionType.SPINOFF_OPEN, false);
 
 	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);

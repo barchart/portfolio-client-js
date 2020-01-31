@@ -205,6 +205,8 @@ module.exports = (() => {
 		.withField('split.reference', DataType.STRING, true)
 		.withField('merger.numerator', DataType.DECIMAL, true)
 		.withField('merger.denominator', DataType.DECIMAL, true)
+		.withField('spinoff.numerator', DataType.DECIMAL, true)
+		.withField('spinoff.denominator', DataType.DECIMAL, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
 		.withField('valuation.rate', DataType.DECIMAL, true)

@@ -102,6 +102,7 @@ module.exports = (() => {
 	const nameChange = new CorporateActionType('NAME_CHANGE', 'Name Change', false);
 	const delist = new CorporateActionType('DELIST', 'Delist', false);
 	const merger = new CorporateActionType('MERGER', 'Merger', false);
+	const spinoff = new CorporateActionType('SPINOFF', 'Spinoff', false);
 
 	return CorporateActionType;
 })();
