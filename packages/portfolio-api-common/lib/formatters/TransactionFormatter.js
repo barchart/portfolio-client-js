@@ -365,7 +365,7 @@ module.exports = (() => {
 	formatters.set(TransactionType.DEBIT, [ basicFormatter, cashFormatter, debitFormatter ]);
 	formatters.set(TransactionType.CREDIT, [ basicFormatter, cashFormatter, creditFormatter ]);
 	formatters.set(TransactionType.MERGER_OPEN, [ basicFormatter, mergerFormatter ]);
-	formatters.set(TransactionType.MERGER_CLOSE, [ basicFormatter, mergerFormatter ]);
+	formatters.set(TransactionType.MERGER_CLOSE, [ basicFormatter ]);
 
 	function getInstrumentTypePriority(type) {
 		if (type === InstrumentType.CASH) {
