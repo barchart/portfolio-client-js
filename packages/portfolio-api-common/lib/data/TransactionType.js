@@ -432,7 +432,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A spinoff.
+		 * A spin-off.
 		 *
 		 * @public
 		 * @static
@@ -443,7 +443,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A spinoff opening.
+		 * A spin-off opening.
 		 *
 		 * @public
 		 * @static
