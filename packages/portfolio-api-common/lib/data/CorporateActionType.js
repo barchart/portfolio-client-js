@@ -93,6 +93,17 @@ module.exports = (() => {
 		static get MERGER() {
 			return merger;
 		}
+
+		/**
+		 * A spinoff.
+		 *
+		 * @public
+		 * @static
+		 * @returns {CorporateActionType}
+		 */
+		static get SPINOFF() {
+			return spinoff;
+		}
 	}
 
 	const split = new CorporateActionType('SPLIT', 'Split', false);
