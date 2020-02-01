@@ -342,6 +342,22 @@ module.exports = (() => {
 		f.shares = t.snapshot.open.subtract(t.quantity);
 	};
 
+	const spinoffFormatter = (t, f) => {
+		f.boughtSold = t.quantity;
+
+		let rate;
+
+		if (!t.spinoff.denominator.getIsZero()) {
+			rate = t.spinoff.numerator.divide(t.spinoff.denominator);
+		} else {
+			rate = '';
+		}
+
+		f.rate = rate;
+
+		f.shares = t.snapshot.open.subtract(t.quantity);
+	};
+
 	const formatters = new Map();
 
 	formatters.set(TransactionType.BUY, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
@@ -366,6 +382,8 @@ module.exports = (() => {
 	formatters.set(TransactionType.CREDIT, [ basicFormatter, cashFormatter, creditFormatter ]);
 	formatters.set(TransactionType.MERGER_OPEN, [ basicFormatter ]);
 	formatters.set(TransactionType.MERGER_CLOSE, [ basicFormatter, mergerFormatter ]);
+	formatters.set(TransactionType.SPINOFF, [ basicFormatter, spinoffFormatter ]);
+	formatters.set(TransactionType.SPINOFF_OPEN, [ basicFormatter ]);
 
 	function getInstrumentTypePriority(type) {
 		if (type === InstrumentType.CASH) {
