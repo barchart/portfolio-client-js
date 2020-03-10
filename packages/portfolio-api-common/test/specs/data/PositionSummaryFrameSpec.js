@@ -432,7 +432,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				}
 			];
 
-			ranges = PositionSummaryFrame.YTD.getRanges(transactions);;
+			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
 		});
 
 		it('should have one range', () => {
