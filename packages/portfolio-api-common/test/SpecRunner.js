@@ -774,11 +774,14 @@ module.exports = (() => {
 	 * @param {Boolean} fee
 	 * @param {Boolean} corporateAction
 	 * @param {Boolean} initial
+	 * @param {Boolean} terminal
 	 * @param {Boolean} significant
-	 * @param {Boolean} system
+	 * @param {Boolean} chaining
+	 * @param {Boolean} chained
+	 * @param {Boolean} transfer
  	 */
 	class TransactionType extends Enum {
-		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, significant) {
+		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, terminal, significant, chaining, chained, transfer) {
 			super(code, description);
 
 			assert.argumentIsRequired(display, 'display', String);
@@ -791,7 +794,11 @@ module.exports = (() => {
 			assert.argumentIsRequired(fee, 'fee', Boolean);
 			assert.argumentIsRequired(corporateAction, 'corporateAction', Boolean);
 			assert.argumentIsRequired(initial, 'initial', Boolean);
+			assert.argumentIsRequired(terminal, 'terminal', Boolean);
 			assert.argumentIsRequired(significant, 'significant', Boolean);
+			assert.argumentIsRequired(chaining, 'chaining', Boolean);
+			assert.argumentIsRequired(chained, 'chained', Boolean);
+			assert.argumentIsRequired(transfer, 'transfer', Boolean);
 
 			this._display = display;
 			this._sequence = sequence;
@@ -803,7 +810,11 @@ module.exports = (() => {
 			this._fee = fee;
 			this._corporateAction = corporateAction;
 			this._initial = initial;
+			this._terminal = terminal;
 			this._significant = significant;
+			this._chaining = chaining;
+			this._chained = chained;
+			this._transfer = transfer;
 		}
 
 		/**
@@ -921,6 +932,16 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if the transaction must be the last
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get terminal() {
+			return this._terminal;
+		}
+
+		/**
 		 * Significant transactions cannot be discarded during transaction re-write.
 		 *
 		 * @public
@@ -928,6 +949,37 @@ module.exports = (() => {
 		 */
 		get significant() {
 			return this._significant;
+		}
+
+		/**
+		 * Chain transactions cause another position to be created.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get chaining() {
+			return this._chaining;
+		}
+
+		/**
+		 * Chained transactions are created from another position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get chained() {
+			return this._chained;
+		}
+
+		/**
+		 * Indicates if the transaction should cause gains and losses to be
+		 * transferred from the original (chaining) position.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get transfer() {
+			return this._transfer;
 		}
 
 		/**
@@ -1105,7 +1157,7 @@ module.exports = (() => {
 		static get DEBIT() {
 			return debit;
 		}
-  
+
 		/**
 		 * A system-generated transaction, indicating the security has stopped active trading.
 		 *
@@ -1150,34 +1202,84 @@ module.exports = (() => {
 			return income;
 		}
 
+		/**
+		 * A merger opening.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get MERGER_OPEN() {
+			return mergerOpen;
+		}
+
+		/**
+		 * A merger closing.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get MERGER_CLOSE() {
+			return mergerClose;
+		}
+
+		/**
+		 * A spin-off.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get SPINOFF() {
+			return spinoff;
+		}
+
+		/**
+		 * A spin-off opening.
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get SPINOFF_OPEN() {
+			return spinoffOpen;
+		}
+
 		toString() {
 			return '[TransactionType]';
 		}
 	}
 
-	const buy = new TransactionType('B', 'Buy', 'Buy', 0, true, false, false, true, false, false, false, true, true);
-	const sell = new TransactionType('S', 'Sell', 'Sell', 0, false, true, false, false, true, false, false, false, true);
-	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', 0, true, false, false, false, true, false, false, false, true);
-	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', 0, false, true, false, true, false, false, false, true, true);
-	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 1, false, false, true, false, false, false, true, false, false);
-	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false);
-	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false);
-	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false);
-	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false);
-	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false);
-	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, false);
+	const buy = new TransactionType('B', 'Buy', 'Buy', 0, true, false, false, true, false, false, false, true, false, true, false, false, false);
+	const sell = new TransactionType('S', 'Sell', 'Sell', 0, false, true, false, false, true, false, false, false, false, true, false, false, false);
+	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', 0, true, false, false, false, true, false, false, false, false, true, false, false, false);
+	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', 0, false, true, false, true, false, false, false, true, false, true, false, false, false);
+	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 1, false, false, true, false, false, false, true, false, false, false, false, false, false);
+	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
+	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
+	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
+	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false, false, false, false, false);
+	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false, false, false, false, false);
+	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, true, false, false, false, false);
 
-	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false);
-	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false);
-	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', 1, false, false, false, true, false, false, true, false, false);
+	const mergerOpen = new TransactionType('MO', 'Merger Open', 'Merger Open', 1, false, false, false, true, false, false, true, true, false, true, false, true, true);
+	const mergerClose = new TransactionType('MC', 'Merger Close', 'Merger Close', 1, false, false, false, false, true, false, true, false, true, false, true, false, false);
 
-	const deposit = new TransactionType('D', 'Deposit', 'Deposit', 0, false, false, false, false, false, false, false, true, true);
-	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', 0, false, false, false, false, false, false, false, true, true);
-	const debit = new TransactionType('DR', 'Debit', 'Debit', 0, false, false, false, false, false, false, false, true, true);
-	const credit = new TransactionType('CR', 'Credit', 'Credit', 0, false, false, false, false, false, false, false, true, true);
+	const spinoff = new TransactionType('SPF', 'Spinoff', 'Spinoff', 1, false, false, false, false, false, false, true, false, false, false, true, false, false);
+	const spinoffOpen = new TransactionType('SPFO', 'Spinoff Open', 'Spinoff Open', 1, false, false, false, true, false, false, true, true, false, true, false, false, false);
 
-	const valuation = new TransactionType('V', 'Valuation', 'Valuation', 0, false, false, false, false, false, false, false, false, false);
-	const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false);
+	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false, false, false, false, false);
+	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
+	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
+
+	const deposit = new TransactionType('D', 'Deposit', 'Deposit', 0, false, false, false, false, false, false, false, true, false, true, false, false, false);
+	const withdrawal = new TransactionType('W', 'Withdrawal', 'Withdrawal', 0, false, false, false, false, false, false, false, true, false, true, false, false, false);
+	const debit = new TransactionType('DR', 'Debit', 'Debit', 0, false, false, false, false, false, false, false, true, false, true, false, false, false);
+	const credit = new TransactionType('CR', 'Credit', 'Credit', 0, false, false, false, false, false, false, false, true, false, true, false, false, false);
+
+	const valuation = new TransactionType('V', 'Valuation', 'Valuation', 0, false, false, false, false, false, false, false, false, false, false, false, false, false);
+	const income = new TransactionType('I', 'Income', 'Income', 0, false, false, true, false, false, false, false, false, false, false, false, false, false);
 
 	return TransactionType;
 })();
@@ -1371,7 +1473,7 @@ module.exports = (() => {
 		static validateInitialTransactionType(transactionType) {
 			return transactionType.initial;
 		}
-		
+
 		/**
 		 * Determines if a position for a given instrument type can exist in
 		 * the given direction.
@@ -1431,6 +1533,10 @@ module.exports = (() => {
 	associateTypes(InstrumentType.EQUITY, TransactionType.DIVIDEND_STOCK, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SPLIT, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.DELIST, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.MERGER_OPEN, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.MERGER_CLOSE, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SPINOFF, false);
+	associateTypes(InstrumentType.EQUITY, TransactionType.SPINOFF_OPEN, false);
 
 	associateTypes(InstrumentType.FUND, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.FUND, TransactionType.SELL, true, [ PositionDirection.LONG ]);
@@ -1440,6 +1546,10 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_REINVEST, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_FUND, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DELIST, false);
+	associateTypes(InstrumentType.FUND, TransactionType.MERGER_OPEN, false);
+	associateTypes(InstrumentType.FUND, TransactionType.MERGER_CLOSE, false);
+	associateTypes(InstrumentType.FUND, TransactionType.SPINOFF, false);
+	associateTypes(InstrumentType.FUND, TransactionType.SPINOFF_OPEN, false);
 
 	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
@@ -4853,7 +4963,7 @@ module.exports = (() => {
 		static get VALUATION() {
 			return valuation;
 		}
-		
+
 		static get DELIST() {
 			return delist;
 		}
@@ -4902,6 +5012,10 @@ module.exports = (() => {
 		.withField('split.denominator', DataType.DECIMAL, true)
 		.withField('split.effective', DataType.DAY, true)
 		.withField('split.reference', DataType.STRING, true)
+		.withField('merger.numerator', DataType.DECIMAL, true)
+		.withField('merger.denominator', DataType.DECIMAL, true)
+		.withField('spinoff.numerator', DataType.DECIMAL, true)
+		.withField('spinoff.denominator', DataType.DECIMAL, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
 		.withField('valuation.rate', DataType.DECIMAL, true)
@@ -4941,6 +5055,10 @@ module.exports = (() => {
 		.withField('split.denominator', DataType.DECIMAL, true)
 		.withField('split.effective', DataType.DAY, true)
 		.withField('split.reference', DataType.STRING, true)
+		.withField('merger.numerator', DataType.DECIMAL, true)
+		.withField('merger.denominator', DataType.DECIMAL, true)
+		.withField('spinoff.numerator', DataType.DECIMAL, true)
+		.withField('spinoff.denominator', DataType.DECIMAL, true)
 		.withField('charge.amount', DataType.DECIMAL, true)
 		.withField('income.amount', DataType.DECIMAL, true)
 		.withField('valuation.rate', DataType.DECIMAL, true)
@@ -5066,7 +5184,7 @@ module.exports = (() => {
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
-	
+
 	const delist = new TransactionSchema(SchemaBuilder.withName(TransactionType.DELIST.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
@@ -5076,7 +5194,7 @@ module.exports = (() => {
 		.withField('force', DataType.BOOLEAN, true)
 		.schema
 	);
-  
+
   const income = new TransactionSchema(SchemaBuilder.withName(TransactionType.INCOME.code)
 		.withField('portfolio', DataType.STRING)
 		.withField('position', DataType.STRING)
@@ -17467,7 +17585,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 				}
 			];
 
-			ranges = PositionSummaryFrame.YTD.getRanges(transactions);;
+			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
 		});
 
 		it('should have one range', () => {
