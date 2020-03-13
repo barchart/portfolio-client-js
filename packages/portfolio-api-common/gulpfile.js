@@ -11,7 +11,6 @@ const browserify = require('browserify'),
 	glob = require('glob'),
 	jasmine = require('gulp-jasmine'),
 	jshint = require('gulp-jshint'),
-	replace = require('gulp-replace'),
 	source = require('vinyl-source-stream');
 
 function getVersionFromPackage() {
@@ -30,8 +29,8 @@ gulp.task('ensure-clean-working-directory', (cb) => {
 
 gulp.task('bump-version', () => {
 	return gulp.src([ './package.json' ])
-	.pipe(bump({ type: 'patch' }))
-	.pipe(gulp.dest('./'));
+		.pipe(bump({ type: 'patch' }))
+		.pipe(gulp.dest('./'));
 });
 
 gulp.task('document', (cb) => {
