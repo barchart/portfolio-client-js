@@ -8,11 +8,15 @@ Simply put, this project contains code that runs on both the servers (i.e. Serve
 
 #### [Serialization](https://github.com/barchart/portfolio-api-common/tree/master/lib/serialization)
 
-Data is passed between client and server in JSON format. However, the code works with more complex types. For example, [decimals](https://github.com/barchart/barchart-common-js/blob/master/lang/Decimal.js) are used in place of [native JavaScript floats](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number). [Days](https://github.com/barchart/barchart-common-js/blob/master/lang/Day.js) are used instead of [native JavaScript Dates](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)). So, before data is sent, it must be converted to pure JSON. Conversely, when data is received, as pure JSON, its translated into more complex types before use. This is facilitated by the [Schema](https://github.com/barchart/barchart-common-js/blob/master/serialization/json/Schema.js) definitions which build custom "reviver" functions for [JSON parsing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse).
+Data is passed between client and server in JSON format. However, the code works with more complex types.
+
+For example, [Decimal](https://github.com/barchart/barchart-common-js/blob/master/lang/Decimal.js) instances are used in place of [native JavaScript floats](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number). [Day](https://github.com/barchart/barchart-common-js/blob/master/lang/Day.js) instances are used instead of [native JavaScript Dates](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date).
+
+So, before data is sent, it must be converted to pure JSON. Conversely, when data is received, as pure JSON, its translated into more complex types before use. This is facilitated by the [Schema](https://github.com/barchart/barchart-common-js/blob/master/serialization/json/Schema.js) definitions which build custom "reviver" functions for [JSON parsing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse).
 
 #### [Processing](https://github.com/barchart/portfolio-api-common/tree/master/lib/processing)
 
-Processing code groups positions together, groups portfolios together, and calculates gains/losses across groups. This code is used by server generated reports and dynamic HTML displays.
+For reporting and display purposes, positions can be grouped together (by asset class, by portfolio, by user, etc). This code supports aggregation and gain/loss calculation. It is used by server-generated reports and dynamic user interfaces.
 
 ### Notable Consumers
 
