@@ -18,9 +18,9 @@ For reporting and display purposes, positions can be grouped together (by asset 
 
 ### Notable Consumers
 
-* [aws-lambda-portfolio](https://github.com/barchart/aws-lambda-portfolio) - Serverless applications for maintaining paper-trading portfolios.
-* [portfolio-client-js](https://github.com/barchart/portfolio-client-js) - JavaScript client SDK for consuming API of exposed by Serverless applications.
-* [tgam-portfolio-ui-js](https://github.com/barchart/tgam-portfolio-ui-js) - A dynamic, single-page HTML application for managing paper-trading portfolios.
+* [aws-lambda-portfolio](https://github.com/barchart/aws-lambda-portfolio) - Serverless applications (i.e. the servers)
+* [portfolio-client-js](https://github.com/barchart/portfolio-client-js) - JavaScript client SDK for communicating with server API's.
+* [tgam-portfolio-ui-js](https://github.com/barchart/tgam-portfolio-ui-js) - A dynamic, single-page HTML UI.
 
 ### Package Managers
 
