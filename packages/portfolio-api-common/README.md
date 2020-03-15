@@ -4,16 +4,20 @@ A *private* library of shared JavaScript code pertaining to the paper-trading po
 
 ### Overview
 
-Simply put, this project contains code that runs on both the servers (i.e. Serverless applications) and clients (e.g. browser, mobile, etc). At present, two main features are shared:
+Simply put, this project contains code that runs on both the servers (i.e. Serverless applications) and clients (e.g. browser, mobile, etc).
 
-* [Serialization](https://github.com/barchart/portfolio-api-common/tree/master/lib/serialization) - Data is passed between client and server in JSON format. However, the code works with more complex types (e.g. [decimals](https://github.com/barchart/barchart-common-js/blob/master/lang/Decimal.js) instead of [native JavaScript floats](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number); [days](https://github.com/barchart/barchart-common-js/blob/master/lang/Day.js) instead of [native JavaScript Dates](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)). So, before data is sent, it must be converted to pure JSON. Conversely, when data is received, as pure JSON, its translated into more complex types before use. This is facilitated by the [Schema]() definitions which build custom "reviver" functions for [JSON parsing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse).
-* [Processing](https://github.com/barchart/portfolio-api-common/tree/master/lib/processing) - Processing code groups positions together, groups portfolios together, and calculates gains/losses across groups. This code is used by server generated reports and dynamic HTML displays.
-* More...
+#### [Serialization](https://github.com/barchart/portfolio-api-common/tree/master/lib/serialization)
+
+Data is passed between client and server in JSON format. However, the code works with more complex types (e.g. [decimals](https://github.com/barchart/barchart-common-js/blob/master/lang/Decimal.js) instead of [native JavaScript floats](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number); [days](https://github.com/barchart/barchart-common-js/blob/master/lang/Day.js) instead of [native JavaScript Dates](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)). So, before data is sent, it must be converted to pure JSON. Conversely, when data is received, as pure JSON, its translated into more complex types before use. This is facilitated by the [Schema]() definitions which build custom "reviver" functions for [JSON parsing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse).
+
+#### [Processing](https://github.com/barchart/portfolio-api-common/tree/master/lib/processing)
+
+Processing code groups positions together, groups portfolios together, and calculates gains/losses across groups. This code is used by server generated reports and dynamic HTML displays.
 
 ### Notable Consumers
 
-* [aws-lambda-portfolio](https://github.com/barchart/aws-lambda-portfolio) - Serverless applications for maintaining paper-trading portfolios, which expose API's.
-* [portfolio-client-js](https://github.com/barchart/portfolio-client-js) - JavaScript client SDK for consuming remote API's.
+* [aws-lambda-portfolio](https://github.com/barchart/aws-lambda-portfolio) - Serverless applications for maintaining paper-trading portfolios.
+* [portfolio-client-js](https://github.com/barchart/portfolio-client-js) - JavaScript client SDK for consuming API of exposed by Serverless applications.
 * [tgam-portfolio-ui-js](https://github.com/barchart/tgam-portfolio-ui-js) - A dynamic, single-page HTML application for managing paper-trading portfolios.
 
 ### Package Managers
