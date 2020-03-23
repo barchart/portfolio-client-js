@@ -70,20 +70,20 @@ module.exports = (() => {
 			return transactions.every((t) => {
 				let valid = true;
 
-				if (is.object(t.reference) && is.string(t.reference.root) && is.number(t.reference.sequence)) {
+				if (is.object(t.reference) && is.string(t.reference.root) && is.string(t.reference.transaction)) {
 					const root = t.reference.root;
-					const sequence = t.reference.sequence;
+					const transaction = t.reference.transaction;
 
 					if (!references.hasOwnProperty(root)) {
 						references[root] = [ ];
 					}
 
-					const sequences = references[root];
+					const transactions = references[root];
 
-					if (sequences.some(s => s === sequence)) {
+					if (transactions.some(t => t === transaction)) {
 						valid = false;
 					} else {
-						sequences.push(sequence);
+						transactions.push(transaction);
 					}
 				}
 
