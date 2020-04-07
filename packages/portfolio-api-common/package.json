@@ -22,7 +22,6 @@
     "gulp-bump": "~1.0.0",
     "gulp-git": "^2.9.0",
     "gulp-jasmine": "^2.2.1",
-    "gulp-jsdoc3": "^1.0.1",
     "gulp-jshint": "~2.1.0",
     "jsdoc": "^3.5.5",
     "jshint": "2.9.5",
