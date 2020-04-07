@@ -5,7 +5,6 @@ const fs = require('fs');
 const browserify = require('browserify'),
 	buffer = require('vinyl-buffer'),
 	bump = require('gulp-bump'),
-	exec = require('child_process').exec,
 	git = require('gulp-git'),
 	gitStatus = require('git-get-status'),
 	glob = require('glob'),
@@ -14,7 +13,7 @@ const browserify = require('browserify'),
 	source = require('vinyl-source-stream');
 
 function getVersionFromPackage() {
-    return JSON.parse(fs.readFileSync('./package.json', 'utf8')).version;
+	return JSON.parse(fs.readFileSync('./package.json', 'utf8')).version;
 }
 
 gulp.task('ensure-clean-working-directory', (cb) => {
@@ -34,25 +33,25 @@ gulp.task('bump-version', () => {
 });
 
 gulp.task('commit-changes', () => {
-    return gulp.src([ './', './test/', './package.json' ])
-        .pipe(git.add())
-        .pipe(git.commit('Release. Bump version number'));
+	return gulp.src([ './', './test/', './package.json' ])
+		.pipe(git.add())
+		.pipe(git.commit('Release. Bump version number'));
 });
 
 gulp.task('push-changes', (cb) => {
-    git.push('origin', 'master', cb);
+	git.push('origin', 'master', cb);
 });
 
 gulp.task('create-tag', (cb) => {
-    const version = getVersionFromPackage();
+	const version = getVersionFromPackage();
 
-    git.tag(version, 'Release ' + version, (error) => {
-        if (error) {
-            return cb(error);
-        }
+	git.tag(version, 'Release ' + version, (error) => {
+		if (error) {
+			return cb(error);
+		}
 
-        git.push('origin', 'master', { args: '--tags' }, cb);
-    });
+		git.push('origin', 'master', { args: '--tags' }, cb);
+	});
 });
 
 gulp.task('build-test-bundle', () => {
@@ -64,13 +63,13 @@ gulp.task('build-test-bundle', () => {
 });
 
 gulp.task('execute-browser-tests', () => {
-    return gulp.src('test/SpecRunner.js')
-        .pipe(jasmine());
+	return gulp.src('test/SpecRunner.js')
+		.pipe(jasmine());
 });
 
 gulp.task('execute-node-tests', () => {
-    return gulp.src(['test/specs/**/*.js'])
-        .pipe(jasmine());
+	return gulp.src(['test/specs/**/*.js'])
+		.pipe(jasmine());
 });
 
 gulp.task('execute-tests', gulp.series(
@@ -89,9 +88,10 @@ gulp.task('release', gulp.series(
 ));
 
 gulp.task('lint', () => {
-    return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./docs/**', '!./test/SpecRunner.js' ])
-        .pipe(jshint({'esversion': 6}))
-        .pipe(jshint.reporter('default'));
+	return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./docs/**', '!./test/SpecRunner.js' ])
+		.pipe(jshint({'esversion': 6}))
+		.pipe(jshint.reporter('default'))
+		.pipe(jshint.reporter('fail'));
 });
 
 gulp.task('test', gulp.series('execute-tests'));
