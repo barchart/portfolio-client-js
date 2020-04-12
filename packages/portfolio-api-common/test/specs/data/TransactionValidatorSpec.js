@@ -58,8 +58,8 @@ describe('When validating transaction order', () => {
 describe('When validating transaction references', () => {
 	'use strict';
 
-	const build = (root, sequence) => {
-		return { reference: { root: root, sequence: sequence } };
+	const build = (root, transaction) => {
+		return { reference: { root: root, transaction: transaction } };
 	};
 
 	it('An array of zero transactions should be valid', () => {
@@ -71,11 +71,11 @@ describe('When validating transaction references', () => {
 	});
 
 	it('An array with distinct references should be valid', () => {
-		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1) ])).toEqual(true);
+		expect(TransactionValidator.validateReferences([ build('a', 'x'), build('a', 'y'), build('b', 'y') ])).toEqual(true);
 	});
 
 	it('An array with non-distinct references should be not valid', () => {
-		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1), build('a', 2) ])).toEqual(false);
+		expect(TransactionValidator.validateReferences([ build('a', 'x'), build('a', 'y'), build('b', 'x'), build('a', 'y') ])).toEqual(false);
 	});
 });
 
