@@ -1357,20 +1357,20 @@ module.exports = (() => {
 			return transactions.every((t) => {
 				let valid = true;
 
-				if (is.object(t.reference) && is.string(t.reference.root) && is.number(t.reference.sequence)) {
+				if (is.object(t.reference) && is.string(t.reference.root) && is.string(t.reference.transaction)) {
 					const root = t.reference.root;
-					const sequence = t.reference.sequence;
+					const transaction = t.reference.transaction;
 
 					if (!references.hasOwnProperty(root)) {
 						references[root] = [ ];
 					}
 
-					const sequences = references[root];
+					const transactions = references[root];
 
-					if (sequences.some(s => s === sequence)) {
+					if (transactions.some(t => t === transaction)) {
 						valid = false;
 					} else {
-						sequences.push(sequence);
+						transactions.push(transaction);
 					}
 				}
 
@@ -4988,7 +4988,7 @@ module.exports = (() => {
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('reference.position', DataType.STRING, true)
-		.withField('reference.sequence', DataType.NUMBER, true)
+		.withField('reference.transaction', DataType.STRING, true)
 		.withField('snapshot.open', DataType.DECIMAL)
 		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
@@ -5037,7 +5037,7 @@ module.exports = (() => {
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('reference.position', DataType.STRING, true)
-		.withField('reference.sequence', DataType.NUMBER, true)
+		.withField('reference.transaction', DataType.NUMBER, true)
 		.withField('snapshot.open', DataType.DECIMAL)
 		.withField('snapshot.direction', DataType.forEnum(PositionDirection, 'PositionDirection'))
 		.withField('snapshot.buys', DataType.DECIMAL)
@@ -7488,6 +7488,7 @@ module.exports = (() => {
      * item's value. If no matching item can be found, a null value is returned.
      *
      * @public
+     * @static
      * @param {Function} type - The enumeration type.
      * @param {String} code - The enumeration item's code.
      * @returns {*|null}
@@ -7501,6 +7502,7 @@ module.exports = (() => {
      * Returns all of the enumeration's items (given an enumeration type).
      *
      * @public
+     * @static
      * @param {Function} type - The enumeration to list.
      * @returns {Array}
      */
@@ -17842,8 +17844,8 @@ describe('When validating transaction order', () => {
 describe('When validating transaction references', () => {
 	'use strict';
 
-	const build = (root, sequence) => {
-		return { reference: { root: root, sequence: sequence } };
+	const build = (root, transaction) => {
+		return { reference: { root: root, transaction: transaction } };
 	};
 
 	it('An array of zero transactions should be valid', () => {
@@ -17855,11 +17857,11 @@ describe('When validating transaction references', () => {
 	});
 
 	it('An array with distinct references should be valid', () => {
-		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1) ])).toEqual(true);
+		expect(TransactionValidator.validateReferences([ build('a', 'x'), build('a', 'y'), build('b', 'y') ])).toEqual(true);
 	});
 
 	it('An array with non-distinct references should be not valid', () => {
-		expect(TransactionValidator.validateReferences([ build('a', 1), build('a', 2), build('b', 1), build('a', 2) ])).toEqual(false);
+		expect(TransactionValidator.validateReferences([ build('a', 'x'), build('a', 'y'), build('b', 'x'), build('a', 'y') ])).toEqual(false);
 	});
 });
 
