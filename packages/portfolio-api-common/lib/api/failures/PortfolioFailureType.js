@@ -356,13 +356,13 @@ module.exports = (() => {
 	const transactionCreateFailedInstrumentCorrupt = new FailureType('TRANSACTION_CREATE_FAILED_INSTRUMENT_CORRUPT', 'Unable to create transaction, corporate action history for {U|symbol} cannot be located.');
 
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
-	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.');
+	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.', false);
 	const transactionDeleteFailedDirectionSwitchOnRewrite = new FailureType('TRANSACTION_DELETE_FAILED_DIRECTION_SWITCH_ON_REWRITE', 'Deleting this transaction would cause your history to be re-written and the position to switch from long to short (i.e. positive to negative) or vice versa.', false);
 	const transactionDeleteFailedPositionLocked = new FailureType('TRANSACTION_DELETE_FAILED_POSITION_LOCKED', 'Unable to delete transaction, your {L|description} history is being recalculated. Please wait a minute or two and retry.');
 	const transactionDeleteFailedTypeReserved = new FailureType('TRANSACTION_DELETE_FAILED_TYPE_RESERVED', 'Unable to delete {U|type.description} transaction, this type of transaction is managed by the system.');
 
 	const transactionEditFailedInvalidDate = new FailureType('TRANSACTION_EDIT_FAILED_INVALID_DATE', 'Unable to edit transaction with given date.');
-	const transactionEditFailedNoTransaction = new FailureType('TRANSACTION_EDIT_FAILED_NO_TRANSACTION', 'Unable to edit transaction. The referenced transaction does not exist.');
+	const transactionEditFailedNoTransaction = new FailureType('TRANSACTION_EDIT_FAILED_NO_TRANSACTION', 'Unable to edit transaction. The referenced transaction does not exist.', false);
 	const transactionEditFailedTypeReserved = new FailureType('TRANSACTION_EDIT_FAILED_TYPE_RESERVED', 'Unable to edit {U|type.description} transaction, this type of transaction is managed by the system.');
 
 	return PortfolioFailureType;
