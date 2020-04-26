@@ -175,7 +175,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[PositionSummaryFrame]';
+			return `[PositionSummaryFrame (code=${this.code})]`;
 		}
 	}
 

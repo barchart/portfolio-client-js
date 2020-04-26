@@ -104,6 +104,10 @@ module.exports = (() => {
 		static get SPINOFF() {
 			return spinoff;
 		}
+
+		toString() {
+			return `[CorporateActionType (code=${this.code})]`;
+		}
 	}
 
 	const split = new CorporateActionType('SPLIT', 'Split', false);

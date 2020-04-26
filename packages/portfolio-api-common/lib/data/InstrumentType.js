@@ -252,7 +252,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[InstrumentType]';
+			return `[InstrumentType (code=${this.code})]`;
 		}
 	}
 

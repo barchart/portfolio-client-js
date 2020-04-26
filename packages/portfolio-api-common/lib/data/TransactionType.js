@@ -494,7 +494,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[TransactionType]';
+			return `[TransactionType (code=${this.code})]`;
 		}
 	}
 

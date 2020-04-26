@@ -118,6 +118,10 @@ module.exports = (() => {
 				return even;
 			}
 		}
+
+		toString() {
+			return `[PositionDirection (code=${this.code})]`;
+		}
 	}
 
 	const long = new PositionDirection('LONG', 'Long', 'positive');

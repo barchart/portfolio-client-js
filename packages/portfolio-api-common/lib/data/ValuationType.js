@@ -48,7 +48,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[ValuationType]';
+			return `[ValuationType (code=${this.code})]`;
 		}
 	}
 
