@@ -73,6 +73,7 @@ module.exports = (() => {
 			this._dataFormat.hide = false;
 			this._dataFormat.invalid = false;
 			this._dataFormat.locked = false;
+			this._dataFormat.calculating = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
 			this._dataFormat.quantityPrevious = null;
@@ -580,6 +581,7 @@ module.exports = (() => {
 
 		let newsBinding = Disposable.getEmpty();
 		let lockedBinding = Disposable.getEmpty();
+		let calculatingBinding = Disposable.getEmpty();
 
 		if (this._single) {
 			newsBinding = item.registerNewsExistsChangeHandler((exists) => {
@@ -589,6 +591,10 @@ module.exports = (() => {
 
 			lockedBinding = item.registerLockChangeHandler((locked) => {
 				this._dataFormat.locked = locked;
+			});
+
+			calculatingBinding = item.registerCalculatingChangeHandler((calculating) => {
+				this._dataFormat.calculating = calculating;
 			});
 		}
 
@@ -604,6 +610,7 @@ module.exports = (() => {
 		this._disposeStack.push(fundamentalBinding);
 		this._disposeStack.push(quoteBinding);
 		this._disposeStack.push(lockedBinding);
+		this._disposeStack.push(calculatingBinding);
 		this._disposeStack.push(newsBinding);
 
 		this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
@@ -611,6 +618,7 @@ module.exports = (() => {
 			quoteBinding.dispose();
 			newsBinding.dispose();
 			lockedBinding.dispose();
+			calculatingBinding.dispose();
 
 			array.remove(this._items, i => i === item);
 			array.remove(this._excludedItems, i => i === item);
@@ -663,7 +671,7 @@ module.exports = (() => {
 		const format = group._dataFormat;
 
 		const currency = group.currency;
-		
+
 		const items = group._consideredItems;
 
 		group._bypassCurrencyTranslation = items.every(item => item.currency === currency);
@@ -794,6 +802,7 @@ module.exports = (() => {
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
+			format.calculating = definition.type === PositionLevelType.POSITION && item.data.calculating;
 		}
 
 		let portfolioType = null;
@@ -899,7 +908,7 @@ module.exports = (() => {
 		actual.marketChangePercent = marketChangePercent;
 
 		format.market = formatCurrency(actual.market, currency);
-		
+
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
 			setTimeout(() => format.marketDirection = updates.marketDirection, 0);
