@@ -581,6 +581,26 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns current price for symbol provided.
+		 *
+		 * @param {String} symbol
+		 * @return {null|Number}
+		 */
+		getCurrentPrice(symbol) {
+			assert.argumentIsRequired(symbol, 'symbol', String);
+
+			let price;
+
+			if (this._symbols.hasOwnProperty(symbol) && this._symbols[symbol].length > 0) {
+				price = this._symbols[symbol][0].currentPrice;
+			} else {
+				price = null;
+			}
+
+			return price;
+		}
+
+		/**
 		 * Sets a historical forex quote.
 		 *
 		 * @public

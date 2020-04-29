@@ -205,6 +205,15 @@ module.exports = (() => {
 			return this._previousQuote;
 		}
 
+		/**
+		 * The current price.
+		 *
+		 * @return {null|Number}
+		 */
+		get currentPrice() {
+			return this._currentPrice;
+		}
+
 		updatePortfolio(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
