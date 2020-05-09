@@ -103,7 +103,7 @@ module.exports = (() => {
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
 		.withField('system.locked', DataType.BOOLEAN, true)
-		.withField('system.calculating', DataType.BOOLEAN, true)
+		.withField('system.calculating.processors', DataType.NUMBER, true)
 		.withField('root', DataType.STRING, true)
 		.schema
 	);
@@ -134,7 +134,7 @@ module.exports = (() => {
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
 		.withField('system.locked', DataType.BOOLEAN, true)
-		.withField('system.calculating', DataType.BOOLEAN, true)
+		.withField('system.calculating.processors', DataType.NUMBER, true)
 		.withField('previous', DataType.NUMBER, true)
 		.schema
 	);
