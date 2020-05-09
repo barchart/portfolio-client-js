@@ -109,6 +109,7 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.withField('system.calculating.processors', DataType.NUMBER, true)
 		.withField('system.sequence', DataType.NUMBER)
 		.withField('system.version', DataType.STRING)
 		.withField('system.timestamp', DataType.TIMESTAMP)
@@ -131,6 +132,7 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.withField('system.calculating.processors', DataType.NUMBER, true)
 		.schema
 	);
 
