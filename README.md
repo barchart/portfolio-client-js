@@ -1,24 +1,24 @@
 # @barchart/portfolio-client-js
-## JavaScript library for interfacing with Barchart's Portfolio API
 
-## Documentation
+[![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiM0hCbTN3M253WGFUUUpFcnk1RFZOSTdUcUZnOWJxbXltaEMvQ3JrcENZeWI0cFRDWlFidks2VFhNR3lHeHlBUVdOSjk5TDU5MWd1bE1abGtoc3p1NjFrPSIsIml2UGFyYW1ldGVyU3BlYyI6InZMalFMNG9pZ3E1ekxJSEciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://github.com/barchart/portfolio-client-js)
 
-The code is documented with [JSDoc](http://usejsdoc.org/). While the output hasn't been committed to source control, you can generate the documentation by using the following commands:
+A JavaScript SDK for interfacing with the Barchart Portfolio System.
 
-    > npm install
-    > gulp document
+### Development
 
-## Development
+#### Documentation
 
-Gulp is used to check "linting" and to run unit tests.
+The code is documented with [JSDoc](http://usejsdoc.org/). This will be used as the basis for formal documentation (coming soon).
 
-    > nvm use 6.11.1
-    > npm install
-    > gulp lint
-    > gulp test
+#### Package Managers
 
-## Build
+This library has been published as a *private* module to NPM as [@barchart/common-js](https://www.npmjs.com/package/@barchart/portfolio-client-js).
 
-Polyfills for ES6 are required:
+```shell
+npm login
+npm install @barchart/portfolio-client-js -S
+```
 
-* Promise
+#### Build
+
+Modern JavaScript language features are used. Some browsers may still require polyfills.
