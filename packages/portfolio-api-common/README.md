@@ -28,5 +28,7 @@ For reporting and display purposes, positions can be grouped together (by asset 
 
 This library has been published as a *private* module to NPM as [@barchart/portfolio-api-common](https://www.npmjs.com/package/@barchart/portfolio-api-common).
 
-    > npm login
-    > npm install @barchart/portfolio-api-common -S
+```shell
+npm login
+npm install @barchart/portfolio-api-common -S
+```
