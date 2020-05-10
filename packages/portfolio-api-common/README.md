@@ -20,7 +20,7 @@ For reporting and display purposes, positions can be grouped together (by asset 
 
 ### Notable Consumers
 
-* [@barchart/aws-lambda-portfolio](https://github.com/barchart/aws-lambda-portfolio) - Serverless applications (i.e. the servers)
+* [@barchart/aws-lambda-portfolio](https://github.com/barchart/aws-lambda-portfolio) - Serverless applications (i.e. the backend)
 * [@barchart/portfolio-client-js](https://github.com/barchart/portfolio-client-js) - JavaScript client SDK for communicating with server API's
 * [@barchart/tgam-portfolio-ui-js](https://github.com/barchart/tgam-portfolio-ui-js) - A dynamic, single-page HTML UI
 
