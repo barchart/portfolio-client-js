@@ -2347,7 +2347,7 @@ module.exports = (() => {
   return {
     JwtGateway: JwtGateway,
     PortfolioGateway: PortfolioGateway,
-    version: '1.4.1'
+    version: '1.4.2'
   };
 })();
 
