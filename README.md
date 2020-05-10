@@ -12,7 +12,7 @@ The code is documented with [JSDoc](http://usejsdoc.org/). This will be used as 
 
 #### Package Managers
 
-This library has been published as a *private* module to NPM as [@barchart/common-js](https://www.npmjs.com/package/@barchart/portfolio-client-js).
+This library has been published as a *private* module to NPM as [@barchart/portfolio-client-js](https://www.npmjs.com/package/@barchart/portfolio-client-js).
 
 ```shell
 npm login
