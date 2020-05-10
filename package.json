@@ -50,9 +50,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/barchart/watchlist-client-js/issues"
+    "url": "https://github.com/barchart/portfolio-client-js/issues"
   },
-  "homepage": "https://github.com/barchart/watchlist-client-js#readme",
+  "homepage": "https://github.com/barchart/portfolio-client-js#readme",
   "directories": {
     "test": "test"
   }
