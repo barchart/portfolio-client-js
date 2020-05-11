@@ -22,7 +22,6 @@ For reporting and display purposes, positions can be grouped together (by asset 
 
 * [@barchart/aws-lambda-portfolio](https://github.com/barchart/aws-lambda-portfolio) - Serverless applications (i.e. the backend)
 * [@barchart/portfolio-client-js](https://github.com/barchart/portfolio-client-js) - JavaScript SDK for communicating with the backend
-* [@barchart/tgam-portfolio-ui-js](https://github.com/barchart/tgam-portfolio-ui-js) - A dynamic, single-page HTML UI
 
 ### Package Managers
 
