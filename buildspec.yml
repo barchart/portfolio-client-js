@@ -1,5 +1,9 @@
 version: 0.2
 
+env:
+  secrets-manager:
+    NPM_READONLY_TOKEN: NPM_READONLY_TOKEN
+
 phases:
   install:
     runtime-versions:
@@ -7,6 +11,7 @@ phases:
 
   pre_build:
     commands:
+      - echo -e $'\n'//registry.npmjs.org/:_authToken=$NPM_READONLY_TOKEN >> .npmrc
       - npm install
 
   build:
