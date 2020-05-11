@@ -253,7 +253,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[InstrumentType]';
+			return `[InstrumentType (code=${this.code})]`;
 		}
 	}
 
@@ -392,6 +392,10 @@ module.exports = (() => {
 			} else {
 				return even;
 			}
+		}
+
+		toString() {
+			return `[PositionDirection (code=${this.code})]`;
 		}
 	}
 
@@ -580,7 +584,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[PositionSummaryFrame]';
+			return `[PositionSummaryFrame (code=${this.code})]`;
 		}
 	}
 
@@ -1247,7 +1251,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[TransactionType]';
+			return `[TransactionType (code=${this.code})]`;
 		}
 	}
 
@@ -8826,7 +8830,7 @@ module.exports = (() => {
 
   return {
     /**
-     * Returns true, if the argument is a number. NaN will return false.
+     * Returns true if the argument is a number. NaN will return false.
      *
      * @static
      * @public
@@ -8838,7 +8842,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is NaN.
+     * Returns true if the argument is NaN.
      *
      * @static
      * @public
@@ -8850,7 +8854,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a valid 32-bit integer.
+     * Returns true if the argument is a valid 32-bit integer.
      *
      * @static
      * @public
@@ -8862,7 +8866,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a valid integer (which can exceed 32 bits); however,
+     * Returns true if the argument is a valid integer (which can exceed 32 bits); however,
      * the check can fail above the value of Number.MAX_SAFE_INTEGER.
      *
      * @static
@@ -8875,7 +8879,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a number that is positive.
+     * Returns true if the argument is a number that is positive.
      *
      * @static
      * @public
@@ -8887,7 +8891,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a number that is negative.
+     * Returns true if the argument is a number that is negative.
      *
      * @static
      * @public
@@ -8899,7 +8903,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a string.
+     * Returns true if the argument is a string.
      *
      * @static
      * @public
@@ -8911,7 +8915,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a JavaScript Date instance.
+     * Returns true if the argument is a JavaScript Date instance.
      *
      * @static
      * @public
@@ -8923,7 +8927,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a function.
+     * Returns true if the argument is a function.
      *
      * @static
      * @public
@@ -8935,7 +8939,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is an array.
+     * Returns true if the argument is an array.
      *
      * @static
      * @public
@@ -8947,7 +8951,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a Boolean value.
+     * Returns true if the argument is a Boolean value.
      *
      * @static
      * @public
@@ -8959,7 +8963,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is an object.
+     * Returns true if the argument is an object.
      *
      * @static
      * @public
@@ -8971,7 +8975,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is a null value.
+     * Returns true if the argument is a null value.
      *
      * @static
      * @public
@@ -8983,7 +8987,7 @@ module.exports = (() => {
     },
 
     /**
-     * Returns true, if the argument is an undefined value.
+     * Returns true if the argument is an undefined value.
      *
      * @static
      * @public
@@ -8992,6 +8996,18 @@ module.exports = (() => {
      */
     undefined(candidate) {
       return candidate === undefined;
+    },
+
+    /**
+     * Returns true if the argument is a zero-length string.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    zeroLengthString(candidate) {
+      return this.string(candidate) && candidate.length === 0;
     },
 
     /**
@@ -10172,9 +10188,9 @@ module.exports = (() => {
 
 },{"./../../../lang/assert":29,"./../../../lang/is":33,"./../Component":36,"./../DataType":37,"./../Field":38,"./../Schema":39,"./ComponentBuilder":40}],42:[function(require,module,exports){
 /*
- *  big.js v5.0.3
+ *  big.js v5.2.2
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
- *  Copyright (c) 2017 Michael Mclaughlin <M8ch88l@gmail.com>
+ *  Copyright (c) 2018 Michael Mclaughlin <M8ch88l@gmail.com>
  *  https://github.com/MikeMcl/big.js/LICENCE
  */
 ;(function (GLOBAL) {
@@ -10280,7 +10296,7 @@ module.exports = (() => {
     Big.RM = RM;
     Big.NE = NE;
     Big.PE = PE;
-    Big.version = '5.0.2';
+    Big.version = '5.2.2';
 
     return Big;
   }
@@ -10364,7 +10380,7 @@ module.exports = (() => {
         more = xc[i] > 5 || xc[i] == 5 &&
           (more || i < 0 || xc[i + 1] !== UNDEFINED || xc[i - 1] & 1);
       } else if (rm === 3) {
-        more = more || xc[i] !== UNDEFINED || i < 0;
+        more = more || !!xc[0];
       } else {
         more = false;
         if (rm !== 0) throw Error(INVALID_RM);
@@ -10831,7 +10847,7 @@ module.exports = (() => {
     xc = xc.slice();
 
     // Prepend zeros to equalise exponents.
-    // Note: Faster to use reverse then do unshifts.
+    // Note: reverse faster than unshifts.
     if (a = xe - ye) {
       if (a > 0) {
         ye = xe;
@@ -10903,18 +10919,19 @@ module.exports = (() => {
 
 
   /*
-   * Return a new Big whose value is the value of this Big rounded to a maximum of dp decimal
-   * places using rounding mode rm.
+   * Return a new Big whose value is the value of this Big rounded using rounding mode rm
+   * to a maximum of dp decimal places, or, if dp is negative, to an integer which is a
+   * multiple of 10**-dp.
    * If dp is not specified, round to 0 decimal places.
    * If rm is not specified, use Big.RM.
    *
-   * dp? {number} Integer, 0 to MAX_DP inclusive.
+   * dp? {number} Integer, -MAX_DP to MAX_DP inclusive.
    * rm? 0, 1, 2 or 3 (ROUND_DOWN, ROUND_HALF_UP, ROUND_HALF_EVEN, ROUND_UP)
    */
   P.round = function (dp, rm) {
     var Big = this.constructor;
     if (dp === UNDEFINED) dp = 0;
-    else if (dp !== ~~dp || dp < 0 || dp > MAX_DP) throw Error(INVALID_DP);
+    else if (dp !== ~~dp || dp < -MAX_DP || dp > MAX_DP) throw Error(INVALID_DP);
     return round(new Big(this), dp, rm === UNDEFINED ? Big.RM : rm);
   };
 
@@ -10938,17 +10955,18 @@ module.exports = (() => {
     if (s < 0) throw Error(NAME + 'No square root');
 
     // Estimate.
-    s = Math.sqrt(x.toString());
+    s = Math.sqrt(x + '');
 
     // Math.sqrt underflow/overflow?
-    // Re-estimate: pass x to Math.sqrt as integer, then adjust the result exponent.
+    // Re-estimate: pass x coefficient to Math.sqrt as integer, then adjust the result exponent.
     if (s === 0 || s === 1 / 0) {
       c = x.c.join('');
       if (!(c.length + e & 1)) c += '0';
-      r = new Big(Math.sqrt(c).toString());
-      r.e = ((e + 1) / 2 | 0) - (e < 0 || e & 1);
+      s = Math.sqrt(c);
+      e = ((e + 1) / 2 | 0) - (e < 0 || e & 1);
+      r = new Big((s == 1 / 0 ? '1e' : (s = s.toExponential()).slice(0, s.indexOf('e') + 1)) + e);
     } else {
-      r = new Big(s.toString());
+      r = new Big(s);
     }
 
     e = r.e + (Big.DP += 4);
@@ -16972,43 +16990,48 @@ for (var i = 0; i < 256; ++i) {
 function bytesToUuid(buf, offset) {
   var i = offset || 0;
   var bth = byteToHex;
-  return bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]];
+  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
+  return ([
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]]
+  ]).join('');
 }
 
 module.exports = bytesToUuid;
 
 },{}],49:[function(require,module,exports){
-(function (global){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
 // and inconsistent support for the `crypto` API.  We do the best we can via
 // feature-detection
-var rng;
 
-var crypto = global.crypto || global.msCrypto; // for IE 11
-if (crypto && crypto.getRandomValues) {
+// getRandomValues needs to be invoked in a context where "this" is a Crypto
+// implementation. Also, find the complete implementation of crypto on IE11.
+var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto)) ||
+                      (typeof(msCrypto) != 'undefined' && typeof window.msCrypto.getRandomValues == 'function' && msCrypto.getRandomValues.bind(msCrypto));
+
+if (getRandomValues) {
   // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
   var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
-  rng = function whatwgRNG() {
-    crypto.getRandomValues(rnds8);
+
+  module.exports = function whatwgRNG() {
+    getRandomValues(rnds8);
     return rnds8;
   };
-}
-
-if (!rng) {
+} else {
   // Math.random()-based (RNG)
   //
   // If all else fails, use Math.random().  It's fast, but is of unspecified
   // quality.
   var rnds = new Array(16);
-  rng = function() {
+
+  module.exports = function mathRNG() {
     for (var i = 0, r; i < 16; i++) {
       if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
       rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
@@ -17018,9 +17041,6 @@ if (!rng) {
   };
 }
 
-module.exports = rng;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],50:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
@@ -17030,29 +17050,39 @@ var bytesToUuid = require('./lib/bytesToUuid');
 // Inspired by https://github.com/LiosK/UUID.js
 // and http://docs.python.org/library/uuid.html
 
-// random #'s we need to init node and clockseq
-var _seedBytes = rng();
-
-// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
-var _nodeId = [
-  _seedBytes[0] | 0x01,
-  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
-];
-
-// Per 4.2.2, randomize (14 bit) clockseq
-var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
+var _nodeId;
+var _clockseq;
 
 // Previous uuid creation time
-var _lastMSecs = 0, _lastNSecs = 0;
+var _lastMSecs = 0;
+var _lastNSecs = 0;
 
-// See https://github.com/broofa/node-uuid for API details
+// See https://github.com/uuidjs/uuid for API details
 function v1(options, buf, offset) {
   var i = buf && offset || 0;
   var b = buf || [];
 
   options = options || {};
-
+  var node = options.node || _nodeId;
   var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+  if (node == null || clockseq == null) {
+    var seedBytes = rng();
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [
+        seedBytes[0] | 0x01,
+        seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]
+      ];
+    }
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  }
 
   // UUID timestamps are 100 nano-second units since the Gregorian epoch,
   // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
@@ -17113,7 +17143,6 @@ function v1(options, buf, offset) {
   b[i++] = clockseq & 0xff;
 
   // `node`
-  var node = options.node || _nodeId;
   for (var n = 0; n < 6; ++n) {
     b[i + n] = node[n];
   }
@@ -17131,7 +17160,7 @@ function v4(options, buf, offset) {
   var i = buf && offset || 0;
 
   if (typeof(options) == 'string') {
-    buf = options == 'binary' ? new Array(16) : null;
+    buf = options === 'binary' ? new Array(16) : null;
     options = null;
   }
   options = options || {};
