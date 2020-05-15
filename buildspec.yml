@@ -1,0 +1,20 @@
+version: 0.2
+
+env:
+  secrets-manager:
+    NPM_READONLY_TOKEN: NPM_READONLY_TOKEN
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12.x
+
+  pre_build:
+    commands:
+      - echo -e $'\n'//registry.npmjs.org/:_authToken=$NPM_READONLY_TOKEN >> .npmrc
+      - npm install
+
+  build:
+    commands:
+      - ./node_modules/.bin/gulp lint
+      - ./node_modules/.bin/gulp test

@@ -1,6 +1,6 @@
 {
   "name": "@barchart/portfolio-client-js",
-  "version": "1.3.19",
+  "version": "1.4.3",
   "description": "JavaScript library for interfacing with Barchart's Portfolio API",
   "author": {
     "name": "Bryan Ingle",
@@ -18,10 +18,10 @@
     "Barchart",
     "JavaScript",
     "Client",
-    "API"
+    "SDK"
   ],
   "dependencies": {
-    "@barchart/common-js": "~3.3.0",
+    "@barchart/common-js": "^3.5.1",
     "@barchart/portfolio-api-common": "git@github.com:barchart/portfolio-api-common.git#igor/position-value"
   },
   "devDependencies": {
@@ -37,7 +37,6 @@
     "gulp-jsdoc3": "^1.0.1",
     "gulp-jshint": "~2.1.0",
     "gulp-replace": "^0.5.4",
-    "jsdoc": "^3.5.5",
     "jshint": "2.9.5",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
@@ -49,11 +48,11 @@
       ]
     ]
   },
-  "license": "MIT",
+  "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/barchart/watchlist-client-js/issues"
+    "url": "https://github.com/barchart/portfolio-client-js/issues"
   },
-  "homepage": "https://github.com/barchart/watchlist-client-js#readme",
+  "homepage": "https://github.com/barchart/portfolio-client-js#readme",
   "directories": {
     "test": "test"
   }

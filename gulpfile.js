@@ -42,15 +42,6 @@ gulp.task('embed-version', () => {
 		.pipe(gulp.dest('./lib/'));
 });
 
-gulp.task('document', (cb) => {
-	exec('jsdoc . -c jsdoc.json -r -d docs', (error, stdout, stderr) => {
-		console.log(stdout);
-		console.log(stderr);
-
-		cb();
-	});
-});
-
 gulp.task('commit-changes', () => {
 	return gulp.src([ './', './test/', './package.json', './lib/index.js', './example/example.js', './test/SpecRunner.js' ])
 		.pipe(git.add())
@@ -108,7 +99,6 @@ gulp.task('execute-tests', gulp.series(
 gulp.task('release', gulp.series(
 	'ensure-clean-working-directory',
 	'execute-tests',
-	'document',
 	'bump-version',
 	'embed-version',
 	'build-example-bundle',
@@ -120,7 +110,8 @@ gulp.task('release', gulp.series(
 gulp.task('lint', () => {
 	return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./docs/**', '!./test/SpecRunner.js', '!./example/example.js' ])
 		.pipe(jshint({'esversion': 6}))
-		.pipe(jshint.reporter('default'));
+		.pipe(jshint.reporter('default'))
+		.pipe(jshint.reporter('fail'));
 });
 
 gulp.task('test', gulp.series('execute-tests'));
