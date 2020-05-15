@@ -754,7 +754,7 @@ module.exports = (() => {
 	function getIsCalculating(position) {
 		assert.argumentIsRequired(position, 'position', Object);
 
-		return !is.object(position.system) || !is.object(position.system.calculating) || !is.number(position.system.calculating.processors) || position.system.calculating.processors > 0;
+		return !is.object(position.system) || !is.object(position.system.calculate) || !is.number(position.system.calculate.processors) || position.system.calculate.processors > 0;
 	}
 
 	function getSnapshot(position, currentSummary, reporting) {
