@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@barchart/common-js": "^3.5.1",
-    "@barchart/portfolio-api-common": "git@github.com:barchart/portfolio-api-common.git#igor/position-value"
+    "@barchart/portfolio-api-common": "^1.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
