@@ -68,7 +68,7 @@ module.exports = (() => {
 
 			this._data.quantity = null;
 			this._data.quantityPrevious = null;
-			
+
 			this._data.realized = null;
 			this._data.income = null;
 			this._data.basisPrice = null;
@@ -100,12 +100,14 @@ module.exports = (() => {
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
+			this._data.calculating = getIsCalculating(position);
 			this._data.locked = getIsLocked(position);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
 			this._fundamentalDataChangedEvent = new Event(this);
 			this._lockChangedEvent = new Event(this);
+			this._calculatingChangedEvent = new Event(this);
 			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
@@ -201,6 +203,15 @@ module.exports = (() => {
 		 */
 		get previousQuote() {
 			return this._previousQuote;
+		}
+
+		/**
+		 * The current price.
+		 *
+		 * @return {null|Number}
+		 */
+		get currentPrice() {
+			return this._currentPrice;
 		}
 
 		updatePortfolio(portfolio) {
@@ -303,6 +314,26 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets a position's calculating status.
+		 *
+		 * @public
+		 * @param {Object} position
+		 */
+		setPositionCalculating(position) {
+			assert.argumentIsRequired(position, 'position', Object);
+
+			if (this.getIsDisposed()) {
+				return;
+			}
+
+			const value = getIsCalculating(position);
+
+			if (this._data.calculating !== value) {
+				this._calculatingChangedEvent.fire(this._data.calculating = value);
+			}
+		}
+
+		/**
 		 * Registers an observer for quote changes, which is fired after internal recalculations
 		 * of position data are complete.
 		 *
@@ -345,6 +376,17 @@ module.exports = (() => {
 		 */
 		registerLockChangeHandler(handler) {
 			return this._lockChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for position calculating changes.
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @return {Disposable}
+		 */
+		registerCalculatingChangeHandler(handler) {
+			return this._calculatingChangedEvent.register(handler);
 		}
 
 		/**
@@ -707,6 +749,12 @@ module.exports = (() => {
 		assert.argumentIsRequired(position, 'position');
 
 		return is.object(position.system) && is.boolean(position.system.locked) && position.system.locked;
+	}
+
+	function getIsCalculating(position) {
+		assert.argumentIsRequired(position, 'position', Object);
+
+		return is.object(position.system) && is.object(position.system.calculate) && is.number(position.system.calculate.processors) &&	position.system.calculate.processors > 0;
 	}
 
 	function getSnapshot(position, currentSummary, reporting) {

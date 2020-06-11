@@ -161,7 +161,7 @@ module.exports = (() => {
 				const tree = new Tree();
 
 				createGroups.call(this, tree, this._items, treeDefinition, treeDefinition.definitions);
-				
+
 				map[treeDefinition.name] = tree;
 
 				return map;
@@ -494,6 +494,41 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Causes a position to be flagged as calculating.
+		 *
+		 * @public
+		 * @param {Object} position
+		 */
+		setPositionCalculating(position) {
+			if (position) {
+				assert.argumentIsRequired(position, 'position', Object);
+				assert.argumentIsRequired(position.position, 'position.position', String);
+
+				const item = this._items.find(i => i.position.position === position.position);
+
+				if (item) {
+					item.setPositionCalculating(position);
+				}
+			}
+		}
+
+		/**
+		 * Returns a position's calculating status.
+		 *
+		 * @public
+		 * @param {Object} position
+		 * @return {Boolean}
+		 */
+		getPositionCalculating(position) {
+			assert.argumentIsRequired(position, 'position', Object);
+			assert.argumentIsRequired(position.position, 'position.position', String);
+
+			const item = this._items.find(i => i.position.position === position.position);
+
+			return is.object(item) && item.data.calculating;
+		}
+
+		/**
 		 * Performs a batch update of both position quotes and forex quotes,
 		 * triggering updates to position(s) and data aggregation(s).
 		 *
@@ -543,6 +578,26 @@ module.exports = (() => {
 			if (positionQuotes.length !== 0 || forexQuotes.length !== 0) {
 				recalculatePercentages.call(this);
 			}
+		}
+
+		/**
+		 * Returns current price for symbol provided.
+		 *
+		 * @param {String} symbol
+		 * @return {null|Number}
+		 */
+		getCurrentPrice(symbol) {
+			assert.argumentIsRequired(symbol, 'symbol', String);
+
+			let price;
+
+			if (this._symbols.hasOwnProperty(symbol) && this._symbols[symbol].length > 0) {
+				price = this._symbols[symbol][0].currentPrice;
+			} else {
+				price = null;
+			}
+
+			return price;
 		}
 
 		/**
