@@ -1130,6 +1130,9 @@ module.exports = (() => {
       }).withQueryBuilder(qb => {
         qb.withVariableParameter('frames', 'frames', 'frames', true, frames => frames.map(f => f.code).join()).withVariableParameter('periods', 'periods', 'periods', true).withVariableParameter('start', 'start', 'start', true, x => x.format());
       }).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForPositionSummaryDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._readPositionsValuesEndpoint = EndpointBuilder.for('read-positions-values', 'read positions values').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => {
+        pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('values', 'values');
+      }).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
       this._readTransactionsEndpoint = EndpointBuilder.for('read-transactions', 'read transactions').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => {
         pb.withLiteralParameter('portfolios', 'portfolios').withVariableParameter('portfolio', 'portfolio', 'portfolio', false).withLiteralParameter('positions', 'positions').withVariableParameter('position', 'position', 'position', false).withLiteralParameter('transactions', 'transactions');
       }).withQueryBuilder(qb => {
@@ -1375,6 +1378,108 @@ module.exports = (() => {
       });
     }
     /**
+     * Returns a promise which resolves as soon as the position's calculating finishes.
+     *
+     * @public
+     * @param {String} portfolio
+     * @param {String} position
+     * @returns {Array}
+     */
+
+
+    observePositionCalculating(portfolio, position) {
+      let disposed = false;
+      const query = promise.build(resolveCallback => {
+        assert.argumentIsRequired(portfolio, 'portfolio', String);
+        assert.argumentIsRequired(position, 'position', String);
+
+        const scheduleCheck = delay => {
+          if (disposed) {
+            return;
+          }
+
+          setTimeout(() => {
+            Gateway.invoke(this._readPositionsEndpoint, {
+              portfolio: portfolio,
+              position: position,
+              includePreviousPrice: false
+            }).then(positions => {
+              const p = positions.find(p => p.position === position);
+
+              if (is.object(p)) {
+                if (is.object(p.system) && is.object(p.system.calculate) && is.number(p.system.calculate.processors) && p.system.calculate.processors > 0) {
+                  scheduleCheck(delay + 1000);
+                } else {
+                  resolveCallback(p);
+                }
+              } else {
+                resolveCallback(null);
+              }
+            }).catch(e => {
+              scheduleCheck(delay + 5000);
+            });
+          }, delay);
+        };
+
+        scheduleCheck(2500);
+      });
+
+      const dispose = () => {
+        disposed = true;
+      };
+
+      return [query, dispose];
+    }
+    /**
+     * Returns a promise which resolves as soon as the portfolio calculating finishes.
+     *
+     * @public
+     * @param {String} portfolio
+     * @returns {Array}
+     */
+
+
+    observePortfolioCalculating(portfolio) {
+      let disposed = false;
+      const query = promise.build(resolveCallback => {
+        assert.argumentIsRequired(portfolio, 'portfolio', String);
+
+        const scheduleCheck = delay => {
+          if (disposed) {
+            return;
+          }
+
+          setTimeout(() => {
+            Gateway.invoke(this._readPortfoliosEndpoint, {
+              portfolio: portfolio
+            }).then(portfolios => {
+              const p = portfolios[0];
+
+              if (is.object(p)) {
+                if (is.object(p.system) && is.object(p.system.calculate) && is.number(p.system.calculate.processors) && p.system.calculate.processors > 0) {
+                  scheduleCheck(delay + 1000);
+                } else {
+                  resolveCallback(p);
+                }
+              } else {
+                resolveCallback(null);
+              }
+            }).catch(e => {
+              scheduleCheck(delay + 5000);
+            });
+          }, delay);
+        };
+
+        scheduleCheck(2500);
+      });
+
+      const dispose = () => {
+        disposed = true;
+      };
+
+      return [query, dispose];
+    }
+    /**
      * Retrieves positions for a user, a user's portfolio, or a single position.
      *
      * @public
@@ -1441,6 +1546,27 @@ module.exports = (() => {
         }
 
         return Gateway.invoke(this._readPositionSummariesEndpoint, payload);
+      });
+    }
+    /**
+     * Retrieves positions values for the entire portfolio or single position.
+     *
+     * @public
+     * @param {String} portfolio
+     * @param {String=} position
+     * @returns {Promise<Object[]>}
+     */
+
+
+    readPositionsValues(portfolio, position) {
+      return Promise.resolve().then(() => {
+        checkStart.call(this);
+        assert.argumentIsRequired(portfolio, 'portfolio', String);
+        assert.argumentIsOptional(position, 'position', String);
+        const payload = {};
+        payload.portfolio = portfolio;
+        payload.position = position || '*';
+        return Gateway.invoke(this._readPositionsValuesEndpoint, payload);
       });
     }
     /**
@@ -2347,7 +2473,7 @@ module.exports = (() => {
   return {
     JwtGateway: JwtGateway,
     PortfolioGateway: PortfolioGateway,
-    version: '1.4.3'
+    version: '1.4.4'
   };
 })();
 
@@ -8034,6 +8160,18 @@ module.exports = (() => {
     },
 
     /**
+     * Returns true if the argument is iterable.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    iterable(candidate) {
+      return !this.null(candidate) && !this.undefined(candidate) && this.fn(candidate[Symbol.iterator]);
+    },
+
+    /**
      * Returns true if the argument is a string.
      *
      * @static
@@ -11159,6 +11297,7 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.create', DataType.DAY)
+		.withField('dates.access', DataType.TIMESTAMP, true)
 		.withField('defaults.cash', DataType.BOOLEAN, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
@@ -11169,6 +11308,7 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('system.sequence', DataType.NUMBER)
 		.withField('system.version', DataType.STRING)
 		.withField('system.timestamp', DataType.TIMESTAMP)
@@ -11181,6 +11321,7 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.create', DataType.DAY)
+		.withField('dates.access', DataType.TIMESTAMP, true)
 		.withField('defaults.cash', DataType.BOOLEAN, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
@@ -11191,6 +11332,7 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.schema
 	);
 
@@ -11332,6 +11474,7 @@ module.exports = (() => {
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
 		.withField('system.locked', DataType.BOOLEAN, true)
+		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('root', DataType.STRING, true)
 		.schema
 	);
@@ -11362,6 +11505,7 @@ module.exports = (() => {
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
 		.withField('system.locked', DataType.BOOLEAN, true)
+		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('previous', DataType.NUMBER, true)
 		.schema
 	);
