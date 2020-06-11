@@ -1,6 +1,6 @@
 {
   "name": "@barchart/portfolio-client-js",
-  "version": "1.4.5",
+  "version": "1.4.4",
   "description": "JavaScript library for interfacing with Barchart's Portfolio API",
   "author": {
     "name": "Bryan Ingle",
@@ -37,7 +37,7 @@
     "gulp-jsdoc3": "^1.0.1",
     "gulp-jshint": "~2.1.0",
     "gulp-replace": "^0.5.4",
-    "jshint": "2.9.5",
+    "jshint": "^2.10.3",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
