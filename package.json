@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@barchart/common-js": "^3.5.1",
-    "@barchart/portfolio-api-common": "^1.4.1"
+    "@barchart/portfolio-api-common": "^1.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
