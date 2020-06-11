@@ -8160,6 +8160,18 @@ module.exports = (() => {
     },
 
     /**
+     * Returns true if the argument is iterable.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    iterable(candidate) {
+      return !this.null(candidate) && !this.undefined(candidate) && this.fn(candidate[Symbol.iterator]);
+    },
+
+    /**
      * Returns true if the argument is a string.
      *
      * @static
@@ -11285,6 +11297,7 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.create', DataType.DAY)
+		.withField('dates.access', DataType.TIMESTAMP, true)
 		.withField('defaults.cash', DataType.BOOLEAN, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
@@ -11295,6 +11308,7 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('system.sequence', DataType.NUMBER)
 		.withField('system.version', DataType.STRING)
 		.withField('system.timestamp', DataType.TIMESTAMP)
@@ -11307,6 +11321,7 @@ module.exports = (() => {
 		.withField('name', DataType.STRING)
 		.withField('timezone', DataType.forEnum(Timezones, 'Timezone'))
 		.withField('dates.create', DataType.DAY)
+		.withField('dates.access', DataType.TIMESTAMP, true)
 		.withField('defaults.cash', DataType.BOOLEAN, true)
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
@@ -11317,6 +11332,7 @@ module.exports = (() => {
 		.withField('legacy.warnings', DataType.NUMBER, true)
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
+		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.schema
 	);
 
@@ -11458,6 +11474,7 @@ module.exports = (() => {
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
 		.withField('system.locked', DataType.BOOLEAN, true)
+		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('root', DataType.STRING, true)
 		.schema
 	);
@@ -11488,6 +11505,7 @@ module.exports = (() => {
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
 		.withField('system.locked', DataType.BOOLEAN, true)
+		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('previous', DataType.NUMBER, true)
 		.schema
 	);
