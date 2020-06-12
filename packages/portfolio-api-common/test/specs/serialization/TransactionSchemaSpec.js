@@ -48,7 +48,7 @@ describe('When transactions are serialized', () => {
 			expect(typeof serialized === 'string').toEqual(true);
 		});
 
-		describe('and the serialized data is deserialized', function() {
+		describe('and the data is deserialized', () => {
 			let deserialized;
 
 			beforeEach(() => {
