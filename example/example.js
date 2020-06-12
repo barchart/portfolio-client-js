@@ -2473,7 +2473,7 @@ module.exports = (() => {
   return {
     JwtGateway: JwtGateway,
     PortfolioGateway: PortfolioGateway,
-    version: '1.4.6'
+    version: '1.4.7'
   };
 })();
 
