@@ -1169,6 +1169,9 @@ module.exports = (() => {
       }).withQueryBuilder(qb => {
         qb.withVariableParameter('frames', 'frames', 'frames', true, frames => frames.map(f => f.code).join());
       }).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForBrokerageReportAvailabilityDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._readVersionEndpoint = EndpointBuilder.for('read-api-version', 'read api version').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => {
+        pb.withLiteralParameter('system', 'system').withLiteralParameter('version', 'version');
+      }).withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(RequestInterceptor.PLAIN_TEXT_RESPONSE).withResponseInterceptor(responseInterceptorForVersion).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
       this._brokerageReportUrlGenerator = (user, portfolio, frame, end) => {
         return `https://${Configuration.getBrokerageHost(host)}/reports/portfolios/${portfolio}/frames/${frame.code}/date/${end.format()}/${user}`;
@@ -1839,6 +1842,19 @@ module.exports = (() => {
       });
     }
     /**
+     * Returns current API version of portfolio.
+     *
+     * @public
+     * @returns {Promise<Object>}
+     */
+
+
+    readVersion() {
+      return Promise.resolve().then(() => {
+        return Gateway.invoke(this._readVersionEndpoint);
+      });
+    }
+    /**
      * Generates a URL suitable for downloading a brokerage report (as a PDF).
      *
      * @public
@@ -2048,6 +2064,13 @@ module.exports = (() => {
   const responseInterceptorForWealthscopeToken = ResponseInterceptor.fromDelegate((response, ignored) => {
     try {
       return JSON.parse(response.data).token;
+    } catch (e) {
+      console.error('Error deserializing data', e);
+    }
+  });
+  const responseInterceptorForVersion = ResponseInterceptor.fromDelegate((response, ignored) => {
+    try {
+      return JSON.parse(response.data).version;
     } catch (e) {
       console.error('Error deserializing data', e);
     }
@@ -2473,7 +2496,7 @@ module.exports = (() => {
   return {
     JwtGateway: JwtGateway,
     PortfolioGateway: PortfolioGateway,
-    version: '1.4.7'
+    version: '1.5.0'
   };
 })();
 
@@ -7043,8 +7066,11 @@ const moment = require('moment-timezone');
 
 module.exports = (() => {
   'use strict';
+
+  const MILLISECONDS_PER_SECOND = 1000;
   /**
-   * A data structure encapsulates (and lazy loads) a moment (see https://momentjs.com/).
+   * An immutable data structure that encapsulates (and lazy loads)
+   * a moment (see https://momentjs.com/).
    *
    * @public
    * @param {Number} timestamp
@@ -7060,7 +7086,7 @@ module.exports = (() => {
       this._moment = null;
     }
     /**
-     * The timestamp.
+     * The timestamp (milliseconds since epoch).
      *
      * @public
      * @returns {Number}
@@ -7088,6 +7114,34 @@ module.exports = (() => {
       }
 
       return this._moment;
+    }
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward (or backward)
+     * by a specific number of seconds.
+     *
+     * @public
+     * @param {Number} milliseconds
+     * @returns {Timestamp}
+     */
+
+
+    add(milliseconds) {
+      assert.argumentIsRequired(milliseconds, 'seconds', Number);
+      return new Timestamp(this._timestamp + milliseconds, this._timezone);
+    }
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward (or backward)
+     * by a specific number of seconds.
+     *
+     * @public
+     * @param {Number} seconds
+     * @returns {Timestamp}
+     */
+
+
+    addSeconds(seconds) {
+      assert.argumentIsRequired(seconds, 'seconds', Number);
+      return this.add(seconds * MILLISECONDS_PER_SECOND);
     }
     /**
      * Returns the JSON representation.
@@ -11473,8 +11527,8 @@ module.exports = (() => {
 		.withField('legacy.portfolio', DataType.STRING, true)
 		.withField('legacy.position', DataType.STRING, true)
 		.withField('system.version', DataType.NUMBER, true)
-		.withField('system.locked', DataType.BOOLEAN, true)
 		.withField('system.calculate.processors', DataType.NUMBER, true)
+		.withField('system.locked', DataType.BOOLEAN, true)
 		.withField('root', DataType.STRING, true)
 		.schema
 	);
@@ -11504,8 +11558,8 @@ module.exports = (() => {
 		.withField('snapshot.basis', DataType.DECIMAL)
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
-		.withField('system.locked', DataType.BOOLEAN, true)
 		.withField('system.calculate.processors', DataType.NUMBER, true)
+		.withField('system.locked', DataType.BOOLEAN, true)
 		.withField('previous', DataType.NUMBER, true)
 		.schema
 	);
