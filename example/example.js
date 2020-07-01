@@ -2070,7 +2070,7 @@ module.exports = (() => {
   });
   const responseInterceptorForVersion = ResponseInterceptor.fromDelegate((response, ignored) => {
     try {
-      return JSON.parse(response.data).version;
+      return JSON.parse(response.data);
     } catch (e) {
       console.error('Error deserializing data', e);
     }
@@ -2496,7 +2496,7 @@ module.exports = (() => {
   return {
     JwtGateway: JwtGateway,
     PortfolioGateway: PortfolioGateway,
-    version: '1.5.0'
+    version: '1.5.1'
   };
 })();
 
