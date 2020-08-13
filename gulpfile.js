@@ -65,7 +65,7 @@ gulp.task('embed-version', () => {
 });
 
 gulp.task('commit-changes', () => {
-	return gulp.src([ './', './test/', './package.json', './lib/index.js', './example/example.js', './test/SpecRunner.js' ])
+	return gulp.src([ './', './test/', './package.json', './lib/index.js', './test/SpecRunner.js' ])
 		.pipe(git.add())
 		.pipe(git.commit('Release. Bump version number'));
 });
@@ -84,14 +84,6 @@ gulp.task('create-tag', (cb) => {
 
 		git.push('origin', 'master', { args: '--tags' }, cb);
 	});
-});
-
-gulp.task('build-example-bundle', () => {
-	return browserify([ './lib/index.js', './example/js/startup.js', ])
-		.bundle()
-		.pipe(source('example.js'))
-		.pipe(buffer())
-		.pipe(gulp.dest('./example'));
 });
 
 gulp.task('build-test-bundle', () => {
@@ -124,14 +116,13 @@ gulp.task('release', gulp.series(
 	'bump-choice',
 	'bump-version',
 	'embed-version',
-	'build-example-bundle',
 	'commit-changes',
 	'push-changes',
 	'create-tag'
 ));
 
 gulp.task('lint', () => {
-	return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./docs/**', '!./test/SpecRunner.js', '!./example/example.js' ])
+	return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./docs/**', '!./test/SpecRunner.js' ])
 		.pipe(jshint({ esversion: 9 }))
 		.pipe(jshint.reporter('default'))
 		.pipe(jshint.reporter('fail'));
