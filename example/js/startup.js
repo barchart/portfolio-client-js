@@ -8,7 +8,7 @@ const Timezones = require('@barchart/common-js/lang/Timezones');
 const TransactionType = require('@barchart/portfolio-api-common/lib/data/TransactionType');
 const ValuationType = require('@barchart/portfolio-api-common/lib/data/ValuationType');
 
-const JwtGateway = require('./../../lib/gateway/jwt/JwtGateway');
+const JwtGateway = require('../../lib/security/JwtGateway');
 const PortfolioGateway = require('./../../lib/gateway/PortfolioGateway');
 
 module.exports = (() => {
