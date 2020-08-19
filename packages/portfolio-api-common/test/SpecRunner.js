@@ -5094,6 +5094,17 @@ module.exports = (() => {
 			return update;
 		}
 
+		/**
+		 * Result item for query of positions by symbol.
+		 *
+		 * @static
+		 * @public
+		 * @returns {PositionSchema}
+		 */
+		static get SIMPLE() {
+			return simple;
+		}
+
 		toString() {
 			return '[PositionSchema]';
 		}
@@ -5176,6 +5187,18 @@ module.exports = (() => {
 		.withField('mapping.symbol.display', DataType.STRING, true)
 		.withField('cash', DataType.BOOLEAN, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
+		.schema
+	);
+
+	const simple = new PositionSchema(SchemaBuilder.withName('simple')
+		.withField('user', DataType.STRING)
+		.withField('portfolio', DataType.STRING)
+		.withField('instrument.id', DataType.STRING)
+		.withField('instrument.name', DataType.STRING)
+		.withField('instrument.symbol.barchart', DataType.STRING, true)
+		.withField('instrument.symbol.display', DataType.STRING, true)
+		.withField('position', DataType.STRING)
+		.withField('open', DataType.BOOLEAN, true)
 		.schema
 	);
 
