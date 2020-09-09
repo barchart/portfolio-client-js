@@ -1,6 +1,6 @@
 {
   "name": "@barchart/portfolio-client-js",
-  "version": "3.4.1",
+  "version": "4.0.0",
   "description": "JavaScript library for interfacing with Barchart's Portfolio API",
   "author": {
     "name": "Bryan Ingle",
