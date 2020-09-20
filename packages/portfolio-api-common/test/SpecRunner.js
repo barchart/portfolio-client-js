@@ -3865,13 +3865,13 @@ module.exports = (() => {
 
 			this._reporting = reporting;
 
-			this._data = { };
-
-			this._data.basis = null;
-
 			this._currentQuote = null;
 			this._previousQuote = null;
 			this._currentPrice = null;
+
+			this._data = { };
+
+			this._data.basis = null;
 
 			this._data.currentPrice = null;
 			this._data.currentPricePrevious = null;
