@@ -234,7 +234,7 @@ module.exports = (() => {
 			const key = portfolio.portfolio;
 
 			if (!this._portfolios.hasOwnProperty(key)) {
-				this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio })
+				this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio });
 
 				this._definitions.forEach((treeDefinition) => {
 					const tree = this._trees[treeDefinition.name];
