@@ -1893,7 +1893,7 @@ module.exports = (() => {
 			const key = portfolio.portfolio;
 
 			if (!this._portfolios.hasOwnProperty(key)) {
-				this._portfolios[key] = portfolio;
+				this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio })
 
 				this._definitions.forEach((treeDefinition) => {
 					const tree = this._trees[treeDefinition.name];
@@ -1972,6 +1972,8 @@ module.exports = (() => {
 			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => removePositionItem.call(this, item));
 
 			delete this._portfolios[portfolio.portfolio];
+
+			this._portfolios = Object.assign({}, this._portfolios);
 
 			Object.keys(this._trees).forEach((key) => {
 				this._trees[key].walk((group, groupNode) => {
@@ -8202,8 +8204,11 @@ const moment = require('moment-timezone');
 
 module.exports = (() => {
   'use strict';
+
+  const MILLISECONDS_PER_SECOND = 1000;
   /**
-   * A data structure encapsulates (and lazy loads) a moment (see https://momentjs.com/).
+   * An immutable data structure that encapsulates (and lazy loads)
+   * a moment (see https://momentjs.com/).
    *
    * @public
    * @param {Number} timestamp
@@ -8219,7 +8224,7 @@ module.exports = (() => {
       this._moment = null;
     }
     /**
-     * The timestamp.
+     * The timestamp (milliseconds since epoch).
      *
      * @public
      * @returns {Number}
@@ -8247,6 +8252,34 @@ module.exports = (() => {
       }
 
       return this._moment;
+    }
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward (or backward)
+     * by a specific number of seconds.
+     *
+     * @public
+     * @param {Number} milliseconds
+     * @returns {Timestamp}
+     */
+
+
+    add(milliseconds) {
+      assert.argumentIsRequired(milliseconds, 'seconds', Number);
+      return new Timestamp(this._timestamp + milliseconds, this._timezone);
+    }
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward (or backward)
+     * by a specific number of seconds.
+     *
+     * @public
+     * @param {Number} seconds
+     * @returns {Timestamp}
+     */
+
+
+    addSeconds(seconds) {
+      assert.argumentIsRequired(seconds, 'seconds', Number);
+      return this.add(seconds * MILLISECONDS_PER_SECOND);
     }
     /**
      * Returns the JSON representation.
