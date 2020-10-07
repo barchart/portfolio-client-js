@@ -234,7 +234,7 @@ module.exports = (() => {
 			const key = portfolio.portfolio;
 
 			if (!this._portfolios.hasOwnProperty(key)) {
-				this._portfolios[key] = portfolio;
+				this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio })
 
 				this._definitions.forEach((treeDefinition) => {
 					const tree = this._trees[treeDefinition.name];
@@ -313,6 +313,8 @@ module.exports = (() => {
 			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => removePositionItem.call(this, item));
 
 			delete this._portfolios[portfolio.portfolio];
+
+			this._portfolios = Object.assign({}, this._portfolios);
 
 			Object.keys(this._trees).forEach((key) => {
 				this._trees[key].walk((group, groupNode) => {

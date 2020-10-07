@@ -127,6 +127,7 @@ module.exports = (() => {
 		f.sequence = t.sequence;
 		f.position = t.position;
 		f.open = t.snapshot.open;
+		f.transaction = t.transaction;
 	};
 
 	const averageCostFormatter = (t, f) => {
