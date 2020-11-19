@@ -1291,8 +1291,7 @@ module.exports = (() => {
 },{"@barchart/common-js/lang/Enum":26,"@barchart/common-js/lang/assert":31}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
-	is = require('@barchart/common-js/lang/is'),
-	Day = require('@barchart/common-js/lang/Day');
+	is = require('@barchart/common-js/lang/is');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
@@ -1595,7 +1594,7 @@ module.exports = (() => {
 	return TransactionValidator;
 })();
 
-},{"./InstrumentType":1,"./PositionDirection":2,"./TransactionType":4,"@barchart/common-js/lang/Day":23,"@barchart/common-js/lang/array":30,"@barchart/common-js/lang/assert":31,"@barchart/common-js/lang/is":35}],6:[function(require,module,exports){
+},{"./InstrumentType":1,"./PositionDirection":2,"./TransactionType":4,"@barchart/common-js/lang/array":30,"@barchart/common-js/lang/assert":31,"@barchart/common-js/lang/is":35}],6:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -8204,11 +8203,8 @@ const moment = require('moment-timezone');
 
 module.exports = (() => {
   'use strict';
-
-  const MILLISECONDS_PER_SECOND = 1000;
   /**
-   * An immutable data structure that encapsulates (and lazy loads)
-   * a moment (see https://momentjs.com/).
+   * A data structure encapsulates (and lazy loads) a moment (see https://momentjs.com/).
    *
    * @public
    * @param {Number} timestamp
@@ -8224,7 +8220,7 @@ module.exports = (() => {
       this._moment = null;
     }
     /**
-     * The timestamp (milliseconds since epoch).
+     * The timestamp.
      *
      * @public
      * @returns {Number}
@@ -8252,34 +8248,6 @@ module.exports = (() => {
       }
 
       return this._moment;
-    }
-    /**
-     * Returns a new {@link Timestamp} instance shifted forward (or backward)
-     * by a specific number of seconds.
-     *
-     * @public
-     * @param {Number} milliseconds
-     * @returns {Timestamp}
-     */
-
-
-    add(milliseconds) {
-      assert.argumentIsRequired(milliseconds, 'seconds', Number);
-      return new Timestamp(this._timestamp + milliseconds, this._timezone);
-    }
-    /**
-     * Returns a new {@link Timestamp} instance shifted forward (or backward)
-     * by a specific number of seconds.
-     *
-     * @public
-     * @param {Number} seconds
-     * @returns {Timestamp}
-     */
-
-
-    addSeconds(seconds) {
-      assert.argumentIsRequired(seconds, 'seconds', Number);
-      return this.add(seconds * MILLISECONDS_PER_SECOND);
     }
     /**
      * Returns the JSON representation.
