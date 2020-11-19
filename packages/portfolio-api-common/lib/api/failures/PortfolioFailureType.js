@@ -213,6 +213,18 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The transaction failed because a dividends cannot be re-invested
+		 * for short positions.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_REINVEST_INVALID() {
+			return transactionCreateFailedReinvestInvalid;
+		}
+
+		/**
 		 * The transaction failed because a related position is locked.
 		 *
 		 * @public
@@ -364,6 +376,7 @@ module.exports = (() => {
 
 	const transactionCreateFailedTypeReserved = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_RESERVED', 'Unable to create {U|type.description} transaction, this type of transaction is managed by the system.');
 	const transactionCreateFailedReinvestPriceUnavailable = new FailureType('TRANSACTION_CREATE_FAILED_REINVEST_PRICE_UNAVAILABLE', 'Unable to create transaction, a dividend was paid on {L|day}; however no historical price is available for this day. To successfully create this transaction, please turn off dividend reinvestment for this position.');
+	const transactionCreateFailedReinvestInvalid = new FailureType('TRANSACTION_CREATE_FAILED_REINVEST_INVALID', 'Unable to create transaction, short positions do not allow dividends to be reinvested.');
 	const transactionCreateFailedPositionLocked = new FailureType('TRANSACTION_CREATE_FAILED_POSITION_LOCKED', 'Unable to create transaction, your {L|description} history is being recalculated. Please re-enter this transaction in a minute or two.');
 	const transactionCreateFailedInstrumentCorrupt = new FailureType('TRANSACTION_CREATE_FAILED_INSTRUMENT_CORRUPT', 'Unable to create transaction, corporate action history for {U|symbol} cannot be located. The issue should be corrected within 24 to 48 hours.');
 
