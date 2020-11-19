@@ -326,6 +326,18 @@ module.exports = (() => {
 			return transactionEditFailedTypeReserved;
 		}
 
+		/**
+		 * A transaction's type cannot be changed.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_EDIT_FAILED_TYPE_CHANGED() {
+			return transactionEditFailedTypeChanged;
+		}
+
+
 		toString() {
 			return '[PortfolioFailureType]';
 		}
@@ -364,6 +376,7 @@ module.exports = (() => {
 	const transactionEditFailedInvalidDate = new FailureType('TRANSACTION_EDIT_FAILED_INVALID_DATE', 'Unable to edit transaction with given date.');
 	const transactionEditFailedNoTransaction = new FailureType('TRANSACTION_EDIT_FAILED_NO_TRANSACTION', 'Unable to edit transaction. The referenced transaction does not exist.', false);
 	const transactionEditFailedTypeReserved = new FailureType('TRANSACTION_EDIT_FAILED_TYPE_RESERVED', 'Unable to edit {U|type.description} transaction, this type of transaction is managed by the system.');
+	const transactionEditFailedTypeChanged = new FailureType('TRANSACTION_EDIT_FAILED_TYPE_CHANGED', 'Changing a transaction type is forbidden. You must delete the existing transaction then recreate it.');
 
 	return PortfolioFailureType;
 })();
