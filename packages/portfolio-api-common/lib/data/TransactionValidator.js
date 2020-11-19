@@ -1,7 +1,6 @@
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
-	is = require('@barchart/common-js/lang/is'),
-	Day = require('@barchart/common-js/lang/Day');
+	is = require('@barchart/common-js/lang/is');
 
 const InstrumentType = require('./InstrumentType'),
 	PositionDirection = require('./PositionDirection'),
