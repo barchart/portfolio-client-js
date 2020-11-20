@@ -348,8 +348,30 @@ module.exports = (() => {
 		static get TRANSACTION_EDIT_FAILED_TYPE_CHANGED() {
 			return transactionEditFailedTypeChanged;
 		}
+		
+		/**
+		 * Conversion of transaction type is unsupported.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_SWITCH_FAILED_INVALID_CONVERSION() {
+			return transactionSwitchFailedInvalidConversion;
+		}
 
-
+		/**
+		 * Conversion of transaction type is not allowed. Dividends (or distributions)
+		 * cannot be reinvested when the position is short.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_SWITCH_FAILED_INVALID_REINVEST() {
+			return transactionSwitchFailedInvalidReinvest;
+		}
+		
 		toString() {
 			return '[PortfolioFailureType]';
 		}
@@ -390,6 +412,9 @@ module.exports = (() => {
 	const transactionEditFailedNoTransaction = new FailureType('TRANSACTION_EDIT_FAILED_NO_TRANSACTION', 'Unable to edit transaction. The referenced transaction does not exist.', false);
 	const transactionEditFailedTypeReserved = new FailureType('TRANSACTION_EDIT_FAILED_TYPE_RESERVED', 'Unable to edit {U|type.description} transaction, this type of transaction is managed by the system.');
 	const transactionEditFailedTypeChanged = new FailureType('TRANSACTION_EDIT_FAILED_TYPE_CHANGED', 'Changing a transaction type is forbidden. You must delete the existing transaction and then create a new transaction.');
+
+	const transactionSwitchFailedInvalidConversion = new FailureType('TRANSACTION_SWITCH_FAILED_INVALID_CONVERSION', 'Unable to convert transaction from {U|existing.description} to {U|desired.description}. This conversion is not supported.');
+	const transactionSwitchFailedInvalidReinvest = new FailureType('TRANSACTION_SWITCH_FAILED_INVALID_REINVEST', 'Unable to convert transaction from {U|existing.description} to {U|desired.description}. Reinvestment is not supported for short positions.');
 
 	return PortfolioFailureType;
 })();
