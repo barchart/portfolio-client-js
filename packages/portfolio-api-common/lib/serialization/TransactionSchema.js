@@ -250,6 +250,7 @@ module.exports = (() => {
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
+		.withField('close', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -263,6 +264,7 @@ module.exports = (() => {
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
+		.withField('close', DataType.BOOLEAN, true)
 		.schema
 	);
 
