@@ -5459,6 +5459,7 @@ module.exports = (() => {
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
+		.withField('close', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -5472,6 +5473,7 @@ module.exports = (() => {
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
 		.withField('force', DataType.BOOLEAN, true)
+		.withField('close', DataType.BOOLEAN, true)
 		.schema
 	);
 
@@ -8203,8 +8205,11 @@ const moment = require('moment-timezone');
 
 module.exports = (() => {
   'use strict';
+
+  const MILLISECONDS_PER_SECOND = 1000;
   /**
-   * A data structure encapsulates (and lazy loads) a moment (see https://momentjs.com/).
+   * An immutable data structure that encapsulates (and lazy loads)
+   * a moment (see https://momentjs.com/).
    *
    * @public
    * @param {Number} timestamp
@@ -8220,7 +8225,7 @@ module.exports = (() => {
       this._moment = null;
     }
     /**
-     * The timestamp.
+     * The timestamp (milliseconds since epoch).
      *
      * @public
      * @returns {Number}
@@ -8248,6 +8253,34 @@ module.exports = (() => {
       }
 
       return this._moment;
+    }
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward (or backward)
+     * by a specific number of seconds.
+     *
+     * @public
+     * @param {Number} milliseconds
+     * @returns {Timestamp}
+     */
+
+
+    add(milliseconds) {
+      assert.argumentIsRequired(milliseconds, 'seconds', Number);
+      return new Timestamp(this._timestamp + milliseconds, this._timezone);
+    }
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward (or backward)
+     * by a specific number of seconds.
+     *
+     * @public
+     * @param {Number} seconds
+     * @returns {Timestamp}
+     */
+
+
+    addSeconds(seconds) {
+      assert.argumentIsRequired(seconds, 'seconds', Number);
+      return this.add(seconds * MILLISECONDS_PER_SECOND);
     }
     /**
      * Returns the JSON representation.
@@ -8550,7 +8583,8 @@ module.exports = (() => {
     },
 
     /**
-     * Set difference operation (using strict equality).
+     * Set difference operation, returning any item in "a" that is not
+     * contained in "b" (using strict equality).
      *
      * @static
      * @param {Array} a
@@ -8562,7 +8596,8 @@ module.exports = (() => {
     },
 
     /**
-     * Set difference operation, where the uniqueness is determined by a delegate.
+     * Set difference operation, returning any item in "a" that is not
+     * contained in "b" (where the uniqueness is determined by a delegate).
      *
      * @static
      * @param {Array} a
@@ -9465,6 +9500,7 @@ module.exports = (() => {
   /**
    * An implementation of the observer pattern.
    *
+   * @public
    * @param {*} sender - The object which owns the event.
    * @extends {Disposable}
    */
@@ -9538,6 +9574,7 @@ module.exports = (() => {
     /**
      * Returns true, if no handlers are currently registered.
      *
+     * @public
      * @returns {boolean}
      */
 
