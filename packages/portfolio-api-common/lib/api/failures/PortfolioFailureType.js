@@ -155,6 +155,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * A transaction quantity cannot have a negative amount.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_QUANTITY_NEGATIVE() {
+			return transactionCreateFailedQuantityNegative;
+		}
+
+		/**
 		 * A valuation transaction cannot have a negative rate (or amount).
 		 *
 		 * @public
@@ -348,7 +359,7 @@ module.exports = (() => {
 		static get TRANSACTION_EDIT_FAILED_TYPE_CHANGED() {
 			return transactionEditFailedTypeChanged;
 		}
-		
+
 		/**
 		 * Conversion of transaction type is unsupported.
 		 *
@@ -371,7 +382,7 @@ module.exports = (() => {
 		static get TRANSACTION_SWITCH_FAILED_INVALID_REINVEST() {
 			return transactionSwitchFailedInvalidReinvest;
 		}
-		
+
 		toString() {
 			return '[PortfolioFailureType]';
 		}
@@ -392,6 +403,7 @@ module.exports = (() => {
 	const transactionCreateFailedTypeInvalidForDirection = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_INVALID_FOR_DIRECTION', 'Unable to process transaction, a {L|positionDirection.description} position would be created (i.e. you would have {L|positionDirection.sign} shares/units). {u|instrumentType.description} positions cannot have {L|positionDirection.description} positions.', false);
 	const transactionCreateFailedInvalidDirectionSwitch = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_DIRECTION_SWITCH', 'Unable to process transaction, the transaction would switch the position from {L|currentDirection.description} to {L|proposedDirection.description} (i.e. {L|currentDirection.sign} to {L|proposedDirection.sign} shares/units). This is not allowed. Please close the current position (i.e. zero it out) and then enter a second transaction.', false);
 	const transactionCreateFailedInvalidInitialType = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_INITIAL_TYPE', 'Unable to process operation because the first transaction would to be a {U|transactionType.description}, which is not allowed -- since {U|transactionType.description} transactions cannot open a position.', false);
+	const transactionCreateFailedQuantityNegative = new FailureType('TRANSACTION_CREATE_FAILED_QUANTITY_NEGATIVE', 'Unable to process transaction, quantity cannot be negative.');
 	const transactionCreateFailedValuationNegative = new FailureType('TRANSACTION_CREATE_FAILED_VALUATION_NEGATIVE', 'Unable to process operation, valuations cannot be negative.', false);
 	const transactionCreateFailedInvalidTermination = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_TERMINATION', 'Unable to process operation, a {U|transactionType.description} must be the final transaction in the position history.', false);
 	const transactionCreateFailedAfterTermination = new FailureType('TRANSACTION_CREATE_FAILED_AFTER_TERMINATION', 'Unable to process operation, one or more transactions would exist after {L|termination}, the final day of trading for this instrument', false);
