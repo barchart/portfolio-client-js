@@ -5694,7 +5694,7 @@ module.exports = (() => {
 
 
     push(item) {
-      this._array.unshift(item);
+      this._array.push(item);
 
       return item;
     }
@@ -5711,7 +5711,7 @@ module.exports = (() => {
         throw new Error('Stack is empty');
       }
 
-      return this._array.shift();
+      return this._array.pop();
     }
     /**
      * Returns the next item in the stack (without removing it). Throws if the stack is empty.
@@ -5726,7 +5726,7 @@ module.exports = (() => {
         throw new Error('Stack is empty');
       }
 
-      return this._array[0];
+      return this._array[this._array.length - 1];
     }
     /**
      * Returns true if the queue is empty; otherwise false.
@@ -5750,10 +5750,12 @@ module.exports = (() => {
     scan(action) {
       assert.argumentIsRequired(action, 'action', Function);
 
-      this._array.forEach(x => action(x));
+      for (let i = this._array.length - 1; i >= 0; i--) {
+        action(this._array[i]);
+      }
     }
     /**
-     * Outputs an array of the stacks's items; without affecting the
+     * Outputs an array of the stack's items; without affecting the
      * queue's internal state;
      *
      * @public
@@ -5762,7 +5764,7 @@ module.exports = (() => {
 
 
     toArray() {
-      return this._array.slice(0);
+      return this._array.slice(0).reverse();
     }
 
     toString() {
@@ -17621,8 +17623,8 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
 		});
 
-		it('should have four ranges (assuming the current year is 2020)', () => {
-			expect(ranges.length).toEqual(5);
+		it('should have six ranges (assuming the current year is 2021)', () => {
+			expect(ranges.length).toEqual(6);
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
@@ -18008,7 +18010,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
-	describe('and a year-to-date position summary ranges are processed for a transaction set that opened last year and has not yet closed (assuming its 2020)', () => {
+	describe('and a year-to-date position summary ranges are processed for a transaction set that opened last year and has not yet closed (assuming its 2021)', () => {
 		let ranges;
 
 		beforeEach(() => {
@@ -18029,9 +18031,9 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges.length).toEqual(1);
 		});
 
-		it('the first range should be from 12-31-2019 to 12-31-2020', () => {
-			expect(ranges[0].start.format()).toEqual('2019-12-31');
-			expect(ranges[0].end.format()).toEqual('2020-12-31');
+		it('the first range should be from 12-31-2020 to 12-31-2021', () => {
+			expect(ranges[0].start.format()).toEqual('2020-12-31');
+			expect(ranges[0].end.format()).toEqual('2021-12-31');
 		});
 	});
 
@@ -18041,14 +18043,14 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		beforeEach(() => {
 			const transactions = [
 				{
-					date: new Day(2020, 1, 1),
+					date: new Day(2021, 1, 1),
 					snapshot: {
 						open: new Decimal(1)
 					},
 					type: TransactionType.BUY
 				},
 				{
-					date: new Day(2020, 1, 2),
+					date: new Day(2021, 1, 2),
 					snapshot: {
 						open: new Decimal(0)
 					},
@@ -18063,9 +18065,9 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			expect(ranges.length).toEqual(1);
 		});
 
-		it('the first range should be from 12-31-2019 to 12-31-2020', () => {
-			expect(ranges[0].start.format()).toEqual('2019-12-31');
-			expect(ranges[0].end.format()).toEqual('2020-12-31');
+		it('the first range should be from 12-31-2020 to 12-31-2021', () => {
+			expect(ranges[0].start.format()).toEqual('2020-12-31');
+			expect(ranges[0].end.format()).toEqual('2021-12-31');
 		});
 	});
 
