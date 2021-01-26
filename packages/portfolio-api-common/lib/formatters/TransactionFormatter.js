@@ -164,6 +164,14 @@ module.exports = (() => {
 			shares = '';
 		}
 
+		if (t.dividend.currency) {
+			f.currency = t.dividend.currency;
+		}
+
+		if (t.dividend.native) {
+			f.native = t.dividend.native;
+		}
+
 		f.shares = shares;
 	};
 
@@ -179,6 +187,14 @@ module.exports = (() => {
 			shares = '';
 		}
 
+		if (t.dividend.currency) {
+			f.currency = t.dividend.currency;
+		}
+
+		if (t.dividend.native) {
+			f.native = t.dividend.native;
+		}
+
 		f.shares = shares;
 	};
 
@@ -187,6 +203,10 @@ module.exports = (() => {
 
 		if (f.fee && !f.fee.getIsZero()) {
 			f.fee = t.fee;
+		}
+
+		if (t.dividend.currency) {
+			f.currency = t.dividend.currency;
 		}
 
 		f.price = t.dividend.price;
@@ -200,6 +220,10 @@ module.exports = (() => {
 
 		if (f.fee && !f.fee.getIsZero()) {
 			f.fee = t.fee;
+		}
+
+		if (t.dividend.currency) {
+			f.currency = t.dividend.currency;
 		}
 
 		f.price = t.dividend.price;
