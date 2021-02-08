@@ -159,10 +159,16 @@ module.exports = (() => {
 		let shares;
 
 		if (!t.dividend.rate.getIsZero()) {
-			shares = t.dividend.amount.divide(t.dividend.rate);
+			if (t.dividend.native) {
+				shares = t.dividend.native.divide(t.dividend.rate);
+			} else {
+				shares = t.dividend.amount.divide(t.dividend.rate);
+			}
 		} else {
 			shares = '';
 		}
+
+		f.shares = shares;
 
 		if (t.dividend.currency) {
 			f.currency = t.dividend.currency;
@@ -171,8 +177,6 @@ module.exports = (() => {
 		if (t.dividend.native) {
 			f.native = t.dividend.native;
 		}
-
-		f.shares = shares;
 	};
 
 	const distributionCashFormatter = (t, f) => {
