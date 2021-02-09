@@ -168,6 +168,16 @@ module.exports = (() => {
 			shares = '';
 		}
 
+		if (shares) {
+			const rounded = shares.round(0);
+
+			if (rounded.subtract(shares).absolute().getIsLessThan(0.01)) {
+				shares = rounded;
+			} else {
+				shares = shares.round(2);
+			}
+		}
+
 		f.shares = shares;
 
 		if (t.dividend.currency) {
@@ -186,10 +196,26 @@ module.exports = (() => {
 		let shares;
 
 		if (!t.dividend.rate.getIsZero()) {
-			shares = t.dividend.amount.divide(t.dividend.rate);
+			if (t.dividend.native) {
+				shares = t.dividend.native.divide(t.dividend.rate);
+			} else {
+				shares = t.dividend.amount.divide(t.dividend.rate);
+			}
 		} else {
 			shares = '';
 		}
+
+		if (shares) {
+			const rounded = shares.round(0);
+
+			if (rounded.subtract(shares).absolute().getIsLessThan(0.01)) {
+				shares = rounded;
+			} else {
+				shares = shares.round(2);
+			}
+		}
+
+		f.shares = shares;
 
 		if (t.dividend.currency) {
 			f.currency = t.dividend.currency;
@@ -198,8 +224,6 @@ module.exports = (() => {
 		if (t.dividend.native) {
 			f.native = t.dividend.native;
 		}
-
-		f.shares = shares;
 	};
 
 	const dividendReinvestFormatter = (t, f) => {
