@@ -892,7 +892,7 @@ module.exports = (() => {
 		let marketChange = updates.market.subtract(actual.marketPrevious);
 		let marketChangePercent;
 
-		if (actual.marketPrevious.getIsZero()) {
+		if (actual.marketPrevious.getIsApproximate(Decimal.ZERO, 4)) {
 			if (marketChange.getIsPositive()) {
 				marketChangePercent = Decimal.ONE;
 			} else if (marketChange.getIsNegative()) {
@@ -950,7 +950,7 @@ module.exports = (() => {
 			if (parent && !excluded) {
 				const parentData = parent._dataActual;
 
-				if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsZero()) {
+				if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsApproximate(Decimal.ZERO, 4)) {
 					let numerator;
 
 					if (group.currency !== parent.currency) {
@@ -992,7 +992,7 @@ module.exports = (() => {
 		const numerator = actual.realized;
 		const denominator = totalBasis.subtract(openBasis);
 
-		if (denominator.getIsZero()) {
+		if (denominator.getIsApproximate(Decimal.ZERO, 4)) {
 			actual.realizedPercent = Decimal.ZERO;
 		} else {
 			actual.realizedPercent = numerator.divide(denominator);
@@ -1008,7 +1008,7 @@ module.exports = (() => {
 		const numerator = actual.unrealized;
 		const denominator = actual.basis.absolute();
 
-		if (denominator.getIsZero()) {
+		if (denominator.getIsApproximate(Decimal.ZERO, 4)) {
 			actual.unrealizedPercent = Decimal.ZERO;
 		} else {
 			actual.unrealizedPercent = numerator.divide(denominator);
@@ -1018,7 +1018,7 @@ module.exports = (() => {
 	}
 
 	function calculateGainPercent(gain, basis) {
-		return basis.getIsZero() ? Decimal.ZERO : gain.divide(basis);
+		return basis.getIsApproximate(Decimal.ZERO, 4) ? Decimal.ZERO : gain.divide(basis);
 	}
 
 	const unchanged = { up: false, down: false };
