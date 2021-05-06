@@ -5857,6 +5857,17 @@ module.exports = (() => {
       return this._children.length === 0;
     }
     /**
+     * Returns true if this node has children; otherwise false.
+     *
+     * @public
+     * @returns {boolean}
+     */
+
+
+    getIsInner() {
+      return this._children.length !== 0;
+    }
+    /**
      * Returns true if this node has no parent; otherwise false.
      *
      * @public
@@ -5994,6 +6005,20 @@ module.exports = (() => {
       };
 
       this.search(predicate, parentFirst, includeCurrentNode);
+    }
+    /**
+     * Returns the count of all descendant nodes by walking the tree. Consequently, this
+     * function is not efficient.
+     *
+     * @public
+     * @returns {Number}
+     */
+
+
+    count() {
+      let count = 0;
+      this.walk(() => count++, true, true);
+      return count;
     }
     /**
      * Climbs the parents of the current node -- current node up to the root node, running an action on each node.
@@ -6229,6 +6254,7 @@ module.exports = (() => {
     /**
      * Compares two dates (in ascending order).
      *
+     * @public
      * @static
      * @param {Date} a
      * @param {Date} b
@@ -6243,6 +6269,7 @@ module.exports = (() => {
     /**
      * Compares two numbers (in ascending order).
      *
+     * @public
      * @static
      * @param {Number} a
      * @param {Number} b
@@ -6257,6 +6284,7 @@ module.exports = (() => {
     /**
      * Compares two strings (in ascending order), using {@link String#localeCompare}.
      *
+     * @public
      * @static
      * @param {String} a
      * @param {String} b
@@ -6271,6 +6299,7 @@ module.exports = (() => {
     /**
      * Compares two boolean values (in ascending order -- false first, true second).
      *
+     * @public
      * @static
      * @param {Boolean} a
      * @param {Boolean} b
@@ -6292,6 +6321,7 @@ module.exports = (() => {
     /**
      * Compares two objects, always returning zero.
      *
+     * @public
      * @static
      * @param {*} a
      * @param {*} b
@@ -7664,7 +7694,6 @@ module.exports = (() => {
    * An object that has an end-of-life process.
    *
    * @public
-   * @interface
    */
 
   class Disposable {
@@ -7719,7 +7748,7 @@ module.exports = (() => {
      * delegated to a function.
      *
      * @public
-     * @param disposeAction {Function}
+     * @param {Function} disposeAction
      * @returns {Disposable}
      */
 
@@ -8285,6 +8314,42 @@ module.exports = (() => {
       return this.add(seconds * MILLISECONDS_PER_SECOND);
     }
     /**
+     * Indicates if another {@link Timestamp} occurs before the current instance.
+     *
+     * @public
+     * @param {Timestamp} other
+     * @returns {boolean}
+     */
+
+
+    getIsBefore(other) {
+      return Timestamp.compareTimestamps(this, other) < 0;
+    }
+    /**
+     * Indicates if another {@link Timestamp} occurs after the current instance.
+     *
+     * @public
+     * @param {Timestamp} other
+     * @returns {boolean}
+     */
+
+
+    getIsAfter(other) {
+      return Timestamp.compareTimestamps(this, other) > 0;
+    }
+    /**
+     * Indicates if another {@link Timestamp} occurs after the current instance.
+     *
+     * @public
+     * @param {Timestamp} other
+     * @returns {boolean}
+     */
+
+
+    getIsEqual(other) {
+      return Timestamp.compareTimestamps(this, other) === 0;
+    }
+    /**
      * Returns the JSON representation.
      *
      * @public
@@ -8331,6 +8396,22 @@ module.exports = (() => {
 
     static now() {
       return new Timestamp(new Date().getTime());
+    }
+    /**
+     * A comparator function for {@link Day} instances.
+     *
+     * @public
+     * @static
+     * @param {Timestamp} a
+     * @param {Timestamp} b
+     * @returns {Number}
+     */
+
+
+    static compareTimestamps(a, b) {
+      assert.argumentIsRequired(a, 'a', Timestamp, 'Timestamp');
+      assert.argumentIsRequired(b, 'b', Timestamp, 'Timestamp');
+      return a.timestamp - b.timestamp;
     }
 
     toString() {
@@ -8765,25 +8846,72 @@ module.exports = (() => {
       } else if (comparator(item, a[0]) < 0) {
         a.unshift(item);
       } else {
-        a.splice(binarySearch(a, item, comparator, 0, a.length - 1), 0, item);
+        a.splice(binarySearchForInsert(a, item, comparator, 0, a.length - 1), 0, item);
       }
 
       return a;
+    },
+
+    /**
+     * Performs a binary search to locate an item within an array.
+     *
+     * @param {*[]} a
+     * @param {*} key
+     * @param {Function} comparator
+     * @param {Number=} start
+     * @param {Number=} end
+     * @returns {*|null}
+     */
+    binarySearch(a, key, comparator, start, end) {
+      assert.argumentIsArray(a, 'a');
+      assert.argumentIsRequired(comparator, 'comparator', Function);
+      assert.argumentIsOptional(start, 'start', Number);
+      assert.argumentIsOptional(end, 'end', Number);
+
+      if (a.length === 0) {
+        return null;
+      }
+
+      return binarySearchForMatch(a, key, comparator, start || 0, end || a.length - 1);
     }
 
   };
 
-  function binarySearch(array, item, comparator, start, end) {
+  function binarySearchForMatch(a, key, comparator, start, end) {
     const size = end - start;
     const midpointIndex = start + Math.floor(size / 2);
-    const midpointItem = array[midpointIndex];
+    const midpointItem = a[midpointIndex];
+    const comparison = comparator(key, midpointItem);
+
+    if (comparison === 0) {
+      return midpointItem;
+    } else if (size < 2) {
+      const finalIndex = a.length - 1;
+      const finalItem = a[finalIndex];
+
+      if (end === finalIndex && comparator(key, finalItem) === 0) {
+        return finalItem;
+      } else {
+        return null;
+      }
+    } else if (comparison > 0) {
+      return binarySearchForMatch(a, key, comparator, midpointIndex, end);
+    } else {
+      return binarySearchForMatch(a, key, comparator, start, midpointIndex);
+    }
+  }
+
+  function binarySearchForInsert(a, item, comparator, start, end) {
+    const size = end - start;
+    const midpointIndex = start + Math.floor(size / 2);
+    const midpointItem = a[midpointIndex];
     const comparison = comparator(item, midpointItem) > 0;
 
     if (size < 2) {
       if (comparison > 0) {
-        const finalIndex = array.length - 1;
+        const finalIndex = a.length - 1;
 
-        if (end === finalIndex && comparator(item, array[finalIndex]) > 0) {
+        if (end === finalIndex && comparator(item, a[finalIndex]) > 0) {
           return end + 1;
         } else {
           return end;
@@ -8792,9 +8920,9 @@ module.exports = (() => {
         return start;
       }
     } else if (comparison > 0) {
-      return binarySearch(array, item, comparator, midpointIndex, end);
+      return binarySearchForInsert(a, item, comparator, midpointIndex, end);
     } else {
-      return binarySearch(array, item, comparator, start, midpointIndex);
+      return binarySearchForInsert(a, item, comparator, start, midpointIndex);
     }
   }
 })();
