@@ -7,9 +7,10 @@
     "email": "bryan.ingle@barchart.com",
     "url": "http://www.barchart.com"
   },
+  "homepage": "https://github.com/barchart/portfolio-api-common#readme",
   "scripts": {},
   "dependencies": {
-    "@barchart/common-js": "^3.5.1",
+    "@barchart/common-js": "^4.9.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
