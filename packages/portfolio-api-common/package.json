@@ -10,8 +10,8 @@
   "homepage": "https://github.com/barchart/portfolio-api-common#readme",
   "scripts": {},
   "dependencies": {
-    "@barchart/common-js": "^4.9.0",
-    "uuid": "^3.4.0"
+    "@barchart/common-js": "^4.9.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
