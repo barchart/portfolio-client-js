@@ -50,7 +50,7 @@ module.exports = (() => {
 
 				if (instruments.hasOwnProperty(position)) {
 					let instrument = instruments[position];
-					let formatted = { instrument: instrument };
+					let formatted = { instrument: instrument, raw: {} };
 
 					const formatterFunctions = formatters.get(transaction.type);
 
@@ -155,6 +155,8 @@ module.exports = (() => {
 	const dividendFormatter = (t, f) => {
 		f.total = t.dividend.amount;
 		f.rate = t.dividend.rate;
+
+		f.raw.rate = t.dividend.rate.toFloat();
 
 		let shares;
 
