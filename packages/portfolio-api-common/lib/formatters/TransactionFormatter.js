@@ -128,6 +128,8 @@ module.exports = (() => {
 		f.position = t.position;
 		f.open = t.snapshot.open;
 		f.transaction = t.transaction;
+
+		f.raw.open = f.open.toFloat();
 	};
 
 	const averageCostFormatter = (t, f) => {
@@ -150,13 +152,14 @@ module.exports = (() => {
 		f.price = t.trade.price;
 		f.fee = t.fee;
 		f.total = t.amount;
+		f.raw.total = f.total.toFloat();
+		f.raw.price = f.price.toFloat();
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const dividendFormatter = (t, f) => {
 		f.total = t.dividend.amount;
 		f.rate = t.dividend.rate;
-
-		f.raw.rate = t.dividend.rate.toFloat();
 
 		let shares;
 
@@ -188,7 +191,12 @@ module.exports = (() => {
 
 		if (t.dividend.native) {
 			f.native = t.dividend.native;
+			f.raw.native = f.native.toFloat();
 		}
+
+		f.raw.rate = f.rate.toFloat();
+		f.raw.shares = f.shares.toFloat();
+		f.raw.total = f.total.toFloat();
 	};
 
 	const distributionCashFormatter = (t, f) => {
@@ -225,7 +233,12 @@ module.exports = (() => {
 
 		if (t.dividend.native) {
 			f.native = t.dividend.native;
+			f.raw.native = f.native.toFloat();
 		}
+
+		f.raw.rate = f.rate.toFloat();
+		f.raw.shares = f.shares.toFloat();
+		f.raw.total = f.total.toFloat();
 	};
 
 	const dividendReinvestFormatter = (t, f) => {
@@ -243,6 +256,11 @@ module.exports = (() => {
 		f.rate = t.dividend.rate;
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
+
+		f.raw.rate = f.rate.toFloat();
+		f.raw.shares = f.shares.toFloat();
+		f.raw.price = f.price.toFloat();
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const distributionReinvestFormatter = (t, f) => {
@@ -260,6 +278,11 @@ module.exports = (() => {
 		f.rate = t.dividend.rate;
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
+
+		f.raw.rate = f.rate.toFloat();
+		f.raw.shares = f.shares.toFloat();
+		f.raw.price = f.price.toFloat();
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const dividendStockFormatter = (t, f) => {
@@ -284,12 +307,18 @@ module.exports = (() => {
 
 			f.rate = rate;
 
+			f.raw.rate = f.rate.toFloat();
+
 			if (t.dividend.price) {
 				f.price = t.dividend.price;
+				f.raw.price = f.price.toFloat();
 			}
 		}
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
+
+		f.raw.shares = f.shares.toFloat();
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const distributionFundFormatter = (t, f) => {
@@ -314,25 +343,34 @@ module.exports = (() => {
 
 			f.rate = rate;
 
+			f.raw.rate = f.rate.toFloat();
+
 			if (t.dividend.price) {
 				f.price = t.dividend.price;
+				f.raw.price = f.price.toFloat();
 			}
 		}
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
+
+		f.raw.shares = f.shares.toFloat();
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const incomeFormatter = (t, f) => {
 		f.total = t.income.amount;
+		f.raw.total = f.total.toFloat();
 	};
 
 	const feeFormatter = (t, f) => {
 		f.fee = t.charge.amount;
 		f.total = t.charge.amount;
+		f.raw.total = f.total.toFloat();
 	};
 
 	const feeUnitsFormatter = (t, f) => {
 		f.boughtSold = t.quantity;
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const splitFormatter = (t, f) => {
@@ -349,6 +387,10 @@ module.exports = (() => {
 		f.rate = rate;
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
+
+		f.raw.rate = f.rate.toFloat();
+		f.raw.shares = f.shares.toFloat();
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const valuationFormatter = (t, f) => {
@@ -367,10 +409,12 @@ module.exports = (() => {
 		}
 
 		f.price = rate;
+		f.raw.price = f.price.toFloat();
 	};
 
 	const cashFormatter = (t, f) => {
 		f.total = t.quantity;
+		f.raw.total = f.total.toFloat();
 	};
 
 	const debitFormatter = (t, f) => {
@@ -395,6 +439,10 @@ module.exports = (() => {
 		f.rate = rate;
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
+
+		f.raw.rate = f.rate.toFloat();
+		f.raw.shares = f.shares.toFloat();
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const spinoffFormatter = (t, f) => {
@@ -411,6 +459,10 @@ module.exports = (() => {
 		f.rate = rate;
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
+
+		f.raw.rate = f.rate.toFloat();
+		f.raw.shares = f.shares.toFloat();
+		f.raw.boughtSold = f.boughtSold.toFloat();
 	};
 
 	const formatters = new Map();
