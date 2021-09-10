@@ -129,7 +129,7 @@ module.exports = (() => {
 		f.open = t.snapshot.open;
 		f.transaction = t.transaction;
 
-		f.raw.open = f.open.toFloat();
+		f.raw.open = getRawForDecimal(f.open);
 	};
 
 	const averageCostFormatter = (t, f) => {
@@ -152,9 +152,9 @@ module.exports = (() => {
 		f.price = t.trade.price;
 		f.fee = t.fee;
 		f.total = t.amount;
-		f.raw.total = f.total.toFloat();
-		f.raw.price = f.price.toFloat();
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.total = getRawForDecimal(f.total);
+		f.raw.price = getRawForDecimal(f.price);
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const dividendFormatter = (t, f) => {
@@ -191,12 +191,12 @@ module.exports = (() => {
 
 		if (t.dividend.native) {
 			f.native = t.dividend.native;
-			f.raw.native = f.native.toFloat();
+			f.raw.native = getRawForDecimal(f.native);
 		}
 
-		f.raw.rate = f.rate.toFloat();
-		f.raw.shares = f.shares.toFloat();
-		f.raw.total = f.total.toFloat();
+		f.raw.rate = getRawForDecimal(f.rate);
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.total = getRawForDecimal(f.total);
 	};
 
 	const distributionCashFormatter = (t, f) => {
@@ -233,12 +233,12 @@ module.exports = (() => {
 
 		if (t.dividend.native) {
 			f.native = t.dividend.native;
-			f.raw.native = f.native.toFloat();
+			f.raw.native = getRawForDecimal(f.native);
 		}
 
-		f.raw.rate = f.rate.toFloat();
-		f.raw.shares = f.shares.toFloat();
-		f.raw.total = f.total.toFloat();
+		f.raw.rate = getRawForDecimal(f.rate);
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.total = getRawForDecimal(f.total);
 	};
 
 	const dividendReinvestFormatter = (t, f) => {
@@ -257,10 +257,10 @@ module.exports = (() => {
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 
-		f.raw.rate = f.rate.toFloat();
-		f.raw.shares = f.shares.toFloat();
-		f.raw.price = f.price.toFloat();
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.rate = getRawForDecimal(f.rate);
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.price = getRawForDecimal(f.price);
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const distributionReinvestFormatter = (t, f) => {
@@ -279,10 +279,10 @@ module.exports = (() => {
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 
-		f.raw.rate = f.rate.toFloat();
-		f.raw.shares = f.shares.toFloat();
-		f.raw.price = f.price.toFloat();
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.rate = getRawForDecimal(f.rate);
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.price = getRawForDecimal(f.price);
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const dividendStockFormatter = (t, f) => {
@@ -307,18 +307,18 @@ module.exports = (() => {
 
 			f.rate = rate;
 
-			f.raw.rate = f.rate.toFloat();
+			f.raw.rate = getRawForDecimal(f.rate);
 
 			if (t.dividend.price) {
 				f.price = t.dividend.price;
-				f.raw.price = f.price.toFloat();
+				f.raw.price = getRawForDecimal(f.price);
 			}
 		}
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 
-		f.raw.shares = f.shares.toFloat();
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const distributionFundFormatter = (t, f) => {
@@ -343,34 +343,34 @@ module.exports = (() => {
 
 			f.rate = rate;
 
-			f.raw.rate = f.rate.toFloat();
+			f.raw.rate = getRawForDecimal(f.rate);
 
 			if (t.dividend.price) {
 				f.price = t.dividend.price;
-				f.raw.price = f.price.toFloat();
+				f.raw.price = getRawForDecimal(f.price);
 			}
 		}
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 
-		f.raw.shares = f.shares.toFloat();
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const incomeFormatter = (t, f) => {
 		f.total = t.income.amount;
-		f.raw.total = f.total.toFloat();
+		f.raw.total = getRawForDecimal(f.total);
 	};
 
 	const feeFormatter = (t, f) => {
 		f.fee = t.charge.amount;
 		f.total = t.charge.amount;
-		f.raw.total = f.total.toFloat();
+		f.raw.total = getRawForDecimal(f.total);
 	};
 
 	const feeUnitsFormatter = (t, f) => {
 		f.boughtSold = t.quantity;
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const splitFormatter = (t, f) => {
@@ -388,9 +388,9 @@ module.exports = (() => {
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 
-		f.raw.rate = f.rate.toFloat();
-		f.raw.shares = f.shares.toFloat();
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.rate = getRawForDecimal(f.rate);
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const valuationFormatter = (t, f) => {
@@ -409,12 +409,12 @@ module.exports = (() => {
 		}
 
 		f.price = rate;
-		f.raw.price = f.price.toFloat();
+		f.raw.price = getRawForDecimal(f.price);
 	};
 
 	const cashFormatter = (t, f) => {
 		f.total = t.quantity;
-		f.raw.total = f.total.toFloat();
+		f.raw.total = getRawForDecimal(f.total);
 	};
 
 	const debitFormatter = (t, f) => {
@@ -440,9 +440,9 @@ module.exports = (() => {
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 
-		f.raw.rate = f.rate.toFloat();
-		f.raw.shares = f.shares.toFloat();
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.rate = getRawForDecimal(f.rate);
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const spinoffFormatter = (t, f) => {
@@ -460,9 +460,9 @@ module.exports = (() => {
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
 
-		f.raw.rate = f.rate.toFloat();
-		f.raw.shares = f.shares.toFloat();
-		f.raw.boughtSold = f.boughtSold.toFloat();
+		f.raw.rate = getRawForDecimal(f.rate);
+		f.raw.shares = getRawForDecimal(f.shares);
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const formatters = new Map();
@@ -498,6 +498,10 @@ module.exports = (() => {
 		} else {
 			return 0;
 		}
+	}
+	
+	function getRawForDecimal(value) {
+		return value && value instanceof Decimal ? value.toFloat() : value;
 	}
 
 	const comparatorAscending = ComparatorBuilder.startWith((a, b) => Day.compareDays(a.date, b.date))
