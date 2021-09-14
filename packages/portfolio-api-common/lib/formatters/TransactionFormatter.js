@@ -162,24 +162,28 @@ module.exports = (() => {
 		f.rate = t.dividend.rate;
 
 		let shares;
-
-		if (!t.dividend.rate.getIsZero()) {
-			if (t.dividend.native) {
-				shares = t.dividend.native.divide(t.dividend.rate);
-			} else {
-				shares = t.dividend.amount.divide(t.dividend.rate);
-			}
+		
+		if (t.dividend.open) {
+			shares = t.dividend.open;
 		} else {
-			shares = '';
-		}
-
-		if (shares) {
-			const rounded = shares.round(0);
-
-			if (rounded.subtract(shares).absolute().getIsLessThan(0.01)) {
-				shares = rounded;
+			if (!t.dividend.rate.getIsZero()) {
+				if (t.dividend.native) {
+					shares = t.dividend.native.divide(t.dividend.rate);
+				} else {
+					shares = t.dividend.amount.divide(t.dividend.rate);
+				}
 			} else {
-				shares = shares.round(2);
+				shares = '';
+			}
+
+			if (shares) {
+				const rounded = shares.round(0);
+
+				if (rounded.subtract(shares).absolute().getIsLessThan(0.01)) {
+					shares = rounded;
+				} else {
+					shares = shares.round(2);
+				}
 			}
 		}
 
@@ -205,24 +209,28 @@ module.exports = (() => {
 
 		let shares;
 
-		if (!t.dividend.rate.getIsZero()) {
-			if (t.dividend.native) {
-				shares = t.dividend.native.divide(t.dividend.rate);
-			} else {
-				shares = t.dividend.amount.divide(t.dividend.rate);
-			}
+		if (t.dividend.open) {
+			shares = t.dividend.open;
 		} else {
-			shares = '';
-		}
-
-		if (shares) {
-			const rounded = shares.round(0);
-
-			if (rounded.subtract(shares).absolute().getIsLessThan(0.01)) {
-				shares = rounded;
+			if (!t.dividend.rate.getIsZero()) {
+				if (t.dividend.native) {
+					shares = t.dividend.native.divide(t.dividend.rate);
+				} else {
+					shares = t.dividend.amount.divide(t.dividend.rate);
+				}
 			} else {
-				shares = shares.round(2);
+				shares = '';
 			}
+
+			if (shares) {
+				const rounded = shares.round(0);
+
+				if (rounded.subtract(shares).absolute().getIsLessThan(0.01)) {
+					shares = rounded;
+				} else {
+					shares = shares.round(2);
+				}
+			}	
 		}
 
 		f.shares = shares;
