@@ -1,14 +1,19 @@
 {
   "name": "@barchart/portfolio-api-common",
   "version": "1.12.0",
-  "description": "Common code used by the Portfolio system",
+  "description": "Common JavaScript code used by Barchart's Portfolio Service",
   "author": {
     "name": "Bryan Ingle",
     "email": "bryan.ingle@barchart.com",
     "url": "https://www.barchart.com"
   },
-  "homepage": "https://github.com/barchart/portfolio-api-common#readme",
-  "scripts": {},
+  "scripts": {
+    "test": "echo \"Error: Please use gulp to run tests\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/barchart/portfolio-api-common.git"
+  },
   "dependencies": {
     "@barchart/common-js": "^4.9.1",
     "uuid": "^8.3.2"
