@@ -11,6 +11,10 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		let ranges;
 
 		beforeEach(() => {
+			let getFullYear = Date.prototype.getFullYear;
+
+			Date.prototype.getFullYear = () => { return 2021; };
+
 			const transactions = [
 				{
 					date: new Day(2015, 10, 20),
@@ -29,6 +33,8 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			];
 
 			ranges = PositionSummaryFrame.YEARLY.getRanges(transactions);
+
+			Date.prototype.getFullYear = getFullYear;
 		});
 
 		it('should have six ranges (assuming the current year is 2021)', () => {
@@ -422,6 +428,10 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		let ranges;
 
 		beforeEach(() => {
+			let getFullYear = Date.prototype.getFullYear;
+
+			Date.prototype.getFullYear = () => { return 2021; };
+
 			const transactions = [
 				{
 					date: new Day(2019, 1, 1),
@@ -433,6 +443,8 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			];
 
 			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
+
+			Date.prototype.getFullYear = getFullYear;
 		});
 
 		it('should have one range', () => {
@@ -449,6 +461,10 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		let ranges;
 
 		beforeEach(() => {
+			let getFullYear = Date.prototype.getFullYear;
+
+			Date.prototype.getFullYear = () => { return 2021; };
+
 			const transactions = [
 				{
 					date: new Day(2021, 1, 1),
@@ -467,6 +483,8 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 			];
 
 			ranges = PositionSummaryFrame.YTD.getRanges(transactions);
+
+			Date.prototype.getFullYear = getFullYear;
 		});
 
 		it('should have one range', () => {
