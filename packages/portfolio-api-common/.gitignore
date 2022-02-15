@@ -1,7 +1,6 @@
-.gitignore
-.idea
-docs
-node_modules
-aws/
 .DS_Store
+.gitignore
 npm-debug.log
+
+.idea
+node_modules
