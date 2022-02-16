@@ -25,7 +25,7 @@ For reporting and display purposes, positions can be grouped together (by asset 
 
 ### Package Managers
 
-This library has been published as a *private* module to NPM as [@barchart/portfolio-api-common](https://www.npmjs.com/package/@barchart/portfolio-api-common).
+This library has been published as a *public* module to NPM as [@barchart/portfolio-api-common](https://www.npmjs.com/package/@barchart/portfolio-api-common).
 
 ```shell
 npm login
