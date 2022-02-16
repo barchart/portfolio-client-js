@@ -102,12 +102,6 @@ gulp.task('execute-node-tests', () => {
 		.pipe(jasmine());
 });
 
-gulp.task('print-github', () => {
-	return Promise.resolve().then(() => {
-		console.info(getGitHubLink());
-	});
-});
-
 gulp.task('execute-tests', gulp.series(
 	'build-test-bundle',
 	'execute-browser-tests',
@@ -121,8 +115,7 @@ gulp.task('release', gulp.series(
 	'bump-version',
 	'commit-changes',
 	'push-changes',
-	'create-tag',
-	'print-github'
+	'create-tag'
 ));
 
 gulp.task('lint', () => {
