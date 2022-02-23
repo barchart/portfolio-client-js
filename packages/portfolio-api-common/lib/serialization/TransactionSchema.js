@@ -361,22 +361,5 @@ module.exports = (() => {
 		.schema
 	);
 
-	const map = { };
-
-	function addSchemaToMap(type, schema) {
-		map[type.code] = schema;
-	}
-
-	addSchemaToMap(TransactionType.BUY, buy);
-	addSchemaToMap(TransactionType.SELL, sell);
-	addSchemaToMap(TransactionType.BUY_SHORT, buyShort);
-	addSchemaToMap(TransactionType.SELL_SHORT, sellShort);
-	addSchemaToMap(TransactionType.FEE, fee);
-	addSchemaToMap(TransactionType.DEPOSIT, deposit);
-	addSchemaToMap(TransactionType.WITHDRAWAL, withdrawal);
-	addSchemaToMap(TransactionType.VALUATION, valuation);
-	addSchemaToMap(TransactionType.DELIST, delist);
-	addSchemaToMap(TransactionType.INCOME, income);
-
 	return TransactionSchema;
 })();
