@@ -19,10 +19,12 @@ Two instances of the Barchart Portfolio Service are always running:
 
 #### Test
 
-The _test_ environment can be used for integration and evaluation purposes. It can be accessed at ```portfolio-test.aws.barchart.com``` and has two significant limitations:
+The public _test_ environment should be used for integration and evaluation purposes. It can be accessed at ```portfolio-test.aws.barchart.com``` and has two significant limitations:
 
 * data saved in the _test_ environment is automatically **purged within 48 hours**, and
 * data saved in the _test_ environment can be **accessed by anyone**.
+
+All example code contained in this documentation uses the _test_ environment. 
 
 #### Production
 

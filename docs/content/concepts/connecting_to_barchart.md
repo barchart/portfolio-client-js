@@ -1,5 +1,3 @@
-## System Integration
-
 As a consumer of the Barchart Portfolio Service, your software will:
 
 * Issue portfolio-related queries to the backend, and
@@ -7,21 +5,38 @@ As a consumer of the Barchart Portfolio Service, your software will:
 
 Regardless of whether you choose to consume the REST API directly, or use the SDK; data is transferred over the public Internet and stored in remote databases.
 
-**The Barchart Portfolio Service uses commercially reasonable procedures to ensure your data is safe.** All data is encrypted before transmission (using HTTP over SSL/TLS). Furthermore, each interaction is authorized using a [JSON Web Token](https://en.wikipedia.org/wiki/JSON_Web_Token).
+**The Barchart Portfolio Service uses commercially reasonable procedures to ensure your data is safe.** All data is encrypted before transmission (using HTTP over SSL/TLS).
 
-## Token Generation
+## Environments
 
-#### Overview
+Two instances of the Barchart Portfolio Service are always running:
 
-Your system is responsible for authentication, for example:
+#### Test
+
+The public _test_ environment should be used for integration and evaluation purposes. It can be accessed at ```portfolio-test.aws.barchart.com``` and has two significant limitations:
+
+* data saved in the _test_ environment is automatically **purged within 48 hours**, and
+* data saved in the _test_ environment can be **accessed by anyone**.
+
+All example code contained in this documentation uses the _test_ environment.
+
+#### Production
+
+The _production_ environment does not permit anonymous connections. **Contact Barchart at solutions@barchart.com or (866) 333-7587 for assistance configuring your account.**
+
+## Authentication and Authorization
+
+**Your system is responsible for authentication**, for example:
 
 * Perhaps users are identified by username and password.
 * Perhaps users are identified using an SSO technology.
 * Perhaps users are assumed to be valid because your software runs in a trusted environment.
 
-**Since your system authenticated the user, it is responsible for token generation.**
+When communicating with the Barchart Portfolio Service, **each interaction is authorized using a [JSON Web Token](https://en.wikipedia.org/wiki/JSON_Web_Token)**. Barchart will _decode_ your token and _verify_ its authenticity (using a shared secret). 
 
-Each interaction with the Barchart Portfolio Service must include a token. Barchart will _decode_ your token and _verify_ its authenticity (using a shared secret).
+## Token Generation
+
+Since your system _authenticated_ the user, it is also responsible for token generation.
 
 #### Token Payload
 
@@ -34,7 +49,7 @@ The token payload must include the following claims:
 }
 ```
 
-A **context** is a container for users. In other words, your "context" is your organization. You can your "context" as follows:
+A **context** is a container for users. In other words, your "context" is your organization. You can your conceptualize a "context" as follows:
 
 ```text
 ├── context
@@ -52,7 +67,7 @@ Your **context identifier** and **user identifiers** are always ```String``` val
 
 Each environment uses different algorithms and signing secrets.
 
-**Test Environment:**
+**Public Test Environment:**
 
 Since the _test_ environment is intended for testing and evaluation purposes only, the secret is intentionally publicized (see below). Data saved in the _test_ environment can be viewed and manipulated by anyone. Do not store sensitive data in the _test_ environment.
 
@@ -104,10 +119,15 @@ First, write a function that signs and returns a token. The function must confor
 function getJwtToken() {
 	return Promise.resolve()
 		.then(() => {
+			let token;
+			
 			// Generate a signed token and return it. You'll probably want to delegate
 			// the actual work to a remote service. This helps to ensure your JWT signing
 			// secret cannot be compromised.
-
+			
+			// Never include your signing secret in code that runs in a web browser.
+			// See the "Best Practices" section (below).
+			
 			return token;
 		});
 }
@@ -116,7 +136,6 @@ function getJwtToken() {
 Next, instantiate a [```JwtProvider```](/content/sdk/lib-security?id=jwtprovider) and pass it to one of the environment-specific factory functions:
 
 * ```PortfolioGateway.forTest```
-* ```PortfolioGateway.forStaging```
 * ```PortfolioGateway.forProduction```
 
 For example:
