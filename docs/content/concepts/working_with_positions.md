@@ -1,6 +1,6 @@
 A position represents an investment in one instrument (e.g. a stock or mutual fund). A position is the result of the execution of one or more transactions for the instrument.
 
-## Portfolio Data Structures
+## Position Data Structures
 
 ## Position Operations
 
