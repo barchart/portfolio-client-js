@@ -1,6 +1,8 @@
-.gitignore
-.idea
-docs
-node_modules
-aws/
+.awspublish-barchart-examples
+.awspublish-docs.barchart.com
 .DS_Store
+.gitignore
+npm-debug.log
+
+.idea
+node_modules

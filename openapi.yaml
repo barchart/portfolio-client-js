@@ -1,0 +1,1078 @@
+openapi: 3.0.0
+
+info:
+  title: Portfolio API
+  description: Portfolio API
+  version: 3.7.0
+
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Unauthorized:
+      description: Authorization failure.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Unauthorized
+
+    SchemaError:
+      description: Input invalid
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                value:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      example: SCHEMA_VALIDATION_FAILURE
+                    message:
+                      type: string
+                      example: An attempt to read CREATE data failed (found \"timezone\" when expecting \"name\").
+                children:
+                  type: array
+                  example: []
+                  items: {}
+
+    ServerError:
+      description: Server error.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                value:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      example: REQUEST_GENERAL_FAILURE
+                    message:
+                      type: string
+                      example: An attempt to create a portfolio failed for unspecified reason(s).
+                children:
+                  type: array
+                  example: []
+                  items: {}
+
+  schemas:
+    portfolio:
+      type: object
+      properties:
+        user:
+          type: string
+          description: The identifier for the portfolio's owner.
+          format: uuid
+          example: ad4b0bd3-b5e1-4f7d-96b1-54d22d99960d
+        portfolio:
+          type: string
+          description: The portfolio identifier (assigned by the backend).
+          format: uuid
+          example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
+        name:
+          type: string
+          description: The name of the portfolio.
+          example: My First Portfolio
+        timezone:
+          type: string
+          description: The timezone of the portfolio. Must conform to a tz database name.
+          format: tz_database_name
+          example: America/New_York
+        defaults:
+          $ref: '#/components/schemas/portfolio-defaults'
+          description: Default settings for the portfolio.
+      required:
+        - portfolio
+        - user
+        - name
+        - timezone
+        - defaults
+
+    portfolio-create:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the portfolio.
+          example: My First Portfolio
+        timezone:
+          type: string
+          description: The timezone of the portfolio. Must conform to a tz database name.
+          format: tz_database_name
+          example: America/New_York
+        defaults:
+          $ref: '#/components/schemas/portfolio-defaults'
+          description: Default settings for the portfolio.
+      required:
+        - name
+        - timezone
+        - defaults
+
+    portfolio-update:
+      type: object
+      properties:
+        portfolio:
+          type: string
+          description: The identifier of the portfolio to update.
+          format: uuid
+          example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
+        name:
+          type: string
+          description: The updated name of the portfolio, if present.
+          example: My Other Portfolio
+        timezone:
+          type: string
+          description: The updated timezone for the portfolio, if present.
+          format: tz_database_name
+          example: America/Chicago
+        defaults:
+          $ref: '#/components/schemas/portfolio-defaults'
+          description: The updated default settings for the portfolio, if present.
+      required:
+        - portfolio
+
+    portfolio-defaults:
+      type: object
+      properties:
+        cash:
+          type: boolean
+          description: Indicates if corresponding cash transactions should be automatically be created for investment transactions (e.g. a DEBIT transaction in a cash positions corresponding to a BUY transaction for a stock).
+          example: true
+        currency:
+          type: string
+          $ref: '#/components/schemas/enum-currency'
+          description: The default currency for the portfolio, used to determine the basis for reporting.
+        reinvest:
+          type: boolean
+          description: Indicates if dividends should be automatically reinvested.
+          example: true
+      required:
+        - cash
+        - currency
+        - reinvest
+
+    position:
+      type: object
+      properties:
+        user:
+          type: string
+          description: The identifier of the position's owner.
+          format: uuid
+          example: ad4b0bd3-b5e1-4f7d-96b1-54d22d99960d
+        portfolio:
+          type: string
+          description: The identifier of the portfolio which contains the position.
+          format: uuid
+          example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
+        instrument:
+          $ref: '#/components/schemas/position-instrument'
+          description: The position's instrument.
+        position:
+          type: string
+          description: The identifier for the position.
+          format: uuid
+          example: 96af2dc6-2236-4a82-84c2-bff969389e00
+        transaction:
+          type: string
+          description: The sequence number of the most recent transaction for the position.
+          format: number
+          example: 42
+        cash:
+          type: boolean
+          description: Indicates if corresponding cash transactions should be created, when appropriate (e.g. also DEBIT cash when creating a BUY transaction for stock).
+          example: true
+        reinvest:
+          type: boolean
+          description: Indicates if dividends should be automatically reinvested.
+          example: true
+        snapshot:
+          $ref: '#/components/schemas/position-snapshot'
+          description: Summary and performance information for the position, as of the last transaction.
+      required:
+        - user
+        - portfolio
+        - instrument
+        - position
+        - transaction
+        - cash
+        - reinvest
+        - snapshot
+
+    position-update:
+      type: object
+      properties:
+        portfolio:
+          type: string
+          description: The identifier of the portfolio containing the position to update.
+          format: uuid
+          example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
+        position:
+          type: string
+          description: The identifier of the position to update.
+          format: uuid
+          example: 96af2dc6-2236-4a82-84c2-bff969389e00
+        cash:
+          type: boolean
+          description: If present, changes the setting for automatic creation of the cash transactions (based on investment transactions).
+          example: true
+        reinvest:
+          type: boolean
+          description: If present, changes whether future dividends are re-invested.
+          example: true
+      required:
+        - portfolio
+        - position
+
+    position-instrument:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The identifier for the instrument.
+          format: uuid
+          example: c6471c5f-48d4-4979-8dd7-56c5ff1439c7
+        name:
+          type: string
+          description: The name of the instrument.
+          example: Apple Inc
+        type:
+          $ref: '#/components/schemas/enum-instrument-type'
+          description: The asset class of the instrument.
+        currency:
+          $ref: '#/components/schemas/enum-currency'
+          description: The currency the instrument trades in.
+        symbol:
+          $ref: '#/components/schemas/misc-symbols'
+          description: Symbols used to identify the instrument.
+      required:
+        - id
+        - name
+        - type
+        - currency
+        - symbol
+
+    position-snapshot:
+      type: object
+      properties:
+        date:
+          type: string
+          description: The date of the snapshot (YYYY-MM-DD).
+          format: date
+          example: '2022-01-13'
+        open:
+          type: string
+          description: The number of shares (units) open (a decimal-formatted string, value may be negative).
+          example: '100'
+        direction:
+          $ref: '#/components/schemas/enum-position-direction'
+          description: Qualifies the number of open shares as LONG (i.e. positive), short (i.e. negative), or EVEN (i.e. zero).
+        buys:
+          type: string
+          description: The sum of all purchases in the currency of the underlying instrument (a decimal-formatted string, value is never negative).
+          example: '-18256'
+        sells:
+          type: string
+          description: The sum of all sales in the currency of the underlying instrument (a decimal-formatted string, value is never negative).
+          example: '0'
+        gain:
+          type: string
+          description: The realized gain on the position (a decimal-formatted string, value may be negative).
+          example: '0'
+        basis:
+          type: string
+          description: The amount invested in the remaining position (a decimal-formatted string, value may be negative).
+          example: '0'
+        income:
+          type: string
+          description: The sum of all income (e.g. dividends) earned on the position (a decimal-formatted string, value may be negative).
+          example: '22'
+        value:
+          type: string
+          description: The current value of the position (a decimal-formatted string, value is never negative). Valuation is based on the last transaction price (not the current market price).
+          example: '18256'
+      required:
+        - date
+        - open
+        - direction
+        - buys
+        - sells
+        - gain
+        - basis
+        - income
+        - value
+
+    transaction:
+      type: object
+      properties:
+        portfolio:
+          type: string
+          description: The identifier of the portfolio which contains the transaction.
+          format: uuid
+          example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
+        position:
+          type: string
+          description: The identifier of the position which contains the transaction.
+          format: uuid
+          example: 96af2dc6-2236-4a82-84c2-bff969389e00
+        transaction:
+          type: string
+          description: The identifier of the transaction.
+          format: uuid
+          example: b3bb28ee-a24c-4b8b-8b3b-8ad5b5b0b00a
+        sequence:
+          type: number
+          description: The sequence number of the transaction (with respect to other transactions for the same position, starts with one).
+          example: 1
+        type:
+          $ref: '#/components/schemas/enum-transaction-type'
+          description: The type of transaction.
+        date:
+          type: string
+          description: The date of the transaction (YYYY-MM-DD).
+          format: date
+          example: '2020-08-30'
+        description:
+          type: string
+          description: Autogenerated text describing the transaction (used for cash positions).
+        amount:
+          type: string
+          description: The amount of currency affected by the transaction (decimal-fomratted string). In cases where currency was paid, the value is negative. In cases where currency was received, the value is positive.
+          example: '-18256'
+        quantity:
+          type: string
+          description: The number of shares (or units) of the position's instrument affected by the transaction (decimal-fomratted string). The value will be positive when purchasing and negative when selling.
+          example: '100'
+        fee:
+          type: string
+          description: A fee paid to execute the transaction (decimal-fomratted string).
+          example: '9.99'
+        reference:
+          $ref: '#/components/schemas/transaction-reference'
+          description: A reference to another transaction — a transaction which caused this transaction to occur.
+        snapshot:
+          $ref: '#/components/schemas/position-snapshot'
+          description: A summary of the position size and performance, immediately after this transaction was executed.
+        trade:
+          $ref: '#/components/schemas/transaction-extension-for-trade'
+          description: Additional information, only present if transaction is a trade (type is B, S, SS, etc).
+        dividend:
+          $ref: '#/components/schemas/transaction-extension-for-dividend'
+          description: Additional information, only present if transaction is a dividend (type is DV, DX, DF, DY, etc).
+        split:
+          $ref: '#/components/schemas/transaction-extension-for-split'
+          description: Additional information, only present if transaction is a split (type is SP).
+      required:
+        - portfolio
+        - position
+        - transaction
+        - sequence
+        - type
+        - date
+        - amount
+        - quantity
+        - snapshot
+
+    transaction-reference:
+      type: object
+      properties:
+        position:
+          type: string
+          description: The identifier of the referenced position.
+          format: uuid
+          example: 96af2dc6-2236-4a82-84c2-bff969389e00
+        transaction:
+          type: string
+          description: The identifier of the referenced transaction.
+          format: uuid
+          example: b3bb28ee-a24c-4b8b-8b3b-8ad5b5b0b00a
+      required:
+        - position
+        - transaction
+
+    transaction-extension-for-trade:
+      type: object
+      properties:
+        price:
+          type: string
+          description: The unit price the transaction was executed at (decimal-fomratted string).
+          example: '182.56'
+      required:
+        - price
+
+    transaction-extension-for-dividend:
+      type: object
+      properties:
+        rate:
+          type: string
+          description: The amount paid per unit (decimal-fomratted string).
+          example: '0.125'
+        effective:
+          type: string
+          description: The day (YYYY-MM-DD) used to determine the quantity eligible to receive the dividend (i.e. the dividend ex-date).
+          format: date
+          example: '2020-08-30'
+        price:
+          type: string
+          description: The market value of the underlying at the time the dividend was paid, used to calculate reinvestment quantities (decimal-fomratted string).
+          example: '499.23'
+        amount:
+          type: string
+          description: The currency amount of the dividend (e.g the rate multiplied by the quantity eligible to receive the dividend, as a decimal-fomratted string).
+          example: '12.50'
+      required:
+        - rate
+        - effective
+        - amount
+
+    transaction-extension-for-split:
+      type: object
+      properties:
+        numerator:
+          type: string
+          description: The numerator in the following fraction [ shares owned after dividend ] / [ shares owned before dividend ] (decimal-fomratted string).
+          example: '4'
+        denominator:
+          type: string
+          description: The denominator in the following fraction [ shares owned after dividend ] / [ shares owned before dividend ] (decimal-fomratted string).
+          example: '1'
+        effective:
+          type: string
+          description: The day (YYYY-MM-DD) used to determine the quantity eligible to receive the dividend (i.e. the split ex-date).
+          format: date
+          example: '2020-08-30'
+      required:
+        - numerator
+        - denominator
+        - effective
+
+    transaction-create:
+      type: object
+      properties:
+        portfolio:
+          type: string
+          description: The portfolio identifier (assigned by the backend).
+          format: uuid
+          example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
+        position:
+          type: string
+          description: The position identifier (or use \"new\" to create a new position).
+          format: uuid
+          example: 96af2dc6-2236-4a82-84c2-bff969389e00
+        type:
+          $ref: '#/components/schemas/enum-transaction-create-type'
+          description: The type of transaction to create.
+        instrument:
+          $ref: '#/components/schemas/transaction-create-instrument'
+          description: Information about the instrument (required when opening a new position, ignored otherwise).
+        date:
+          type: string
+          description: The day of the transaction (YYYY-MM-DD).
+          format: date
+          example: '2022-01-13'
+        price:
+          type: string
+          description: The unit price of the instrument at the time the transaction executes (decimal-fomratted string).
+          example: '123.45'
+        quantity:
+          type: string
+          description: The number of units affected by the transaction (decimal-fomratted string).
+          example: '100'
+        fee:
+          type: string
+          description: A fee paid to execute the transaction (decimal-fomratted string).
+          example: '9.99'
+      required:
+        - portfolio
+        - position
+        - type
+        - date
+        - quantity
+
+    transaction-create-instrument:
+      type: object
+      properties:
+        symbol:
+          $ref: '#/components/schemas/misc-symbols'
+          description: Symbols used to identify the target instrument.
+      required:
+        - symbol
+
+    transaction-mutate-result:
+      type: object
+      properties:
+        positions:
+          $ref: '#/components/schemas/transaction-mutate-result-positions'
+          description: Positions which were affected by a transaction (create, update, or delete) operation.
+      required:
+        - positions
+
+    transaction-mutate-result-positions:
+      type: object
+      properties:
+        saved:
+          type: array
+          description: All positions which were created or updated.
+          items:
+            $ref: '#/components/schemas/position'
+        deleted:
+          type: array
+          description: All positions which were deleted.
+          items:
+            $ref: '#/components/schemas/position'
+      required:
+        - saved
+        - deleted
+
+    misc-symbols:
+      type: object
+      properties:
+        barhcart:
+          type: string
+          description: The symbol used by Barchart (required to lookup quotes and determine prices).
+          example: AAPL
+        display:
+          type: string
+          description: The symbol used for display purposes (often the same as the Barchart symbol).
+          example: AAPL
+      required:
+        - barhcart
+
+    enum-currency:
+      type: string
+      description: Currencies used to trade and value instruments and positions.
+      enum:
+        - USD
+        - CAD
+
+    enum-instrument-type:
+      type: string
+      description: Codes which define asset classes for instruments.
+      enum:
+        - EQUITY
+        - FUND
+        - CASH
+        - OTHER
+
+    enum-position-direction:
+      type: string
+      description: Codes which describe position size — positive values are LONG, negative values are SHORT and zero values are EVENT.
+      enum:
+        - LONG
+        - SHORT
+        - EVEN
+
+    enum-transaction-type:
+      type: string
+      description: Single letter codes for transaction types (e.g. B for BUY, S for SELL; see \"Appendicies > Enumerations\" in SDK documentation for more info), including types which are managed by the backend (e.g. DV for dividend).
+      enum:
+        - B
+        - S
+        - BS
+        - SS
+        - F
+        - D
+        - W
+        - DR
+        - CR
+        - V
+        - I
+        - DV
+        - DX
+        - DS
+        - SP
+        - F
+        - FU
+        - DL
+        - MO
+        - MC
+        - SPF
+        - SPFO
+        - DC
+        - DY
+        - DF
+        - D
+        - W
+        - DR
+        - CR
+
+    enum-transaction-create-type:
+      type: string
+      description: Single letter codes for transaction types (e.g. B for BUY, S for SELL; see \"Appendicies > Enumerations\" in SDK documentation for more info) which can be created by a consumer (this is a subset of the  "enum-transaction-type" component).
+      enum:
+        - B
+        - S
+        - BS
+        - SS
+        - F
+        - D
+        - W
+        - V
+        - I
+
+    service-metadata:
+      type: object
+      properties:
+        server:
+          $ref: '#/components/schemas/service-metadata-server'
+        user:
+          $ref: '#/components/schemas/service-metadata-user'
+        context:
+          $ref: '#/components/schemas/service-metadata-context'
+
+    service-metadata-context:
+      type: object
+      properties:
+        id:
+          type: string
+          example: BARCHART
+
+    service-metadata-server:
+      type: object
+      properties:
+        name:
+          type: string
+          example: barchart/portfolio-private-api-main
+        description:
+          type: string
+          example: API for Barchart Portfolio Service
+        environment:
+          type: string
+          example: prod
+        semver:
+          type: string
+          example: 5.6.1
+
+    service-metadata-user:
+      type: object
+      properties:
+        id:
+          type: string
+          example: me
+
+servers:
+  - url: https://portfolio-test.aws.barchart.com/v1
+    description: Hostname for test environment.
+  - url: https://portfolio.aws.barchart.com/v1
+    description: Hostname for production environment.
+
+tags:
+  - name: Portfolio
+  - name: Service
+
+paths:
+  /service:
+    get:
+      summary: Returns the version and the authorized user
+      description: Returns the version number of the Barchart Portfolio Service along with the user identifier and context of the authorized user (of the JWT).
+      tags:
+        - Service
+      security:
+        - JWT: []
+      responses:
+        '200':
+          description: An object describing the remote service and the authorized user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/service-metadata'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /portfolios:
+    post:
+      summary: Creates a new portfolio.
+      description: Creates a new portfolio for the current user.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/portfolio-create'
+      responses:
+        '200':
+          description: The newly created portfolio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/portfolio'
+        '400':
+          $ref: '#/components/responses/SchemaError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}:
+    get:
+      summary: Returns one (or more) portfolios, owned by the current user.
+      description: Returns one (or more) portfolios, owned by the current user. If the user has no portfolios, an empty array is returned.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio to retrieve. Use an asterisk (*) to retrieve all portfolios for the current user.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: An array of portfolios (with zero, one, or many items).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/portfolio'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: Updates a portfolio.
+      description: Updates a portfolio.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio to update.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/portfolio-update'
+      responses:
+        '200':
+          description: The updated portfolio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/portfolio'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Deletes a portfolio and everything associated with the portoolio — including all positions, transactions, and summaries, etc.
+      description: Deletes a portfolio and everything associated with the portoolio — including all positions, transactions, and summaries, etc.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio to delete.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deletion of portfolio successful. No data is returned.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}/positions/{position}:
+    get:
+      summary: Returns positions, optionally filtering for portfolio.
+      description: Returns positions, optionally filtering for portfolio.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio which contains the positions to query. Use an asterisk (*) to retrieve all positions, regardless of portfolio.
+          schema:
+            type: string
+            format: uuid
+        - name: position
+          in: path
+          required: true
+          description: The identifier the specific position to retrieve. Use an asterisk (*) to retrieve all positions.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: An array of positions (with zero, one, or many items).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/position'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: Updates a position.
+      description: Updates a position (e.g. defaults like automatic re-investment).
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio to containing the position to update.
+          schema:
+            type: string
+            format: uuid
+        - name: position
+          in: path
+          required: true
+          description: The identifier of the position to update.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/position-update'
+      responses:
+        '200':
+          description: The updated position.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/position'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Deletes a position and everything associated with the position — including all transactions, summaries, etc.
+      description: Deletes a position and everything associated with the position — including all transactions, summaries, etc.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio to containing the position to delete.
+          schema:
+            type: string
+            format: uuid
+        - name: position
+          in: path
+          required: true
+          description: The identifier of the position to delete.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deletion of position successful. No data is returned.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}/positions/{position}/transactions:
+    post:
+      summary: Creates a new new transaction
+      description: Creates a new transaction for the current user.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio.
+          schema:
+            type: string
+            format: uuid
+        - name: position
+          in: path
+          required: true
+          description: The identifier of the position to which the transaction will be added, use \"new\" to create a new position.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transaction-create'
+      responses:
+        '200':
+          description: An object listing the positions affected by the new transaction.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction-mutate-result'
+        '400':
+          $ref: '#/components/responses/SchemaError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}/positions/{position}/transactions/{seqeunce}:
+    get:
+      summary: Returns transactions.
+      description: Returns transactions.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio containing the transactions to retrieve.
+          schema:
+            type: string
+            format: uuid
+        - name: position
+          in: path
+          required: true
+          description: The identifier of the position containing the transactions to retrieve.
+          schema:
+            type: string
+            format: uuid
+        - name: seqeunce
+          in: path
+          required: true
+          description: The sequence number of the transaction to retrieve (e.g. 1). Use an asterisk (*) to retrieve all transactions for the position.
+          schema:
+            type: number
+      responses:
+        '200':
+          description: An array of transactions (with zero, one, or many items).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/transaction'
+        '400':
+          $ref: '#/components/responses/SchemaError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: Edits a transaction.
+      description: Edits a transaction (e.g. change dates, prices, quantities).
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio containing the transaction to edit.
+          schema:
+            type: string
+            format: uuid
+        - name: position
+          in: path
+          required: true
+          description: The identifier of the position containing the transaction to edit.
+          schema:
+            type: string
+            format: uuid
+        - name: seqeunce
+          in: path
+          required: true
+          description: The sequence number of the transaction to edit (e.g. 1).
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transaction'
+      responses:
+        '200':
+          description: An object listing the positions affected by the transaction deletion.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction-mutate-result'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Deletes a transaction from a position.
+      description: Deletes a transaction from a position.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio containing the transaction to delete.
+          schema:
+            type: string
+            format: uuid
+        - name: position
+          in: path
+          required: true
+          description: The identifier of the position containing the transaction to delete.
+          schema:
+            type: string
+            format: uuid
+        - name: seqeunce
+          in: path
+          required: true
+          description: The sequence number of the transaction to delete (e.g. 1).
+          schema:
+            type: number
+      responses:
+        '200':
+          description: An object listing the positions affected by the transaction deletion.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction-mutate-result'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'

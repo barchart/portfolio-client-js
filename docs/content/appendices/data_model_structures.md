@@ -1,0 +1,5 @@
+## Day
+
+## Decimal
+
+## Currency

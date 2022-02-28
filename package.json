@@ -1,7 +1,8 @@
 {
   "name": "@barchart/portfolio-client-js",
   "version": "5.1.2",
-  "description": "JavaScript library for interfacing with Barchart's Portfolio API",
+  "description": "JavaScript SDK for Barchart's Portfolio Service",
+  "homepage": "https://docs.barchart.com/portfolio/#/",
   "author": {
     "name": "Bryan Ingle",
     "email": "bryan.ingle@barchart.com",
@@ -12,12 +13,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/barchart/barchart/portfolio-client-js.git"
+    "url": "git+ssh://git@github.com/barchart/portfolio-client-js.git"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "bugs": {
+    "url": "https://github.com/barchart/portfolio-client-js/issues"
   },
   "keywords": [
     "Barchart",
+    "Portfolio",
     "JavaScript",
-    "Client",
     "SDK"
   ],
   "dependencies": {
@@ -48,12 +55,5 @@
       ]
     ]
   },
-  "license": "UNLICENSED",
-  "bugs": {
-    "url": "https://github.com/barchart/portfolio-client-js/issues"
-  },
-  "homepage": "https://github.com/barchart/portfolio-client-js#readme",
-  "directories": {
-    "test": "test"
-  }
+  "license": "MIT"
 }
