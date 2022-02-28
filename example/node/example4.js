@@ -3,7 +3,7 @@ const process = require('process');
 const PortfolioGateway = require('./../../lib/gateway/PortfolioGateway'),
 	JwtProvider = require('./../../lib/security/JwtProvider');
 
-console.info(`Example: Starting Node.js example script #4 (query portolios)`);
+console.info(`Example: Starting Node.js example script #4 (query portfolios)`);
 
 let portfolioGateway = null;
 
