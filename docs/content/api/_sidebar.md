@@ -2,7 +2,6 @@
 * [Quick Start](/content/quick_start)
 * Key Concepts
   * [Connecting to Barchart](/content/concepts/connecting_to_barchart)
-  * [Securing the Connection](/content/concepts/securing_the_connection)
   * [Interaction Basics](/content/concepts/interaction_basics)
   * [Working with Portfolios](/content/concepts/working_with_portfolios)
   * [Working with Positions](/content/concepts/working_with_positions)
