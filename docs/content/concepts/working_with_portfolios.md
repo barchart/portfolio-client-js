@@ -167,7 +167,7 @@ Again, we'll assume your portfolio identifier is ```0004e3e3-b001-42b5-90f7-8bb0
 
 #### Using the SDK
 
-Pass the `portfolio` identifier to the `PortfolioGateway.deletePortfolio` function. 
+Pass the `portfolio` identifier to the [```PortfolioGateway.deletePortfolio```](/content/sdk/lib-gateway?id=portfoliogatewaydeleteportfolio) function. 
 
 ```javascript
 const portfolio = '0004e3e3-b001-42b5-90f7-8bb06ea5b337';
