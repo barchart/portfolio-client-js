@@ -180,7 +180,7 @@ portfolioGateway.deletePortfolios(portfolio)
 
 #### Using the API
 
-Issue a ```DELETE``` request to the [/portfolios/{portfolio}](/content/api/paths?id=put-portfoliosportfolio) endpoint.
+Issue a ```DELETE``` request to the [/portfolios/{portfolio}](/content/api/paths?id=delete-portfoliosportfolio) endpoint.
 
 ```shell
 curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337' \
