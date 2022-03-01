@@ -570,7 +570,7 @@ components:
 
     enum-position-direction:
       type: string
-      description: Codes which describe position size — positive values are LONG, negative values are SHORT and zero values are EVENT.
+      description: Codes which describe position size — positive values are LONG, negative values are SHORT and zero values are EVEN.
       enum:
         - LONG
         - SHORT

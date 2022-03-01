@@ -146,7 +146,7 @@ First, construct a JSON object matching the [```portfolio-update```](/content/ap
 }
 ```
 
-Then, post issue a ```PUT``` request to the [/portfolios/{portfolio}](/content/api/paths?id=put-portfoliosportfolio) endpoint.
+Then, issue a ```PUT``` request to the [/portfolios/{portfolio}](/content/api/paths?id=put-portfoliosportfolio) endpoint.
 
 ```shell
 curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337' \

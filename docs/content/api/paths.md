@@ -52,7 +52,7 @@
 **Security**: 
 [JWT](/content/api/components?id=securityJWT)
 #### Request Body
-    
+
 **Content Type**: application/json
 
 **Type**: [<code>portfolio-create</code>](/content/api/components?id=schemasportfolio-create)
@@ -178,7 +178,7 @@
 | portfolio | <code>String</code> | true | false | The identifier of the portfolio to update. |
 
 #### Request Body
-    
+
 **Content Type**: application/json
 
 **Type**: [<code>portfolio-update</code>](/content/api/components?id=schemasportfolio-update)
@@ -351,7 +351,7 @@
 | position | <code>String</code> | true | false | The identifier of the position to update. |
 
 #### Request Body
-    
+
 **Content Type**: application/json
 
 **Type**: [<code>position-update</code>](/content/api/components?id=schemasposition-update)
@@ -468,7 +468,7 @@
 | position | <code>String</code> | true | false | The identifier of the position to which the transaction will be added, use \"new\" to create a new position. |
 
 #### Request Body
-    
+
 **Content Type**: application/json
 
 **Type**: [<code>transaction-create</code>](/content/api/components?id=schemastransaction-create)
@@ -693,7 +693,7 @@
 | seqeunce | <code>Number</code> | true | false | The sequence number of the transaction to edit (e.g. 1). |
 
 #### Request Body
-    
+
 **Content Type**: application/json
 
 **Type**: [<code>transaction</code>](/content/api/components?id=schemastransaction)
