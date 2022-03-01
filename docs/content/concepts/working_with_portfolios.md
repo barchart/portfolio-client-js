@@ -161,9 +161,32 @@ curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-9
 
 ## Deleting a Portfolio
 
+When a portfolio is deleted, all associated data is also deleted. This includes positions, transactions, summaries, etc.
+
+Again, we'll assume your portfolio identifier is ```0004e3e3-b001-42b5-90f7-8bb06ea5b337```.
+
 #### Using the SDK
 
+Pass the `portfolio` identifier to the `PortfolioGateway.deletePortfolio` function. 
+
+```javascript
+const portfolio = '0004e3e3-b001-42b5-90f7-8bb06ea5b337';
+
+portfolioGateway.deletePortfolios(portfolio)
+	.then((portfolio) => {
+		console.info(`Example: Successfully deleted portfolio [ ${portfolio} ].`);
+	});
+```
+
 #### Using the API
+
+Issue a ```DELETE``` request to the [/portfolios/{portfolio}](/content/api/paths?id=put-portfoliosportfolio) endpoint.
+
+```shell
+curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337' \
+  -X 'DELETE' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtZSIsImNvbnRleHRJZCI6ImJhcmNoYXJ0IiwiaWF0IjoxNjQ1NDY5MDIxfQ.l6kg72DiUmuDU0OkUA8sdnsrrgSR0XAiMiGvtB9wG08'
+```
 
 ## Portfolio Queries
 
@@ -173,4 +196,3 @@ curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-9
 
 ## Portfolio Value-Over-Time
 
-The Portfolio Service can pro
