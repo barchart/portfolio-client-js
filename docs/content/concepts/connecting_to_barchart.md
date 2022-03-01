@@ -143,9 +143,13 @@ For example:
 ```js
 const jwtProvider = new JwtProvider(getJwtToken);
 
+let portfolioGateway;
+
 PortfolioGateway.forProduction(jwtProvider)
-	.then((portfolioGateway) => {
-		// Ready to use ...
+	.then((pg) => {
+		// Your PortfolioGateway instance is ready to use...
+
+		portfolioGateway = pg;
 	});
 ```
 

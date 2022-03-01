@@ -69,15 +69,7 @@ PortfolioGateway.forTest(JwtProvider.forTest(myUserId, myContextId))
 	});
 ```
 
-**Try it out** by executing the [```example1.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example1.js) script, located in the GitHub repository for this SDK. Assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node.js](https://nodejs.org/en/download/) installed, run the following:
-
-```shell
-git clone git@github.com:barchart/portfolio-client-js.git
-cd portfolio-client-js
-npm install
-cd example/node
-node example1.js me barchart
-```
+> **Try it out** by executing the [```example1.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example1.js) script. See the [Examples: Sample Code](/content/appendices/sample_code) appendix for detailed instructions.
 
 #### Using the API
 
@@ -121,7 +113,7 @@ const Currency = require('@barchart/common-js/lang/Currency'),
 	Timezones = require('@barchart/common-js/lang/Timezones');
 
 const data = {
-	name: "My First Portfolio", 
+	name: 'My First Portfolio', 
 	timezone: Timezones.AMERICA_NEW_YORK,
 	defaults: {
 		cash: false,
@@ -138,7 +130,7 @@ portfolioGateway.createPortfolio(data)
 
 The result will be [```Portfolio```](/content/sdk/lib-data?id=schemaportfolio) object. Notice the ```portfolio``` and ```user``` identifiers have been assigned.
 
-**Try it out** by executing the [```example2.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example2.js) script.
+> **Try it out** by executing the [```example2.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example2.js) script.
 
 #### Using the API
 
@@ -146,13 +138,13 @@ Construct a JSON object, matching the [```portfolio-create```](/content/api/comp
 
 ```json
 {
-	"name": "My First Portfolio", 
-	"timezone": "America/New_York",
-	"defaults": {
-		"cash":false,
-		"currency":"USD",
-		"reinvest":false
-	}
+  "name": "My First Portfolio",
+  "timezone": "America/New_York",
+  "defaults": {
+	"cash": false,
+	"currency": "USD",
+	"reinvest": false
+  }
 }
 ```
 
@@ -217,7 +209,7 @@ portfolioGateway.createTransaction(data)
 
 After the transaction has been processed, you'll receive a [```TransactionMutateResult```](/content/sdk/lib-data?id=schematransactionmutateresult) object. This object includes the positions that were affected. More on this later.
 
-**Try it out** by executing the [```example3.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example3.js) script.
+> **Try it out** by executing the [```example3.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example3.js) script.
 
 #### Using the API
 
@@ -225,19 +217,19 @@ Construct a JSON object, matching the [```transaction-create```](/content/api/co
 
 ```json
 {
-	"portfolio": "0004e3e3-b001-42b5-90f7-8bb06ea5b337",
-	"position": "new",
-	"type": "B",
-	"instrument": {
-		"symbol": {
-			"barchart": "AAPL",
-			"display": "AAPL"
-		}
-	},
-	"date": "2022-01-03",
-	"price": "182.56",
-	"quantity": "100",
-	"fee": "0"
+  "portfolio": "0004e3e3-b001-42b5-90f7-8bb06ea5b337",
+  "position": "new",
+  "type": "B",
+  "instrument": {
+	"symbol": {
+	  "barchart": "AAPL",
+	  "display": "AAPL"
+	}
+  },
+  "date": "2022-01-03",
+  "price": "182.56",
+  "quantity": "100",
+  "fee": "0"
 }
 ```
 
@@ -269,7 +261,7 @@ portfolioGateway.readPortfolios()
 	});
 ```
 
-**Try it out** by executing the [```example4.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example4.js) script.
+> **Try it out** by executing the [```example4.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example4.js) script.
 
 #### Using the API
 
@@ -299,7 +291,7 @@ portfolioGateway.readPositions()
 	});
 ```
 
-**Try it out** by executing the [```example5.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example5.js) script.
+> **Try it out** by executing the [```example5.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example5.js) script.
 
 #### Using the API
 
@@ -339,7 +331,7 @@ portfolioGateway.readTransactions(query)
 	});
 ```
 
-**Try it out** by executing the [```example6.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example6.js) script.
+> **Try it out** by executing the [```example6.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example6.js) script.
 
 #### Using the API
 

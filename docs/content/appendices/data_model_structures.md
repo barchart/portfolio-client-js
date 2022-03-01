@@ -1,5 +1,3 @@
 ## Day
 
 ## Decimal
-
-## Currency
