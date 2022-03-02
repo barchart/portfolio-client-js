@@ -23,9 +23,9 @@ So, as you use the SDK, you'll need to create ```Day``` instances (e.g. when bui
 ```javascript
 const Day = require('@barchart/common-js/lang/Day');
 
-const date = new Day(2022, 2, 10); // February 10, 2022.
+const txCreate = { };
 
-const transactionCreate = { date };
+txCreate.date = new Day(2022, 2, 10); // February 10, 2022
 ```
 
 #### Using the API
@@ -39,3 +39,48 @@ For JSON serialization, ```Day``` instances are converted to ```string``` values
 ```
 
 ## Decimal
+
+Mathematical operations involving money must be accurate — to the penny. However, since JavaScript uses [floating point numbers](https://en.wikipedia.org/wiki/IEEE_754), some decimal values cannot be represented — leading to potentially confusing results.
+
+Here's a classic example, using Node.js; however, the same concerns apply to the JavaScript execution engines used by modern web browsers:
+
+```shell
+% node
+Welcome to Node.js v14.17.3.
+Type ".help" for more information.
+> 0.1 + 0.2
+0.30000000000000004
+```
+
+Consequently, the JavaScript SDK uses a custom data structure to ensure the accuracy of decimal-based operations. Specifically, decimal values are represented using the [```@barchart/common-js/lang/Decimal```](https://github.com/barchart/common-js/blob/master/lang/Decimal.js) class. Here are some actual uses of the `Decimal` class:
+
+* The unit ```price``` of a transaction.
+* The ```quantity``` of a transaction.
+* The aggregate size of an ```open``` position.
+
+Any numeric value, used as input to (or output from) the SDK, will be an instance of the ```Decimal``` class. In the following example, the ```Decimal``` class is used to begin construction of a [```TransactionCreate```](/content/sdk/lib-data?id=schematransactioncreate) object:
+
+```javascript
+const Decimal = require('@barchart/common-js/lang/Decimal');
+
+const txCreate = { };
+
+txCreate.quantity = new Decimal(100); // from float
+txCreate.quantity = new Decimal('100'); // from string
+```
+
+#### Using the API
+
+For JSON serialization, ```Decimal``` instances are converted to ```string``` values for transmission to (or from) the Barchart Portfolio Service. Here's an example:
+
+```json
+{
+  "quantity": "100"
+}
+```
+
+
+
+
+
+
