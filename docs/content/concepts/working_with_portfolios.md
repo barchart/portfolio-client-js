@@ -157,11 +157,13 @@ curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-9
   --data-binary '{"portfolio":"0004e3e3-b001-42b5-90f7-8bb06ea5b337","name":"An Improved Portfolio Name","timezone":"America/Chicago","defaults":{"cash":true,"currency":"CAD","reinvest":true}}'
 ```
 
-> Notice the portfolio identifier must be included in the URI path of the HTTP request.
+> Notice the portfolio identifier must be included in the URI path of the HTTP request (and in the request's body).
 
 ## Deleting a Portfolio
 
-When a portfolio is deleted, all associated data is also deleted. This includes positions, transactions, summaries, etc.
+When a portfolio is deleted, all associated data is also deleted.
+
+> This action will delete all positions contained in the portfolio, transaction records for those positions, daily position valuations, and periodic gain/loss summaries. This action cannot be undone.
 
 Again, we'll assume your portfolio identifier is ```0004e3e3-b001-42b5-90f7-8bb06ea5b337```.
 
@@ -187,6 +189,8 @@ curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-9
   -X 'DELETE' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtZSIsImNvbnRleHRJZCI6ImJhcmNoYXJ0IiwiaWF0IjoxNjQ1NDY5MDIxfQ.l6kg72DiUmuDU0OkUA8sdnsrrgSR0XAiMiGvtB9wG08'
 ```
+
+An empty HTTP 200 response indicates success.
 
 ## Portfolio Queries
 
