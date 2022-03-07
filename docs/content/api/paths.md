@@ -942,3 +942,49 @@
 
 * * *
 
+## GET /portfolios/{portfolio}/positions/{position}/values 
+
+> Returns a daily history of valuations for positions (or an entire portfolio).
+
+**Summary**: Returns a daily history of valuations for positions (or an entire portfolio).
+
+**Security**: 
+[JWT](/content/api/components?id=securityJWT)
+#### Path Parameters
+
+| Name | Type | Required | Nullable | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| portfolio | <code>String</code> | true | false | The identifier of the portfolio. |
+| position | <code>String</code> | true | false | The identifier a specific position. Use an asterisk (*) to retrieve all positions, resulting in the valuation of the entire portfolio. |
+
+#### Responses
+
+**Status Code**: 200
+
+> An array of valuations (with zero, one, or many items).
+
+**Content Type**: <code>application/json</code>
+
+**Response Type:** [<code>Array&lt;misc-valuation&gt;</code>](/content/api/components?id=schemasmisc-valuation)
+
+**Example**:
+
+```
+[
+  {
+    "date": "2020-08-30",
+    "market": 20924.08
+  }
+]
+```
+
+* * *
+
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
+
+* * *
+
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
+
+* * *
+

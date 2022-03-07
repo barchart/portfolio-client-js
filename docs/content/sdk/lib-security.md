@@ -131,7 +131,7 @@
 * * *
 
 ### Callbacks.JwtTokenGenerator :id=callbacksjwttokengenerator
-> A function which returns a signed token.
+> A function, accepting no arguments, which returns a signed token.
 
 **Kind**: static typedef of [<code>Callbacks</code>](#Callbacks)  
 **Returns**: <code>String</code> \| <code>Promise.&lt;String&gt;</code>  

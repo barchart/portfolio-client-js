@@ -21,6 +21,7 @@
         * [.editTransaction(transaction)](#PortfolioGatewayeditTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
         * [.deleteTransaction(portfolio, position, sequence, [force], [echoStart], [echoEnd])](#PortfolioGatewaydeleteTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
         * [.readTransactions(portfolio, [position], [sequence])](#PortfolioGatewayreadTransactions) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Transaction&gt;&gt;</code>](/content/sdk/lib-data?id=schematransaction)
+        * [.readValuations(portfolio, [position])](#PortfolioGatewayreadValuations) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Valuation&gt;&gt;</code>](/content/sdk/lib-data?id=schemavaluation)
         * [.readVersion()](#PortfolioGatewayreadVersion) ⇒ <code>Promise.&lt;Object&gt;</code>
     * _static_
         * [.forTest(jwtProvider, [product])](#PortfolioGatewayforTest) ⇒ [<code>Promise.&lt;PortfolioGateway&gt;</code>](#PortfolioGateway)
@@ -220,6 +221,21 @@
 | portfolio | <code>String</code> | <p>The identifier of the portfolio containing the desired transactions.</p> |
 | [position] | <code>String</code> | <p>The identifier for the position to read transactions for. If included, the resulting transactions will be limited to the specified position. Otherwise, transactions for all positions in the portfolio, will be returned.</p> |
 | [sequence] | <code>Number</code> | <p>The sequence number of the specific transaction to read. If included, both the &quot;portfolio&quot; and &quot;position&quot; parameters must be specified.</p> |
+
+
+* * *
+
+### portfolioGateway.readValuations(portfolio, [position]) :id=portfoliogatewayreadvaluations
+> Retrieves end-of-day valuations for the entire portfolio (or a single position).
+
+**Kind**: instance method of [<code>PortfolioGateway</code>](#PortfolioGateway)  
+**Returns**: [<code>Promise.&lt;Array.&lt;Schema.Valuation&gt;&gt;</code>](/content/sdk/lib-data?id=schemavaluation)  
+**Access**: public  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| portfolio | <code>String</code> | <p>The identifier of the portfolio.</p> |
+| [position] | <code>String</code> | <p>The identifier of the position. If omitted, that valuation history will be returned for the entire portfolio (i.e. sum of valuations for all positions contained in the portfolio).</p> |
 
 
 * * *

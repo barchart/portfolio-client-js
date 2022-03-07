@@ -49,7 +49,7 @@ const portfolioCreate = {
 };
 ```
 
-Assuming you've [built a PortfolioGateway instance](/content/concepts/connecting_to_barchart?id=using-the-sdk), pass the JavaScript object to the ```PortfolioGateway.createPortfolio``` function. 
+Assuming you've [built a PortfolioGateway instance](/content/concepts/connecting_to_barchart?id=using-the-sdk), pass the JavaScript object to the [PortfolioGateway.createPortfolio](/content/sdk/lib-gateway?id=portfoliogatewaycreateportfolio) function. 
 
 ```javascript
 portfolioGateway.createPortfolio(portfolioCreate)
@@ -120,7 +120,7 @@ const portfolioupdate = {
 };
 ```
 
-Once you've constructed the JavaScript object, pass it to the ```PortfolioGateway.updatePortfolio``` function.
+Once you've constructed the JavaScript object, pass it to the [PortfolioGateway.updatePortfolio](/content/sdk/lib-gateway?id=portfoliogatewayupdateportfolio) function.
 
 ```javascript
 portfolioGateway.updatePortfolio(portfolioCreate)
@@ -197,7 +197,7 @@ There are two distinct ways to query the active user's portfolios:
 
 #### Using the SDK
 
-The [PortfolioGateway.readPortfolios](/content/sdk/lib-gateway?id=portfoliogatewayreadportfolios) function retrieves the active user's [Portfolio](/content/sdk/lib-data?id=schemaportfolio) objects:
+The [```PortfolioGateway.readPortfolios```](/content/sdk/lib-gateway?id=portfoliogatewayreadportfolios) function retrieves the active user's [Portfolio](/content/sdk/lib-data?id=schemaportfolio) objects:
 
 ```javascript
 portfolioGateway.readPortfolios()
@@ -243,3 +243,52 @@ In the event the specified portfolio doesn't exist, the response will be an empt
 
 ## Portfolio Value-Over-Time
 
+The _Portfolio Service_ maintains a history of end-of-day valuations [for each individual position](/content/concepts/working_with_positions?id=position-value-over-time). It also maintains a history of end-of-day valuations for the entire portfolio. This data is often presented visually in a chart. Here is an example of the data:
+
+| date       |  valuation |
+|------------|-----------:|
+| ...        |            |
+| 2022-02-26 |  20,924.08 |
+| 2022-02-27 |  20,924.08 |
+| 2022-02-28 |  20,919.05 |
+| 2022-03-01 |  20,794.13 |
+| 2022-03-02 |  21,036.53 |
+| 2022-03-03 |  21,077.96 |
+| ...        |            |
+
+
+The valuation of a position is calculated by multiplying the position's `open` quantity by the last available quote price. 
+
+The valuation of a portfolio, on a given day, is the sum of the valuations of the portfolio's positions on that day — with one important caveat. The aggregate value of the portfolio is presented in the portfolio's default currency. So, each position denominated in a foreign currency will first be translated into portfolio's default currency, using the exchange rate on the given day.
+
+> Generally speaking, these valuations are updated nightly. However, if the current user has been inactive for over a week, the Portfolio Service stops updating his/her valuations on a nightly basis. Once the user accesses the API again, an asynchronous job to backfill missing data points will be scheduled, although it may take several minutes to complete.
+
+Again, in the following examples, we'll assume your portfolio identifier is ```0004e3e3-b001-42b5-90f7-8bb06ea5b337```.
+
+#### Using the SDK
+
+To obtain a complete history of daily valuations for the position, execute the [```PortfolioGateway.readValuations```](/content/sdk/lib-gateway?id=portfoliogatewayreadvaluations) function.
+
+```javascript
+const portfolio = '0004e3e3-b001-42b5-90f7-8bb06ea5b337';
+
+portfolioGateway.readValuations(portfolio)
+	.then((valuations) => {
+		console.info(`Example: Valuation query for portfolio [ ${portfolio} ] completed with [ ${valuations.length} ] daily valuation(s).`);
+	});
+```
+
+The function will return an ordered array of [Valuation](/content/sdk/lib-data?id=schemavaluation) objects, beginning with the first available valuation and ending with the latest valuation.
+
+#### Using the API
+
+Issue a ```GET``` request to the [```/portfolios/{portfolio}/positions/{position}/values```](/content/api/paths?id=get-portfoliosportfolio) endpoint.
+
+Notice `position` path parameter is required. To query valuations for the entire portfolio, use an asterisk character (`*`).
+
+```shell
+curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337/positions/*/values' \
+  -X 'GET' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtZSIsImNvbnRleHRJZCI6ImJhcmNoYXJ0IiwiaWF0IjoxNjQ1NDY5MDIxfQ.l6kg72DiUmuDU0OkUA8sdnsrrgSR0XAiMiGvtB9wG08'
+```

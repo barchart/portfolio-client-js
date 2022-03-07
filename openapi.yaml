@@ -552,6 +552,22 @@ components:
       required:
         - barhcart
 
+    misc-valuation:
+      type: object
+      properties:
+        date:
+          type: string
+          description: The date of the valuation (YYYY-MM-DD).
+          format: date
+          example: '2020-08-30'
+        market:
+          type: number
+          description: The market value of the position (or portfolio).
+          example: 20924.08
+      required:
+        - date
+        - market
+
     enum-currency:
       type: string
       description: Currencies used to trade and value instruments and positions.
@@ -1072,6 +1088,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/transaction-mutate-result'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}/positions/{position}/values:
+    get:
+      summary: Returns a daily history of valuations for positions (or an entire portfolio).
+      description: Returns a daily history of valuations for positions (or an entire portfolio).
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - name: portfolio
+          in: path
+          required: true
+          description: The identifier of the portfolio.
+          schema:
+            type: string
+            format: uuid
+        - name: position
+          in: path
+          required: true
+          description: The identifier a specific position. Use an asterisk (*) to retrieve all positions, resulting in the valuation of the entire portfolio.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: An array of valuations (with zero, one, or many items).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/misc-valuation'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':

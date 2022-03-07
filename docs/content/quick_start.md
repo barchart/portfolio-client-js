@@ -243,7 +243,7 @@ curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-9
   -H 'Accept: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtZSIsImNvbnRleHRJZCI6ImJhcmNoYXJ0IiwiaWF0IjoxNjQ1NDY5MDIxfQ.l6kg72DiUmuDU0OkUA8sdnsrrgSR0XAiMiGvtB9wG08' \
   -H 'Content-Type: application/json;charset=UTF-8' \
-  --data-binary '{"portfolio":"0004e3e3-b001-42b5-90f7-8bb06ea5b337","position":"new","type":"B","instrument":{"symbol":{"barchart":"AAPL","display":"AAPL"}},"date":"2020-11-30","price":"182.56","quantity":"100","fee":"0"}'
+  --data-binary '{"portfolio":"0004e3e3-b001-42b5-90f7-8bb06ea5b337","position":"new","type":"B","instrument":{"symbol":{"barchart":"AAPL","display":"AAPL"}},"date":"2022-01-03","price":"182.56","quantity":"100","fee":"0"}'
 ```
 
 ## Querying Portfolios

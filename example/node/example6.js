@@ -43,7 +43,7 @@ console.info(`Example: Initializing PortfolioGateway and connecting to test envi
 PortfolioGateway.forTest(JwtProvider.forTest(userId, contextId)).then((pg) => {
 	portfolioGateway = pg;
 
-	console.info(`Example: Querying all positions for user [ ${userId}@${contextId} ].`);
+	console.info(`Example: Querying all positions, regardless of portfolio, for user [ ${userId}@${contextId} ].`);
 
 	return portfolioGateway.readPositions()
 		.then((positions) => {

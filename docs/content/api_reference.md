@@ -47,6 +47,7 @@
 * [transaction-mutate-result](/content/api/components?id=schemastransaction-mutate-result)
 * [transaction-mutate-result-positions](/content/api/components?id=schemastransaction-mutate-result-positions)
 * [misc-symbols](/content/api/components?id=schemasmisc-symbols)
+* [misc-valuation](/content/api/components?id=schemasmisc-valuation)
 * [enum-currency](/content/api/components?id=schemasenum-currency)
 * [enum-instrument-type](/content/api/components?id=schemasenum-instrument-type)
 * [enum-position-direction](/content/api/components?id=schemasenum-position-direction)
@@ -76,3 +77,4 @@
 * [GET /portfolios/{portfolio}/positions/{position}/transactions/{seqeunce}](/content/api/paths?id=get-portfoliosportfoliopositionspositiontransactionsseqeunce)
 * [PUT /portfolios/{portfolio}/positions/{position}/transactions/{seqeunce}](/content/api/paths?id=put-portfoliosportfoliopositionspositiontransactionsseqeunce)
 * [DELETE /portfolios/{portfolio}/positions/{position}/transactions/{seqeunce}](/content/api/paths?id=delete-portfoliosportfoliopositionspositiontransactionsseqeunce)
+* [GET /portfolios/{portfolio}/positions/{position}/values](/content/api/paths?id=get-portfoliosportfoliopositionspositionvalues)

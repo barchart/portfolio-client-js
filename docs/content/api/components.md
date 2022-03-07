@@ -722,6 +722,26 @@
 
 * * *
 
+### misc-valuation :id=schemasmisc-valuation
+**Type**: <code>Object</code>
+
+| Name | Type | Required | Nullable | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| date | <code>String</code> | true | false | The date of the valuation (YYYY-MM-DD). |
+| market | <code>Number</code> | true | false | The market value of the position (or portfolio). |
+
+
+**Example**:
+
+```json
+{
+  "date": "2020-08-30",
+  "market": 20924.08
+}
+```
+
+* * *
+
 ### enum-currency :id=schemasenum-currency
 **Type**: <code>String</code>
 

@@ -22,6 +22,7 @@
         * [.TransactionCreate](#SchemaTransactionCreate) : <code>Object</code>
         * [.TransactionCreateInstrument](#SchemaTransactionCreateInstrument) : <code>Object</code>
         * [.TransactionMutateResult](#SchemaTransactionMutateResult) : <code>Object</code>
+        * [.Valuation](#SchemaValuation) : <code>Object</code>
         * [.Symbols](#SchemaSymbols) : <code>Object</code>
 
 
@@ -308,6 +309,20 @@
 | positions.deleted | [<code>Array.&lt;Position&gt;</code>](#SchemaPosition) | <p>All positions which were deleted.</p> |
 | summaries | [<code>Array.&lt;PositionSummary&gt;</code>](#SchemaPositionSummary) | <p>All position summaries created or updated.</p> |
 | replaced | <code>Boolean</code> | <p>If true, the position (and position summaries) need to be replaced.</p> |
+
+
+* * *
+
+### Schema.Valuation :id=schemavaluation
+> The valuation of a position (or portfolio) on a given day.
+
+**Kind**: static typedef of [<code>Schema</code>](#Schema)  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| date | <code>Day</code> | <p>The date of the valuation.</p> |
+| market | <code>Number</code> | <p>The market value of the position (or portfolio).</p> |
 
 
 * * *
