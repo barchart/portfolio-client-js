@@ -69,7 +69,7 @@ PortfolioGateway.forTest(JwtProvider.forTest(myUserId, myContextId))
 	});
 ```
 
-> **Try it out** by executing the [```example1.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example1.js) script. See the [Examples: Sample Code](/content/appendices/sample_code) appendix for detailed instructions.
+> Try it out by executing the [```example1.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example1.js) script. See the [Examples: Sample Code](/content/appendices/sample_code) appendix for detailed instructions.
 
 #### Using the API
 
@@ -130,7 +130,7 @@ portfolioGateway.createPortfolio(data)
 
 The result will be [```Portfolio```](/content/sdk/lib-data?id=schemaportfolio) object. Notice the ```portfolio``` and ```user``` identifiers have been assigned.
 
-> **Try it out** by executing the [```example2.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example2.js) script.
+> Try it out by executing the [```example2.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example2.js) script.
 
 #### Using the API
 
@@ -148,7 +148,7 @@ Construct a JSON object, matching the [```portfolio-create```](/content/api/comp
 }
 ```
 
-**IMPORTANT NOTE:** The backend is sensitive to the ordering of attributes in JSON documents. More on this later.
+> The backend is sensitive to the ordering of attributes in JSON documents. More on this later.
 
 Once you've constructed a JSON object, ```POST``` it to the [```/portfolios```](/content/api/paths?id=post-portfolios) endpoint. Here is a cURL example:
 
@@ -209,7 +209,7 @@ portfolioGateway.createTransaction(data)
 
 After the transaction has been processed, you'll receive a [```TransactionMutateResult```](/content/sdk/lib-data?id=schematransactionmutateresult) object. This object includes the positions that were affected. More on this later.
 
-> **Try it out** by executing the [```example3.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example3.js) script.
+> Try it out by executing the [```example3.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example3.js) script.
 
 #### Using the API
 
@@ -233,7 +233,7 @@ Construct a JSON object, matching the [```transaction-create```](/content/api/co
 }
 ```
 
-**IMPORTANT NOTE:** The backend is sensitive to the ordering of attributes in JSON documents. More on this later.
+> The backend is sensitive to the ordering of attributes in JSON documents. More on this later.
 
 Once you've constructed a JSON object, ```POST``` it to the [```/portfolios/{portfolio}/positions/{position}/transactions```](/content/api/paths?id=post-portfoliosportfoliopositionspositiontransactions) endpoint. Here is a cURL example:
 
@@ -261,7 +261,7 @@ portfolioGateway.readPortfolios()
 	});
 ```
 
-> **Try it out** by executing the [```example4.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example4.js) script.
+> Try it out by executing the [```example4.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example4.js) script.
 
 #### Using the API
 
@@ -291,7 +291,7 @@ portfolioGateway.readPositions()
 	});
 ```
 
-> **Try it out** by executing the [```example5.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example5.js) script.
+> Try it out by executing the [```example5.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example5.js) script.
 
 #### Using the API
 
@@ -331,7 +331,7 @@ portfolioGateway.readTransactions(query)
 	});
 ```
 
-> **Try it out** by executing the [```example6.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example6.js) script.
+> Try it out by executing the [```example6.js```](https://github.com/barchart/portfolio-client-js/blob/master/example/node/example6.js) script.
 
 #### Using the API
 
