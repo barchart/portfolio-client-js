@@ -7,7 +7,7 @@
   * [Working with Positions](/content/concepts/working_with_positions)
   * [Working with Transactions](/content/concepts/working_with_transactions)
 * Appendices
-  * [Data Model: Basic Structures](/content/appendices/data_model_structures)
+  * [Data Model: Special Structures](/content/appendices/data_model_structures)
   * [Data Model: Enumerations](/content/appendices/data_model_enumerations)
   * [Enhancements: Other Barchart Services](/content/appendices/other_barchart_services)
   * [Examples: Demo Applications](/content/appendices/demo_applications)
