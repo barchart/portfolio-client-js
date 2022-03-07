@@ -247,7 +247,7 @@ In the event the specified portfolio doesn't exist, the response will be an empt
 
 ## Portfolio Value-Over-Time
 
-The _Portfolio Service_ maintains a history of end-of-day valuations [for each individual position](/content/concepts/working_with_positions?id=position-value-over-time). It also maintains a history of end-of-day valuations for the entire portfolio. This data is often presented visually in a chart. Here is an example of the data:
+The _Portfolio Service_ maintains a history of end-of-day valuations [for each individual position](/content/concepts/working_with_positions?id=position-value-over-time) and for the entire portfolio. Here is some example data:
 
 | date       |  valuation |
 |------------|-----------:|
@@ -259,7 +259,6 @@ The _Portfolio Service_ maintains a history of end-of-day valuations [for each i
 | 2022-03-02 |  21,036.53 |
 | 2022-03-03 |  21,077.96 |
 | ...        |            |
-
 
 The valuation of a position is calculated by multiplying the position's `open` quantity by the last available quote price. 
 
