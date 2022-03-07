@@ -282,7 +282,7 @@ The function will return an ordered array of [Valuation](/content/sdk/lib-data?i
 
 #### Using the API
 
-Issue a ```GET``` request to the [```/portfolios/{portfolio}/positions/{position}/values```](/content/api/paths?id=get-portfoliosportfolio) endpoint.
+Issue a ```GET``` request to the [```/portfolios/{portfolio}/positions/{position}/values```](/content/api/paths?id=get-portfoliosportfoliopositionspositionvalues) endpoint.
 
 Notice `position` path parameter is required. To query valuations for the entire portfolio, use an asterisk character (`*`).
 
@@ -292,3 +292,5 @@ curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-9
   -H 'Accept: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtZSIsImNvbnRleHRJZCI6ImJhcmNoYXJ0IiwiaWF0IjoxNjQ1NDY5MDIxfQ.l6kg72DiUmuDU0OkUA8sdnsrrgSR0XAiMiGvtB9wG08'
 ```
+
+An array [```misc-valuation```](/content/api/components?id=schemasmisc-valuation) components is returned.
