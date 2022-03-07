@@ -1,6 +1,6 @@
 ## Portfolio Data Structures
 
-A portfolio is a container for positions, with a single owner. Here are the most common data structures used by the SDK/API:
+**A _portfolio_ is a container for positions, owned by a single user.** Here are the most common data structures used by the SDK/API:
 
 | SDK Schema                                                        | API Component                                                          | Purpose                       | Attributes                                                             |
 |-------------------------------------------------------------------|------------------------------------------------------------------------|-------------------------------|------------------------------------------------------------------------|
