@@ -278,7 +278,7 @@ portfolioGateway.readValuations(portfolio)
 	});
 ```
 
-The function will return an ordered array of [Valuation](/content/sdk/lib-data?id=schemavaluation) objects, beginning with the first available valuation and ending with the latest valuation.
+The function returns an ordered array of [Valuation](/content/sdk/lib-data?id=schemavaluation) objects, beginning with the first available valuation and ending with the latest valuation.
 
 #### Using the API
 
