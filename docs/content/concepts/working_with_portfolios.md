@@ -6,7 +6,7 @@ A portfolio is a container for positions, with a single owner. Here are the most
 |-------------------------------------------------------------------|------------------------------------------------------------------------|-------------------------------|------------------------------------------------------------------------|
 | [Portfolio](/content/sdk/lib-data?id=schemaportfolio)             | [portfolio](/content/api/components?id=schemasportfolio)               | Response data (e.g. queries). | All.                                                                   |
 | [PortfolioCreate](/content/sdk/lib-data?id=schemaportfoliocreate) | [portfolio-create](/content/api/components?id=schemasportfolio-create) | Request to create portfolio.  | Some. Excludes attributes assigned remotely (e.g. unique identifiers). |
-| [PortfolioUpdate](/content/sdk/lib-data?id=schemaportfolioupdate) | [portfolio-update](/content/api/components?id=schemasportfolio-update) | Request to update portfolio.  | Some. Excludes attributes assigned remotely (e.g. unique identifiers). |
+| [PortfolioUpdate](/content/sdk/lib-data?id=schemaportfolioupdate) | [portfolio-update](/content/api/components?id=schemasportfolio-update) | Request to update portfolio.  | Some. Requires unique identifier. Include only attributes to change.   |
 
 ## Portfolio Operations
 
@@ -58,7 +58,7 @@ portfolioGateway.createPortfolio(portfolioCreate)
 	});
 ```
 
-Notice the resulting [```Portfolio```](/content/sdk/lib-data?id=schemaportfolio) object has unique identifier — a [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) — assigned to the `portfolio` property. You'll need this later (e.g. when [querying positions](/content/concepts/working_with_positions?id=position-queries) or [executing new transactions](/content/concepts/working_with_transactions?id=executing-a-transaction)).
+Notice the resulting [```Portfolio```](/content/sdk/lib-data?id=schemaportfolio) object has unique identifier — a [```UUID```](https://en.wikipedia.org/wiki/Universally_unique_identifier) — assigned to the `portfolio` property. You'll need this later (e.g. when [querying positions](/content/concepts/working_with_positions?id=position-queries) or [executing new transactions](/content/concepts/working_with_transactions?id=executing-a-transaction)).
 
 #### Using the API
 
@@ -78,7 +78,7 @@ Construct a JSON object conforming to the [```portfolio-create```](/content/api/
 
 > Unlike the SDK example, the ```timezone``` and ```defaults.currency``` properties have ```String``` values. Refer to the [Data Model: Enumerations](/content/appendices/data_model_enumerations) appendix for the correct codes.
 
-Once you've constructed a suitable JSON object, ```POST``` it to the [/portfolios](/content/api/paths?id=post-portfolios) endpoint.
+Once you've constructed a suitable JSON object, ```POST``` it to the [```/portfolios```](/content/api/paths?id=post-portfolios) endpoint.
 
 ```shell
 curl 'https://portfolio-test.aws.barchart.com/v1/portfolios' \
@@ -146,7 +146,7 @@ First, construct a JSON object matching the [```portfolio-update```](/content/ap
 }
 ```
 
-Then, issue a ```PUT``` request to the [/portfolios/{portfolio}](/content/api/paths?id=put-portfoliosportfolio) endpoint.
+Then, issue a ```PUT``` request to the [```/portfolios/{portfolio}```](/content/api/paths?id=put-portfoliosportfolio) endpoint.
 
 ```shell
 curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337' \
@@ -167,7 +167,7 @@ Again, we'll assume your portfolio identifier is ```0004e3e3-b001-42b5-90f7-8bb0
 
 #### Using the SDK
 
-Pass the `portfolio` identifier to the [```PortfolioGateway.deletePortfolio```](/content/sdk/lib-gateway?id=portfoliogatewaydeleteportfolio) function. 
+Pass the ```portfolio``` identifier to the [```PortfolioGateway.deletePortfolio```](/content/sdk/lib-gateway?id=portfoliogatewaydeleteportfolio) function. 
 
 ```javascript
 const portfolio = '0004e3e3-b001-42b5-90f7-8bb06ea5b337';
@@ -180,7 +180,7 @@ portfolioGateway.deletePortfolios(portfolio)
 
 #### Using the API
 
-Issue a ```DELETE``` request to the [/portfolios/{portfolio}](/content/api/paths?id=delete-portfoliosportfolio) endpoint.
+Issue a ```DELETE``` request to the [```/portfolios/{portfolio}```](/content/api/paths?id=delete-portfoliosportfolio) endpoint.
 
 ```shell
 curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337' \
@@ -190,9 +190,56 @@ curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-9
 
 ## Portfolio Queries
 
+There are two distinct ways to query the active user's portfolios:
+
+* Query for all portfolios,
+* Query for a single portfolio (given the portfolio's identifier)
+
 #### Using the SDK
 
+The [PortfolioGateway.readPortfolios](/content/sdk/lib-gateway?id=portfoliogatewayreadportfolios) function retrieves the active user's [Portfolio](/content/sdk/lib-data?id=schemaportfolio) objects:
+
+```javascript
+portfolioGateway.readPortfolios()
+	.then((results) => {
+		console.info(`Example: The active user has [ ${results.length} ] portfolio(s).`);
+	});
+```
+
+Pass an optional string parameter to restrict the results to a single portfolio:
+
+```javascript
+const portfolio = '0004e3e3-b001-42b5-90f7-8bb06ea5b337';
+
+portfolioGateway.readPortfolios(portfolio)
+	.then((results) => {
+		console.info(`Example: The user ${results.length === 1 ? 'does' : 'does not'} own a portfolio with identifier [ ${portfolio} ].`);
+	});
+```
+
 #### Using the API
+
+Issue a ```GET``` request to the [```/portfolios/{portfolio}```](/content/api/paths?id=get-portfoliosportfolio) endpoint.
+
+Notice `portfolio` path parameter is required. To query for all portfolios, use an asterisk character (`*`). To query for a specific portfolio, use its identifier (a UUID). Here are two examples:
+
+```shell
+curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/*' \
+  -X 'GET' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtZSIsImNvbnRleHRJZCI6ImJhcmNoYXJ0IiwiaWF0IjoxNjQ1NDY5MDIxfQ.l6kg72DiUmuDU0OkUA8sdnsrrgSR0XAiMiGvtB9wG08'
+```
+
+The response contain an array of [```portfolio```](/content/api/components?id=schemasportfolio) components.
+
+```shell
+curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337' \
+  -X 'GET' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtZSIsImNvbnRleHRJZCI6ImJhcmNoYXJ0IiwiaWF0IjoxNjQ1NDY5MDIxfQ.l6kg72DiUmuDU0OkUA8sdnsrrgSR0XAiMiGvtB9wG08'
+```
+
+In the event the specified portfolio doesn't exist, the response will be an empty array.
 
 ## Portfolio Value-Over-Time
 
