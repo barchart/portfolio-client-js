@@ -260,7 +260,7 @@ The _Portfolio Service_ maintains a history of end-of-day valuations [for each i
 | 2022-03-03 |  21,077.96 |
 | ...        |            |
 
-The valuation of a position is calculated by multiplying the position's `open` quantity by the last available quote price. 
+Generally speaking, the valuation of a position is calculated by multiplying the position's `open` quantity by the last available quote price. 
 
 The valuation of a portfolio, on a given day, is the sum of the valuations of the portfolio's positions on that day — with one important caveat. The aggregate value of the portfolio is presented in the portfolio's default currency. So, each position denominated in a foreign currency will first be translated into portfolio's default currency, using the exchange rate on the given day.
 
