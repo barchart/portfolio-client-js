@@ -2,21 +2,21 @@
 
 The [```@barchart/common-js/lang/Day```](https://github.com/barchart/common-js/blob/master/lang/Day.js) class is used to represent a "day" without consideration for time or timezone.
 
-For example, let's say a dividend was paid on February 10, 2022. In that case, we use a ```Day``` instance.
+For example, we use a ```Day``` instances indicate when dividend payments are made. We don't know the exact time payments will occur; we only know that payments will occur sometime over the course of the specified day.
 
-> It would be incorrect to use more traditional time-aware structures like a [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) because we don't know the exact time the dividend is paid. Using a "[magic value](https://en.wikipedia.org/wiki/Magic_number_(programming))", like midnight, only increases the changes for misunderstandings and bugs. 
+> In many cases, use time-aware structures, like the JavaScript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) class is less than ideal. Either an exact time is unknown or unimportant. Furthermore, use of "[magic values](https://en.wikipedia.org/wiki/Magic_number_(programming))", like midnight, can lead to misunderstandings and bugs. 
 
-Here are some actual uses of the `Day` class:
+Here are some cases where the ```Day``` class is used by the Portfolio Service:
 
-* The ```date``` a transaction was executed.
-* The ```date``` position snapshot is compiled.
-* The ```effective``` date for a dividend or split.
+* The day a dividend was paid.
+* The day a transaction was executed.
+* The day a position "snapshot" was taken.
 
-Generally speaking, the Barchart Portfolio Service does not store times. When two transactions occur on the say day, ordering is controlled by ```sequence``` number — not by the time of day.
+Generally speaking, the Barchart Portfolio Service does not store times. In some cases, a time is implied (e.g. "end of day").
 
 #### Using the SDK
 
-The ```PortfolioGateway``` expects to receive ```Day``` instances as input (usually as attribute values of larger objects). Similarly, the ```PortfolioGateway``` will return ```Day``` instances as output (usually as attribute values of larger objects).
+The SDK expects to receive ```Day``` instances as input (usually as attribute values). Similarly, the SDK will return ```Day``` instances as output (usually as attribute values).
 
 So, as you use the SDK, you'll need to create ```Day``` instances (e.g. when building a [```TransactionCreate```](/content/sdk/lib-data?id=schematransactioncreate) object).
 
@@ -42,7 +42,7 @@ For JSON serialization, ```Day``` instances are converted to ```string``` values
 
 Mathematical operations involving money must be accurate — to the penny. However, since JavaScript uses [floating point numbers](https://en.wikipedia.org/wiki/IEEE_754), some decimal values cannot be represented — leading to potentially confusing results.
 
-Here's a classic example, using Node.js; however, the same concerns apply to the JavaScript execution engines used by modern web browsers:
+Here's a classic example, using Node.js:
 
 ```shell
 % node
@@ -52,13 +52,14 @@ Type ".help" for more information.
 0.30000000000000004
 ```
 
-Consequently, the JavaScript SDK uses a custom data structure to ensure the accuracy of decimal-based operations. Specifically, decimal values are represented using the [```@barchart/common-js/lang/Decimal```](https://github.com/barchart/common-js/blob/master/lang/Decimal.js) class. Here are some actual uses of the `Decimal` class:
+Consequently, the Portfolio Service uses a custom data structure to ensure the accuracy of decimal-based operations. Specifically, decimal values are stored as instances of the [```@barchart/common-js/lang/Decimal```](https://github.com/barchart/common-js/blob/master/lang/Decimal.js) class. Here are some usages, specific to the Portfolio Service:
 
 * The unit ```price``` of a transaction.
 * The ```quantity``` of a transaction.
 * The aggregate size of an ```open``` position.
 
-Any numeric value, used as input to (or output from) the SDK, will be an instance of the ```Decimal``` class. In the following example, the ```Decimal``` class is used to begin construction of a [```TransactionCreate```](/content/sdk/lib-data?id=schematransactioncreate) object:
+
+#### Using the SDK
 
 ```javascript
 const Decimal = require('@barchart/common-js/lang/Decimal');
@@ -78,6 +79,72 @@ For JSON serialization, ```Decimal``` instances are converted to ```string``` va
   "quantity": "100"
 }
 ```
+
+## Enum
+
+Many programming languages use the concept of an _enumeration_ to restrict an attribute's value to a limited set of choices. Unfortunately, native JavaScript does not include this concept.
+
+To make up for this shortcoming, the [```@barchart/common-js/lang/Enum```](https://github.com/barchart/common-js/blob/master/lang/Enum.js) class is used throughout the Portfolio Service.
+
+Here is a fictitious implementation:
+
+```javascript
+const Enum = require('@barchart/common-js/lang/Enum');
+
+class PrimaryColor extends Enum {
+	constructor(code, hex) {
+		super(code, code);
+
+		this._hex = hex;
+	}
+
+	get hex() {
+		return this._hex;
+	}
+	
+	static RED() {
+		return red;
+	}
+	
+	static GREEN() {
+		return green;
+	}
+	
+	static BLUE() {
+		return blue;
+	}
+}
+
+const red = new PrimaryColor('RED', '#ff0000');
+const green = new PrimaryColor('GREEN', '#00ff00');
+const blue = new PrimaryColor('BLUE', '#0000ff');
+```
+
+Portfolio-specific implementations, like ```TransactionType``` are described in the [Enumerations](/content/appendices/data_model_enumerations) appendix.
+
+#### Using the SDK
+
+For the purposes of the SDK, restricted attributes will use enumeration items. In the following example, the ```TransactionType``` class is used to construct part of a [```TransactionCreate```](/content/sdk/lib-data?id=schematransactioncreate) object:
+
+```javascript
+const TransactionType = require('@barchart/portfolio-api-common/lib/data/TransactionType');
+
+const txCreate = { };
+
+txCreate.type = TransactionType.BUY;
+```
+
+#### Using the API
+
+For JSON serialization, ```Enum``` instances are converted to ```string``` values for transmission to (or from) the Barchart Portfolio Service. Here's an example:
+
+```json
+{
+  "type": "B"
+}
+```
+
+
 
 
 

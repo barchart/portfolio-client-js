@@ -1,12 +1,12 @@
 ## Currency
 
-The [```@barchart/common-js/lang/Currency```](https://github.com/barchart/common-js/blob/master/lang/Currency.js) enumeration defines the currencies used in the Portfolio Service. Currencies are used as:
+The [```@barchart/common-js/lang/Currency```](https://github.com/barchart/common-js/blob/master/lang/Currency.js) enumeration defines well-known currencies. Here are some example usages:
 
 * The default currency for a portfolio (used for reporting and translation purposes).
 * The currency an instrument trades in.
 * The currency a cash position is denominated in.
 
-Three currencies are currently supported; however, more could be added, if desired.
+At present, only three currencies are defined:
 
 | Enumeration Item (SDK) | String Code (API) | Description          |
 |------------------------|-------------------|----------------------|

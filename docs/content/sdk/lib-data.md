@@ -22,8 +22,8 @@
         * [.TransactionCreate](#SchemaTransactionCreate) : <code>Object</code>
         * [.TransactionCreateInstrument](#SchemaTransactionCreateInstrument) : <code>Object</code>
         * [.TransactionMutateResult](#SchemaTransactionMutateResult) : <code>Object</code>
-        * [.Valuation](#SchemaValuation) : <code>Object</code>
         * [.Symbols](#SchemaSymbols) : <code>Object</code>
+        * [.Valuation](#SchemaValuation) : <code>Object</code>
 
 
 * * *
@@ -313,20 +313,6 @@
 
 * * *
 
-### Schema.Valuation :id=schemavaluation
-> The valuation of a position (or portfolio) on a given day.
-
-**Kind**: static typedef of [<code>Schema</code>](#Schema)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| date | <code>Day</code> | <p>The date of the valuation.</p> |
-| market | <code>Number</code> | <p>The market value of the position (or portfolio).</p> |
-
-
-* * *
-
 ### Schema.Symbols :id=schemasymbols
 > The symbols (i.e. codes) used to identify an instrument (e.g. &quot;AAPL&quot; for Apple Inc).
 
@@ -337,6 +323,20 @@
 | --- | --- | --- |
 | barchart | <code>String</code> | <p>The symbol used by Barchart (required to lookup quotes and determine prices).</p> |
 | display | <code>String</code> | <p>The symbol used for display purposes (often the same as the Barchart symbol).</p> |
+
+
+* * *
+
+### Schema.Valuation :id=schemavaluation
+> The valuation of a position (or portfolio) on a given day.
+
+**Kind**: static typedef of [<code>Schema</code>](#Schema)  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| date | <code>Day</code> | <p>The date of the valuation.</p> |
+| market | <code>Number</code> | <p>The market value of the position (or portfolio).</p> |
 
 
 * * *
