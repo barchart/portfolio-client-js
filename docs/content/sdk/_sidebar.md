@@ -9,7 +9,7 @@
 * Appendices
   * [Data Model: Structures](/content/appendices/data_model_structures)
   * [Data Model: Enumerations](/content/appendices/data_model_enumerations)
-  * [Enhancements: Other Barchart Services](/content/appendices/other_barchart_services)
+  * [Enhancements: Other Services](/content/appendices/other_services)
   * [Examples: Demo Applications](/content/appendices/demo_applications)
   * [Examples: Sample Code](/content/appendices/sample_code)
 <!-- sdk_open -->
