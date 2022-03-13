@@ -1,6 +1,8 @@
+**A _portfolio_ is a container for positions.** Each portfolio is owned by a single user.
+
 ## Portfolio Data Structures
 
-**A _portfolio_ is a container for positions, owned by a single user.** Here are the most common data structures used by the SDK/API:
+Here are the most common data structures used by the SDK/API:
 
 | SDK Schema                                                        | API Component                                                          | Purpose                       | Attributes                                                             |
 |-------------------------------------------------------------------|------------------------------------------------------------------------|-------------------------------|------------------------------------------------------------------------|
