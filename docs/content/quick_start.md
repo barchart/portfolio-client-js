@@ -90,7 +90,7 @@ Three important data structures are used to track investments:
 
 * A **portfolio** is a container for investments, owned by a single user.
 * A **position** represents a single investment (e.g. common stock in Apple computer).
-* A **transaction** which represents a change to a position, where one or more transactions compose a position.
+* A **transaction** which represents a change to a position.
 
 In the next few sections, we will:
 

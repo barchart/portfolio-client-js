@@ -2,7 +2,7 @@
 
 ## Portfolio Data Structures
 
-Here are the most common data structures used by the SDK/API:
+Here are the most common portfolio-related data structures used by the SDK/API:
 
 | SDK Schema                                                        | API Component                                                          | Purpose                       | Attributes                                                             |
 |-------------------------------------------------------------------|------------------------------------------------------------------------|-------------------------------|------------------------------------------------------------------------|
