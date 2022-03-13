@@ -1,4 +1,4 @@
-A position represents an investment in one instrument (e.g. a stock or mutual fund). A position is the result of the execution of one or more transactions for the instrument.
+**A position represents an investment in one instrument.**  A position is the result, in aggregate, of the execution of one or more transactions for the same instrument and a position is contained within a portfolio.
 
 ## Position Data Structures
 
