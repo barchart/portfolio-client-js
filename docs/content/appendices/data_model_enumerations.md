@@ -31,6 +31,14 @@ The [```@barchart/portfolio-api-common/lib/data/InstrumentType```](https://githu
 
 ## PositionDirection
 
+Broadly speaking, the [```@barchart/portfolio-api-common/lib/data/PositionDirection```](https://github.com/barchart/portfolio-api-common/blob/master/lib/data/PositionDirection.js) enumeration defines whether the investor would benefit as the price of the instrument increases or decreases. Each [```PositionSnapshot```](/content/sdk/lib-data?id=schemapositionsnapshot) indicates the current direction of the position.
+
+| Enumeration Item (SDK)        | String Code (API) | Investor Benefits   | Position Quantity |
+|-------------------------------|-------------------|---------------------|-------------------|
+| ```PositionDirection.LONG```  | ```"LONG"```      | As price increases. | Positive          |
+| ```PositionDirection.SHORT``` | ```"SHORT"```     | As price decreases. | Negative          |
+| ```PositionDirection.EVEN```  | ```"EVEN"```      | Neutral.            | Zero              |
+
 ## PositionSummaryFrame
 
 ## TransactionType
