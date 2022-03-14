@@ -289,7 +289,7 @@ The function returns an ordered array of [Valuation](/content/sdk/lib-data?id=sc
 
 Issue a ```GET``` request to the [```/portfolios/{portfolio}/positions/{position}/values```](/content/api/paths?id=get-portfoliosportfoliopositionspositionvalues) endpoint.
 
-Notice `position` path parameter is required. To query valuations for the entire portfolio, use an asterisk character (`*`).
+Notice the `position` path parameter is required. To query valuations for the entire portfolio, use an asterisk character (`*`).
 
 ```shell
 curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337/positions/*/values' \
