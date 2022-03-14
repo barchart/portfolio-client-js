@@ -6,6 +6,9 @@
   * [Working with Portfolios](/content/concepts/working_with_portfolios)
   * [Working with Positions](/content/concepts/working_with_positions)
   * [Working with Transactions](/content/concepts/working_with_transactions)
+  * [Understanding Position Summaries](/content/concepts/understanding_position_summaries)
+  * [Understanding Position Valuations](/content/concepts/understanding_position_valuations)
+  * [Understanding Corporate Actions](/content/concepts/understanding_corporate_actions)
 * Appendices
   * [Data Model: Structures](/content/appendices/data_model_structures)
   * [Data Model: Enumerations](/content/appendices/data_model_enumerations)
