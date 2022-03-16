@@ -965,17 +965,23 @@
 
 **Content Type**: <code>application/json</code>
 
-**Response Type:** [<code>Array&lt;misc-valuation&gt;</code>](/content/api/components?id=schemasmisc-valuation)
+**Response Type:** [<code>misc-valuation-container</code>](/content/api/components?id=schemasmisc-valuation-container)
 
 **Example**:
 
 ```
-[
-  {
-    "date": "2020-08-30",
-    "market": 20924.08
-  }
-]
+{
+  "user": "ad4b0bd3-b5e1-4f7d-96b1-54d22d99960d",
+  "portfolio": "6ce12dec-bba9-4bf3-b865-8a4eab6e43a3",
+  "position": "96af2dc6-2236-4a82-84c2-bff969389e00",
+  "currency": "USD",
+  "valuations": [
+    {
+      "date": "2020-08-30",
+      "market": 20924.08
+    }
+  ]
+}
 ```
 
 * * *

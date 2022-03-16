@@ -23,18 +23,11 @@ The following portfolio-related operations are available:
 
 ## Creating a Portfolio
 
-Creating a new portfolio is simple and straight-forward. The portfolio will be owned by the active user (as specified in your [JWT claims](/content/concepts/connecting_to_barchart?id=token-payload)). Once you've created a portfolio, you can execute transactions, thereby creating positions.
-
-There is no restriction on the number of portfolios that can be created by a user.
+Creating a new portfolio is simple. The portfolio will be owned by the active user (as specified in your [JWT claims](/content/concepts/connecting_to_barchart?id=token-payload)) and there is no restriction on the number of portfolios the user can create.
 
 #### Using the SDK
 
-First, create a JavaScript object that conforms to the [```PortfolioCreate```](/content/sdk/lib-data?id=schemaportfoliocreate) schema. In essence, you're providing:
-
-* the ```name``` of the portfolio,
-* the ```timezone``` of the portfolio's owner,
-* the default currency of the portfolio, and
-* some ```defaults``` for handling positions.
+First, create a JavaScript object that conforms to the [```PortfolioCreate```](/content/sdk/lib-data?id=schemaportfoliocreate) schema.
 
 ```JavaScript
 const Currency = require('@barchart/common-js/lang/Currency'),
@@ -60,7 +53,7 @@ portfolioGateway.createPortfolio(portfolioCreate)
 	});
 ```
 
-Notice the resulting [```Portfolio```](/content/sdk/lib-data?id=schemaportfolio) object has unique identifier — a [```UUID```](https://en.wikipedia.org/wiki/Universally_unique_identifier) — assigned to the `portfolio` property. You'll need this later (e.g. when [querying positions](/content/concepts/working_with_positions?id=position-queries) or [executing new transactions](/content/concepts/working_with_transactions?id=executing-a-transaction)).
+Notice the resulting [```Portfolio```](/content/sdk/lib-data?id=schemaportfolio) object has unique identifier — a [```UUID```](https://en.wikipedia.org/wiki/Universally_unique_identifier) — assigned to the `portfolio` property. You'll need this later (e.g. when [querying positions](/content/concepts/working_with_positions?id=position-queries) or [executing transactions](/content/concepts/working_with_transactions?id=executing-a-transaction)).
 
 #### Using the API
 
@@ -78,7 +71,7 @@ Construct a JSON object conforming to the [```portfolio-create```](/content/api/
 }
 ```
 
-> Unlike the SDK example, the ```timezone``` and ```defaults.currency``` properties have ```String``` values. Refer to the [Data Model: Enumerations](/content/appendices/data_model_enumerations) appendix for the correct codes.
+> Refer to the [Data Model: Enumerations](/content/appendices/data_model_enumerations) appendix for the correct codes to use for the ```timezone``` and ```defaults.currency``` attributes.
 
 Once you've constructed a suitable JSON object, ```POST``` it to the [```/portfolios```](/content/api/paths?id=post-portfolios) endpoint.
 
@@ -99,7 +92,7 @@ Once created, the following attributes can be updated:
 * The `timezone` of the portfolio.
 * The `defaults` applied to new positions.
 
-This operation does _not_ affect existing positions contained within the portfolio. The portfolio's positions can be modified by [executing transactions](/content/concepts/working_with_transactions?id=executing-a-transaction).
+> This operation does _not_ affect existing positions contained within the portfolio. Positions can be modified by [executing transactions](/content/concepts/working_with_transactions?id=executing-a-transaction).
 
 #### Using the SDK
 
@@ -249,53 +242,4 @@ In the event the specified portfolio doesn't exist, the response will be an empt
 
 ## Portfolio Value-Over-Time
 
-The _Portfolio Service_ maintains a history of end-of-day valuations [for each individual position](/content/concepts/working_with_positions?id=position-value-over-time) and for the entire portfolio. Here is some example data:
-
-| date       |  valuation |
-|------------|-----------:|
-| ...        |            |
-| 2022-02-26 |  20,924.08 |
-| 2022-02-27 |  20,924.08 |
-| 2022-02-28 |  20,919.05 |
-| 2022-03-01 |  20,794.13 |
-| 2022-03-02 |  21,036.53 |
-| 2022-03-03 |  21,077.96 |
-| ...        |            |
-
-Generally speaking, the valuation of a position is calculated by multiplying the position's `open` quantity by the last available quote price. 
-
-The valuation of a portfolio, on a given day, is the sum of the valuations of the portfolio's positions on that day — with one important caveat. The aggregate value of the portfolio is presented in the portfolio's default currency. So, each position denominated in a foreign currency will first be translated into portfolio's default currency, using the exchange rate on the given day.
-
-> Generally speaking, these valuations are updated nightly. However, if the current user has been inactive for over a week, the Portfolio Service stops updating his/her valuations on a nightly basis. Once the user accesses the API again, an asynchronous job to backfill missing data points will be scheduled, although it may take several minutes to complete.
-
-Again, in the following examples, we'll assume your portfolio identifier is ```0004e3e3-b001-42b5-90f7-8bb06ea5b337```.
-
-#### Using the SDK
-
-To obtain a complete history of daily valuations for the position, execute the [```PortfolioGateway.readValuations```](/content/sdk/lib-gateway?id=portfoliogatewayreadvaluations) function.
-
-```javascript
-const portfolio = '0004e3e3-b001-42b5-90f7-8bb06ea5b337';
-
-portfolioGateway.readValuations(portfolio)
-	.then((valuations) => {
-		console.info(`Example: Valuation query for portfolio [ ${portfolio} ] completed with [ ${valuations.length} ] daily valuation(s).`);
-	});
-```
-
-The function returns an ordered array of [Valuation](/content/sdk/lib-data?id=schemavaluation) objects, beginning with the first available valuation and ending with the latest valuation.
-
-#### Using the API
-
-Issue a ```GET``` request to the [```/portfolios/{portfolio}/positions/{position}/values```](/content/api/paths?id=get-portfoliosportfoliopositionspositionvalues) endpoint.
-
-Notice the `position` path parameter is required. To query valuations for the entire portfolio, use an asterisk character (`*`).
-
-```shell
-curl 'https://portfolio-test.aws.barchart.com/v1/portfolios/0004e3e3-b001-42b5-90f7-8bb06ea5b337/positions/*/values' \
-  -X 'GET' \
-  -H 'Accept: application/json' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtZSIsImNvbnRleHRJZCI6ImJhcmNoYXJ0IiwiaWF0IjoxNjQ1NDY5MDIxfQ.l6kg72DiUmuDU0OkUA8sdnsrrgSR0XAiMiGvtB9wG08'
-```
-
-An array [```misc-valuation```](/content/api/components?id=schemasmisc-valuation) components is returned.
+The _Portfolio Service_ maintains a history of end-of-day valuations for the entire portfolio. Refer to the [Key Concepts: Working with Valuations](/content/concepts/working_with_valuations) section for more information.

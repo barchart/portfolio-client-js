@@ -1,10 +1,5 @@
 const process = require('process');
 
-const Day = require('@barchart/common-js/lang/Day'),
-	Decimal = require('@barchart/common-js/lang/Decimal'),
-	Currency = require('@barchart/common-js/lang/Currency'),
-	Timezones = require('@barchart/common-js/lang/Timezones');
-
 const PortfolioGateway = require('./../../lib/gateway/PortfolioGateway'),
 	JwtProvider = require('./../../lib/security/JwtProvider');
 
@@ -69,8 +64,8 @@ PortfolioGateway.forTest(JwtProvider.forTest(userId, contextId)).then((pg) => {
 			console.info(`Example: Querying valuation history for portfolio [ ${portfolio.portfolio} ].`);
 
 			return portfolioGateway.readValuations(portfolio.portfolio)
-				.then((valuations) => {
-					console.info(`Example: Completed valuation history query for portfolio [ ${portfolio.portfolio} ] with [ ${valuations.length} ] daily valuation(s).`);
+				.then((data) => {
+					console.info(`Example: Completed valuation history query for portfolio [ ${data.portfolio} ] with [ ${data.valuations.length} ] daily valuation(s).`);
 				});
 		});
 }).then(() => {

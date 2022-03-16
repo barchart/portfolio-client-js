@@ -25,6 +25,8 @@ Positions are not created directly. Instead, positions are automatically created
 
 ## Updating a Position
 
+By default, each new position inherits some basic behaviors from its containing portfolio.
+
 #### Using the SDK
 
 #### Using the API
@@ -44,3 +46,5 @@ Positions are not created directly. Instead, positions are automatically created
 ## Position Summaries
 
 ## Position Value-Over-Time
+
+The _Portfolio Service_ maintains end-of-day valuations for each individual position. Refer to the [Key Concepts: Working with Valuations]([for each individual position](/content/concepts/working_with_valuations) section for more information.

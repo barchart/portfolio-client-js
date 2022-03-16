@@ -47,6 +47,7 @@
 * [transaction-mutate-result](/content/api/components?id=schemastransaction-mutate-result)
 * [transaction-mutate-result-positions](/content/api/components?id=schemastransaction-mutate-result-positions)
 * [misc-symbols](/content/api/components?id=schemasmisc-symbols)
+* [misc-valuation-container](/content/api/components?id=schemasmisc-valuation-container)
 * [misc-valuation](/content/api/components?id=schemasmisc-valuation)
 * [enum-currency](/content/api/components?id=schemasenum-currency)
 * [enum-instrument-type](/content/api/components?id=schemasenum-instrument-type)

@@ -23,6 +23,7 @@
         * [.TransactionCreateInstrument](#SchemaTransactionCreateInstrument) : <code>Object</code>
         * [.TransactionMutateResult](#SchemaTransactionMutateResult) : <code>Object</code>
         * [.Symbols](#SchemaSymbols) : <code>Object</code>
+        * [.ValuationContainer](#SchemaValuationContainer) : <code>Object</code>
         * [.Valuation](#SchemaValuation) : <code>Object</code>
 
 
@@ -323,6 +324,24 @@
 | --- | --- | --- |
 | barchart | <code>String</code> | <p>The symbol used by Barchart (required to lookup quotes and determine prices).</p> |
 | display | <code>String</code> | <p>The symbol used for display purposes (often the same as the Barchart symbol).</p> |
+
+
+* * *
+
+### Schema.ValuationContainer :id=schemavaluationcontainer
+> An ordered list of end-of-day valuations (for an individual position or an entire portfolio),
+> along with metadata regarding the valuations (e.g. portfolio, position, currency).
+
+**Kind**: static typedef of [<code>Schema</code>](#Schema)  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| user | <code>String</code> | <p>The identifier for the portfolio's owner.</p> |
+| portfolio | <code>String</code> | <p>The identifier for the portfolio.</p> |
+| position | <code>String</code> | <p>The identifier for the position being valued. If this value is an asterisk (<code>*</code>), then valuation refers to the entire portfolio.</p> |
+| [currency] | <code>Currency</code> | <p>The currency of the valuations (absent when no valuations are returned).</p> |
+| valuations | [<code>Array.&lt;Valuation&gt;</code>](#SchemaValuation) | <p>The end-of-day valuations.</p> |
 
 
 * * *
