@@ -28,6 +28,7 @@ module.exports = (() => {
 	const REQUIRED_CURRENCIES = [
 		Currency.CAD,
 		Currency.EUR,
+		Currency.HKD,
 		Currency.JPY,
 		Currency.USD
 	];
