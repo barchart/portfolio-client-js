@@ -1686,6 +1686,7 @@ module.exports = (() => {
 	const REQUIRED_CURRENCIES = [
 		Currency.CAD,
 		Currency.EUR,
+		Currency.HKD,
 		Currency.JPY,
 		Currency.USD
 	];
@@ -6565,10 +6566,21 @@ module.exports = (() => {
       return eur;
     }
     /**
-     * The Japanese Yen
+     * The Hong Kong Dollar.
      *
+     * @public
      * @returns {Currency}
-     * @constructor
+     */
+
+
+    static get HKD() {
+      return hkd;
+    }
+    /**
+     * The Japanese Yen.
+     *
+     * @public
+     * @returns {Currency}
      */
 
 
@@ -6595,6 +6607,7 @@ module.exports = (() => {
 
   const cad = new Currency('CAD', 'Canadian Dollar', 2, 'CAD$');
   const eur = new Currency('EUR', 'Euro', 2, 'EUR');
+  const hkd = new Currency('HKD', 'Hong Kong Dollar', 2, 'HK$');
   const jpy = new Currency('JPY', 'Japanese Yen', 2, 'JPY');
   const usd = new Currency('USD', 'US Dollar', 2, 'US$');
   return Currency;
