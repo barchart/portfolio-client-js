@@ -1,6 +1,7 @@
 # @barchart/portfolio-api-common
 
 [![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiSXBJTDZKWVFmSGVOSG9XQUgwbzB3Um5BZ0JsN2h1U3NQNWNhZTRHMlJKTVpEVVlVMENPaEFmR0NYS29rSStZWmZ5M1d0YVh2eXErVGhiekFtdHBpVmhJPSIsIml2UGFyYW1ldGVyU3BlYyI6ImROM3ZLMURwaXFyekltdDYiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://github.com/barchart/portfolio-api-common)
+[![NPM](https://img.shields.io/npm/v/@barchart/portfolio-api-common)](https://www.npmjs.com/package/@barchart/portfolio-api-common)
 
 A *public* library of shared JavaScript code used by Barchart's paper-trading portfolio system.
 
