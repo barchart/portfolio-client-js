@@ -497,8 +497,8 @@ module.exports = (() => {
 	formatters.set(TransactionType.CREDIT, [ basicFormatter, cashFormatter, creditFormatter ]);
 	formatters.set(TransactionType.MERGER_OPEN, [ basicFormatter ]);
 	formatters.set(TransactionType.MERGER_CLOSE, [ basicFormatter, mergerFormatter ]);
-	formatters.set(TransactionType.SPINOFF, [ basicFormatter, spinoffFormatter ]);
-	formatters.set(TransactionType.SPINOFF_OPEN, [ basicFormatter ]);
+	formatters.set(TransactionType.SPINOFF, [ basicFormatter, spinoffFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.SPINOFF_OPEN, [ basicFormatter, averageCostFormatter ]);
 
 	function getInstrumentTypePriority(type) {
 		if (type === InstrumentType.CASH) {
