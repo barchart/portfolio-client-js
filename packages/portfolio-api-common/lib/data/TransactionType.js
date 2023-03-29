@@ -450,18 +450,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A merger opening.
-		 *
-		 * @public
-		 * @static
-		 * @returns {TransactionType}
-		 */
-		static get MERGER_OPEN() {
-			return mergerOpen;
-		}
-
-		/**
-		 * A merger closing.
+		 * A closing transaction as a result of a merger (for the acquired company).
 		 *
 		 * @public
 		 * @static
@@ -472,7 +461,18 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A spin-off.
+		 * A opening transaction as a result of a merger (for the acquiring company).
+		 *
+		 * @public
+		 * @static
+		 * @returns {TransactionType}
+		 */
+		static get MERGER_OPEN() {
+			return mergerOpen;
+		}
+
+		/**
+		 * A spin-off (transaction applies to the original company).
 		 *
 		 * @public
 		 * @static
@@ -483,7 +483,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A spin-off opening.
+		 * A spin-off (transaction opens a position in a new company).
 		 *
 		 * @public
 		 * @static
@@ -510,11 +510,11 @@ module.exports = (() => {
 	const feeUnits = new TransactionType('FU', 'Fee Units', 'Fee', 0, false, false, false, false, true, false, false, false, false, false, false, false, false);
 	const delist = new TransactionType('DL', 'Delist', 'Delist', 1, false, false, false, false, false, false, true, false, true, false, false, false, false);
 
-	const mergerOpen = new TransactionType('MO', 'Merger Open', 'Merger Open', 1, false, false, false, true, false, false, true, true, false, true, false, true, true);
 	const mergerClose = new TransactionType('MC', 'Merger Close', 'Merger Close', 1, false, false, false, false, true, false, true, false, true, false, true, false, false);
+	const mergerOpen = new TransactionType('MO', 'Merger Open', 'Merger Open', 1, false, false, false, true, false, false, true, true, false, true, false, true, true);
 
 	const spinoff = new TransactionType('SPF', 'Spinoff', 'Spinoff', 1, false, false, false, false, false, false, true, false, false, false, true, false, false);
-	const spinoffOpen = new TransactionType('SPFO', 'Spinoff Open', 'Spinoff Open', 1, false, false, false, true, false, false, true, true, false, true, false, false, false);
+	const spinoffOpen = new TransactionType('SPFO', 'Spinoff Open', 'Spinoff Open', 1, false, false, false, true, false, false, true, true, false, true, false, true, true);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false, false, false, false, false);
 	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
