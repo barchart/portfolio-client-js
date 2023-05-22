@@ -48,9 +48,10 @@ module.exports = (() => {
 	 * @param {Object[]} summaries - The positions summaries (for all positions).
 	 * @param {PositionSummaryFrame=} reportFrame - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 * @param {Day=} reportDate - The end date for the report frame.
+	 * @param {Array[]=} currencyPairs - The currency pairs.
 	 */
 	class PositionContainer {
-		constructor(definitions, portfolios, positions, summaries, reportFrame, reportDate) {
+		constructor(definitions, portfolios, positions, summaries, reportFrame, reportDate, currencyPairs) {
 			assert.argumentIsArray(definitions, 'definitions', PositionTreeDefinition, 'PositionTreeDefinition');
 			assert.argumentIsArray(portfolios, 'portfolios');
 			assert.argumentIsArray(positions, 'positions');
@@ -59,6 +60,15 @@ module.exports = (() => {
 
 			if (reportFrame) {
 				assert.argumentIsRequired(reportDate, 'reportDate', Day, 'Day');
+			}
+
+			if (currencyPairs) {
+				assert.argumentIsArray(currencyPairs, 'currencyPairs');
+
+				currencyPairs.forEach((currencyPair) => {
+					assert.argumentIsArray(currencyPair, 'currencyPair', Currency, 'Currency');
+					assert.argumentIsValid(currencyPair.length, 'currencyPair.length', l => l === 2, 'has two items');
+				});
 			}
 
 			this._definitions = definitions;
@@ -144,15 +154,25 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			const forexCurrencyCodes = array.unique(Object.keys(this._currencies).concat(REQUIRED_CURRENCIES.map(c => c.code)));
+			if (is.array(currencyPairs)) {
+				currencyPairs.forEach((currencyPair) => {
+					currencyPair.sort((a, b) => comparators.compareStrings(a.code, b.code));
+				});
 
-			this._forexSymbols = forexCurrencyCodes.reduce((symbols, code) => {
-				if (code !== DEFAULT_CURRENCY.code) {
-					symbols.push(`^${code}${DEFAULT_CURRENCY.code}`);
-				}
+				this._forexSymbols = array.unique(currencyPairs.map((currencyPair) => {
+					return `^${currencyPair[0].code}${currencyPair[1].code}`;
+				}));
+			} else {
+				const forexCurrencyCodes = array.unique(Object.keys(this._currencies).concat(REQUIRED_CURRENCIES.map(c => c.code)));
 
-				return symbols;
-			}, [ ]);
+				this._forexSymbols = forexCurrencyCodes.reduce((symbols, code) => {
+					if (code !== DEFAULT_CURRENCY.code) {
+						symbols.push(`^${code}${DEFAULT_CURRENCY.code}`);
+					}
+
+					return symbols;
+				}, [ ]);
+			}
 
 			this._forexQuotes = this._forexSymbols.map((symbol) => {
 				return Rate.fromPair(Decimal.ONE, symbol);
