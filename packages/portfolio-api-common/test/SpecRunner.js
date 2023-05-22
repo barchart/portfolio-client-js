@@ -3125,6 +3125,22 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Changes the group currency.
+		 *
+		 * @public
+		 * @param {Currency} currency
+		 */
+		changeCurrency(currency) {
+			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+
+			if (this._currency !== currency) {
+				this._currency = currency;
+
+				this.refresh();
+			}
+		}
+
+		/**
 		 * Sets the immediate parent group (allowing for calculation of relative
 		 * percentages).
 		 *
@@ -3262,6 +3278,8 @@ module.exports = (() => {
 			}
 
 			this._dataFormat.portfolioType = portfolioType;
+
+			this.changeCurrency(this._definition.currencySelector({ portfolio }));
 		}
 
 		/**
@@ -3425,6 +3443,14 @@ module.exports = (() => {
 
 			this._dataActual.description = this._description;
 			this._dataFormat.description = this._description;
+
+			if (this._definition.type !== PositionLevelType.PORTFOLIO || this._key !== PositionLevelDefinition.getKeyForPortfolioGroup(portfolio)) {
+				return;
+			}
+
+			const currencySelector = this._definition.currencySelector;
+
+			this.changeCurrency(currencySelector({ portfolio }));
 		}));
 
 		this._disposeStack.push(fundamentalBinding);
