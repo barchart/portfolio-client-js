@@ -44,8 +44,8 @@ module.exports = (() => {
 	 * @public
 	 * @param {PositionTreeDefinition[]} definitions
 	 * @param {Object[]} portfolios - The portfolios.
-	 * @param {Object[]} positions - The positions (for all of portfolios).
-	 * @param {Object[]} summaries - The positions summaries (for all of positions).
+	 * @param {Object[]} positions - The positions (for all portfolios).
+	 * @param {Object[]} summaries - The positions summaries (for all positions).
 	 * @param {PositionSummaryFrame=} reportFrame - If specified, locks the current (and previous) periods to a specific frame, use for reporting.
 	 * @param {Day=} reportDate - The end date for the report frame.
 	 */
