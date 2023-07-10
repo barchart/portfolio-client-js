@@ -1,8 +1,11 @@
 const gulp = require('gulp');
 
-const fs = require('fs');
+const fs = require('fs'),
+	path = require('path');
 
-const browserify = require('browserify'),
+const AWS = require('aws-sdk'),
+	awspublish = require('gulp-awspublish'),
+	browserify = require('browserify'),
 	buffer = require('vinyl-buffer'),
 	exec = require('child_process').exec,
 	git = require('gulp-git'),
@@ -11,6 +14,7 @@ const browserify = require('browserify'),
 	jasmine = require('gulp-jasmine'),
 	jshint = require('gulp-jshint'),
 	prompt = require('gulp-prompt'),
+	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
 	source = require('vinyl-source-stream');
 
@@ -71,6 +75,29 @@ gulp.task('embed-version', () => {
 		.pipe(replace(/(version:\s*')([0-9]+\.[0-9]+\.[0-9]+)(')/g, '$1' + version + '$3'))
 		.pipe(gulp.dest('./lib/'));
 });
+
+gulp.task('upload-documentation-site-to-S3', () => {
+	let publisher = awspublish.create({
+		region: 'us-east-1',
+		params: {
+			Bucket: 'docs.barchart.com'
+		},
+		credentials: new AWS.SharedIniFileCredentials({profile: 'default'})
+	});
+
+	let headers = {'Cache-Control': 'no-cache'};
+	let options = {};
+
+	return gulp.src(['./docs/**'])
+		.pipe(rename((filePath) => {
+			filePath.dirname = path.join('portfolio', filePath.dirname);
+		}))
+		.pipe(publisher.publish(headers, options))
+		.pipe(publisher.cache())
+		.pipe(awspublish.reporter());
+});
+
+gulp.task('deploy-documentation', gulp.series('upload-documentation-site-to-S3'));
 
 gulp.task('commit-changes', () => {
 	return gulp.src([ './', './test/', './package.json', './lib/index.js', './test/SpecRunner.js' ])
@@ -133,6 +160,7 @@ gulp.task('release', gulp.series(
 	'commit-changes',
 	'push-changes',
 	'create-tag',
+	'deploy-documentation',
 	'print-github'
 ));
 
