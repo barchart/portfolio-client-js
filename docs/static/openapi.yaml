@@ -1,9 +1,13 @@
-openapi: 3.0.0
+openapi: 3.0.1
 
 info:
-  title: Portfolio API
-  description: Portfolio API
-  version: 3.7.0
+  title: Barchart Portfolio API
+  description: Barchart Portfolio API
+  version: 3.8.1
+  contact:
+    name: Barchart Support
+    url: https://help.barchart.com/support/home
+    email: support@barchart.com
 
 components:
   securitySchemes:

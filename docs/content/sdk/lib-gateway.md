@@ -315,7 +315,7 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| protocol | <code>String</code> | <p>The protocol of the of the Portfolio web service (either http or https).</p> |
+| protocol | <code>String</code> | <p>The protocol of the Portfolio web service (either http or https).</p> |
 | host | <code>String</code> | <p>The hostname of the Portfolio web service.</p> |
 | port | <code>Number</code> | <p>The TCP port number of the Portfolio web service.</p> |
 | environment | <code>String</code> | <p>A description of the environment we're connecting to.</p> |

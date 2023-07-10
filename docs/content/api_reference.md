@@ -1,8 +1,8 @@
 # API Reference
 
-## Portfolio API 3.7.0 {docsify-ignore}
+## Barchart Portfolio API 3.8.1 {docsify-ignore}
     
-> Portfolio API
+> Barchart Portfolio API
 
 ## OpenAPI Definition {docsify-ignore}
 
