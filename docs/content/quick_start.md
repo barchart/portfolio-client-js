@@ -148,7 +148,7 @@ Construct a JSON object, matching the [```portfolio-create```](/content/api/comp
 }
 ```
 
-> The backend is sensitive to the ordering of attributes in JSON documents. More on this later.
+> The backend is sensitive to the ordering of attributes in JSON documents. See the [Interaction Basics: JavaScript and JSON](/content/concepts/interaction_basics?id=javascript-objects-and-json) section for details.
 
 Once you've constructed a JSON object, ```POST``` it to the [```/portfolios```](/content/api/paths?id=post-portfolios) endpoint. Here is a cURL example:
 
@@ -233,7 +233,7 @@ Construct a JSON object, matching the [```transaction-create```](/content/api/co
 }
 ```
 
-> The backend is sensitive to the ordering of attributes in JSON documents. More on this later.
+> The backend is sensitive to the ordering of attributes in JSON documents. See the [Interaction Basics: JavaScript and JSON](/content/concepts/interaction_basics?id=javascript-objects-and-json) section for details.
 
 Once you've constructed a JSON object, ```POST``` it to the [```/portfolios/{portfolio}/positions/{position}/transactions```](/content/api/paths?id=post-portfoliosportfoliopositionspositiontransactions) endpoint. Here is a cURL example:
 
