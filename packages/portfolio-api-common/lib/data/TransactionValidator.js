@@ -296,6 +296,10 @@ module.exports = (() => {
 	associateDirections(InstrumentType.FUND, PositionDirection.EVEN);
 	associateDirections(InstrumentType.FUND, PositionDirection.LONG);
 
+	associateDirections(InstrumentType.FUTURE, PositionDirection.EVEN);
+	associateDirections(InstrumentType.FUTURE, PositionDirection.LONG);
+	associateDirections(InstrumentType.FUTURE, PositionDirection.SHORT);
+
 	associateDirections(InstrumentType.OTHER, PositionDirection.EVEN);
 	associateDirections(InstrumentType.OTHER, PositionDirection.LONG);
 
