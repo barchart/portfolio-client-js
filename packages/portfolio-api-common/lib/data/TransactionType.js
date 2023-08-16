@@ -493,6 +493,16 @@ module.exports = (() => {
 			return spinoffOpen;
 		}
 
+		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {TransactionType|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(TransactionType, code);
+		}
+
 		toString() {
 			return `[TransactionType (code=${this.code})]`;
 		}

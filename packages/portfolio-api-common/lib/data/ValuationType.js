@@ -17,17 +17,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Given a code, returns the enumeration item.
-		 *
-		 * @public
-		 * @param {String} code
-		 * @returns {ValuationType|null}
-		 */
-		static parse(code) {
-			return Enum.fromCode(ValuationType, code);
-		}
-
-		/**
 		 * A valuation method that uses average costing.
 		 *
 		 * @public
@@ -45,6 +34,17 @@ module.exports = (() => {
 		 */
 		static get FIFO() {
 			return fifo;
+		}
+
+		/**
+		 * Given a code, returns the enumeration item.
+		 *
+		 * @public
+		 * @param {String} code
+		 * @returns {ValuationType|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(ValuationType, code);
 		}
 
 		toString() {

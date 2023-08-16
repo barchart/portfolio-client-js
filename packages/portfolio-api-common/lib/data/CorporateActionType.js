@@ -105,6 +105,16 @@ module.exports = (() => {
 			return spinoff;
 		}
 
+		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {CorporateActionType|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(CorporateActionType, code);
+		}
+
 		toString() {
 			return `[CorporateActionType (code=${this.code})]`;
 		}

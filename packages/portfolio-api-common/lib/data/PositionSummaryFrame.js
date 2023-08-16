@@ -174,6 +174,16 @@ module.exports = (() => {
 			return ytd;
 		}
 
+		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {PositionSummaryFrame|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(PositionSummaryFrame, code);
+		}
+
 		toString() {
 			return `[PositionSummaryFrame (code=${this.code})]`;
 		}

@@ -246,6 +246,16 @@ module.exports = (() => {
 		}
 
 		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {InstrumentType|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(InstrumentType, code);
+		}
+
+		/**
 		 * Generates an identifier for the instrument.
 		 *
 		 * @public

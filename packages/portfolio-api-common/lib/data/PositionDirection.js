@@ -99,6 +99,16 @@ module.exports = (() => {
 		}
 
 		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {PositionDirection|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(PositionDirection, code);
+		}
+
+		/**
 		 * Given an open quantity, returns a {@link PositionDirection} that
 		 * describes the quantity.
 		 *
