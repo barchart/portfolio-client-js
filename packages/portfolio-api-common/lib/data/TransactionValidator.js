@@ -263,8 +263,10 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUND, TransactionType.SPINOFF, false);
 	associateTypes(InstrumentType.FUND, TransactionType.SPINOFF_OPEN, false);
 
-	associateTypes(InstrumentType.FUTURE, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN, PositionDirection.SHORT ]);
-	associateTypes(InstrumentType.FUTURE, TransactionType.SELL, true, [ PositionDirection.LONG, PositionDirection.EVEN, PositionDirection.SHORT ]);
+	associateTypes(InstrumentType.FUTURE, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.FUTURE, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.FUTURE, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.FUTURE, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
 
 	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
