@@ -93,6 +93,13 @@ module.exports = (() => {
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
+
+		.withField('instrument.future.expiration', DataType.DAY, true)
+		.withField('instrument.future.tick', DataType.DECIMAL, true)
+		.withField('instrument.future.value', DataType.DECIMAL, true)
+		.withField('instrument.option.expiration', DataType.DAY, true)
+		.withField('instrument.option.strike', DataType.DECIMAL, true)
+
 		.withField('position', DataType.STRING)
 		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
@@ -129,6 +136,13 @@ module.exports = (() => {
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
+
+		.withField('instrument.future.expiration', DataType.DAY, true)
+		.withField('instrument.future.tick', DataType.DECIMAL, true)
+		.withField('instrument.future.value', DataType.DECIMAL, true)
+		.withField('instrument.option.expiration', DataType.DAY, true)
+		.withField('instrument.option.strike', DataType.DECIMAL, true)
+
 		.withField('position', DataType.STRING)
 		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
