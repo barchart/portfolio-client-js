@@ -212,6 +212,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * A transaction cannot be created  after the instrument's expiration date.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_INSTRUMENT_EXPIRED() {
+			return transactionCreateFailedInstrumentExpired;
+		}
+
+		/**
 		 * The transaction (of this type) cannot be created by a user, instead,
 		 * it is created and managed by the system (e.g. dividends).
 		 *
@@ -431,6 +442,8 @@ module.exports = (() => {
 	const transactionCreateFailedInvalidTermination = new FailureType('TRANSACTION_CREATE_FAILED_INVALID_TERMINATION', 'Unable to process operation, a {U|transactionType.description} must be the final transaction in the position history.', false);
 	const transactionCreateFailedAfterTermination = new FailureType('TRANSACTION_CREATE_FAILED_AFTER_TERMINATION', 'Unable to process operation, one or more transactions would exist after {L|termination}, the final day of trading for this instrument', false);
 	const transactionCreateFailedInvalidPriceForInstrument = new FailureType('TRANSACTION_CREATE_FAILED_PRICE_INVALID_FOR_INSTRUMENT', 'Unable to process transaction, the trade price for {U|symbol} must be a multiple of {tick} (the minimum tick increment).', false);
+	const transactionCreateFailedInstrumentExpired = new FailureType('TRANSACTION_CREATE_FAILED_INSTRUMENT_EXPIRED', 'Unable to process transaction, the transaction date {date} is after the expiration date {expiration}.', false);
+
 
 	const transactionCreateFailedTypeReserved = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_RESERVED', 'Unable to create {U|type.description} transaction, this type of transaction is managed by the system.');
 	const transactionCreateFailedReinvestPriceUnavailable = new FailureType('TRANSACTION_CREATE_FAILED_REINVEST_PRICE_UNAVAILABLE', 'Unable to create transaction, a dividend was paid on {L|day}; however no historical price is available for this day. To successfully create this transaction, please turn off dividend reinvestment for this position.');
