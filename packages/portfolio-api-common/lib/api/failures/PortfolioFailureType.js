@@ -444,7 +444,6 @@ module.exports = (() => {
 	const transactionCreateFailedInvalidPriceForInstrument = new FailureType('TRANSACTION_CREATE_FAILED_PRICE_INVALID_FOR_INSTRUMENT', 'Unable to process transaction, the trade price for {U|symbol} must be a multiple of {tick} (the minimum tick increment).', false);
 	const transactionCreateFailedInstrumentExpired = new FailureType('TRANSACTION_CREATE_FAILED_INSTRUMENT_EXPIRED', 'Unable to process transaction, the transaction date {date} is after the expiration date {expiration}.', false);
 
-
 	const transactionCreateFailedTypeReserved = new FailureType('TRANSACTION_CREATE_FAILED_TYPE_RESERVED', 'Unable to create {U|type.description} transaction, this type of transaction is managed by the system.');
 	const transactionCreateFailedReinvestPriceUnavailable = new FailureType('TRANSACTION_CREATE_FAILED_REINVEST_PRICE_UNAVAILABLE', 'Unable to create transaction, a dividend was paid on {L|day}; however no historical price is available for this day. To successfully create this transaction, please turn off dividend reinvestment for this position.');
 	const transactionCreateFailedReinvestInvalid = new FailureType('TRANSACTION_CREATE_FAILED_REINVEST_INVALID', 'Unable to create transaction, short positions do not allow dividends to be reinvested.');
