@@ -464,9 +464,9 @@ module.exports = (() => {
 		data.marketPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
 		data.quantityPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.open;
 
-		data.periodGain = calculatePeriodGain(position.instrument.type, data.initiate, currentSummary, previousSummary1);
-		data.periodGainPrevious = calculatePeriodGain(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
-		data.periodGainPrevious2 = calculatePeriodGain(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
+		data.periodGain = calculatePeriodGain(position.instrument, data.initiate, currentSummary, previousSummary1);
+		data.periodGainPrevious = calculatePeriodGain(position.instrument, data.initiate, previousSummary1, previousSummary2);
+		data.periodGainPrevious2 = calculatePeriodGain(position.instrument, data.initiate, previousSummary2, previousSummary3);
 
 		data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal.ZERO;
 		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
@@ -478,6 +478,11 @@ module.exports = (() => {
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
+		} else if (position.instrument.type === InstrumentType.FUTURE) {
+			const minimumTick = position.instrument.future.tick;
+			const minimumTickValue = position.instrument.future.value;
+
+			data.basisPrice = basis.divide(snapshot.open).divide(minimumTickValue).multiply(minimumTick);
 		} else {
 			data.basisPrice = basis.divide(snapshot.open);
 		}
@@ -509,6 +514,8 @@ module.exports = (() => {
 			market = snapshot.value;
 		} else if (position.instrument.type === InstrumentType.CASH) {
 			market = snapshot.open;
+		} else if (position.instrument.type === InstrumentType.FUTURE) {
+			market = getFuturesValue(position.instrument, snapshot.open, price) || snapshot.value;
 		} else {
 			if (price) {
 				market = snapshot.open.multiply(price);
@@ -544,7 +551,15 @@ module.exports = (() => {
 		let unrealizedTodayChange;
 
 		if (data.previousPrice && price) {
-			unrealizedToday = market.subtract(snapshot.open.multiply(data.previousPrice));
+			let unrealizedTodayBase;
+
+			if (position.instrument.type === InstrumentType.FUTURE) {
+				unrealizedTodayBase = getFuturesValue(position.instrument, snapshot.open, data.previousPrice);
+			} else {
+				unrealizedTodayBase = snapshot.open.multiply(data.previousPrice);
+			}
+
+			unrealizedToday = market.subtract(unrealizedTodayBase);
 
 			if (data.unrealizedToday !== null) {
 				unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
@@ -576,7 +591,14 @@ module.exports = (() => {
 			}
 
 			if (priceToUse !== null) {
-				let unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
+				let unrealized;
+
+				if (position.instrument.type === InstrumentType.FUTURE) {
+					unrealized = getFuturesValue(position.instrument, currentSummary.end.open, priceToUse).add(currentSummary.end.basis);
+				} else {
+					unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
+				}
+
 				let unrealizedChange;
 
 				if (data.unrealized !== null) {
@@ -588,7 +610,7 @@ module.exports = (() => {
 				data.unrealized = unrealized;
 				data.unrealizedChange = unrealizedChange;
 
-				let periodGain = calculatePeriodGain(position.instrument.type, data.initiate, currentSummary, previousSummary, priceToUse);
+				let periodGain = calculatePeriodGain(position.instrument, data.initiate, currentSummary, previousSummary, priceToUse);
 				let periodGainChange;
 
 				if (data.periodGain !== null) {
@@ -643,8 +665,10 @@ module.exports = (() => {
 		return direction || PositionDirection.LONG;
 	}
 
-	function calculatePeriodGain(type, direction, currentSummary, previousSummary, overridePrice) {
+	function calculatePeriodGain(instrument, direction, currentSummary, previousSummary, overridePrice) {
 		let returnRef;
+
+		const type = instrument.type;
 
 		if (currentSummary && type !== InstrumentType.CASH) {
 			let startValue;
@@ -658,7 +682,11 @@ module.exports = (() => {
 			let endValue;
 
 			if (overridePrice) {
-				endValue = currentSummary.end.open.multiply(overridePrice);
+				if (type === InstrumentType.FUTURE) {
+					endValue = getFuturesValue(instrument, currentSummary.end.open, overridePrice);
+				} else {
+					endValue = currentSummary.end.open.multiply(overridePrice);
+				}
 			} else {
 				endValue = currentSummary.end.value;
 			}
@@ -777,6 +805,19 @@ module.exports = (() => {
 		}
 
 		return snapshot;
+	}
+
+	function getFuturesValue(instrument, contracts, price) {
+		if (price || price === 0) {
+			const priceDecimal = new Decimal(price);
+
+			const minimumTick = instrument.future.tick;
+			const minimumTickValue = instrument.future.value;
+
+			return priceDecimal.divide(minimumTick).multiply(minimumTickValue).multiply(contracts);
+		} else {
+			return null;
+		}
 	}
 
 	return PositionItem;

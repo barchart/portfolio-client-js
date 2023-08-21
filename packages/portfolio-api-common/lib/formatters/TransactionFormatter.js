@@ -50,7 +50,7 @@ module.exports = (() => {
 
 				if (instruments.hasOwnProperty(position)) {
 					let instrument = instruments[position];
-					let formatted = { instrument: instrument, raw: {} };
+					let formatted = { instrument, raw: {} };
 
 					const formatterFunctions = formatters.get(transaction.type);
 
@@ -139,7 +139,14 @@ module.exports = (() => {
 		let average;
 
 		if (basis && open && !open.getIsZero()) {
-			average = basis.divide(open).absolute();
+			if (f.instrument.type === InstrumentType.FUTURE) {
+				const minimumTick = f.instrument.future.tick;
+				const minimumTickValue = f.instrument.future.value;
+
+				average = basis.divide(open).multiply(minimumTick).divide(minimumTickValue).absolute();
+			} else {
+				average = basis.divide(open).absolute();
+			}
 		} else {
 			average = '';
 		}
