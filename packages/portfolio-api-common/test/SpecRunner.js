@@ -21,13 +21,14 @@ module.exports = (() => {
 	 * @param {Boolean} canSwitchDirection
 	 * @param {Boolean} usesSymbols
 	 * @param {Boolean} hasCorporateActions
+	 * @param {Boolean} allowFractional
 	 * @param {Boolean} closeFractional
 	 * @param {Boolean} roundQuantity
 	 * @param {Boolean} strictOrdering
 	 * @param {Function} generator
 	 */
 	class InstrumentType extends Enum {
-		constructor(code, description, alternateDescription, canExistEmpty, canReinvest, canShort, canSwitchDirection, usesSymbols, hasCorporateActions, closeFractional, roundQuantity, strictOrdering, generator) {
+		constructor(code, description, alternateDescription, canExistEmpty, canReinvest, canShort, canSwitchDirection, usesSymbols, hasCorporateActions, allowFractional, closeFractional, roundQuantity, strictOrdering, generator) {
 			super(code, description);
 
 			assert.argumentIsRequired(alternateDescription, 'alternateDescription', String);
@@ -37,9 +38,10 @@ module.exports = (() => {
 			assert.argumentIsRequired(canSwitchDirection, 'canSwitchDirection', Boolean);
 			assert.argumentIsRequired(usesSymbols, 'usesSymbols', Boolean);
 			assert.argumentIsRequired(hasCorporateActions, 'hasCorporateActions', Boolean);
+			assert.argumentIsRequired(allowFractional, 'allowFractional', Boolean);
 			assert.argumentIsRequired(closeFractional, 'closeFractional', Boolean);
 			assert.argumentIsRequired(roundQuantity, 'roundQuantity', Boolean);
-			assert.argumentIsRequired(roundQuantity, 'strictOrdering', Boolean);
+			assert.argumentIsRequired(strictOrdering, 'strictOrdering', Boolean);
 			assert.argumentIsRequired(generator, 'generator', Function);
 
 			this._alternateDescription = alternateDescription;
@@ -50,6 +52,7 @@ module.exports = (() => {
 			this._canSwitchDirection = canSwitchDirection;
 			this._usesSymbols = usesSymbols;
 			this._hasCorporateActions = hasCorporateActions;
+			this._allowFractional = allowFractional;
 			this._closeFractional = closeFractional;
 			this._roundQuantity = roundQuantity;
 			this._strictOrdering = strictOrdering;
@@ -126,6 +129,17 @@ module.exports = (() => {
 		 */
 		get hasCorporateActions() {
 			return this._hasCorporateActions;
+		}
+
+		/**
+		 * Indicates if a position can have a fractional value; otherwise, only
+		 * integer values are allowed.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get allowFractional() {
+			return this._allowFractional;
 		}
 
 		/**
@@ -211,6 +225,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * A futures contract.
+		 *
+		 * @public
+		 * @static
+		 * @returns {InstrumentType}
+		 */
+		static get FUTURE() {
+			return future;
+		}
+
+		/**
 		 * An undefined asset (e.g. a house, or a collectible, or a salvaged alien spaceship).
 		 *
 		 * @public
@@ -222,6 +247,16 @@ module.exports = (() => {
 		}
 
 		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {InstrumentType|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(InstrumentType, code);
+		}
+
+		/**
 		 * Generates an identifier for the instrument.
 		 *
 		 * @public
@@ -230,7 +265,9 @@ module.exports = (() => {
 		 * @returns {String}
 		 */
 		static generateIdentifier(instrument) {
-			return map[instrument.type.code].generateIdentifier(instrument);
+			const type = Enum.fromCode(InstrumentType, instrument.type.code);
+
+			return type.generateIdentifier(instrument);
 		}
 
 		/**
@@ -247,6 +284,8 @@ module.exports = (() => {
 				return InstrumentType.EQUITY;
 			} else if (code === 5 || code == 15) {
 				return InstrumentType.FUND;
+			} else if (code === 2) {
+				return InstrumentType.FUTURE;
 			} else {
 				throw new Error(`Unable to determine InstrumentType for [ ${code} ]`);
 			}
@@ -257,17 +296,11 @@ module.exports = (() => {
 		}
 	}
 
-	const cash = new InstrumentType('CASH', 'cash', 'Cash', true, false, false, true, false, false, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
-	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', false, true, true, false, true, true, true, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', false, true, false, false, true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, false, false, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
-
-	const map = { };
-
-	map[cash.code] = cash;
-	map[equity.code] = equity;
-	map[fund.code] = fund;
-	map[other.code] = other;
+	const cash = new InstrumentType('CASH', 'cash', 'Cash', true, false, false, true, false, false, true, false, false, false, instrument => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', false, true, true, false, true, true, true, true, true, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', false, true, false, false, true, true, true,false, true, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const future = new InstrumentType('FUTURE', 'futures contract', 'Futures', false, false, true, false, true, false, false, false, false, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, false, false, true,false, true, true, instrument => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
 
 	return InstrumentType;
 })();
@@ -371,6 +404,16 @@ module.exports = (() => {
 		 */
 		static get EVEN() {
 			return even;
+		}
+
+		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {PositionDirection|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(PositionDirection, code);
 		}
 
 		/**
@@ -581,6 +624,16 @@ module.exports = (() => {
 		 */
 		static get YTD() {
 			return ytd;
+		}
+
+		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {PositionSummaryFrame|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(PositionSummaryFrame, code);
 		}
 
 		toString() {
@@ -1250,6 +1303,16 @@ module.exports = (() => {
 			return spinoffOpen;
 		}
 
+		/**
+		 * @public
+		 * @static
+		 * @param {String} code
+		 * @returns {TransactionType|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(TransactionType, code);
+		}
+
 		toString() {
 			return `[TransactionType (code=${this.code})]`;
 		}
@@ -1554,6 +1617,11 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUND, TransactionType.SPINOFF, false);
 	associateTypes(InstrumentType.FUND, TransactionType.SPINOFF_OPEN, false);
 
+	associateTypes(InstrumentType.FUTURE, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.FUTURE, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.FUTURE, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.FUTURE, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
+
 	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.INCOME, true, [ PositionDirection.LONG ]);
@@ -1583,6 +1651,10 @@ module.exports = (() => {
 
 	associateDirections(InstrumentType.FUND, PositionDirection.EVEN);
 	associateDirections(InstrumentType.FUND, PositionDirection.LONG);
+
+	associateDirections(InstrumentType.FUTURE, PositionDirection.EVEN);
+	associateDirections(InstrumentType.FUTURE, PositionDirection.LONG);
+	associateDirections(InstrumentType.FUTURE, PositionDirection.SHORT);
 
 	associateDirections(InstrumentType.OTHER, PositionDirection.EVEN);
 	associateDirections(InstrumentType.OTHER, PositionDirection.LONG);
@@ -1614,17 +1686,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Given a code, returns the enumeration item.
-		 *
-		 * @public
-		 * @param {String} code
-		 * @returns {ValuationType|null}
-		 */
-		static parse(code) {
-			return Enum.fromCode(ValuationType, code);
-		}
-
-		/**
 		 * A valuation method that uses average costing.
 		 *
 		 * @public
@@ -1642,6 +1703,17 @@ module.exports = (() => {
 		 */
 		static get FIFO() {
 			return fifo;
+		}
+
+		/**
+		 * Given a code, returns the enumeration item.
+		 *
+		 * @public
+		 * @param {String} code
+		 * @returns {ValuationType|null}
+		 */
+		static parse(code) {
+			return Enum.fromCode(ValuationType, code);
 		}
 
 		toString() {
@@ -4339,9 +4411,9 @@ module.exports = (() => {
 		data.marketPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
 		data.quantityPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.open;
 
-		data.periodGain = calculatePeriodGain(position.instrument.type, data.initiate, currentSummary, previousSummary1);
-		data.periodGainPrevious = calculatePeriodGain(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
-		data.periodGainPrevious2 = calculatePeriodGain(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
+		data.periodGain = calculatePeriodGain(position.instrument, data.initiate, currentSummary, previousSummary1);
+		data.periodGainPrevious = calculatePeriodGain(position.instrument, data.initiate, previousSummary1, previousSummary2);
+		data.periodGainPrevious2 = calculatePeriodGain(position.instrument, data.initiate, previousSummary2, previousSummary3);
 
 		data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal.ZERO;
 		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
@@ -4353,6 +4425,11 @@ module.exports = (() => {
 
 		if (snapshot.open.getIsZero()) {
 			data.basisPrice = Decimal.ZERO;
+		} else if (position.instrument.type === InstrumentType.FUTURE) {
+			const minimumTick = position.instrument.future.tick;
+			const minimumTickValue = position.instrument.future.value;
+
+			data.basisPrice = basis.divide(snapshot.open).divide(minimumTickValue).multiply(minimumTick);
 		} else {
 			data.basisPrice = basis.divide(snapshot.open);
 		}
@@ -4384,6 +4461,8 @@ module.exports = (() => {
 			market = snapshot.value;
 		} else if (position.instrument.type === InstrumentType.CASH) {
 			market = snapshot.open;
+		} else if (position.instrument.type === InstrumentType.FUTURE) {
+			market = getFuturesValue(position.instrument, snapshot.open, price) || snapshot.value;
 		} else {
 			if (price) {
 				market = snapshot.open.multiply(price);
@@ -4419,7 +4498,15 @@ module.exports = (() => {
 		let unrealizedTodayChange;
 
 		if (data.previousPrice && price) {
-			unrealizedToday = market.subtract(snapshot.open.multiply(data.previousPrice));
+			let unrealizedTodayBase;
+
+			if (position.instrument.type === InstrumentType.FUTURE) {
+				unrealizedTodayBase = getFuturesValue(position.instrument, snapshot.open, data.previousPrice);
+			} else {
+				unrealizedTodayBase = snapshot.open.multiply(data.previousPrice);
+			}
+
+			unrealizedToday = market.subtract(unrealizedTodayBase);
 
 			if (data.unrealizedToday !== null) {
 				unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
@@ -4451,7 +4538,14 @@ module.exports = (() => {
 			}
 
 			if (priceToUse !== null) {
-				let unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
+				let unrealized;
+
+				if (position.instrument.type === InstrumentType.FUTURE) {
+					unrealized = getFuturesValue(position.instrument, currentSummary.end.open, priceToUse).add(currentSummary.end.basis);
+				} else {
+					unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
+				}
+
 				let unrealizedChange;
 
 				if (data.unrealized !== null) {
@@ -4463,7 +4557,7 @@ module.exports = (() => {
 				data.unrealized = unrealized;
 				data.unrealizedChange = unrealizedChange;
 
-				let periodGain = calculatePeriodGain(position.instrument.type, data.initiate, currentSummary, previousSummary, priceToUse);
+				let periodGain = calculatePeriodGain(position.instrument, data.initiate, currentSummary, previousSummary, priceToUse);
 				let periodGainChange;
 
 				if (data.periodGain !== null) {
@@ -4518,8 +4612,10 @@ module.exports = (() => {
 		return direction || PositionDirection.LONG;
 	}
 
-	function calculatePeriodGain(type, direction, currentSummary, previousSummary, overridePrice) {
+	function calculatePeriodGain(instrument, direction, currentSummary, previousSummary, overridePrice) {
 		let returnRef;
+
+		const type = instrument.type;
 
 		if (currentSummary && type !== InstrumentType.CASH) {
 			let startValue;
@@ -4533,7 +4629,11 @@ module.exports = (() => {
 			let endValue;
 
 			if (overridePrice) {
-				endValue = currentSummary.end.open.multiply(overridePrice);
+				if (type === InstrumentType.FUTURE) {
+					endValue = getFuturesValue(instrument, currentSummary.end.open, overridePrice);
+				} else {
+					endValue = currentSummary.end.open.multiply(overridePrice);
+				}
 			} else {
 				endValue = currentSummary.end.value;
 			}
@@ -4652,6 +4752,19 @@ module.exports = (() => {
 		}
 
 		return snapshot;
+	}
+
+	function getFuturesValue(instrument, contracts, price) {
+		if (price || price === 0) {
+			const priceDecimal = new Decimal(price);
+
+			const minimumTick = instrument.future.tick;
+			const minimumTickValue = instrument.future.value;
+
+			return priceDecimal.divide(minimumTick).multiply(minimumTickValue).multiply(contracts);
+		} else {
+			return null;
+		}
 	}
 
 	return PositionItem;
@@ -5168,6 +5281,11 @@ module.exports = (() => {
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.delist', DataType.DAY, true)
+		.withField('instrument.future.expiration', DataType.DAY, true)
+		.withField('instrument.future.tick', DataType.DECIMAL, true)
+		.withField('instrument.future.value', DataType.DECIMAL, true)
+		.withField('instrument.option.expiration', DataType.DAY, true)
+		.withField('instrument.option.strike', DataType.DECIMAL, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('position', DataType.STRING)
@@ -5204,6 +5322,11 @@ module.exports = (() => {
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.delist', DataType.DAY, true)
+		.withField('instrument.future.expiration', DataType.DAY, true)
+		.withField('instrument.future.tick', DataType.DECIMAL, true)
+		.withField('instrument.future.value', DataType.DECIMAL, true)
+		.withField('instrument.option.expiration', DataType.DAY, true)
+		.withField('instrument.option.strike', DataType.DECIMAL, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('position', DataType.STRING)
@@ -5950,7 +6073,7 @@ module.exports = (() => {
      *
      * @public
      * @param {Tree~nodePredicate} predicate - A predicate that tests each child node. The predicate takes two arguments -- the node's value, and the node itself.
-     * @param {boolean=} parentFirst - If true, the true will be searched from parent-to-child (breadth first). Otherwise, child-to-parent (depth first).
+     * @param {boolean=} parentFirst - If true, the tree will be searched from parent-to-child (breadth first). Otherwise, child-to-parent (depth first).
      * @param {boolean=} includeCurrentNode - True, if the current node should be checked against the predicate.
      * @returns {Tree|null}
      */
@@ -5959,11 +6082,13 @@ module.exports = (() => {
       if (returnRef === null && parentFirst && includeCurrentNode && predicate(this.getValue(), this)) {
         returnRef = this;
       }
-      for (let i = 0; i < this._children.length; i++) {
-        const child = this._children[i];
-        returnRef = child.search(predicate, parentFirst, true);
-        if (returnRef !== null) {
-          break;
+      if (returnRef === null) {
+        for (let i = 0; i < this._children.length; i++) {
+          const child = this._children[i];
+          returnRef = child.search(predicate, parentFirst, true);
+          if (returnRef !== null) {
+            break;
+          }
         }
       }
       if (returnRef === null && !parentFirst && includeCurrentNode && predicate(this.getValue(), this)) {
@@ -5977,7 +6102,7 @@ module.exports = (() => {
      *
      * @public
      * @param {Tree~nodeAction} walkAction - A action to apply to each node. The action takes two arguments -- the node's value, and the node itself.
-     * @param {boolean=} parentFirst - If true, the true will be searched from parent-to-child (breadth first). Otherwise, child-to-parent (depth first).
+     * @param {boolean=} parentFirst - If true, the tree will be searched from parent-to-child (breadth first). Otherwise, child-to-parent (depth first).
      * @param {boolean=} includeCurrentNode - True if the current node should be applied to the action.
      */
     walk(walkAction, parentFirst, includeCurrentNode) {
