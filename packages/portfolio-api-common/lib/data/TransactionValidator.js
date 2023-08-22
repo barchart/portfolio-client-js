@@ -250,6 +250,11 @@ module.exports = (() => {
 	associateTypes(InstrumentType.EQUITY, TransactionType.SPINOFF, false);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SPINOFF_OPEN, false);
 
+	associateTypes(InstrumentType.EQUITY_OPTION, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.EQUITY_OPTION, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.EQUITY_OPTION, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.EQUITY_OPTION, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
+
 	associateTypes(InstrumentType.FUND, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.FUND, TransactionType.SELL, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.FUND, TransactionType.FEE, true, [ PositionDirection.LONG ]);
@@ -267,6 +272,11 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUTURE, TransactionType.SELL, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.FUTURE, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.FUTURE, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
+
+	associateTypes(InstrumentType.FUTURE_OPTION, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.FUTURE_OPTION, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.FUTURE_OPTION, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.FUTURE_OPTION, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
 
 	associateTypes(InstrumentType.OTHER, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.OTHER, TransactionType.SELL, true, [ PositionDirection.LONG ]);
@@ -295,12 +305,20 @@ module.exports = (() => {
 	associateDirections(InstrumentType.EQUITY, PositionDirection.LONG);
 	associateDirections(InstrumentType.EQUITY, PositionDirection.SHORT);
 
+	associateDirections(InstrumentType.EQUITY_OPTION, PositionDirection.EVEN);
+	associateDirections(InstrumentType.EQUITY_OPTION, PositionDirection.LONG);
+	associateDirections(InstrumentType.EQUITY_OPTION, PositionDirection.SHORT);
+
 	associateDirections(InstrumentType.FUND, PositionDirection.EVEN);
 	associateDirections(InstrumentType.FUND, PositionDirection.LONG);
 
 	associateDirections(InstrumentType.FUTURE, PositionDirection.EVEN);
 	associateDirections(InstrumentType.FUTURE, PositionDirection.LONG);
 	associateDirections(InstrumentType.FUTURE, PositionDirection.SHORT);
+
+	associateDirections(InstrumentType.FUTURE_OPTION, PositionDirection.EVEN);
+	associateDirections(InstrumentType.FUTURE_OPTION, PositionDirection.LONG);
+	associateDirections(InstrumentType.FUTURE_OPTION, PositionDirection.SHORT);
 
 	associateDirections(InstrumentType.OTHER, PositionDirection.EVEN);
 	associateDirections(InstrumentType.OTHER, PositionDirection.LONG);

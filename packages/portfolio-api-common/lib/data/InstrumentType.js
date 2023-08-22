@@ -213,6 +213,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * An option on equity shares.
+		 *
+		 * @public
+		 * @static
+		 * @returns {InstrumentType}
+		 */
+		static get EQUITY_OPTION() {
+			return equityOption;
+		}
+
+		/**
 		 * A mutual fund.
 		 *
 		 * @public
@@ -232,6 +243,17 @@ module.exports = (() => {
 		 */
 		static get FUTURE() {
 			return future;
+		}
+
+		/**
+		 * An option on a futures contract.
+		 *
+		 * @public
+		 * @static
+		 * @returns {InstrumentType}
+		 */
+		static get FUTURE_OPTION() {
+			return futureOption;
 		}
 
 		/**
@@ -281,10 +303,14 @@ module.exports = (() => {
 
 			if (code === 1 || code === 6 || code === 7 || code === 11) {
 				return InstrumentType.EQUITY;
+			} else if (code === 34) {
+				return InstrumentType.EQUITY_OPTION;
 			} else if (code === 5 || code == 15) {
 				return InstrumentType.FUND;
 			} else if (code === 2) {
 				return InstrumentType.FUTURE;
+			} else if (code === 12) {
+				return InstrumentType.FUTURE_OPTION;
 			} else {
 				throw new Error(`Unable to determine InstrumentType for [ ${code} ]`);
 			}
@@ -297,8 +323,10 @@ module.exports = (() => {
 
 	const cash = new InstrumentType('CASH', 'cash', 'Cash', true, false, false, true, false, false, true, false, false, false, instrument => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
 	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', false, true, true, false, true, true, true, true, true, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const equityOption = new InstrumentType('EQUITY_OPTION', 'equity option', 'Equity Option', false, false, true, false, true, false, false, false, false, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
 	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', false, true, false, false, true, true, true,false, true, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
 	const future = new InstrumentType('FUTURE', 'futures contract', 'Futures', false, false, true, false, true, false, false, false, false, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+	const futureOption = new InstrumentType('FUTURE_OPTION', 'futures option', 'Futures Option', false, false, true, false, true, false, false, false, false, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
 	const other = new InstrumentType('OTHER', 'other', 'Other', false, false, false, false, false, false, true,false, true, true, instrument => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
 
 	return InstrumentType;
