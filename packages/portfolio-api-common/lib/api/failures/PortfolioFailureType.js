@@ -281,6 +281,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * The transaction failed because instrument metadata could not be resolved.
+		 *
+		 * @public
+		 * @static
+		 * @returns {FailureType}
+		 */
+		static get TRANSACTION_CREATE_FAILED_INSTRUMENT_UNAVAILABLE() {
+			return transactionCreateFailedInstrumentUnavailable;
+		}
+
+		/**
 		 * The transaction (of this type) cannot be deleted by a user, instead,
 		 * it is created and managed by the system (e.g. dividends).
 		 *
@@ -449,6 +460,7 @@ module.exports = (() => {
 	const transactionCreateFailedReinvestInvalid = new FailureType('TRANSACTION_CREATE_FAILED_REINVEST_INVALID', 'Unable to create transaction, short positions do not allow dividends to be reinvested.');
 	const transactionCreateFailedPositionLocked = new FailureType('TRANSACTION_CREATE_FAILED_POSITION_LOCKED', 'Unable to create transaction, your {L|description} history is being recalculated. Please re-enter this transaction in a minute or two.');
 	const transactionCreateFailedInstrumentCorrupt = new FailureType('TRANSACTION_CREATE_FAILED_INSTRUMENT_CORRUPT', 'Unable to create transaction, corporate action history for {U|symbol} cannot be located. The issue should be corrected within 24 to 48 hours.');
+	const transactionCreateFailedInstrumentUnavailable = new FailureType('TRANSACTION_CREATE_FAILED_INSTRUMENT_UNAVAILABLE', 'Unable to create transaction, no {L|description} instrument was found with the symbol {U|symbol}.');
 
 	const transactionDeleteFailedOutOfSequence = new FailureType('TRANSACTION_DELETE_FAILED_OUT_OF_SEQUENCE', 'Deleting any transaction, except for the most recent, will cause transaction history to be re-written. Please confirm your intent to re-write transaction history (which could take some time and alter the historical results for this position).');
 	const transactionDeleteFailedNoTransaction = new FailureType('TRANSACTION_DELETE_FAILED_NO_TRANSACTION', 'Unable to delete transaction. The referenced transaction does not exist.', false);
