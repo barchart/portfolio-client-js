@@ -1,5 +1,4 @@
-const Enum = require('@barchart/common-js/lang/Enum'),
-	is = require('@barchart/common-js/lang/is');
+const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
 	'use strict';
@@ -120,14 +119,14 @@ module.exports = (() => {
 		}
 	}
 
-	const split = new CorporateActionType('SPLIT', 'Split', false);
-	const dividend = new CorporateActionType('DIVIDEND', 'Dividend', false);
-	const stockDividend = new CorporateActionType('STOCK_DIVIDEND', 'Stock Dividend', false);
-	const symbolChange = new CorporateActionType('SYMBOL_CHANGE', 'Symbol Change', false);
-	const nameChange = new CorporateActionType('NAME_CHANGE', 'Name Change', false);
-	const delist = new CorporateActionType('DELIST', 'Delist', false);
-	const merger = new CorporateActionType('MERGER', 'Merger', false);
-	const spinoff = new CorporateActionType('SPINOFF', 'Spinoff', false);
+	const split = new CorporateActionType('SPLIT', 'Split');
+	const dividend = new CorporateActionType('DIVIDEND', 'Dividend');
+	const stockDividend = new CorporateActionType('STOCK_DIVIDEND', 'Stock Dividend');
+	const symbolChange = new CorporateActionType('SYMBOL_CHANGE', 'Symbol Change');
+	const nameChange = new CorporateActionType('NAME_CHANGE', 'Name Change');
+	const delist = new CorporateActionType('DELIST', 'Delist');
+	const merger = new CorporateActionType('MERGER', 'Merger');
+	const spinoff = new CorporateActionType('SPINOFF', 'Spinoff');
 
 	return CorporateActionType;
 })();
