@@ -174,6 +174,26 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if the instrument is a futures contract.
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get future() {
+			return this === future;
+		}
+
+		/**
+		 * Indicates if the instrument is an option contract.
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get option() {
+			return this === equityOption || this === futureOption;
+		}
+
+		/**
 		 * Generates an identifier for the instrument.
 		 *
 		 * @public
