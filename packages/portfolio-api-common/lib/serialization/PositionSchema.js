@@ -5,6 +5,7 @@ const Currency = require('@barchart/common-js/lang/Currency'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const InstrumentType = require('./../data/InstrumentType'),
+	OptionSide = require('./../data/OptionSide'),
 	PositionDirection = require('./../data/PositionDirection'),
 	ValuationType = require('./../data/ValuationType');
 
@@ -95,7 +96,11 @@ module.exports = (() => {
 		.withField('instrument.future.tick', DataType.DECIMAL, true)
 		.withField('instrument.future.value', DataType.DECIMAL, true)
 		.withField('instrument.option.expiration', DataType.DAY, true)
+		.withField('instrument.option.side', DataType.forEnum(OptionSide, 'OptionSide'))
 		.withField('instrument.option.strike', DataType.DECIMAL, true)
+		.withField('instrument.option.multiplier', DataType.DECIMAL, true)
+		.withField('instrument.option.tick', DataType.DECIMAL, true)
+		.withField('instrument.option.value', DataType.DECIMAL, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('position', DataType.STRING)
@@ -136,7 +141,11 @@ module.exports = (() => {
 		.withField('instrument.future.tick', DataType.DECIMAL, true)
 		.withField('instrument.future.value', DataType.DECIMAL, true)
 		.withField('instrument.option.expiration', DataType.DAY, true)
+		.withField('instrument.option.side', DataType.forEnum(OptionSide, 'OptionSide'))
 		.withField('instrument.option.strike', DataType.DECIMAL, true)
+		.withField('instrument.option.multiplier', DataType.DECIMAL, true)
+		.withField('instrument.option.tick', DataType.DECIMAL, true)
+		.withField('instrument.option.value', DataType.DECIMAL, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('position', DataType.STRING)
