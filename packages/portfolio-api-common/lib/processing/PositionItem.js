@@ -516,6 +516,10 @@ module.exports = (() => {
 			market = snapshot.open;
 		} else if (position.instrument.type === InstrumentType.FUTURE) {
 			market = getFuturesValue(position.instrument, snapshot.open, price) || snapshot.value;
+		} else if (position.instrument.type === InstrumentType.FUTURE_OPTION) {
+			market = getFuturesOptionValue(position.instrument, snapshot.open, price) || snapshot.value;
+		} else if (position.instrument.type === InstrumentType.EQUITY_OPTION) {
+			market = getEquityOptionValue(position.instrument, snapshot.open, price) || snapshot.value;
 		} else {
 			if (price) {
 				market = snapshot.open.multiply(price);
@@ -555,6 +559,10 @@ module.exports = (() => {
 
 			if (position.instrument.type === InstrumentType.FUTURE) {
 				unrealizedTodayBase = getFuturesValue(position.instrument, snapshot.open, data.previousPrice);
+			} else if (position.instrument.type === InstrumentType.FUTURE_OPTION) {
+				unrealizedTodayBase = getFuturesOptionValue(position.instrument, snapshot.open, data.previousPrice);
+			} else if (position.instrument.type === InstrumentType.EQUITY_OPTION) {
+				unrealizedTodayBase = getEquityOptionValue(position.instrument, snapshot.open, data.previousPrice);
 			} else {
 				unrealizedTodayBase = snapshot.open.multiply(data.previousPrice);
 			}
@@ -595,6 +603,10 @@ module.exports = (() => {
 
 				if (position.instrument.type === InstrumentType.FUTURE) {
 					unrealized = getFuturesValue(position.instrument, currentSummary.end.open, priceToUse).add(currentSummary.end.basis);
+				} else if (position.instrument.type === InstrumentType.FUTURE_OPTION) {
+					unrealized = getFuturesOptionValue(position.instrument, currentSummary.end.open, priceToUse).add(currentSummary.end.basis);
+				} else if (position.instrument.type === InstrumentType.EQUITY_OPTION) {
+					unrealized = getEquityOptionValue(position.instrument, currentSummary.end.open, priceToUse).add(currentSummary.end.basis);
 				} else {
 					unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
 				}
@@ -684,6 +696,10 @@ module.exports = (() => {
 			if (overridePrice) {
 				if (type === InstrumentType.FUTURE) {
 					endValue = getFuturesValue(instrument, currentSummary.end.open, overridePrice);
+				} else if (type === InstrumentType.FUTURE_OPTION) {
+					endValue = getFuturesOptionValue(instrument, currentSummary.end.open, overridePrice);
+				} else if (type === InstrumentType.EQUITY_OPTION) {
+					endValue = getEquityOptionValue(instrument, currentSummary.end.open, overridePrice);
 				} else {
 					endValue = currentSummary.end.open.multiply(overridePrice);
 				}
@@ -815,6 +831,32 @@ module.exports = (() => {
 			const minimumTickValue = instrument.future.value;
 
 			return priceDecimal.divide(minimumTick).multiply(minimumTickValue).multiply(contracts);
+		} else {
+			return null;
+		}
+	}
+
+	function getFuturesOptionValue(instrument, contracts, price) {
+		if (price || price === 0) {
+			const priceDecimal = new Decimal(price);
+
+			const minimumTick = instrument.option.tick;
+			const minimumTickValue = instrument.option.value;
+
+			const multiplier = instrument.option.multiplier;
+
+			return priceDecimal.divide(minimumTick).multiply(minimumTickValue).multiply(multiplier).multiply(contracts);
+		} else {
+			return null;
+		}
+	}
+
+	function getEquityOptionValue(instrument, contracts, price) {
+		if (price || price === 0) {
+			const priceDecimal = new Decimal(price);
+			const multiplier = instrument.option.multiplier;
+
+			return priceDecimal.multiply(contracts).multiply(multiplier);
 		} else {
 			return null;
 		}
