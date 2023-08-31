@@ -8,6 +8,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 const InstrumentType = require('./../data/InstrumentType'),
 	PositionDirection = require('./../data/PositionDirection');
 
+const ValuationCalculator = require('./../calculators/ValuationCalculator');
+
 module.exports = (() => {
 	'use strict';
 
@@ -514,18 +516,8 @@ module.exports = (() => {
 			market = snapshot.value;
 		} else if (position.instrument.type === InstrumentType.CASH) {
 			market = snapshot.open;
-		} else if (position.instrument.type === InstrumentType.FUTURE) {
-			market = getFuturesValue(position.instrument, snapshot.open, price) || snapshot.value;
-		} else if (position.instrument.type === InstrumentType.FUTURE_OPTION) {
-			market = getFuturesOptionValue(position.instrument, snapshot.open, price) || snapshot.value;
-		} else if (position.instrument.type === InstrumentType.EQUITY_OPTION) {
-			market = getEquityOptionValue(position.instrument, snapshot.open, price) || snapshot.value;
 		} else {
-			if (price) {
-				market = snapshot.open.multiply(price);
-			} else {
-				market = snapshot.value;
-			}
+			market = ValuationCalculator.calculate(position.instrument, price, snapshot.open) || snapshot.value;
 		}
 
 		let marketChange;
@@ -555,17 +547,7 @@ module.exports = (() => {
 		let unrealizedTodayChange;
 
 		if (data.previousPrice && price) {
-			let unrealizedTodayBase;
-
-			if (position.instrument.type === InstrumentType.FUTURE) {
-				unrealizedTodayBase = getFuturesValue(position.instrument, snapshot.open, data.previousPrice);
-			} else if (position.instrument.type === InstrumentType.FUTURE_OPTION) {
-				unrealizedTodayBase = getFuturesOptionValue(position.instrument, snapshot.open, data.previousPrice);
-			} else if (position.instrument.type === InstrumentType.EQUITY_OPTION) {
-				unrealizedTodayBase = getEquityOptionValue(position.instrument, snapshot.open, data.previousPrice);
-			} else {
-				unrealizedTodayBase = snapshot.open.multiply(data.previousPrice);
-			}
+			const unrealizedTodayBase = ValuationCalculator.calculate(position.instrument, data.previousPrice, snapshot.open);
 
 			unrealizedToday = market.subtract(unrealizedTodayBase);
 
@@ -599,17 +581,7 @@ module.exports = (() => {
 			}
 
 			if (priceToUse !== null) {
-				let unrealized;
-
-				if (position.instrument.type === InstrumentType.FUTURE) {
-					unrealized = getFuturesValue(position.instrument, currentSummary.end.open, priceToUse).add(currentSummary.end.basis);
-				} else if (position.instrument.type === InstrumentType.FUTURE_OPTION) {
-					unrealized = getFuturesOptionValue(position.instrument, currentSummary.end.open, priceToUse).add(currentSummary.end.basis);
-				} else if (position.instrument.type === InstrumentType.EQUITY_OPTION) {
-					unrealized = getEquityOptionValue(position.instrument, currentSummary.end.open, priceToUse).add(currentSummary.end.basis);
-				} else {
-					unrealized = currentSummary.end.open.multiply(priceToUse).add(currentSummary.end.basis);
-				}
+				const unrealized = ValuationCalculator.calculate(position.instrument, priceToUse, currentSummary.end.open).add(currentSummary.end.basis);
 
 				let unrealizedChange;
 
@@ -694,15 +666,7 @@ module.exports = (() => {
 			let endValue;
 
 			if (overridePrice) {
-				if (type === InstrumentType.FUTURE) {
-					endValue = getFuturesValue(instrument, currentSummary.end.open, overridePrice);
-				} else if (type === InstrumentType.FUTURE_OPTION) {
-					endValue = getFuturesOptionValue(instrument, currentSummary.end.open, overridePrice);
-				} else if (type === InstrumentType.EQUITY_OPTION) {
-					endValue = getEquityOptionValue(instrument, currentSummary.end.open, overridePrice);
-				} else {
-					endValue = currentSummary.end.open.multiply(overridePrice);
-				}
+				endValue = ValuationCalculator.calculate(instrument, overridePrice, currentSummary.end.open);
 			} else {
 				endValue = currentSummary.end.value;
 			}
@@ -821,45 +785,6 @@ module.exports = (() => {
 		}
 
 		return snapshot;
-	}
-
-	function getFuturesValue(instrument, contracts, price) {
-		if (price || price === 0) {
-			const priceDecimal = new Decimal(price);
-
-			const minimumTick = instrument.future.tick;
-			const minimumTickValue = instrument.future.value;
-
-			return priceDecimal.divide(minimumTick).multiply(minimumTickValue).multiply(contracts);
-		} else {
-			return null;
-		}
-	}
-
-	function getFuturesOptionValue(instrument, contracts, price) {
-		if (price || price === 0) {
-			const priceDecimal = new Decimal(price);
-
-			const minimumTick = instrument.option.tick;
-			const minimumTickValue = instrument.option.value;
-
-			const multiplier = instrument.option.multiplier;
-
-			return priceDecimal.divide(minimumTick).multiply(minimumTickValue).multiply(multiplier).multiply(contracts);
-		} else {
-			return null;
-		}
-	}
-
-	function getEquityOptionValue(instrument, contracts, price) {
-		if (price || price === 0) {
-			const priceDecimal = new Decimal(price);
-			const multiplier = instrument.option.multiplier;
-
-			return priceDecimal.multiply(contracts).multiply(multiplier);
-		} else {
-			return null;
-		}
 	}
 
 	return PositionItem;
