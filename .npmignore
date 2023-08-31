@@ -1,5 +1,4 @@
-.awspublish-barchart-examples
-.awspublish-docs.barchart.com.DS_Store
+.awspublish*
 .gitignore
 .jshintrc
 buildspec.yml
