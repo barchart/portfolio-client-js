@@ -5,12 +5,27 @@ const InstrumentType = require('./../data/InstrumentType');
 
 module.exports = (() => {
 	'use strict';
-	
+
+	/**
+	 * Static utilities for calculating the value of a position.
+	 *
+	 * @public
+	 */
 	class ValuationCalculator {
 		constructor() {
 
 		}
 
+		/**
+		 * Calculates the value of a position.
+		 *
+		 * @public
+		 * @static
+		 * @param {Object} instrument
+		 * @param {Decimal|Number} price
+		 * @param {Decimal} quantity
+		 * @returns {null|Decimal}
+		 */
 		static calculate(instrument, price, quantity) {
 			let priceToUse = null;
 
