@@ -23,7 +23,7 @@ module.exports = (() => {
 		 * @static
 		 * @param {Object} instrument
 		 * @param {Decimal|Number} price
-		 * @param {Decimal} quantity
+		 * @param {Decimal|Number} quantity
 		 * @returns {null|Decimal}
 		 */
 		static calculate(instrument, price, quantity) {
