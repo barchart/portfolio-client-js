@@ -122,9 +122,11 @@ module.exports = (() => {
 
 			this._dataActual.currentPrice = null;
 			this._dataActual.basis = null;
+			this._dataActual.basis2 = null;
 			this._dataActual.realized = null;
 			this._dataActual.income = null;
 			this._dataActual.market = null;
+			this._dataActual.market2 = null;
 			this._dataActual.marketPercent = null;
 			this._dataActual.marketPercentPortfolio = null;
 			this._dataActual.unrealized = null;
@@ -145,10 +147,12 @@ module.exports = (() => {
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.basis = null;
+			this._dataFormat.basis2 = null;
 			this._dataFormat.realized = null;
 			this._dataFormat.realizedPercent = null;
 			this._dataFormat.income = null;
 			this._dataFormat.market = null;
+			this._dataFormat.market2 = null;
 			this._dataFormat.marketPercent = null;
 			this._dataFormat.marketPercentPortfolio = null;
 			this._dataFormat.marketDirection = null;
@@ -716,6 +720,15 @@ module.exports = (() => {
 
 		let updates = items.reduce((updates, item) => {
 			updates.basis = updates.basis.add(translate(item, item.data.basis));
+
+			if (item.position.instrument.type === InstrumentType.FUTURE) {
+				if (group.single) {
+					updates.basis2 = null;
+				}
+			} else {
+				updates.basis2 = updates.basis2.add(translate(item, item.data.basis));
+			}
+
 			updates.realized = updates.realized.add(translate(item, item.data.realized));
 			updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 			updates.income = updates.income.add(translate(item, item.data.income));
@@ -741,6 +754,7 @@ module.exports = (() => {
 			return updates;
 		}, {
 			basis: Decimal.ZERO,
+			basis2: Decimal.ZERO,
 			realized: Decimal.ZERO,
 			unrealized: Decimal.ZERO,
 			income: Decimal.ZERO,
@@ -760,6 +774,7 @@ module.exports = (() => {
 		});
 
 		actual.basis = updates.basis;
+		actual.basis2 = updates.basis2;
 		actual.realized = updates.realized;
 		actual.unrealized = updates.unrealized;
 		actual.income = updates.income;
@@ -778,6 +793,7 @@ module.exports = (() => {
 		actual.periodDivisorPrevious2 = updates.periodDivisorPrevious2;
 
 		format.basis = formatCurrency(actual.basis, currency);
+		format.basis2 = formatCurrency(actual.basis2, currency);
 		format.realized = formatCurrency(actual.realized, currency);
 		format.unrealized = formatCurrency(actual.unrealized, currency);
 		format.income = formatCurrency(actual.income, currency);
@@ -877,6 +893,13 @@ module.exports = (() => {
 
 			updates = items.reduce((updates, item) => {
 				updates.market = updates.market.add(translate(item, item.data.market));
+
+				if (item.position.instrument.type === InstrumentType.FUTURE) {
+					updates.market2 = updates.market2.add(translate(item, item.data.unrealized));
+				} else {
+					updates.market2 = updates.market2.add(translate(item, item.data.market));
+				}
+
 				updates.marketAbsolute = updates.marketAbsolute.add(translate(item, item.data.marketAbsolute));
 				updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 				updates.unrealizedToday = updates.unrealizedToday.add(translate(item, item.data.unrealizedToday));
@@ -886,6 +909,7 @@ module.exports = (() => {
 				return updates;
 			}, {
 				market: Decimal.ZERO,
+				market2: Decimal.ZERO,
 				marketAbsolute: Decimal.ZERO,
 				marketDirection: unchanged,
 				unrealized: Decimal.ZERO,
@@ -894,18 +918,26 @@ module.exports = (() => {
 				periodUnrealized: Decimal.ZERO
 			});
 		} else {
-			updates = {
-				market: actual.market.add(translate(item, item.data.marketChange)),
-				marketAbsolute: actual.marketAbsolute.add(translate(item, item.data.marketAbsoluteChange)),
-				marketDirection: { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() },
-				unrealized: actual.unrealized.add(translate(item, item.data.unrealizedChange)),
-				unrealizedToday: actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange)),
-				summaryTotalCurrent: actual.summaryTotalCurrent.add(translate(item, item.data.periodGainChange)),
-				periodUnrealized: actual.periodUnrealized.add(translate(item, item.data.periodUnrealizedChange))
-			};
+			updates = { };
+
+			updates.market = actual.market.add(translate(item, item.data.marketChange));
+
+			if (item.position.instrument.type === InstrumentType.FUTURE) {
+				updates.market2 = actual.market2.add(translate(item, item.data.unrealizedChange));
+			} else {
+				updates.market2 = actual.market2.add(translate(item, item.data.marketChange));
+			}
+
+			updates.marketAbsolute = actual.marketAbsolute.add(translate(item, item.data.marketAbsoluteChange));
+			updates.marketDirection = { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() };
+			updates.unrealized = actual.unrealized.add(translate(item, item.data.unrealizedChange));
+			updates.unrealizedToday = actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange));
+			updates.summaryTotalCurrent = actual.summaryTotalCurrent.add(translate(item, item.data.periodGainChange));
+			updates.periodUnrealized = actual.periodUnrealized.add(translate(item, item.data.periodUnrealizedChange));
 		}
 
 		actual.market = updates.market;
+		actual.market2 = updates.market2;
 		actual.marketAbsolute = updates.marketAbsolute;
 		actual.unrealized = updates.unrealized;
 		actual.unrealizedToday = updates.unrealizedToday;
@@ -934,6 +966,7 @@ module.exports = (() => {
 		actual.marketChangePercent = marketChangePercent;
 
 		format.market = formatCurrency(actual.market, currency);
+		format.market2 = formatCurrency(actual.market2, currency);
 
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
