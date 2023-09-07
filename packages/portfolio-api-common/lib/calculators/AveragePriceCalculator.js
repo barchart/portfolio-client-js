@@ -31,7 +31,7 @@ module.exports = (() => {
 
 			if (is.number(basis)) {
 				basisToUse = new Decimal(basis);
-			} else if (price instanceof Decimal) {
+			} else if (basis instanceof Decimal) {
 				basisToUse = basis;
 			}
 
