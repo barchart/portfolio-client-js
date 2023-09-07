@@ -9,6 +9,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 const InstrumentType = require('./../data/InstrumentType'),
 	TransactionType = require('./../data/TransactionType');
 
+const AveragePriceCalculator = require('./../calculators/AveragePriceCalculator');
+
 module.exports = (() => {
 	'use strict';
 
@@ -139,14 +141,7 @@ module.exports = (() => {
 		let average;
 
 		if (basis && open && !open.getIsZero()) {
-			if (f.instrument.type === InstrumentType.FUTURE) {
-				const minimumTick = f.instrument.future.tick;
-				const minimumTickValue = f.instrument.future.value;
-
-				average = basis.divide(open).multiply(minimumTick).divide(minimumTickValue).absolute();
-			} else {
-				average = basis.divide(open).absolute();
-			}
+			average = AveragePriceCalculator.calculate(f.instrument, basis, open);
 		} else {
 			average = '';
 		}
