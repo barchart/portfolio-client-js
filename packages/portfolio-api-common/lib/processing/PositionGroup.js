@@ -25,7 +25,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {PositionContainer} container
-	 * @param {LevelDefinition} definition
+	 * @param {PositionLevelDefinition} definition
 	 * @param {PositionItem[]} items
 	 * @param {Currency} currency
 	 * @param {String} key
