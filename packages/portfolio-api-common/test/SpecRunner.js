@@ -599,7 +599,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34,"uuid":52}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34,"uuid":53}],4:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -3292,7 +3292,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {PositionContainer} container
-	 * @param {LevelDefinition} definition
+	 * @param {PositionLevelDefinition} definition
 	 * @param {PositionItem[]} items
 	 * @param {Currency} currency
 	 * @param {String} key
@@ -5569,6 +5569,8 @@ const Currency = require('@barchart/common-js/lang/Currency'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
+const UnitCode = require('@barchart/marketdata-api-js/lib/utilities/data/UnitCode');
+
 const InstrumentType = require('./../data/InstrumentType'),
 	OptionSide = require('./../data/OptionSide'),
 	PositionDirection = require('./../data/PositionDirection'),
@@ -5655,6 +5657,7 @@ module.exports = (() => {
 		.withField('instrument.id', DataType.STRING)
 		.withField('instrument.name', DataType.STRING)
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.code', DataType.forEnum(UnitCode, 'UnitCode'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.future.expiration', DataType.DAY, true)
@@ -5700,6 +5703,7 @@ module.exports = (() => {
 		.withField('instrument.id', DataType.STRING)
 		.withField('instrument.name', DataType.STRING)
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.code', DataType.forEnum(UnitCode, 'UnitCode'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.future.expiration', DataType.DAY, true)
@@ -5762,7 +5766,7 @@ module.exports = (() => {
 	return PositionSchema;
 })();
 
-},{"./../data/InstrumentType":3,"./../data/OptionSide":4,"./../data/PositionDirection":5,"./../data/ValuationType":9,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/serialization/json/DataType":42,"@barchart/common-js/serialization/json/Schema":44,"@barchart/common-js/serialization/json/builders/SchemaBuilder":46}],17:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./../data/OptionSide":4,"./../data/PositionDirection":5,"./../data/ValuationType":9,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/serialization/json/DataType":42,"@barchart/common-js/serialization/json/Schema":44,"@barchart/common-js/serialization/json/builders/SchemaBuilder":46,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":47}],17:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -7615,7 +7619,7 @@ module.exports = (() => {
      * provided.
      *
      * @public
-     * @param {Decimal|Number|String} exponent
+     * @param {Number} exponent
      * @returns {Decimal}
      */
     raise(exponent) {
@@ -7637,6 +7641,18 @@ module.exports = (() => {
       assert.argumentIsOptional(mode, 'mode', RoundingMode, 'RoundingMode');
       const modeToUse = mode || RoundingMode.NORMAL;
       return new Decimal(this._big.round(places, modeToUse.value));
+    }
+
+    /**
+     * Returns a new {@link Decimal} instance with a value that returns
+     * the remainder of dividing by the value supplied.
+     *
+     * @public
+     * @param {Decimal|Number|String} other
+     * @returns {Decimal}
+     */
+    mod(other) {
+      return new Decimal(this._big.mod(getBig(other)));
     }
 
     /**
@@ -8091,7 +8107,7 @@ module.exports = (() => {
   return Decimal;
 })();
 
-},{"./Enum":29,"./assert":34,"./is":38,"big.js":47}],28:[function(require,module,exports){
+},{"./Enum":29,"./assert":34,"./is":38,"big.js":48}],28:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -8417,6 +8433,16 @@ module.exports = (() => {
     }
 
     /**
+     * An array of constant exchange rates.
+     *
+     * @static
+     * @returns {Rate[]}
+     */
+    static get CONSTANTS() {
+      return [Rate.fromPair(0.01, '^GBXGBP')];
+    }
+
+    /**
      * The rate.
      *
      * @public
@@ -8490,7 +8516,7 @@ module.exports = (() => {
      */
     formatPair(useCarat) {
       assert.argumentIsOptional(useCarat, 'useCarat', Boolean);
-      return `${useCarat ? '^' : ''}${this._numerator}${this._denominator}`;
+      return `${useCarat ? '^' : ''}${this._numerator.code}${this._denominator.code}`;
     }
 
     /**
@@ -8530,7 +8556,27 @@ module.exports = (() => {
       } else {
         const numerator = desiredCurrency;
         const denominator = currency;
-        let rate = rates.find(r => r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator);
+        const staticRates = [];
+        Rate.CONSTANTS.forEach(staticRate => {
+          staticRates.push(staticRate);
+          const staticRateInverted = staticRate.invert();
+          rates.forEach(rate => {
+            [staticRate, staticRateInverted].forEach(r => {
+              let indirect;
+              if (rate.numerator === r.denominator) {
+                indirect = new Rate(rate.decimal.multiply(r.decimal), r.numerator, rate.denominator);
+              } else if (rate.denominator === r.denominator) {
+                indirect = new Rate(rate.decimal.divide(r.decimal), rate.numerator, r.numerator);
+              } else {
+                indirect = null;
+              }
+              if (indirect !== null) {
+                staticRates.push(indirect);
+              }
+            });
+          });
+        });
+        let rate = rates.concat(staticRates).find(r => r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator);
         if (rate) {
           if (rate.numerator === denominator) {
             rate = rate.invert();
@@ -8744,7 +8790,7 @@ module.exports = (() => {
   return Timestamp;
 })();
 
-},{"./assert":34,"./is":38,"moment-timezone":49}],33:[function(require,module,exports){
+},{"./assert":34,"./is":38,"moment-timezone":50}],33:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -9566,7 +9612,7 @@ module.exports = (() => {
      *
      * @static
      * @public
-     * @param {*} candidate {*}
+     * @param {*} candidate
      * @returns {boolean}
      */
     number(candidate) {
@@ -10271,7 +10317,7 @@ module.exports = (() => {
   return DataType;
 })();
 
-},{"./../../lang/AdHoc":24,"./../../lang/Day":26,"./../../lang/Decimal":27,"./../../lang/Enum":29,"./../../lang/Timestamp":32,"./../../lang/assert":34,"./../../lang/is":38,"moment":51}],43:[function(require,module,exports){
+},{"./../../lang/AdHoc":24,"./../../lang/Day":26,"./../../lang/Decimal":27,"./../../lang/Enum":29,"./../../lang/Timestamp":32,"./../../lang/assert":34,"./../../lang/is":38,"moment":52}],43:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -10767,6 +10813,277 @@ module.exports = (() => {
 })();
 
 },{"./../../../lang/assert":34,"./../../../lang/is":38,"./../Component":41,"./../DataType":42,"./../Field":43,"./../Schema":44,"./ComponentBuilder":45}],47:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+  Decimal = require('@barchart/common-js/lang/Decimal'),
+  is = require('@barchart/common-js/lang/is');
+const Enum = require('@barchart/common-js/lang/Enum');
+module.exports = (() => {
+  'use strict';
+
+  // 2021/07/14, For a more detailed on the "special" fractional formatting (i.e. CME
+  // tick notation), please refer to the detailed unit test suite written for CME
+  // notation (see the cmeSpec.js file).
+
+  /**
+   * An enumeration that describes different conventions for formatting prices,
+   * as decimals or fractions (using tick notation). Each instrument is assigned
+   * a unit code. See the {@link Profile.unitCode} property.
+   *
+   * Barchart uses fourteen distinct unit codes.
+   *
+   * @public
+   * @exported
+   * @extends {Enum}
+   * @param {String} code
+   * @param {Number} baseCode
+   * @param {Number} decimalDigits - When formatting a price as a decimal value, the number of decimal places to display.
+   * @param {Boolean} supportsFractions - As an alternative to decimal-formatted prices, some instruments support fractional representations.
+   * @param {Number=} fractionFactor - The count of discrete prices which a unit can be divided into (e.g. a US dollar can be divided into 100 cents). By default, this is also the implied denominator in fractional notation (e.g. 3.6875 equals 3 and 22/32 — which is represented in fractional notation as "3-22", where the denominator of 32 is implied).
+   * @param {Number} fractionDigits - The number of digits of the fraction's numerator to display (e.g. using two digits, the fraction 22/32 is shown as "0-22"; using three digits, the fraction 22.375/32 is shown as "0-223").
+   * @param {Number=} fractionFactorSpecial - Special fraction factors refer to the CME tick notation scheme (read more [here](https://www.cmegroup.com/confluence/display/EPICSANDBOX/Fractional+Pricing+-+Tick+and+Decimal+Conversions)). For example, the CME notation for 0.51171875 (in 1/8ths of 1/32nds) is "0-163", where the numerator of "163" means 16 thirty-seconds and 3 eighths of a thirty-second, where the actual fraction is 16.3[75] / 32, which equals 0.51171875.
+   * @param {Number=} fractionDigitsSpecial - The number of digits of the fraction's numerator to display, when formatting in CME tick notation. For example, the notation "0-163" (in 1/8ths of 1/32nds) equates to the fraction of 16.375/32. This notation is limited to three digits (163) and omits the trailing two digits (75).
+   */
+  class UnitCode extends Enum {
+    constructor(code, baseCode, decimalDigits, supportsFractions, fractionFactor, fractionDigits, fractionFactorSpecial, fractionDigitsSpecial) {
+      super(code, code);
+      this._baseCode = baseCode;
+      this._decimalDigits = decimalDigits;
+      this._supportsFractions = supportsFractions;
+      if (supportsFractions) {
+        this._fractionFactor = fractionFactor;
+        this._fractionDigits = fractionDigits;
+        this._fractionFactorSpecial = fractionFactorSpecial || fractionFactor;
+        this._fractionDigitsSpecial = fractionDigitsSpecial || fractionDigits;
+      } else {
+        this._fractionFactor = undefined;
+        this._fractionDigits = undefined;
+        this._fractionFactorSpecial = undefined;
+        this._fractionDigitsSpecial = undefined;
+      }
+    }
+
+    /**
+     * The numeric counterpart of a "unit" code.
+     *
+     * @public
+     * @returns {Number}
+     */
+    get baseCode() {
+      return this._baseCode;
+    }
+
+    /**
+     * The single character "unit" code.
+     *
+     * @public
+     * @returns {String}
+     */
+    get unitCode() {
+      return this._code;
+    }
+
+    /**
+     * When formatting in decimal mode, the number of digits to show after the
+     * decimal point.
+     *
+     * @public
+     * @returns {Number}
+     */
+    get decimalDigits() {
+      return this._decimalDigits;
+    }
+
+    /**
+     * Indicates if formatting can use the alternative to decimal notation -- that
+     * is, fractional notation.
+     *
+     * @public
+     * @returns {Boolean}
+     */
+    get supportsFractions() {
+      return this._supportsFractions;
+    }
+
+    /**
+     * The count of discrete prices which a unit can be divided into (e.g. a US dollar can be divided
+     * into 100 cents). By default, this is also the implied denominator in fractional notation (e.g. 3.6875
+     * equals 3 and 22/32 — which is represented in fractional notation as "3-22", where the denominator of 32
+     * is implied).
+     *
+     * @public
+     * @returns {Number|undefined}
+     */
+    get fractionFactor() {
+      return this._fractionFactor;
+    }
+
+    /**
+     * The number of digits of the fraction's numerator to display (e.g. using two digits, the fraction 22/32 is
+     * shown as "0-22"; using three digits, the fraction 22.375/32 is shown as "0-223").
+     *
+     * @public
+     * @returns {Number|undefined}
+     */
+    get fractionDigits() {
+      return this._fractionDigits;
+    }
+
+    /**
+     * Special fraction factors refer to the CME tick notation scheme (read more [here](https://www.cmegroup.com/confluence/display/EPICSANDBOX/Fractional+Pricing+-+Tick+and+Decimal+Conversions)).
+     *
+     * @public
+     * @returns {Number|undefined}
+     */
+    get fractionFactorSpecial() {
+      return this._fractionFactorSpecial;
+    }
+
+    /**
+     * Same as {@link UnitCode#fractionDigits} for "special" fractions.
+     *
+     * @public
+     * @returns {Number|undefined}
+     */
+    get fractionDigitsSpecial() {
+      return this._fractionDigitsSpecial;
+    }
+
+    /**
+     * The number of digits of the fraction's numerator to display, when formatting
+     * in CME tick notation. For example, the notation "0-163" (in 1/8ths of 1/32nds) equates
+     * to the fraction of 16.375/32. This notation is limited to three digits (163)
+     * and omits the trailing two digits (75).
+     *
+     * @public
+     * @param {Boolean=} special
+     * @returns {Number|undefined}
+     */
+    getFractionFactor(special) {
+      return special === true ? this._fractionFactorSpecial : this._fractionFactor;
+    }
+
+    /**
+     * Returns the {@link UnitCode#fractionDigits} or {@link UnitCode#fractionDigitsSpecial} value.
+     *
+     * @public
+     * @param {Boolean=} special
+     * @returns {Number|undefined}
+     */
+    getFractionDigits(special) {
+      return special === true ? this._fractionDigitsSpecial : this._fractionDigits;
+    }
+
+    /**
+     * Determines the minimum price fluctuation. In other words, multiples
+     * of this value determine the set of valid quote and trade prices
+     * for an instrument.
+     *
+     * @public
+     * @param {Number} tickIncrement - Taken from a {@link Profile} instance.
+     * @returns {Number}
+     */
+    getMinimumTick(tickIncrement) {
+      assert.argumentIsValid(tickIncrement, 'tickIncrement', is.integer, 'must be an integer');
+      const one = new Decimal(1);
+      const ten = new Decimal(10);
+      let discretePrice;
+      if (this.supportsFractions) {
+        discretePrice = one.divide(this._fractionFactor);
+      } else {
+        discretePrice = one.divide(ten.raise(this._decimalDigits));
+      }
+      const minimumTick = discretePrice.multiply(tickIncrement);
+      return minimumTick.toFloat();
+    }
+
+    /**
+     * Returns the change in value of a position when the instrument's price moves
+     * up by the minimum tick.
+     *
+     * @public
+     * @param {Number} tickIncrement - Taken from a {@link Profile} instance.
+     * @param {Number} pointValue - Taken from a {@link Profile} instance.
+     * @returns {Number}
+     */
+    getMinimumTickValue(tickIncrement, pointValue) {
+      assert.argumentIsValid(tickIncrement, 'tickIncrement', is.integer, 'must be an integer');
+      assert.argumentIsValid(pointValue, 'pointValue', is.number, 'must be a number');
+      const minimumTick = new Decimal(this.getMinimumTick(tickIncrement));
+      const minimumTickValue = minimumTick.multiply(pointValue);
+      return minimumTickValue.toFloat();
+    }
+
+    /**
+     * Rounds a value to the nearest valid tick.
+     *
+     * @param {Number|Decimal} value
+     * @param {Number} tickIncrement
+     * @param {Boolean=} roundToZero
+     * @returns {Number}
+     */
+    roundToNearestTick(value, tickIncrement, roundToZero) {
+      assert.argumentIsValid(value, 'value', x => is.number(x) || x instanceof Decimal, 'must be a number primitive or a Decimal instance');
+      assert.argumentIsOptional(roundToZero, 'roundToZero', Boolean);
+      const minimumTick = this.getMinimumTick(tickIncrement);
+      let valueToUse;
+      if (value instanceof Decimal) {
+        valueToUse = value;
+      } else {
+        valueToUse = new Decimal(value);
+      }
+      let ticks = valueToUse.divide(minimumTick);
+      let remainder = valueToUse.mod(minimumTick);
+      if (!remainder.getIsZero()) {
+        ticks = ticks.round(0, is.boolean(roundToZero) && roundToZero ? Decimal.ROUNDING_MODE.DOWN : Decimal.ROUNDING_MODE.NORMAL);
+      }
+      return ticks.multiply(minimumTick).toFloat();
+    }
+    toString() {
+      return `[UnitCode (code=${this.code})]`;
+    }
+
+    /**
+     * Converts a unit code character into a {@link UnitCode} enumeration item.
+     *
+     * @public
+     * @static
+     * @param {String} code
+     * @returns {UnitCode|null}
+     */
+    static parse(code) {
+      return Enum.fromCode(UnitCode, code);
+    }
+
+    /**
+     * Converts a numeric "base" code into a {@link UnitCode} item.
+     *
+     * @public
+     * @static
+     * @param {Number} code
+     * @returns {UnitCode|null}
+     */
+    static fromBaseCode(code) {
+      return Enum.getItems(UnitCode).find(x => x.baseCode === code) || null;
+    }
+  }
+  const TWO = new UnitCode('2', -1, 3, true, 8, 1);
+  const THREE = new UnitCode('3', -2, 4, true, 16, 2);
+  const FOUR = new UnitCode('4', -3, 5, true, 32, 2);
+  const FIVE = new UnitCode('5', -4, 6, true, 64, 2, 320, 3);
+  const SIX = new UnitCode('6', -5, 7, true, 128, 3, 320, 3);
+  const SEVEN = new UnitCode('7', -6, 8, true, 256, 3, 320, 3);
+  const EIGHT = new UnitCode('8', 0, 0, false);
+  const NINE = new UnitCode('9', 1, 1, false);
+  const A = new UnitCode('A', 2, 2, false);
+  const B = new UnitCode('B', 3, 3, false);
+  const C = new UnitCode('C', 4, 4, false);
+  const D = new UnitCode('D', 5, 5, false);
+  const E = new UnitCode('E', 6, 6, false);
+  const F = new UnitCode('F', 7, 7, false);
+  return UnitCode;
+})();
+
+},{"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38}],48:[function(require,module,exports){
 /*
  *  big.js v5.2.2
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -11709,7 +12026,7 @@ module.exports = (() => {
   }
 })(this);
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports={
 	"version": "2023c",
 	"zones": [
@@ -12562,11 +12879,11 @@ module.exports={
 		"ZW|Africa/Maputo Africa/Harare"
 	]
 }
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":48,"./moment-timezone":50}],50:[function(require,module,exports){
+},{"./data/packed/latest.json":49,"./moment-timezone":51}],51:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.43
 //! Copyright (c) JS Foundation and other contributors
@@ -13264,7 +13581,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":51}],51:[function(require,module,exports){
+},{"moment":52}],52:[function(require,module,exports){
 //! moment.js
 //! version : 2.29.4
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -18951,7 +19268,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19031,7 +19348,7 @@ var _stringify = _interopRequireDefault(require("./stringify.js"));
 var _parse = _interopRequireDefault(require("./parse.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./nil.js":54,"./parse.js":55,"./stringify.js":59,"./v1.js":60,"./v3.js":61,"./v4.js":63,"./v5.js":64,"./validate.js":65,"./version.js":66}],53:[function(require,module,exports){
+},{"./nil.js":55,"./parse.js":56,"./stringify.js":60,"./v1.js":61,"./v3.js":62,"./v4.js":64,"./v5.js":65,"./validate.js":66,"./version.js":67}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19255,7 +19572,7 @@ function md5ii(a, b, c, d, x, s, t) {
 
 var _default = md5;
 exports.default = _default;
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19264,7 +19581,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = '00000000-0000-0000-0000-000000000000';
 exports.default = _default;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19310,7 +19627,7 @@ function parse(uuid) {
 
 var _default = parse;
 exports.default = _default;
-},{"./validate.js":65}],56:[function(require,module,exports){
+},{"./validate.js":66}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19319,7 +19636,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
 exports.default = _default;
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19346,7 +19663,7 @@ function rng() {
 
   return getRandomValues(rnds8);
 }
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19451,7 +19768,7 @@ function sha1(bytes) {
 
 var _default = sha1;
 exports.default = _default;
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19491,7 +19808,7 @@ function stringify(arr, offset = 0) {
 
 var _default = stringify;
 exports.default = _default;
-},{"./validate.js":65}],60:[function(require,module,exports){
+},{"./validate.js":66}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19599,7 +19916,7 @@ function v1(options, buf, offset) {
 
 var _default = v1;
 exports.default = _default;
-},{"./rng.js":57,"./stringify.js":59}],61:[function(require,module,exports){
+},{"./rng.js":58,"./stringify.js":60}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19616,7 +19933,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v3 = (0, _v.default)('v3', 0x30, _md.default);
 var _default = v3;
 exports.default = _default;
-},{"./md5.js":53,"./v35.js":62}],62:[function(require,module,exports){
+},{"./md5.js":54,"./v35.js":63}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19695,7 +20012,7 @@ function _default(name, version, hashfunc) {
   generateUUID.URL = URL;
   return generateUUID;
 }
-},{"./parse.js":55,"./stringify.js":59}],63:[function(require,module,exports){
+},{"./parse.js":56,"./stringify.js":60}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19733,7 +20050,7 @@ function v4(options, buf, offset) {
 
 var _default = v4;
 exports.default = _default;
-},{"./rng.js":57,"./stringify.js":59}],64:[function(require,module,exports){
+},{"./rng.js":58,"./stringify.js":60}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19750,7 +20067,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v5 = (0, _v.default)('v5', 0x50, _sha.default);
 var _default = v5;
 exports.default = _default;
-},{"./sha1.js":58,"./v35.js":62}],65:[function(require,module,exports){
+},{"./sha1.js":59,"./v35.js":63}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19768,7 +20085,7 @@ function validate(uuid) {
 
 var _default = validate;
 exports.default = _default;
-},{"./regex.js":56}],66:[function(require,module,exports){
+},{"./regex.js":57}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19790,7 +20107,7 @@ function version(uuid) {
 
 var _default = version;
 exports.default = _default;
-},{"./validate.js":65}],67:[function(require,module,exports){
+},{"./validate.js":66}],68:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -19933,7 +20250,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(AveragePriceCalculator.calculate(instrument, -800000, 2).toFloat()).toEqual(400000);
 	});
 });
-},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],68:[function(require,module,exports){
+},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],69:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -20152,7 +20469,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(ValuationCalculator.calculate(instrument, null, 4)).toBe(null);
 	});
 });
-},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],69:[function(require,module,exports){
+},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],70:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -20801,7 +21118,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}],70:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}],71:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day');
 
 const TransactionType = require('./../../../lib/data/TransactionType'),
@@ -20896,7 +21213,7 @@ describe('When requesting all the user-initiated transaction types', () => {
 		expect(userInitiated.length).toEqual(9);
 	});
 });
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":26}],71:[function(require,module,exports){
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":26}],72:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -21083,7 +21400,7 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/processing/PositionContainer":10,"./../../../lib/processing/definitions/PositionLevelDefinition":13,"./../../../lib/processing/definitions/PositionLevelType":14,"./../../../lib/processing/definitions/PositionTreeDefinition":15,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27}],72:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/processing/PositionContainer":10,"./../../../lib/processing/definitions/PositionLevelDefinition":13,"./../../../lib/processing/definitions/PositionLevelType":14,"./../../../lib/processing/definitions/PositionTreeDefinition":15,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27}],73:[function(require,module,exports){
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -21149,7 +21466,7 @@ describe('When positions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/serialization/PositionSchema":16}],73:[function(require,module,exports){
+},{"./../../../lib/serialization/PositionSchema":16}],74:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -21216,4 +21533,4 @@ describe('When transactions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/serialization/TransactionSchema":17,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}]},{},[67,68,69,70,71,72,73]);
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/serialization/TransactionSchema":17,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}]},{},[68,69,70,71,72,73,74]);
