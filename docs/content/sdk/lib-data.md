@@ -292,8 +292,8 @@
 | --- | --- | --- |
 | symbol | [<code>Symbols</code>](#SchemaSymbols) | <p>The symbol(s) used to identify an instrument.</p> |
 | [name] | <code>String</code> | <p>The name of the instrument.</p> |
-| [type] | <code>String</code> | <p>The code of the asset class. See the InstrumentAssetClass enumeration in the @barchart/portfolio-api-common library.</p> |
-| [code] | <code>Number</code> | <p>The numeric code of the asset class. See the InstrumentAssetClass enumeration in the @barchart/portfolio-api-common library.</p> |
+| [type] | <code>String</code> | <p>The code of the asset class. See the InstrumentType enumeration in the @barchart/portfolio-api-common library.</p> |
+| [code] | <code>Number</code> | <p>The numeric code of the asset class. See the InstrumentType enumeration in the @barchart/portfolio-api-common library.</p> |
 | [exchange] | <code>String</code> | <p>The code of the listing exchange.</p> |
 | [currency] | <code>Currency</code> | <p>The currency the instrument is transacted in.</p> |
 

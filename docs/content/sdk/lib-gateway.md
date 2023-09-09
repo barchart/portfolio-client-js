@@ -17,7 +17,7 @@
         * [.updatePosition(position)](#PortfolioGatewayupdatePosition) ⇒ [<code>Promise.&lt;Schema.Position&gt;</code>](/content/sdk/lib-data?id=schemaposition)
         * [.deletePosition(portfolio, position)](#PortfolioGatewaydeletePosition) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Position&gt;&gt;</code>](/content/sdk/lib-data?id=schemaposition)
         * [.readPositions([portfolio], [position], [includePreviousPrice])](#PortfolioGatewayreadPositions) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Position&gt;&gt;</code>](/content/sdk/lib-data?id=schemaposition)
-        * [.createTransaction(transaction)](#PortfolioGatewaycreateTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
+        * [.createTransaction(transaction, options)](#PortfolioGatewaycreateTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
         * [.editTransaction(transaction)](#PortfolioGatewayeditTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
         * [.deleteTransaction(portfolio, position, sequence, [force], [echoStart], [echoEnd])](#PortfolioGatewaydeleteTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
         * [.readTransactions(portfolio, [position], [sequence])](#PortfolioGatewayreadTransactions) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Transaction&gt;&gt;</code>](/content/sdk/lib-data?id=schematransaction)
@@ -163,7 +163,7 @@
 
 * * *
 
-### portfolioGateway.createTransaction(transaction) :id=portfoliogatewaycreatetransaction
+### portfolioGateway.createTransaction(transaction, options) :id=portfoliogatewaycreatetransaction
 > Creates a new transaction.
 
 **Kind**: instance method of [<code>PortfolioGateway</code>](#PortfolioGateway)  
@@ -173,6 +173,7 @@
 | Param | Type |
 | --- | --- |
 | transaction | [<code>Schema.TransactionCreate</code>](/content/sdk/lib-data?id=schematransactioncreate) | 
+| options | <code>Object</code> | 
 
 
 * * *
