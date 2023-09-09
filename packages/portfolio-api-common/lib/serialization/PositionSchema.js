@@ -4,6 +4,8 @@ const Currency = require('@barchart/common-js/lang/Currency'),
 	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
+const UnitCode = require('@barchart/marketdata-api-js/lib/utilities/data/UnitCode');
+
 const InstrumentType = require('./../data/InstrumentType'),
 	OptionSide = require('./../data/OptionSide'),
 	PositionDirection = require('./../data/PositionDirection'),
@@ -90,6 +92,7 @@ module.exports = (() => {
 		.withField('instrument.id', DataType.STRING)
 		.withField('instrument.name', DataType.STRING)
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.code', DataType.forEnum(UnitCode, 'UnitCode'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.future.expiration', DataType.DAY, true)
@@ -135,6 +138,7 @@ module.exports = (() => {
 		.withField('instrument.id', DataType.STRING)
 		.withField('instrument.name', DataType.STRING)
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
+		.withField('instrument.code', DataType.forEnum(UnitCode, 'UnitCode'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.future.expiration', DataType.DAY, true)
