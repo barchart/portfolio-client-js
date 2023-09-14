@@ -218,10 +218,10 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The {@link LevelDefinition} which was used to generate this group.
+		 * The {@link PositionLevelDefinition} which was used to generate this group.
 		 *
 		 * @public
-		 * @returns {LevelDefinition}
+		 * @returns {PositionLevelDefinition}
 		 */
 		get definition() {
 			return this._definition;
