@@ -64,13 +64,13 @@ module.exports = (() => {
 						formatterFunction(transaction, formatted);
 					});
 
+					const code = instrument.code;
+
 					Object.keys(formatted).forEach((key) => {
 						const value = formatted[key];
 
 						if (value instanceof Decimal) {
-							const code = instrument.code;
-
-							if (fractions && code.supportsFractions && (instrument.type === InstrumentType.FUTURE || instrument.type === InstrumentType.FUTURE_OPTION) && keys.fractions.some(k => k === key)) {
+							if (fractions && code && code.supportsFractions && (instrument.type === InstrumentType.FUTURE || instrument.type === InstrumentType.FUTURE_OPTION) && keys.fractions.some(k => k === key)) {
 								const rounded = code.roundToNearestTick(value.toFloat(), instrument.future.tick, true);
 
 								formatted[key] = formatter.numberToFraction(rounded, code.fractionFactor, code.fractionDigits, '-', true);
