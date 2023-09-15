@@ -24,7 +24,7 @@ module.exports = (() => {
 		 * @param {Object} instrument
 		 * @param {Decimal|Number} basis
 		 * @param {Decimal|Number} quantity
-		 * @returns {null|Decimal}
+		 * @returns {Decimal|null}
 		 */
 		static calculate(instrument, basis, quantity) {
 			let basisToUse = null;

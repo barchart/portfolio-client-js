@@ -6,6 +6,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
 	formatter = require('@barchart/common-js/lang/formatter');
 
+formatter.numberToFraction = require('@barchart/marketdata-api-js/lib/utilities/format/fraction');
+
 const InstrumentType = require('./../data/InstrumentType'),
 	TransactionType = require('./../data/TransactionType');
 
@@ -32,12 +34,14 @@ module.exports = (() => {
 		 * @param {Object[]} transactions
 		 * @param {Object[]} positions
 		 * @param {Boolean=} descending
+		 * @param {Boolean=} fractions
 		 * @returns {Array}
 		 */
-		static format(transactions, positions, descending) {
+		static format(transactions, positions, descending, fractions) {
 			assert.argumentIsArray(transactions, 'transactions');
 			assert.argumentIsArray(positions, 'positions');
 			assert.argumentIsOptional(descending, 'descending', Boolean);
+			assert.argumentIsOptional(fractions, 'fractions', Boolean);
 
 			const instruments = positions.reduce((map, p) => {
 				const instrument = Object.assign({ }, p.instrument || { });
@@ -52,7 +56,7 @@ module.exports = (() => {
 
 				if (instruments.hasOwnProperty(position)) {
 					let instrument = instruments[position];
-					let formatted = { instrument, raw: {} };
+					let formatted = { instrument, raw: { } };
 
 					const formatterFunctions = formatters.get(transaction.type);
 
@@ -64,9 +68,17 @@ module.exports = (() => {
 						const value = formatted[key];
 
 						if (value instanceof Decimal) {
-							const precision = instrument.currency.precision;
+							if (fractions && (instrument.type === InstrumentType.FUTURE || instrument.type === InstrumentType.FUTURE_OPTION) && keys.fractions.some(k => k === key)) {
+								const code = instrument.code;
 
-							formatted[key] = formatter.numberToString(value.toFloat(), precision, ',');
+								const rounded = code.roundToNearestTick(value.toFloat(), instrument.future.tick, true);
+
+								formatted[key] = formatter.numberToFraction(rounded, code.fractionFactor, code.fractionDigits, '-', true);
+							} else {
+								const precision = instrument.currency.precision;
+
+								formatted[key] = formatter.numberToString(value.toFloat(), precision, ',');
+							}
 						}
 					});
 
@@ -122,6 +134,10 @@ module.exports = (() => {
 		}
 	}
 
+	const keys = { };
+
+	keys.fractions = [ 'average', 'price' ];
+
 	const basicFormatter = (t, f) => {
 		f.date = t.date;
 		f.type = t.type.display;
@@ -147,6 +163,7 @@ module.exports = (() => {
 		}
 
 		f.average = average;
+		f.raw.average = getRawForDecimal(average);
 	};
 
 	const buySellFormatter = (t, f) => {

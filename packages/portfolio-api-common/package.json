@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@barchart/common-js": "^4.27.0",
-    "@barchart/marketdata-api-js": "^6.2.0",
+    "@barchart/marketdata-api-js": "^6.2.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
