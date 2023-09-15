@@ -68,9 +68,9 @@ module.exports = (() => {
 						const value = formatted[key];
 
 						if (value instanceof Decimal) {
-							if (fractions && (instrument.type === InstrumentType.FUTURE || instrument.type === InstrumentType.FUTURE_OPTION) && keys.fractions.some(k => k === key)) {
-								const code = instrument.code;
+							const code = instrument.code;
 
+							if (fractions && code.supportsFractions && (instrument.type === InstrumentType.FUTURE || instrument.type === InstrumentType.FUTURE_OPTION) && keys.fractions.some(k => k === key)) {
 								const rounded = code.roundToNearestTick(value.toFloat(), instrument.future.tick, true);
 
 								formatted[key] = formatter.numberToFraction(rounded, code.fractionFactor, code.fractionDigits, '-', true);
