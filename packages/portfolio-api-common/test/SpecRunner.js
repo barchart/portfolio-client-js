@@ -25,7 +25,7 @@ module.exports = (() => {
 		 * @param {Object} instrument
 		 * @param {Decimal|Number} basis
 		 * @param {Decimal|Number} quantity
-		 * @returns {null|Decimal}
+		 * @returns {Decimal|null}
 		 */
 		static calculate(instrument, basis, quantity) {
 			let basisToUse = null;
@@ -599,7 +599,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34,"uuid":53}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34,"uuid":54}],4:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -3276,6 +3276,8 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate');
 
+const fractionFormatter = require('@barchart/marketdata-api-js/lib/utilities/format/fraction');
+
 const InstrumentType = require('./../data/InstrumentType');
 
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
@@ -3485,10 +3487,10 @@ module.exports = (() => {
 		}
 
 		/**
-		 * The {@link LevelDefinition} which was used to generate this group.
+		 * The {@link PositionLevelDefinition} which was used to generate this group.
 		 *
 		 * @public
-		 * @returns {LevelDefinition}
+		 * @returns {PositionLevelDefinition}
 		 */
 		get definition() {
 			return this._definition;
@@ -3783,10 +3785,12 @@ module.exports = (() => {
 	function bindItem(item) {
 		const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
 			if (this._single) {
-				const precision = sender.position.instrument.currency.precision;
+				const instrument = sender.position.instrument;
+				const currency = instrument.currency;
+				const precision = currency.precision;
 
 				this._dataActual.currentPrice = quote.lastPrice;
-				this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
+				this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument);
 
 				this._dataActual.quoteLast = quote.previousPrice;
 				this._dataActual.quoteOpen = quote.openPrice;
@@ -3801,7 +3805,8 @@ module.exports = (() => {
 				this._dataFormat.quoteOpen = formatNumber(this._dataActual.quoteOpen, precision);
 				this._dataFormat.quoteHigh = formatNumber(this._dataActual.quoteHigh, precision);
 				this._dataFormat.quoteLow = formatNumber(this._dataActual.quoteLow, precision);
-				this._dataFormat.quoteChange = formatNumber(this._dataActual.quoteChange, precision);
+				this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument);
+
 				this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
 				this._dataFormat.quoteTime = this._dataActual.quoteTime;
 				this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
@@ -3925,6 +3930,27 @@ module.exports = (() => {
 
 			this.refresh();
 		}));
+	}
+
+	function formatFraction(value, currency, instrument) {
+		let decimal = value instanceof Decimal;
+
+		if (instrument) {
+			const type = instrument.type;
+			const code = instrument.code;
+
+			if (code && code.supportsFractions && (type === InstrumentType.FUTURE || type === InstrumentType.FUTURE_OPTION)) {
+				const rounded = code.roundToNearestTick(decimal ? value.toFloat() : value, instrument.future ? instrument.future.tick : instrument.option.tick, true);
+
+				return fractionFormatter(rounded, code.fractionFactor, code.fractionDigits, '-', true);
+			}
+		}
+
+		if (decimal) {
+			return formatDecimal(value, currency.precision);
+		} else {
+			return formatNumber(value, currency.precision);
+		}
 	}
 
 	function formatNumber(number, precision) {
@@ -4100,8 +4126,7 @@ module.exports = (() => {
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 
 			actual.basisPrice = item.data.basisPrice;
-
-			format.basisPrice = formatCurrency(actual.basisPrice, currency);
+			format.basisPrice = formatFraction(actual.basisPrice, currency, item.position.instrument);
 
 			actual.periodPrice = item.data.periodPrice;
 			actual.periodPricePrevious = item.data.periodPricePrevious;
@@ -4352,7 +4377,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/collections/specialized/DisposableStack":23,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Disposable":28,"@barchart/common-js/lang/Rate":31,"@barchart/common-js/lang/array":33,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/formatter":36,"@barchart/common-js/lang/is":38,"@barchart/common-js/messaging/Event":40}],12:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/collections/specialized/DisposableStack":23,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Disposable":28,"@barchart/common-js/lang/Rate":31,"@barchart/common-js/lang/array":33,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/formatter":36,"@barchart/common-js/lang/is":38,"@barchart/common-js/messaging/Event":40,"@barchart/marketdata-api-js/lib/utilities/format/fraction":48}],12:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -8107,7 +8132,7 @@ module.exports = (() => {
   return Decimal;
 })();
 
-},{"./Enum":29,"./assert":34,"./is":38,"big.js":48}],28:[function(require,module,exports){
+},{"./Enum":29,"./assert":34,"./is":38,"big.js":49}],28:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -8790,7 +8815,7 @@ module.exports = (() => {
   return Timestamp;
 })();
 
-},{"./assert":34,"./is":38,"moment-timezone":50}],33:[function(require,module,exports){
+},{"./assert":34,"./is":38,"moment-timezone":51}],33:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -10317,7 +10342,7 @@ module.exports = (() => {
   return DataType;
 })();
 
-},{"./../../lang/AdHoc":24,"./../../lang/Day":26,"./../../lang/Decimal":27,"./../../lang/Enum":29,"./../../lang/Timestamp":32,"./../../lang/assert":34,"./../../lang/is":38,"moment":52}],43:[function(require,module,exports){
+},{"./../../lang/AdHoc":24,"./../../lang/Day":26,"./../../lang/Decimal":27,"./../../lang/Enum":29,"./../../lang/Timestamp":32,"./../../lang/assert":34,"./../../lang/is":38,"moment":53}],43:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -11016,15 +11041,15 @@ module.exports = (() => {
     /**
      * Rounds a value to the nearest valid tick.
      *
-     * @param {Number|Decimal} value
-     * @param {Number} tickIncrement
-     * @param {Boolean=} roundToZero
+     * @param {Number|Decimal} value - The price to round.
+     * @param {Number|Decimal} minimumTick - The minimum tick size (see {@link UnitCode#getMinimumTick})
+     * @param {Boolean=} roundToZero - When true, the rounding will always go towards zero.
      * @returns {Number}
      */
-    roundToNearestTick(value, tickIncrement, roundToZero) {
+    roundToNearestTick(value, minimumTick, roundToZero) {
       assert.argumentIsValid(value, 'value', x => is.number(x) || x instanceof Decimal, 'must be a number primitive or a Decimal instance');
+      assert.argumentIsValid(minimumTick, 'minimumTick', x => is.number(x) || x instanceof Decimal, 'must be a number primitive or a Decimal instance');
       assert.argumentIsOptional(roundToZero, 'roundToZero', Boolean);
-      const minimumTick = this.getMinimumTick(tickIncrement);
       let valueToUse;
       if (value instanceof Decimal) {
         valueToUse = value;
@@ -11084,6 +11109,79 @@ module.exports = (() => {
 })();
 
 },{"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38}],48:[function(require,module,exports){
+const is = require('@barchart/common-js/lang/is');
+module.exports = (() => {
+  'use strict';
+
+  function getIntegerPart(value, fractionSeparator) {
+    const floor = Math.floor(value);
+    if (floor === 0 && fractionSeparator === '') {
+      return '';
+    } else {
+      return floor;
+    }
+  }
+  function getDecimalPart(absoluteValue) {
+    return absoluteValue - Math.floor(absoluteValue);
+  }
+  function frontPad(value, digits) {
+    return ['000', Math.floor(value)].join('').substr(-1 * digits);
+  }
+
+  /**
+   * Formats a value using fractional tick notation.
+   *
+   * @exported
+   * @function
+   * @memberOf Functions
+   * @param {Number} value - The decimal value to format as a fraction.
+   * @param {Number} fractionFactor - The count of discrete prices which a unit can be divided into (e.g. a US dollar can be divided into 100 cents). By default, this is also the implied denominator in fractional notation (e.g. 3.6875 equals 3 and 22/32 — which is represented in fractional notation as "3-22" where the denominator of 32 is implied).
+   * @param {Number} fractionDigits - The number of digits of the fraction's numerator to display (e.g. using two digits, the fraction 22/32 is shown as "0-22"; using three digits, the fraction 22.375/32 is shown as "0-223").
+   * @param {String=} fractionSeparator - An optional character to insert between the whole and fractional part of the value.
+   * @param {Boolean=} useParenthesis - If true, negative values will be wrapped in parenthesis.
+   * @returns {String}
+   */
+  function formatFraction(value, fractionFactor, fractionDigits, fractionSeparator, useParenthesis) {
+    if (!is.number(value)) {
+      return '';
+    }
+    if (!is.number(fractionFactor)) {
+      return '';
+    }
+    if (!is.number(fractionDigits)) {
+      return '';
+    }
+    if (!is.string(fractionSeparator) || fractionSeparator.length > 1) {
+      fractionSeparator = '.';
+    }
+    const absoluteValue = Math.abs(value);
+    const integerPart = getIntegerPart(absoluteValue, fractionSeparator);
+    const decimalPart = getDecimalPart(absoluteValue);
+    const denominator = fractionFactor;
+    const numerator = decimalPart * denominator;
+    const roundedNumerator = Math.floor(parseFloat(numerator.toFixed(1)));
+    const formattedNumerator = frontPad(roundedNumerator, fractionDigits);
+    let prefix;
+    let suffix;
+    if (value < 0) {
+      useParenthesis = is.boolean(useParenthesis) && useParenthesis;
+      if (useParenthesis) {
+        prefix = '(';
+        suffix = ')';
+      } else {
+        prefix = '-';
+        suffix = '';
+      }
+    } else {
+      prefix = '';
+      suffix = '';
+    }
+    return [prefix, integerPart, fractionSeparator, formattedNumerator, suffix].join('');
+  }
+  return formatFraction;
+})();
+
+},{"@barchart/common-js/lang/is":38}],49:[function(require,module,exports){
 /*
  *  big.js v5.2.2
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -12026,7 +12124,7 @@ module.exports = (() => {
   }
 })(this);
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports={
 	"version": "2023c",
 	"zones": [
@@ -12879,11 +12977,11 @@ module.exports={
 		"ZW|Africa/Maputo Africa/Harare"
 	]
 }
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":49,"./moment-timezone":51}],51:[function(require,module,exports){
+},{"./data/packed/latest.json":50,"./moment-timezone":52}],52:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.43
 //! Copyright (c) JS Foundation and other contributors
@@ -13581,7 +13679,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":52}],52:[function(require,module,exports){
+},{"moment":53}],53:[function(require,module,exports){
 //! moment.js
 //! version : 2.29.4
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -19268,7 +19366,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19348,7 +19446,7 @@ var _stringify = _interopRequireDefault(require("./stringify.js"));
 var _parse = _interopRequireDefault(require("./parse.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./nil.js":55,"./parse.js":56,"./stringify.js":60,"./v1.js":61,"./v3.js":62,"./v4.js":64,"./v5.js":65,"./validate.js":66,"./version.js":67}],54:[function(require,module,exports){
+},{"./nil.js":56,"./parse.js":57,"./stringify.js":61,"./v1.js":62,"./v3.js":63,"./v4.js":65,"./v5.js":66,"./validate.js":67,"./version.js":68}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19572,7 +19670,7 @@ function md5ii(a, b, c, d, x, s, t) {
 
 var _default = md5;
 exports.default = _default;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19581,7 +19679,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = '00000000-0000-0000-0000-000000000000';
 exports.default = _default;
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19627,7 +19725,7 @@ function parse(uuid) {
 
 var _default = parse;
 exports.default = _default;
-},{"./validate.js":66}],57:[function(require,module,exports){
+},{"./validate.js":67}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19636,7 +19734,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
 exports.default = _default;
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19663,7 +19761,7 @@ function rng() {
 
   return getRandomValues(rnds8);
 }
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19768,7 +19866,7 @@ function sha1(bytes) {
 
 var _default = sha1;
 exports.default = _default;
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19808,7 +19906,7 @@ function stringify(arr, offset = 0) {
 
 var _default = stringify;
 exports.default = _default;
-},{"./validate.js":66}],61:[function(require,module,exports){
+},{"./validate.js":67}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19916,7 +20014,7 @@ function v1(options, buf, offset) {
 
 var _default = v1;
 exports.default = _default;
-},{"./rng.js":58,"./stringify.js":60}],62:[function(require,module,exports){
+},{"./rng.js":59,"./stringify.js":61}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19933,7 +20031,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v3 = (0, _v.default)('v3', 0x30, _md.default);
 var _default = v3;
 exports.default = _default;
-},{"./md5.js":54,"./v35.js":63}],63:[function(require,module,exports){
+},{"./md5.js":55,"./v35.js":64}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20012,7 +20110,7 @@ function _default(name, version, hashfunc) {
   generateUUID.URL = URL;
   return generateUUID;
 }
-},{"./parse.js":56,"./stringify.js":60}],64:[function(require,module,exports){
+},{"./parse.js":57,"./stringify.js":61}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20050,7 +20148,7 @@ function v4(options, buf, offset) {
 
 var _default = v4;
 exports.default = _default;
-},{"./rng.js":58,"./stringify.js":60}],65:[function(require,module,exports){
+},{"./rng.js":59,"./stringify.js":61}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20067,7 +20165,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v5 = (0, _v.default)('v5', 0x50, _sha.default);
 var _default = v5;
 exports.default = _default;
-},{"./sha1.js":59,"./v35.js":63}],66:[function(require,module,exports){
+},{"./sha1.js":60,"./v35.js":64}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20085,7 +20183,7 @@ function validate(uuid) {
 
 var _default = validate;
 exports.default = _default;
-},{"./regex.js":57}],67:[function(require,module,exports){
+},{"./regex.js":58}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20107,7 +20205,7 @@ function version(uuid) {
 
 var _default = version;
 exports.default = _default;
-},{"./validate.js":66}],68:[function(require,module,exports){
+},{"./validate.js":67}],69:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -20250,7 +20348,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(AveragePriceCalculator.calculate(instrument, -800000, 2).toFloat()).toEqual(400000);
 	});
 });
-},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],69:[function(require,module,exports){
+},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],70:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -20469,7 +20567,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(ValuationCalculator.calculate(instrument, null, 4)).toBe(null);
 	});
 });
-},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],70:[function(require,module,exports){
+},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],71:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -21118,7 +21216,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}],71:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}],72:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day');
 
 const TransactionType = require('./../../../lib/data/TransactionType'),
@@ -21213,7 +21311,7 @@ describe('When requesting all the user-initiated transaction types', () => {
 		expect(userInitiated.length).toEqual(9);
 	});
 });
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":26}],72:[function(require,module,exports){
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":26}],73:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -21400,7 +21498,7 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/processing/PositionContainer":10,"./../../../lib/processing/definitions/PositionLevelDefinition":13,"./../../../lib/processing/definitions/PositionLevelType":14,"./../../../lib/processing/definitions/PositionTreeDefinition":15,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27}],73:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/processing/PositionContainer":10,"./../../../lib/processing/definitions/PositionLevelDefinition":13,"./../../../lib/processing/definitions/PositionLevelType":14,"./../../../lib/processing/definitions/PositionTreeDefinition":15,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27}],74:[function(require,module,exports){
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -21466,7 +21564,7 @@ describe('When positions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/serialization/PositionSchema":16}],74:[function(require,module,exports){
+},{"./../../../lib/serialization/PositionSchema":16}],75:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -21533,4 +21631,4 @@ describe('When transactions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/serialization/TransactionSchema":17,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}]},{},[68,69,70,71,72,73,74]);
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/serialization/TransactionSchema":17,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}]},{},[69,70,71,72,73,74,75]);
