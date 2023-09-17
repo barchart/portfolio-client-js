@@ -71,7 +71,7 @@ module.exports = (() => {
 
 						if (value instanceof Decimal) {
 							if (fractions && code && code.supportsFractions && (instrument.type === InstrumentType.FUTURE || instrument.type === InstrumentType.FUTURE_OPTION) && keys.fractions.some(k => k === key)) {
-								const rounded = code.roundToNearestTick(value.toFloat(), instrument.future.tick, true);
+								const rounded = code.roundToNearestTick(value.toFloat(), instrument.future ? instrument.future.tick : instrument.option.tick, true);
 
 								formatted[key] = formatter.numberToFraction(rounded, code.fractionFactor, code.fractionDigits, '-', true);
 							} else {

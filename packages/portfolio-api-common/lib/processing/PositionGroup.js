@@ -9,6 +9,8 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate');
 
+const fractionFormatter = require('@barchart/marketdata-api-js/lib/utilities/format/fraction');
+
 const InstrumentType = require('./../data/InstrumentType');
 
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
@@ -516,10 +518,12 @@ module.exports = (() => {
 	function bindItem(item) {
 		const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
 			if (this._single) {
-				const precision = sender.position.instrument.currency.precision;
+				const instrument = sender.position.instrument;
+				const currency = instrument.currency;
+				const precision = currency.precision;
 
 				this._dataActual.currentPrice = quote.lastPrice;
-				this._dataFormat.currentPrice = formatNumber(this._dataActual.currentPrice, precision);
+				this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument);
 
 				this._dataActual.quoteLast = quote.previousPrice;
 				this._dataActual.quoteOpen = quote.openPrice;
@@ -534,7 +538,8 @@ module.exports = (() => {
 				this._dataFormat.quoteOpen = formatNumber(this._dataActual.quoteOpen, precision);
 				this._dataFormat.quoteHigh = formatNumber(this._dataActual.quoteHigh, precision);
 				this._dataFormat.quoteLow = formatNumber(this._dataActual.quoteLow, precision);
-				this._dataFormat.quoteChange = formatNumber(this._dataActual.quoteChange, precision);
+				this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument);
+
 				this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
 				this._dataFormat.quoteTime = this._dataActual.quoteTime;
 				this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
@@ -658,6 +663,27 @@ module.exports = (() => {
 
 			this.refresh();
 		}));
+	}
+
+	function formatFraction(value, currency, instrument) {
+		let decimal = value instanceof Decimal;
+
+		if (instrument) {
+			const type = instrument.type;
+			const code = instrument.code;
+
+			if (code && code.supportsFractions && (type === InstrumentType.FUTURE || type === InstrumentType.FUTURE_OPTION)) {
+				const rounded = code.roundToNearestTick(decimal ? value.toFloat() : value, instrument.future ? instrument.future.tick : instrument.option.tick, true);
+
+				return fractionFormatter(rounded, code.fractionFactor, code.fractionDigits, '-', true);
+			}
+		}
+
+		if (decimal) {
+			return formatDecimal(value, currency.precision);
+		} else {
+			return formatNumber(value, currency.precision);
+		}
 	}
 
 	function formatNumber(number, precision) {
@@ -833,8 +859,7 @@ module.exports = (() => {
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 
 			actual.basisPrice = item.data.basisPrice;
-
-			format.basisPrice = formatCurrency(actual.basisPrice, currency);
+			format.basisPrice = formatFraction(actual.basisPrice, currency, item.position.instrument);
 
 			actual.periodPrice = item.data.periodPrice;
 			actual.periodPricePrevious = item.data.periodPricePrevious;
