@@ -26,9 +26,9 @@ module.exports = (() => {
 	 * all the positions and performs currency translation, as necessary.
 	 *
 	 * @public
-	 * @param {PositionContainer} container
 	 * @param {PositionLevelDefinition} definition
 	 * @param {PositionItem[]} items
+	 * @param {Rate[]} rates
 	 * @param {Currency} currency
 	 * @param {String} key
 	 * @param {String} description
