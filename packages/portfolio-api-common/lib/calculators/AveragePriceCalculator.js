@@ -34,10 +34,18 @@ module.exports = (() => {
 			} else if (basis instanceof Decimal) {
 				basisToUse = basis;
 			}
+			
+			let quantityToUse = null;
+
+			if (is.number(basis)) {
+				quantityToUse = new Decimal(quantity);
+			} else if (basis instanceof Decimal) {
+				quantityToUse = quantity;
+			}
 
 			const calculator = calculators.get(instrument.type);
 
-			return calculator(instrument, basisToUse, quantity);
+			return calculator(instrument, basisToUse, quantityToUse);
 		}
 
 		toString() {
@@ -50,11 +58,7 @@ module.exports = (() => {
 	}
 
 	function calculateForEquity(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -62,11 +66,7 @@ module.exports = (() => {
 	}
 
 	function calculateForEquityOption(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -76,11 +76,7 @@ module.exports = (() => {
 	}
 
 	function calculateForFund(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -88,11 +84,7 @@ module.exports = (() => {
 	}
 
 	function calculateForFuture(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -103,11 +95,7 @@ module.exports = (() => {
 	}
 
 	function calculateForFutureOption(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -118,11 +106,7 @@ module.exports = (() => {
 	}
 
 	function calculateForOther(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 

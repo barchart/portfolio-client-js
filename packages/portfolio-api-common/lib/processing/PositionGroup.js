@@ -80,6 +80,7 @@ module.exports = (() => {
 			this._dataFormat.quantity = null;
 			this._dataFormat.quantityPrevious = null;
 			this._dataFormat.basisPrice = null;
+			this._dataFormat.unrealizedPrice = null;
 
 			this._dataActual.key = this._key;
 			this._dataActual.description = this._description;
@@ -87,6 +88,7 @@ module.exports = (() => {
 			this._dataActual.quantity = null;
 			this._dataActual.quantityPrevious = null;
 			this._dataActual.basisPrice = null;
+			this._dataActual.unrealizedPrice = null;
 
 			if (this._single && items.length === 1) {
 				const item = items[0];
@@ -668,7 +670,7 @@ module.exports = (() => {
 	function formatFraction(value, currency, instrument) {
 		let decimal = value instanceof Decimal;
 
-		if (instrument) {
+		if (instrument && value !== null) {
 			const type = instrument.type;
 			const code = instrument.code;
 
@@ -851,6 +853,7 @@ module.exports = (() => {
 
 		if (group.single && groupItems.length === 1) {
 			const item = group._items[0];
+			const instrument = item.position.instrument;
 
 			actual.quantity = item.data.quantity;
 			actual.quantityPrevious = item.data.quantityPrevious;
@@ -859,13 +862,16 @@ module.exports = (() => {
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 
 			actual.basisPrice = item.data.basisPrice;
-			format.basisPrice = formatFraction(actual.basisPrice, currency, item.position.instrument);
+			format.basisPrice = formatFraction(actual.basisPrice, currency, instrument);
 
 			actual.periodPrice = item.data.periodPrice;
 			actual.periodPricePrevious = item.data.periodPricePrevious;
 
 			format.periodPrice = formatCurrency(actual.periodPrice, currency);
 			format.periodPricePrevious = formatCurrency(actual.periodPricePrevious, currency);
+
+			actual.unrealizedPrice = item.data.unrealizedPrice;
+			format.unrealizedPrice = formatFraction(actual.unrealizedPrice, currency, instrument);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
@@ -1021,6 +1027,11 @@ module.exports = (() => {
 
 		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
 		format.periodPercent = formatPercent(actual.periodPercent, 2);
+
+		if (group.single && item) {
+			actual.unrealizedPrice = item.data.unrealizedPrice;
+			format.unrealizedPrice = formatFraction(actual.unrealizedPrice, currency, item.position.instrument);
+		}
 	}
 
 	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {

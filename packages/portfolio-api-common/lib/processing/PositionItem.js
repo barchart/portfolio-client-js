@@ -8,7 +8,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 const InstrumentType = require('./../data/InstrumentType'),
 	PositionDirection = require('./../data/PositionDirection');
 
-const ValuationCalculator = require('./../calculators/ValuationCalculator');
+const AveragePriceCalculator = require('./../calculators/AveragePriceCalculator'),
+	ValuationCalculator = require('./../calculators/ValuationCalculator');
 
 module.exports = (() => {
 	'use strict';
@@ -73,7 +74,9 @@ module.exports = (() => {
 
 			this._data.realized = null;
 			this._data.income = null;
+
 			this._data.basisPrice = null;
+			this._data.unrealizedPrice = null;
 
 			this._data.periodIncome = null;
 			this._data.periodRealized = null;
@@ -478,16 +481,8 @@ module.exports = (() => {
 		data.periodDivisorPrevious = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
 		data.periodDivisorPrevious2 = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
 
-		if (snapshot.open.getIsZero()) {
-			data.basisPrice = Decimal.ZERO;
-		} else if (position.instrument.type === InstrumentType.FUTURE) {
-			const minimumTick = position.instrument.future.tick;
-			const minimumTickValue = position.instrument.future.value;
-
-			data.basisPrice = basis.divide(snapshot.open).divide(minimumTickValue).multiply(minimumTick);
-		} else {
-			data.basisPrice = basis.divide(snapshot.open);
-		}
+		data.basisPrice = AveragePriceCalculator.calculate(position.instrument, data.basis, snapshot.open) || Decimal.ZERO;
+		data.basisPrice = data.basisPrice.opposite();
 
 		if (currentSummary && !currentSummary.end.open.getIsZero()) {
 			data.periodPrice = currentSummary.end.value.divide(currentSummary.end.open);
@@ -617,6 +612,12 @@ module.exports = (() => {
 
 				data.periodUnrealized = periodUnrealized;
 				data.periodUnrealizedChange = periodUnrealizedChange;
+
+				if (snapshot.open.getIsZero()) {
+					data.unrealizedPrice = null;
+				} else {
+					data.unrealizedPrice = data.basisPrice.opposite().add(priceToUse);
+				}
 			} else {
 				data.unrealizedChange = Decimal.ZERO;
 				data.periodUnrealizedChange = Decimal.ZERO;
