@@ -10,7 +10,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 */
-	class PositionSummaryFormatter{
+	class PositionSummaryFormatter {
 		/**
 		 * The formatter
 		 *
