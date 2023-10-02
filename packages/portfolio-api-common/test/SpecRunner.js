@@ -35,10 +35,18 @@ module.exports = (() => {
 			} else if (basis instanceof Decimal) {
 				basisToUse = basis;
 			}
+			
+			let quantityToUse = null;
+
+			if (is.number(basis)) {
+				quantityToUse = new Decimal(quantity);
+			} else if (basis instanceof Decimal) {
+				quantityToUse = quantity;
+			}
 
 			const calculator = calculators.get(instrument.type);
 
-			return calculator(instrument, basisToUse, quantity);
+			return calculator(instrument, basisToUse, quantityToUse);
 		}
 
 		toString() {
@@ -51,11 +59,7 @@ module.exports = (() => {
 	}
 
 	function calculateForEquity(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -63,11 +67,7 @@ module.exports = (() => {
 	}
 
 	function calculateForEquityOption(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -77,11 +77,7 @@ module.exports = (() => {
 	}
 
 	function calculateForFund(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -89,11 +85,7 @@ module.exports = (() => {
 	}
 
 	function calculateForFuture(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -104,11 +96,7 @@ module.exports = (() => {
 	}
 
 	function calculateForFutureOption(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -119,11 +107,7 @@ module.exports = (() => {
 	}
 
 	function calculateForOther(instrument, basis, quantity) {
-		if (basis === null) {
-			return null;
-		}
-
-		if (quantity === Decimal.ZERO || quantity === 0) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
 		}
 
@@ -3293,9 +3277,9 @@ module.exports = (() => {
 	 * all the positions and performs currency translation, as necessary.
 	 *
 	 * @public
-	 * @param {PositionContainer} container
 	 * @param {PositionLevelDefinition} definition
 	 * @param {PositionItem[]} items
+	 * @param {Rate[]} rates
 	 * @param {Currency} currency
 	 * @param {String} key
 	 * @param {String} description
@@ -3347,6 +3331,7 @@ module.exports = (() => {
 			this._dataFormat.quantity = null;
 			this._dataFormat.quantityPrevious = null;
 			this._dataFormat.basisPrice = null;
+			this._dataFormat.unrealizedPrice = null;
 
 			this._dataActual.key = this._key;
 			this._dataActual.description = this._description;
@@ -3354,6 +3339,7 @@ module.exports = (() => {
 			this._dataActual.quantity = null;
 			this._dataActual.quantityPrevious = null;
 			this._dataActual.basisPrice = null;
+			this._dataActual.unrealizedPrice = null;
 
 			if (this._single && items.length === 1) {
 				const item = items[0];
@@ -3935,7 +3921,7 @@ module.exports = (() => {
 	function formatFraction(value, currency, instrument) {
 		let decimal = value instanceof Decimal;
 
-		if (instrument) {
+		if (instrument && value !== null) {
 			const type = instrument.type;
 			const code = instrument.code;
 
@@ -4118,6 +4104,7 @@ module.exports = (() => {
 
 		if (group.single && groupItems.length === 1) {
 			const item = group._items[0];
+			const instrument = item.position.instrument;
 
 			actual.quantity = item.data.quantity;
 			actual.quantityPrevious = item.data.quantityPrevious;
@@ -4126,13 +4113,16 @@ module.exports = (() => {
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 
 			actual.basisPrice = item.data.basisPrice;
-			format.basisPrice = formatFraction(actual.basisPrice, currency, item.position.instrument);
+			format.basisPrice = formatFraction(actual.basisPrice, currency, instrument);
 
 			actual.periodPrice = item.data.periodPrice;
 			actual.periodPricePrevious = item.data.periodPricePrevious;
 
 			format.periodPrice = formatCurrency(actual.periodPrice, currency);
 			format.periodPricePrevious = formatCurrency(actual.periodPricePrevious, currency);
+
+			actual.unrealizedPrice = item.data.unrealizedPrice;
+			format.unrealizedPrice = formatFraction(actual.unrealizedPrice, currency, instrument);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
@@ -4288,6 +4278,11 @@ module.exports = (() => {
 
 		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
 		format.periodPercent = formatPercent(actual.periodPercent, 2);
+
+		if (group.single && item) {
+			actual.unrealizedPrice = item.data.unrealizedPrice;
+			format.unrealizedPrice = formatFraction(actual.unrealizedPrice, currency, item.position.instrument);
+		}
 	}
 
 	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
@@ -4388,7 +4383,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 const InstrumentType = require('./../data/InstrumentType'),
 	PositionDirection = require('./../data/PositionDirection');
 
-const ValuationCalculator = require('./../calculators/ValuationCalculator');
+const AveragePriceCalculator = require('./../calculators/AveragePriceCalculator'),
+	ValuationCalculator = require('./../calculators/ValuationCalculator');
 
 module.exports = (() => {
 	'use strict';
@@ -4453,7 +4449,9 @@ module.exports = (() => {
 
 			this._data.realized = null;
 			this._data.income = null;
+
 			this._data.basisPrice = null;
+			this._data.unrealizedPrice = null;
 
 			this._data.periodIncome = null;
 			this._data.periodRealized = null;
@@ -4858,16 +4856,8 @@ module.exports = (() => {
 		data.periodDivisorPrevious = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
 		data.periodDivisorPrevious2 = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
 
-		if (snapshot.open.getIsZero()) {
-			data.basisPrice = Decimal.ZERO;
-		} else if (position.instrument.type === InstrumentType.FUTURE) {
-			const minimumTick = position.instrument.future.tick;
-			const minimumTickValue = position.instrument.future.value;
-
-			data.basisPrice = basis.divide(snapshot.open).divide(minimumTickValue).multiply(minimumTick);
-		} else {
-			data.basisPrice = basis.divide(snapshot.open);
-		}
+		data.basisPrice = AveragePriceCalculator.calculate(position.instrument, data.basis, snapshot.open) || Decimal.ZERO;
+		data.basisPrice = data.basisPrice.opposite();
 
 		if (currentSummary && !currentSummary.end.open.getIsZero()) {
 			data.periodPrice = currentSummary.end.value.divide(currentSummary.end.open);
@@ -4997,6 +4987,12 @@ module.exports = (() => {
 
 				data.periodUnrealized = periodUnrealized;
 				data.periodUnrealizedChange = periodUnrealizedChange;
+
+				if (snapshot.open.getIsZero()) {
+					data.unrealizedPrice = null;
+				} else {
+					data.unrealizedPrice = data.basisPrice.opposite().add(priceToUse);
+				}
 			} else {
 				data.unrealizedChange = Decimal.ZERO;
 				data.periodUnrealizedChange = Decimal.ZERO;
@@ -5170,7 +5166,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":3,"./../data/PositionDirection":5,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Disposable":28,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38,"@barchart/common-js/messaging/Event":40}],13:[function(require,module,exports){
+},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":3,"./../data/PositionDirection":5,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Disposable":28,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38,"@barchart/common-js/messaging/Event":40}],13:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
