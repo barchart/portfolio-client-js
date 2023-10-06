@@ -20,11 +20,11 @@ describe('When calculating the value of a cash', () => {
 		expect(ValuationCalculator.calculate(instrument, 0, new Decimal(100)).toFloat()).toEqual(100);
 	});
 
-	it('100 shares (long) valued at an undefined price should return null', () => {
+	it('$100 valued at an undefined price should return null', () => {
 		expect(ValuationCalculator.calculate(instrument, undefined, 100)).toBe(null);
 	});
 
-	it('100 shares (long) valued at a null price should return null', () => {
+	it('$100 shares at a null price should return null', () => {
 		expect(ValuationCalculator.calculate(instrument, null, 100)).toBe(null);
 	});
 });
