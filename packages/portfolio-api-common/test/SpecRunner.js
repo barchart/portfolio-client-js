@@ -4945,7 +4945,8 @@ module.exports = (() => {
 			} else if (data.previousPrice) {
 				priceToUse = new Decimal(data.previousPrice);
 			} else if (!currentSummary.end.open.getIsZero()) {
-				priceToUse = currentSummary.end.value.divide(currentSummary.end.open);
+				priceToUse = AveragePriceCalculator.calculate(position.instrument, currentSummary.end.value, currentSummary.end.open) || Decimal.ZERO;
+				priceToUse = priceToUse.opposite();
 			} else {
 				priceToUse = null;
 			}
@@ -20405,7 +20406,7 @@ describe('When calculating the value of an equity', () => {
 		expect(ValuationCalculator.calculate(instrument, new Decimal(17.5), new Decimal(-50)).toFloat()).toEqual(-875);
 	});
 
-	it('50 shares (short) @ $0 should equal (0) (using decimals)', () => {
+	it('50 shares (short) @ $0 should equal 0 (using decimals)', () => {
 		expect(ValuationCalculator.calculate(instrument, new Decimal(0), new Decimal(-50)).toFloat()).toEqual(0);
 	});
 
@@ -20447,7 +20448,7 @@ describe('When calculating the value of an equity option (with a multiplier of 1
 		expect(ValuationCalculator.calculate(instrument, new Decimal(1.75), new Decimal(-2)).toFloat()).toEqual(-350);
 	});
 
-	it('2 contracts (short) @ $0 should equal ($0) (using decimals)', () => {
+	it('2 contracts (short) @ $0 should equal $0 (using decimals)', () => {
 		expect(ValuationCalculator.calculate(instrument, new Decimal(0), new Decimal(-2)).toFloat()).toEqual(0);
 	});
 
@@ -20511,11 +20512,11 @@ describe('When calculating the value of a future (with a minimum tick of 0.25 ti
 		expect(ValuationCalculator.calculate(instrument, new Decimal(0), new Decimal(3)).toFloat()).toEqual(0);
 	});
 
-	it('3 contracts (short) @ $461.75 should equal $69,262.50 (using numbers)', () => {
+	it('3 contracts (short) @ $461.75 should equal ($69,262.50) (using numbers)', () => {
 		expect(ValuationCalculator.calculate(instrument, 461.75, -3).toFloat()).toEqual(-69262.5);
 	});
 
-	it('3 contracts (short) @ $461.75 should equal $69,262.50 (using decimals)', () => {
+	it('3 contracts (short) @ $461.75 should equal ($69,262.50) (using decimals)', () => {
 		expect(ValuationCalculator.calculate(instrument, new Decimal(461.75), new Decimal(-3)).toFloat()).toEqual(-69262.5);
 	});
 
