@@ -570,7 +570,8 @@ module.exports = (() => {
 			} else if (data.previousPrice) {
 				priceToUse = new Decimal(data.previousPrice);
 			} else if (!currentSummary.end.open.getIsZero()) {
-				priceToUse = currentSummary.end.value.divide(currentSummary.end.open);
+				priceToUse = AveragePriceCalculator.calculate(position.instrument, currentSummary.end.value, currentSummary.end.open) || Decimal.ZERO;
+				priceToUse = priceToUse.opposite();
 			} else {
 				priceToUse = null;
 			}
