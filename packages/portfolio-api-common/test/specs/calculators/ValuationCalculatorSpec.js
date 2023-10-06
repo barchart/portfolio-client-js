@@ -72,19 +72,19 @@ describe('When calculating the value of an equity option (with a multiplier of 1
 		instrument = { type: InstrumentType.EQUITY_OPTION, option: { multiplier: 100 } };
 	});
 
-	it('2 contracts (long) shares @ $1.75 should equal $350 (using numbers)', () => {
+	it('2 contracts (long) @ $1.75 should equal $350 (using numbers)', () => {
 		expect(ValuationCalculator.calculate(instrument, 1.75, 2).toFloat()).toEqual(350);
 	});
 
-	it('2 contracts (long) shares @ $1.75 should equal $350 (using decimals)', () => {
+	it('2 contracts (long) @ $1.75 should equal $350 (using decimals)', () => {
 		expect(ValuationCalculator.calculate(instrument, new Decimal(1.75), new Decimal(2)).toFloat()).toEqual(350);
 	});
 
-	it('2 contracts (short) shares @ $1.75 should equal ($350) (using numbers)', () => {
+	it('2 contracts (short) @ $1.75 should equal ($350) (using numbers)', () => {
 		expect(ValuationCalculator.calculate(instrument, 1.75, -2).toFloat()).toEqual(-350);
 	});
 
-	it('2 contracts (short) shares @ $1.75 should equal ($350) (using decimals)', () => {
+	it('2 contracts (short) @ $1.75 should equal ($350) (using decimals)', () => {
 		expect(ValuationCalculator.calculate(instrument, new Decimal(1.75), new Decimal(-2)).toFloat()).toEqual(-350);
 	});
 
