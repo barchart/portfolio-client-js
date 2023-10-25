@@ -33,8 +33,8 @@ if (typeof(userId) !== 'string' || userId.length === 0) {
 	process.exit();
 }
 
-if (typeof(userId) !== 'string' || userId.length === 0) {
-	console.error('A context identifier must be specified. Usage example: "node example6.js user-123 barchart"');
+if (typeof(contextId) !== 'string' || contextId.length === 0) {
+	console.error('A context identifier must be specified. Usage example: "node example1.js user-123 barchart"');
 	process.exit();
 }
 
