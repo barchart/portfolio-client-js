@@ -1,6 +1,6 @@
 {
   "name": "@barchart/portfolio-client-js",
-  "version": "5.9.0",
+  "version": "5.10.0",
   "description": "JavaScript SDK for Barchart's Portfolio Service",
   "homepage": "https://docs.barchart.com/portfolio/#/",
   "author": {
