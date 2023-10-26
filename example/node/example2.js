@@ -55,6 +55,14 @@ PortfolioGateway.forTest(JwtProvider.forTest(userId, contextId)).then((pg) => {
 			cash: false,
 			currency: Currency.USD,
 			reinvest: false
+		},
+		miscellany: {
+			hello: 'Bryan'
+		},
+		email: {
+			times: [ '03:00', '16:45' ],
+			format: 'My Portfolio',
+			csv: true
 		}
 	};
 
