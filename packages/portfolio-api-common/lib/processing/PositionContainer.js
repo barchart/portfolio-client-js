@@ -356,7 +356,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} position
-		 * @param {Object>[]} summaries
+		 * @param {Object[]} summaries
 		 */
 		updatePosition(position, summaries) {
 			assert.argumentIsRequired(position, 'position', Object);
