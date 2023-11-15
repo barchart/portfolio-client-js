@@ -2445,7 +2445,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} position
-		 * @param {Object>[]} summaries
+		 * @param {Object[]} summaries
 		 */
 		updatePosition(position, summaries) {
 			assert.argumentIsRequired(position, 'position', Object);
@@ -3584,7 +3584,7 @@ module.exports = (() => {
 		 * percentages).
 		 *
 		 * @public
-		 * @param {PortfolioGroup} group
+		 * @param {PositionGroup} group
 		 */
 		setParentGroup(group) {
 			assert.argumentIsOptional(group, 'group', PositionGroup, 'PositionGroup');
@@ -3601,7 +3601,7 @@ module.exports = (() => {
 		 * of relative percentages).
 		 *
 		 * @public
-		 * @param {PortfolioGroup} group
+		 * @param {PositionGroup} group
 		 */
 		setPortfolioGroup(group) {
 			assert.argumentIsOptional(group, 'group', PositionGroup, 'PositionGroup');
