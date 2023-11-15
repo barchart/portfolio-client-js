@@ -1,5 +1,76 @@
 # Release Notes
 
+## 5.10.1
+**Other**
+
+* Removed Wealthscope integration.
+
+## 5.10.0
+**New Features**
+
+* Added support for `email` attribute on portfolio objects.
+
+**Technical Enhancements**
+
+* Updated the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library, taking changes to the `PortfolioSchema` enumeration.
+
+## 5.9.0
+**New Features**
+
+* Added a `portfolio-www-stage.aws.barchart.com` hostname to the `PortfolioGateway` as `www-stage`.
+* Added a `portfolio-www.aws.barchart.com` hostname to the `PortfolioGateway` as `www-prod`.
+
+
+## 5.8.0
+**New Features**
+
+* Added support for the unit code attribute on positions.
+
+**Technical Enhancements**
+
+* Updated the minimum version of the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library.
+
+## 5.7.0
+**New Features**
+
+* Added support for `options.correctInvalidTicks` to `PortfolioGateway.createTransaction` function.
+
+**Technical Enhancements**
+
+* Updated the minimum version of the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library.
+
+
+## 5.6.1
+**Technical Enhancements**
+
+* Updated the minimum version of the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library.
+
+## 5.6.0
+**New Features**
+
+* Added initial support for futures and equity options.
+
+## 5.5.1
+**Other**
+
+* Renamed `options.relaxInstrumentResolution` to `options.strictInstrumentResolution` for `PortfolioGateway.createTransaction` function.
+
+## 5.5.0
+**New Features**
+
+* Added support for `options.suppressCorporateActions` to `PortfolioGateway.createTransaction` function.
+* Added support for `options.strictInstrumentResolution` to `PortfolioGateway.createTransaction` function.
+
+## 5.4.0
+**New Features**
+
+* Added initial support for futures contracts.
+
+## 5.3.0
+**New Features**
+
+* Added `options` parameter to the `PortfolioGateway.createTransaction` function.
+
 ## 5.2.0
 **New Features**
 
