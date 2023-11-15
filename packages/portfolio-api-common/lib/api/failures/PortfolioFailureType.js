@@ -416,17 +416,6 @@ module.exports = (() => {
 		static get TRANSACTION_SWITCH_FAILED_INVALID_REINVEST() {
 			return transactionSwitchFailedInvalidReinvest;
 		}
-		
-		/**
-		 * Unable to generate analytics report. The portfolio does not exist.
-		 *
-		 * @public
-		 * @static
-		 * @returns {FailureType}
-		 */
-		static get WEALTHSCOPE_TOKEN_CREATE_FAIL_NO_PORTFOLIO() {
-			return wealthscopeTokenCreateFailNoPortfolio;
-		}
 
 		toString() {
 			return '[PortfolioFailureType]';
@@ -475,8 +464,6 @@ module.exports = (() => {
 
 	const transactionSwitchFailedInvalidConversion = new FailureType('TRANSACTION_SWITCH_FAILED_INVALID_CONVERSION', 'Unable to convert transaction from {U|existing.description} to {U|desired.description}. This conversion is not supported.');
 	const transactionSwitchFailedInvalidReinvest = new FailureType('TRANSACTION_SWITCH_FAILED_INVALID_REINVEST', 'Unable to convert transaction from {U|existing.description} to {U|desired.description}. Reinvestment is not supported for short positions.');
-
-	const wealthscopeTokenCreateFailNoPortfolio = new FailureType('WEALTHSCOPE_TOKEN_CREATE_FAIL_NO_PORTFOLIO', 'Unable to generate analytics report. The portfolio does not exist, has it been deleted?', false);
 
 	return PortfolioFailureType;
 })();
