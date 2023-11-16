@@ -16,6 +16,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {String} name
+	 * @param {PositionLevelType} type
 	 * @param {PositionLevelDefinition~keySelector} keySelector
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
