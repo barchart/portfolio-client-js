@@ -714,12 +714,12 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {Number[]} keys
+		 * @param {String[]} keys
 		 * @returns {PositionGroup}
 		 */
 		getGroup(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
-			assert.argumentIsArray(keys, 'keys', Number);
+			assert.argumentIsArray(keys, 'keys', String);
 
 			return findNode(this._trees[name], keys).getValue();
 		}
@@ -730,12 +730,12 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {Number[]} keys
+		 * @param {String[]} keys
 		 * @returns {PositionGroup[]}
 		 */
 		getGroups(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
-			assert.argumentIsArray(keys, 'keys', Number);
+			assert.argumentIsArray(keys, 'keys', String);
 
 			return findNode(this._trees[name], keys).getChildren().map(node => node.getValue());
 		}
