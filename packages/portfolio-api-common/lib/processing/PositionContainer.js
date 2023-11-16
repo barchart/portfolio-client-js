@@ -662,6 +662,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} symbol
+		 * @param {Boolean} display
 		 * @param {Object} data
 		 */
 		setPositionFundamentalData(symbol, display, data) {
@@ -713,7 +714,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {String[]} keys
+		 * @param {Number[]} keys
 		 * @returns {PositionGroup}
 		 */
 		getGroup(name, keys) {
@@ -729,7 +730,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} name
-		 * @param {String[]} keys
+		 * @param {Number[]} keys
 		 * @returns {PositionGroup[]}
 		 */
 		getGroups(name, keys) {
@@ -743,7 +744,7 @@ module.exports = (() => {
 		 * Returns the immediate parent {@link PositionGroup} of a {@link PositionGroup}.
 		 *
 		 * @public
-		 * @param {PositionGroup} position
+		 * @param {PositionGroup} group
 		 * @returns {PositionGroup|null}
 		 */
 		getParentGroup(group) {
@@ -756,7 +757,7 @@ module.exports = (() => {
 		 * Returns the a parent {@link PositionGroup} which represents a portfolio.
 		 *
 		 * @public
-		 * @param {PositionGroup} position
+		 * @param {PositionGroup} group
 		 * @returns {PositionGroup|null}
 		 */
 		getParentGroupForPortfolio(group) {
