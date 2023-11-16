@@ -265,7 +265,7 @@ module.exports = (() => {
 		 * The {@link PositionItem} instances which for which aggregated data is compiled.
 		 *
 		 * @public
-		 * @returns {Currency}
+		 * @returns {PositionItem[]}
 		 */
 		get items() {
 			return this._items;
