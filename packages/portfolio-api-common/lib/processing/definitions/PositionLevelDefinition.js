@@ -174,6 +174,15 @@ module.exports = (() => {
 			};
 		}
 
+		/**
+		 * Generates the key for a {@link PositionGroup}, representing a portfolio, held
+		 * within a {@link PositionContainer}.
+		 *
+		 * @public
+		 * @static
+		 * @param {Object} portfolio
+		 * @returns {String}
+		 */
 		static getKeyForPortfolioGroup(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 
@@ -218,6 +227,16 @@ module.exports = (() => {
 			};
 		}
 
+		/**
+		 * Generates the key for a {@link PositionGroup}, representing a grouping of positions
+		 * by asset class, held within a {@link PositionContainer}.
+		 *
+		 * @public
+		 * @static
+		 * @param {InstrumentType} type
+		 * @param {Currency} currency
+		 * @returns {String}
+		 */
 		static getKeyForAssetClassGroup(type, currency) {
 			assert.argumentIsRequired(type, 'type', InstrumentType, 'InstrumentType');
 			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
