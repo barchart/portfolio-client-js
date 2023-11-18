@@ -13,7 +13,7 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {InstrumentProvider} provider
-	 * @param {Number} cacheDuration - The maximum number of milliseconds to cache an instrument.
+	 * @param {Number=} cacheDuration - The maximum number of milliseconds to cache an instrument.
 	 */
 	class InstrumentProviderCache {
 		constructor(provider, cacheDuration) {
