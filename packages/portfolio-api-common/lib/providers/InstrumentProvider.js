@@ -14,8 +14,6 @@ module.exports = (() => {
 
 	const MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS = 3 * 1000;
 
-	const cache = { };
-
 	/**
 	 * A utility that downloads instrument metadata (i.e. instrument "profile" data).
 	 *
@@ -41,8 +39,6 @@ module.exports = (() => {
 
 					return promise.timeout(Gateway.invoke(getInstrumentLookupEndpoint(), {symbol}), MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS, 'instrument lookup')
 							.catch((e) => {
-								delete cache[symbol];
-
 								let message;
 
 								if (is.string(e) && e === 'timeout') {
