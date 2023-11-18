@@ -37,7 +37,7 @@ module.exports = (() => {
 				.then(() => {
 					assert.argumentIsRequired(symbol, 'symbol', String);
 
-					return promise.timeout(Gateway.invoke(getInstrumentLookupEndpoint(), {symbol}), MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS, 'instrument lookup')
+					return promise.timeout(Gateway.invoke(instrumentLookupEndpoint, { symbol }), MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS, 'instrument lookup')
 							.catch((e) => {
 								let message;
 
@@ -63,32 +63,18 @@ module.exports = (() => {
 		}
 	}
 
-	function buildInstrumentLookupEndpoint(host) {
-		return EndpointBuilder.for('query-instrument', 'query instrument')
-			.withVerb(VerbType.GET)
-			.withProtocol(ProtocolType.HTTPS)
-			.withHost(host)
-			.withPort(443)
-			.withPathBuilder((pb) => {
-				pb.withLiteralParameter('instruments', 'instruments')
-					.withVariableParameter('symbol', 'symbol', 'symbol');
-			})
-			.withResponseInterceptor(ResponseInterceptor.DATA)
-			.withErrorInterceptor(ErrorInterceptor.GENERAL)
-			.endpoint;
-	}
-
-	const instrumentLookupEndpoints = new Map();
-
-	function getInstrumentLookupEndpoint() {
-		const host = 'instruments-prod.aws.barchart.com';
-
-		if (!instrumentLookupEndpoints.has(host)) {
-			instrumentLookupEndpoints.set(host, buildInstrumentLookupEndpoint(host));
-		}
-
-		return instrumentLookupEndpoints.get(host);
-	}
+	const instrumentLookupEndpoint = EndpointBuilder.for('query-instrument', 'query instrument')
+		.withVerb(VerbType.GET)
+		.withProtocol(ProtocolType.HTTPS)
+		.withHost('instruments-prod.aws.barchart.com')
+		.withPort(443)
+		.withPathBuilder((pb) => {
+			pb.withLiteralParameter('instruments', 'instruments')
+				.withVariableParameter('symbol', 'symbol', 'symbol');
+		})
+		.withResponseInterceptor(ResponseInterceptor.DATA)
+		.withErrorInterceptor(ErrorInterceptor.GENERAL)
+		.endpoint;
 
 	return InstrumentProvider;
 })();
