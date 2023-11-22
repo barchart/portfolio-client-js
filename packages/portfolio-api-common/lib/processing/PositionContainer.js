@@ -583,7 +583,14 @@ module.exports = (() => {
 
 					if (symbol) {
 						const rate = Rate.fromPair(quote.lastPrice, symbol);
-						const index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
+
+						let index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
+
+						if (index < 0) {
+							const inverted = rate.invert();
+
+							index = this._forexQuotes.findIndex(existing => existing.formatPair() === inverted.formatPair());
+						}
 
 						if (index < 0) {
 							this._forexQuotes.push(rate);
@@ -591,12 +598,12 @@ module.exports = (() => {
 							this._forexQuotes[index] = rate;
 						}
 
-						Object.keys(this._trees).forEach((key) => {
-							this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false);
-						});
-
 						recalculatePercentages.call(this);
 					}
+				});
+
+				Object.keys(this._trees).forEach((key) => {
+					this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false);
 				});
 			}
 
