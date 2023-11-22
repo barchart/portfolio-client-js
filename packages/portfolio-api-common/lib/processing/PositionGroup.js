@@ -292,7 +292,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the group will only contain one {@link PositionItem} -- that is,
+		 * Indicates if the group will only contain one {@link PositionItem} — that is,
 		 * indicates if the group represents a single position.
 		 *
 		 * @public
@@ -585,7 +585,7 @@ module.exports = (() => {
 								if (summary.count > 0) {
 									averageFormat = formatPercent(new Decimal(summary.total / summary.count), 2, true);
 								} else {
-									averageFormat = '--';
+									averageFormat = '—';
 								}
 
 								summary.averageFormat = averageFormat;
@@ -595,7 +595,7 @@ module.exports = (() => {
 
 					return sums;
 				}, fundamentalFields.reduce((sums, fieldName) => {
-					sums[fieldName] = { total: 0, count: 0, averageFormat: '--' };
+					sums[fieldName] = { total: 0, count: 0, averageFormat: '—' };
 
 					return sums;
 				}, { }));
