@@ -91,7 +91,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Day} date
-		 * @return {PositionSummaryRange[]}
+		 * @returns {PositionSummaryRange[]}
 		 */
 		getRangesFromDate(date) {
 			assert.argumentIsRequired(date, 'date', Day, 'Day');
@@ -138,6 +138,7 @@ module.exports = (() => {
 		 * A summary for a calendar year.
 		 *
 		 * @public
+		 * @static
 		 * @returns {PositionSummaryFrame}
 		 */
 		static get YEARLY() {
@@ -148,6 +149,7 @@ module.exports = (() => {
 		 * A summary for a quarter.
 		 *
 		 * @public
+		 * @static
 		 * @returns {PositionSummaryFrame}
 		 */
 		static get QUARTERLY() {
@@ -158,6 +160,7 @@ module.exports = (() => {
 		 * A summary for a calendar month.
 		 *
 		 * @public
+		 * @static
 		 * @returns {PositionSummaryFrame}
 		 */
 		static get MONTHLY() {
@@ -168,6 +171,7 @@ module.exports = (() => {
 		 * A summary the current year (to date).
 		 *
 		 * @public
+		 * @static
 		 * @returns {PositionSummaryFrame}
 		 */
 		static get YTD() {
@@ -175,6 +179,9 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns the {@link PositionSummaryFrame} instance that matches the code
+		 * provided.
+		 *
 		 * @public
 		 * @static
 		 * @param {String} code
