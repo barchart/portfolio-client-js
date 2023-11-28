@@ -14,6 +14,7 @@ module.exports = (() => {
 	 * @extends {Enum}
 	 * @param {String} code
 	 * @param {String} description
+	 * @param {Boolean} unique
 	 * @param {Function} rangeCalculator
 	 * @param {Function} startDateCalculator
 	 * @param {Function} descriptionCalculator
