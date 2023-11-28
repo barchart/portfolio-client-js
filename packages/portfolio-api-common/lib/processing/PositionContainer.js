@@ -507,7 +507,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} position
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		getPositionLock(position) {
 			assert.argumentIsRequired(position, 'position', Object);
@@ -542,7 +542,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} position
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		getPositionCalculating(position) {
 			assert.argumentIsRequired(position, 'position', Object);
@@ -615,8 +615,9 @@ module.exports = (() => {
 		/**
 		 * Returns current price for symbol provided.
 		 *
+		 * @public
 		 * @param {String} symbol
-		 * @return {null|Number}
+		 * @returns {null|Number}
 		 */
 		getCurrentPrice(symbol) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
