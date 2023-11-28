@@ -109,6 +109,7 @@ module.exports = (() => {
 		 * @public
 		 * @param {Day} date
 		 * @param {Number} periods
+		 * @returns {PositionSummaryRange[]}
 		 */
 		getPriorRanges(date, periods) {
 			assert.argumentIsRequired(date, 'date', Day, 'Day');
