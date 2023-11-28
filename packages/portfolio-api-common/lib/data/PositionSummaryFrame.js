@@ -222,10 +222,7 @@ module.exports = (() => {
 	 */
 
 	function getRange(start, end) {
-		return {
-			start: start,
-			end: end
-		};
+		return { start, end };
 	}
 
 	function getYearlyRanges(transactions) {
