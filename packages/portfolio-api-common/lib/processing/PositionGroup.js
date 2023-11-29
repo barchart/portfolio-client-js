@@ -76,6 +76,7 @@ module.exports = (() => {
 			this._dataFormat.invalid = false;
 			this._dataFormat.locked = false;
 			this._dataFormat.calculating = false;
+			this._dataFormat.expired = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
 			this._dataFormat.quantityPrevious = null;
@@ -876,6 +877,7 @@ module.exports = (() => {
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
 			format.calculating = definition.type === PositionLevelType.POSITION && item.data.calculating;
+			format.expired = definition.type === PositionLevelType.POSITION && item.data.expired;
 		}
 
 		let portfolioType = null;
