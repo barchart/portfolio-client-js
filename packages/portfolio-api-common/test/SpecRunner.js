@@ -807,6 +807,7 @@ module.exports = (() => {
 	 * @extends {Enum}
 	 * @param {String} code
 	 * @param {String} description
+	 * @param {Boolean} unique
 	 * @param {Function} rangeCalculator
 	 * @param {Function} startDateCalculator
 	 * @param {Function} descriptionCalculator
@@ -884,7 +885,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Day} date
-		 * @return {PositionSummaryRange[]}
+		 * @returns {PositionSummaryRange[]}
 		 */
 		getRangesFromDate(date) {
 			assert.argumentIsRequired(date, 'date', Day, 'Day');
@@ -901,6 +902,7 @@ module.exports = (() => {
 		 * @public
 		 * @param {Day} date
 		 * @param {Number} periods
+		 * @returns {PositionSummaryRange[]}
 		 */
 		getPriorRanges(date, periods) {
 			assert.argumentIsRequired(date, 'date', Day, 'Day');
@@ -931,6 +933,7 @@ module.exports = (() => {
 		 * A summary for a calendar year.
 		 *
 		 * @public
+		 * @static
 		 * @returns {PositionSummaryFrame}
 		 */
 		static get YEARLY() {
@@ -941,6 +944,7 @@ module.exports = (() => {
 		 * A summary for a quarter.
 		 *
 		 * @public
+		 * @static
 		 * @returns {PositionSummaryFrame}
 		 */
 		static get QUARTERLY() {
@@ -951,6 +955,7 @@ module.exports = (() => {
 		 * A summary for a calendar month.
 		 *
 		 * @public
+		 * @static
 		 * @returns {PositionSummaryFrame}
 		 */
 		static get MONTHLY() {
@@ -961,6 +966,7 @@ module.exports = (() => {
 		 * A summary the current year (to date).
 		 *
 		 * @public
+		 * @static
 		 * @returns {PositionSummaryFrame}
 		 */
 		static get YTD() {
@@ -968,6 +974,9 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns the {@link PositionSummaryFrame} instance that matches the code
+		 * provided.
+		 *
 		 * @public
 		 * @static
 		 * @param {String} code
@@ -1007,10 +1016,7 @@ module.exports = (() => {
 	 */
 
 	function getRange(start, end) {
-		return {
-			start: start,
-			end: end
-		};
+		return { start, end };
 	}
 
 	function getYearlyRanges(transactions) {
@@ -2176,6 +2182,8 @@ module.exports = (() => {
 			}, { });
 
 			if (reportFrame) {
+				this._referenceDate = reportDate;
+
 				this._currentSummaryFrame = reportFrame;
 				this._currentSummaryRange = array.last(this._currentSummaryFrame.getPriorRanges(reportDate, 0));
 
@@ -2184,6 +2192,8 @@ module.exports = (() => {
 
 				this._previousSummaryRanges.pop();
 			} else {
+				this._referenceDate = Day.getToday();
+
 				this._currentSummaryFrame = PositionSummaryFrame.YTD;
 				this._currentSummaryRange = array.first(this._currentSummaryFrame.getRecentRanges(0));
 
@@ -2596,7 +2606,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} position
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		getPositionLock(position) {
 			assert.argumentIsRequired(position, 'position', Object);
@@ -2631,7 +2641,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} position
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 */
 		getPositionCalculating(position) {
 			assert.argumentIsRequired(position, 'position', Object);
@@ -2704,8 +2714,9 @@ module.exports = (() => {
 		/**
 		 * Returns current price for symbol provided.
 		 *
+		 * @public
 		 * @param {String} symbol
-		 * @return {null|Number}
+		 * @returns {null|Number}
 		 */
 		getCurrentPrice(symbol) {
 			assert.argumentIsRequired(symbol, 'symbol', String);
@@ -3192,7 +3203,7 @@ module.exports = (() => {
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
 			if (!requireCurrentSummary || currentSummary !== null) {
-				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting);
+				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._referenceDate);
 			} else {
 				returnRef = null;
 			}
@@ -3255,7 +3266,6 @@ module.exports = (() => {
 
 	return PositionContainer;
 })();
-
 },{"./../data/PositionSummaryFrame":6,"./PositionGroup":11,"./PositionItem":12,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"./definitions/PositionTreeDefinition":15,"@barchart/common-js/collections/Tree":20,"@barchart/common-js/collections/sorting/ComparatorBuilder":21,"@barchart/common-js/collections/sorting/comparators":22,"@barchart/common-js/collections/specialized/DisposableStack":23,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Rate":31,"@barchart/common-js/lang/array":33,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38,"@barchart/common-js/messaging/Event":40}],11:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
@@ -3335,6 +3345,7 @@ module.exports = (() => {
 			this._dataFormat.invalid = false;
 			this._dataFormat.locked = false;
 			this._dataFormat.calculating = false;
+			this._dataFormat.expired = false;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
 			this._dataFormat.quantityPrevious = null;
@@ -4135,6 +4146,7 @@ module.exports = (() => {
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
 			format.calculating = definition.type === PositionLevelType.POSITION && item.data.calculating;
+			format.expired = definition.type === PositionLevelType.POSITION && item.data.expired;
 		}
 
 		let portfolioType = null;
@@ -4408,9 +4420,10 @@ module.exports = (() => {
 	 * @param {Object} currentSummary
 	 * @param {Object[]} previousSummaries
 	 * @param {Boolean} reporting
+	 * @param {Day} referenceDate
 	 */
 	class PositionItem extends Disposable {
-		constructor(portfolio, position, currentSummary, previousSummaries, reporting) {
+		constructor(portfolio, position, currentSummary, previousSummaries, reporting, referenceDate) {
 			super();
 
 			this._portfolio = portfolio;
@@ -4490,6 +4503,7 @@ module.exports = (() => {
 			this._data.fundamental = { };
 			this._data.calculating = getIsCalculating(position);
 			this._data.locked = getIsLocked(position);
+			this._data.expired = getIsExpired(position, referenceDate);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
@@ -4888,6 +4902,13 @@ module.exports = (() => {
 
 		const data = item._data;
 
+		// 2023/11/28, BRI. Futures contracts do not have their value set to zero
+		// after expiration. At expiration, the contract would have been closed
+		// (but the price would not have been zero). On the other hand, option
+		// contracts can expire worthless and we attempt to represent that here.
+
+		const worthless = data.expired && (position.instrument.type === InstrumentType.EQUITY_OPTION || position.instrument.type === InstrumentType.FUTURE_OPTION);
+
 		let market;
 
 		if (position.instrument.type === InstrumentType.OTHER) {
@@ -4895,7 +4916,15 @@ module.exports = (() => {
 		} else if (position.instrument.type === InstrumentType.CASH) {
 			market = snapshot.open;
 		} else {
-			market = ValuationCalculator.calculate(position.instrument, price, snapshot.open) || snapshot.value;
+			let priceToUse;
+
+			if (worthless) {
+				priceToUse = Decimal.ZERO;
+			} else {
+				priceToUse = price;
+			}
+
+			market = ValuationCalculator.calculate(position.instrument, priceToUse, snapshot.open) || snapshot.value;
 		}
 
 		let marketChange;
@@ -4948,7 +4977,9 @@ module.exports = (() => {
 		if (currentSummary && position.instrument.type !== InstrumentType.CASH) {
 			let priceToUse;
 
-			if (price) {
+			if (worthless) {
+				priceToUse = Decimal.ZERO;
+			} else if (price) {
 				priceToUse = price;
 			} else if (data.previousPrice) {
 				priceToUse = new Decimal(data.previousPrice);
@@ -5145,9 +5176,27 @@ module.exports = (() => {
 	}
 
 	function getIsCalculating(position) {
-		assert.argumentIsRequired(position, 'position', Object);
+		assert.argumentIsRequired(position, 'position');
 
 		return is.object(position.system) && is.object(position.system.calculate) && is.number(position.system.calculate.processors) &&	position.system.calculate.processors > 0;
+	}
+
+	function getIsExpired(position, day) {
+		assert.argumentIsRequired(position, 'position');
+
+		const type = position.instrument.type;
+
+		let expiration;
+
+		if (type === InstrumentType.FUTURE) {
+			expiration = position.instrument.future.expiration;
+		} else if (type === InstrumentType.FUTURE_OPTION || type === InstrumentType.EQUITY_OPTION) {
+			expiration = position.instrument.option.expiration;
+		} else {
+			expiration = null;
+		}
+
+		return expiration !== null && expiration.getIsBefore(day);
 	}
 
 	function getSnapshot(position, currentSummary, reporting) {
