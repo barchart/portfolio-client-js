@@ -25,9 +25,10 @@ module.exports = (() => {
 	 * @param {Object} currentSummary
 	 * @param {Object[]} previousSummaries
 	 * @param {Boolean} reporting
+	 * @param {Day} referenceDate
 	 */
 	class PositionItem extends Disposable {
-		constructor(portfolio, position, currentSummary, previousSummaries, reporting) {
+		constructor(portfolio, position, currentSummary, previousSummaries, reporting, referenceDate) {
 			super();
 
 			this._portfolio = portfolio;
@@ -107,6 +108,7 @@ module.exports = (() => {
 			this._data.fundamental = { };
 			this._data.calculating = getIsCalculating(position);
 			this._data.locked = getIsLocked(position);
+			this._data.expired = getIsExpired(position, referenceDate);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
@@ -505,6 +507,13 @@ module.exports = (() => {
 
 		const data = item._data;
 
+		// 2023/11/28, BRI. Futures contracts do not have their value set to zero
+		// after expiration. At expiration, the contract would have been closed
+		// (but the price would not have been zero). On the other hand, option
+		// contracts can expire worthless and we attempt to represent that here.
+
+		const worthless = data.expired && (position.instrument.type === InstrumentType.EQUITY_OPTION || position.instrument.type === InstrumentType.FUTURE_OPTION);
+
 		let market;
 
 		if (position.instrument.type === InstrumentType.OTHER) {
@@ -512,7 +521,15 @@ module.exports = (() => {
 		} else if (position.instrument.type === InstrumentType.CASH) {
 			market = snapshot.open;
 		} else {
-			market = ValuationCalculator.calculate(position.instrument, price, snapshot.open) || snapshot.value;
+			let priceToUse;
+
+			if (worthless) {
+				priceToUse = Decimal.ZERO;
+			} else {
+				priceToUse = price;
+			}
+
+			market = ValuationCalculator.calculate(position.instrument, priceToUse, snapshot.open) || snapshot.value;
 		}
 
 		let marketChange;
@@ -565,7 +582,9 @@ module.exports = (() => {
 		if (currentSummary && position.instrument.type !== InstrumentType.CASH) {
 			let priceToUse;
 
-			if (price) {
+			if (worthless) {
+				priceToUse = Decimal.ZERO;
+			} else if (price) {
 				priceToUse = price;
 			} else if (data.previousPrice) {
 				priceToUse = new Decimal(data.previousPrice);
@@ -762,9 +781,27 @@ module.exports = (() => {
 	}
 
 	function getIsCalculating(position) {
-		assert.argumentIsRequired(position, 'position', Object);
+		assert.argumentIsRequired(position, 'position');
 
 		return is.object(position.system) && is.object(position.system.calculate) && is.number(position.system.calculate.processors) &&	position.system.calculate.processors > 0;
+	}
+
+	function getIsExpired(position, day) {
+		assert.argumentIsRequired(position, 'position');
+
+		const type = position.instrument.type;
+
+		let expiration;
+
+		if (type === InstrumentType.FUTURE) {
+			expiration = position.instrument.future.expiration;
+		} else if (type === InstrumentType.FUTURE_OPTION || type === InstrumentType.EQUITY_OPTION) {
+			expiration = position.instrument.option.expiration;
+		} else {
+			expiration = null;
+		}
+
+		return expiration !== null && expiration.getIsBefore(day);
 	}
 
 	function getSnapshot(position, currentSummary, reporting) {

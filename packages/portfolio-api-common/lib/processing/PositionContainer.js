@@ -87,6 +87,8 @@ module.exports = (() => {
 			}, { });
 
 			if (reportFrame) {
+				this._referenceDate = reportDate;
+
 				this._currentSummaryFrame = reportFrame;
 				this._currentSummaryRange = array.last(this._currentSummaryFrame.getPriorRanges(reportDate, 0));
 
@@ -95,6 +97,8 @@ module.exports = (() => {
 
 				this._previousSummaryRanges.pop();
 			} else {
+				this._referenceDate = Day.getToday();
+
 				this._currentSummaryFrame = PositionSummaryFrame.YTD;
 				this._currentSummaryRange = array.first(this._currentSummaryFrame.getRecentRanges(0));
 
@@ -1104,7 +1108,7 @@ module.exports = (() => {
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
 			if (!requireCurrentSummary || currentSummary !== null) {
-				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting);
+				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._referenceDate);
 			} else {
 				returnRef = null;
 			}
