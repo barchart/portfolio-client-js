@@ -36,7 +36,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the position size is positive (i.e. is {@link PositionDirection.LONG}).
+		 * Indicates if the position size is positive (i.e. {@link PositionDirection#LONG}).
 		 *
 		 * @public
 		 * @returns {boolean}
@@ -46,7 +46,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the position size is negative (i.e. is {@link PositionDirection.SHORT}).
+		 * Indicates if the position size is negative (i.e. {@link PositionDirection#SHORT}).
 		 *
 		 * @public
 		 * @returns {boolean}
@@ -56,7 +56,18 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the position size is zero (i.e. is {@link PositionDirection.EVEN}).
+		 * Indicates if the position size is zero (i.e. {@link PositionDirection#LONG} or
+		 * {@link PositionDirection#SHORT}).
+		 *
+		 * @public
+		 * @returns {boolean}
+		 */
+		get open() {
+			return this !== even;
+		}
+
+		/**
+		 * Indicates if the position size is zero (i.e. {@link PositionDirection#EVEN}).
 		 *
 		 * @public
 		 * @returns {boolean}
