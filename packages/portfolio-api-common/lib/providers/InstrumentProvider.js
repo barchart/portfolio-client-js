@@ -12,15 +12,19 @@ const EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointB
 module.exports = (() => {
 	'use strict';
 
-	const MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS = 3 * 1000;
+	const DEFAULT_MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS = 3 * 1000;
 
 	/**
 	 * A utility that downloads instrument metadata (i.e. instrument "profile" data).
 	 *
 	 * @public
+	 * @param {Number=} waitInMilliseconds - The maximum amount of time to wait for the response from server.
 	 */
 	class InstrumentProvider {
-		constructor() {
+		constructor(waitInMilliseconds) {
+			assert.argumentIsOptional(waitInMilliseconds, 'waitInMillis', Number);
+
+			this._waitInMilliseconds = waitInMilliseconds || DEFAULT_MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS;
 		}
 
 		/**
@@ -37,7 +41,7 @@ module.exports = (() => {
 				.then(() => {
 					assert.argumentIsRequired(symbol, 'symbol', String);
 
-					return promise.timeout(Gateway.invoke(instrumentLookupEndpoint, { symbol }), MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS, 'instrument lookup')
+					return promise.timeout(Gateway.invoke(instrumentLookupEndpoint, { symbol }), this._waitInMilliseconds, 'instrument lookup')
 							.catch((e) => {
 								let message;
 
