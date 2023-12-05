@@ -7027,10 +7027,10 @@ module.exports = (() => {
     }
 
     /**
-     * Given a code, returns the enumeration item.
+     * Converts a JSON-serialized object into an {@link AdHoc} instance.
      *
      * @public
-     * @param {String} code
+     * @param {String} serialized
      * @returns {AdHoc}
      */
     static parse(serialized) {
@@ -7754,8 +7754,8 @@ module.exports = (() => {
     }
 
     /**
-     * Returns a new {@link Decimal} instance with a value that returns
-     * the remainder of dividing by the value supplied.
+     * Returns a new {@link Decimal} instance with of the remainder when
+     * dividing the current instance by the value supplied.
      *
      * @public
      * @param {Decimal|Number|String} other
@@ -10165,6 +10165,9 @@ module.exports = (() => {
    * @public
    * @param {String} description
    * @param {Function=} enumerationType
+   * @param {Function=} reviver
+   * @param {Function=} validator
+   * @param {Function=} builder
    */
   class DataType {
     constructor(description, enumerationType, reviver, validator, builder) {
@@ -10355,7 +10358,8 @@ module.exports = (() => {
     }
 
     /**
-     * References a {@link Timestamp} instance.
+     * References an object whose internal properties are not important (for
+     * serialization and deserialization purposes).
      *
      * @public
      * @static
@@ -10498,8 +10502,8 @@ module.exports = (() => {
    *
    * @public
    * @param {String} name - The name of the schema
-   * @param {Array<Field>} fields
-   * @param {Array<Component>} components
+   * @param {Field[]} fields
+   * @param {Component[]} components
    * @param {Boolean=} strict
    */
   class Schema {
