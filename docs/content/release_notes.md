@@ -1,5 +1,11 @@
 # Release Notes
 
+## 5.11.0
+**New Features**
+
+* Added `PortfolioGateway.registerAuthorizationObserver` function which notifies callbacks when operations fail due to entitlement problems.
+
+
 ## 5.10.1
 **Other**
 
