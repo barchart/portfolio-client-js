@@ -463,10 +463,17 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Boolean} display - If true, all "display" symbols are returned; otherwise Barchart symbols are returned.
+		 * @param {Boolean} excludeExpired - If true, only non-expired symbols are filtered.
 		 * @returns {String[]}
 		 */
-		getPositionSymbols(display) {
-			const symbols = this._items.reduce((symbols, item) => {
+		getPositionSymbols(display, excludeExpired) {
+			let items = this._items;
+
+			if (excludeExpired) {
+				items = items.filter(item => !item.data.expired);
+			}
+
+			const symbols = items.reduce((symbols, item) => {
 				const position = item.position;
 
 				let symbol;
