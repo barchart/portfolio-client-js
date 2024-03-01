@@ -1,7 +1,6 @@
 const Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
-	Schema = require('@barchart/common-js/serialization/json/Schema'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder');
 
 const UnitCode = require('@barchart/marketdata-api-js/lib/utilities/data/UnitCode');
@@ -121,6 +120,7 @@ module.exports = (() => {
 		.withField('snapshot.basis', DataType.DECIMAL)
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
+		.withField('snapshot.initial', DataType.forEnum(PositionDirection, 'PositionDirection'), true)
 		.withField('legacy.system', DataType.STRING, true)
 		.withField('legacy.user', DataType.STRING, true)
 		.withField('legacy.portfolio', DataType.STRING, true)
@@ -167,6 +167,7 @@ module.exports = (() => {
 		.withField('snapshot.basis', DataType.DECIMAL)
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
+		.withField('snapshot.initial', DataType.forEnum(PositionDirection, 'PositionDirection'), true)
 		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('system.locked', DataType.BOOLEAN, true)
 		.withField('previous', DataType.NUMBER, true)
