@@ -775,7 +775,7 @@ module.exports = (() => {
 				updates.cashTotal = updates.cashTotal.add(translate(item, item.data.market));
 			}
 
-			updates.totalDivisor = updates.periodDivisorCurrent.add(translate(item, item.data.totalDivisor));
+			updates.totalDivisor = updates.totalDivisor.add(translate(item, item.data.totalDivisor));
 			updates.periodDivisorCurrent = updates.periodDivisorCurrent.add(translate(item, item.data.periodDivisor));
 			updates.periodDivisorPrevious = updates.periodDivisorPrevious.add(translate(item, item.data.periodDivisorPrevious));
 			updates.periodDivisorPrevious2 = updates.periodDivisorPrevious2.add(translate(item, item.data.periodDivisorPrevious2));
