@@ -447,7 +447,7 @@ module.exports = (() => {
 
 		const data = item._data;
 
-		data.initiate = guessInitiateDirection(item.previousSummaries, item.currentSummary);
+		data.initiate = guessInitialDirection(position, item.previousSummaries, item.currentSummary);
 
 		data.quantity = snapshot.open;
 		data.previousPrice = position.previous || null;
@@ -498,7 +498,7 @@ module.exports = (() => {
 			data.periodPricePrevious = null;
 		}
 
-		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, currentSummary, position);
+		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, position);
 	}
 
 	function calculatePriceData(item, price) {
@@ -650,7 +650,11 @@ module.exports = (() => {
 		}
 	}
 
-	function guessInitiateDirection(previousSummaries, currentSummary) {
+	function guessInitialDirection(position, previousSummaries, currentSummary) {
+		if (position.snapshot.initial) {
+			return position.snapshot.initial;
+		}
+
 		const summaries = previousSummaries.concat(currentSummary);
 
 		const direction = summaries.reduce((accumulator, summary) => {
@@ -740,24 +744,22 @@ module.exports = (() => {
 		return returnRef;
 	}
 
-	function calculateTotalDivisor(type, direction, finalSummary, position) {
-		let returnRef;
-
-		// 2019-06-05, BRI. We should be reading from the summary -- in case we are
-		// running for a previous period. However, the summary does not have buy and
-		// sell totals for the entire history. Could be added.
-
-		if (finalSummary && type !== InstrumentType.CASH) {
-			if (direction === PositionDirection.SHORT) {
-				returnRef = position.snapshot.sells;
-			} else {
-				returnRef = position.snapshot.buys.opposite();
-			}
-		} else {
-			returnRef = Decimal.ZERO;
+	function calculateTotalDivisor(type, direction, position) {
+		if (type === InstrumentType.CASH) {
+			return Decimal.ZERO;
 		}
 
-		return returnRef;
+		let divisor;
+
+		if (direction === PositionDirection.SHORT) {
+			divisor = position.snapshot.sells;
+		} else if (direction === PositionDirection.LONG) {
+			divisor = position.snapshot.buys.opposite();
+		} else {
+			divisor = Decimal.ZERO;
+		}
+
+		return divisor;
 	}
 
 	function getPreviousSummary(previousSummaries, count) {
