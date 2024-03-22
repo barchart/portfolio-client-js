@@ -696,11 +696,10 @@ module.exports = (() => {
 		if (currency === Currency.GBX) {
 			translatedCurrency = Currency.GBP;
 
-			const isDecimal = value instanceof Decimal;
-			const isNumber = value instanceof Number;
-
-			if (isDecimal || isNumber) {
+			if (value instanceof Decimal) {
 				translatedValue = Rate.convert(value, Currency.GBX, Currency.GBP);
+			} else if (is.number(value)) {
+				translatedValue = Rate.convert(new Decimal(value), Currency.GBX, Currency.GBP).toFloat();
 			} else {
 				translatedValue = value;
 			}
