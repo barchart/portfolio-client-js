@@ -689,6 +689,29 @@ module.exports = (() => {
 		}
 	}
 
+	function formatFractionAndTranslate(value, currency, instrument) {
+		let translatedCurrency;
+		let translatedValue;
+
+		if (currency === Currency.GBX) {
+			translatedCurrency = Currency.GBP;
+
+			const isDecimal = value instanceof Decimal;
+			const isNumber = value instanceof Number;
+
+			if (isDecimal || isNumber) {
+				translatedValue = Rate.convert(value, Currency.GBX, Currency.GBP);
+			} else {
+				translatedValue = value;
+			}
+		} else {
+			translatedCurrency = currency;
+			translatedValue = value;
+		}
+
+		return formatFraction(translatedValue, translatedCurrency, instrument);
+	}
+
 	function formatNumber(number, precision) {
 		if (is.number(number)) {
 			return formatter.numberToString(number, precision, ',', false);
@@ -722,7 +745,15 @@ module.exports = (() => {
 	}
 
 	function formatCurrency(decimal, currency) {
-		return formatDecimal(decimal, currency.precision);
+		let formatted;
+
+		if (decimal === null || currency !== Currency.GBX) {
+			formatted = formatDecimal(decimal, currency.precision);
+		} else {
+			formatted = formatDecimal(Rate.convert(decimal, Currency.GBX, Currency.GBP), Currency.GBP.precision);
+		}
+
+		return formatted;
 	}
 
 	function calculateStaticData(group, rates, definition) {
@@ -863,7 +894,7 @@ module.exports = (() => {
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 
 			actual.basisPrice = item.data.basisPrice;
-			format.basisPrice = formatFraction(actual.basisPrice, currency, instrument);
+			format.basisPrice = formatFractionAndTranslate(actual.basisPrice, currency, instrument);
 
 			actual.periodPrice = item.data.periodPrice;
 			actual.periodPricePrevious = item.data.periodPricePrevious;
@@ -872,7 +903,7 @@ module.exports = (() => {
 			format.periodPricePrevious = formatCurrency(actual.periodPricePrevious, currency);
 
 			actual.unrealizedPrice = item.data.unrealizedPrice;
-			format.unrealizedPrice = formatFraction(actual.unrealizedPrice, currency, instrument);
+			format.unrealizedPrice = formatFractionAndTranslate(actual.unrealizedPrice, currency, instrument);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
@@ -1032,7 +1063,7 @@ module.exports = (() => {
 
 		if (group.single && item) {
 			actual.unrealizedPrice = item.data.unrealizedPrice;
-			format.unrealizedPrice = formatFraction(actual.unrealizedPrice, currency, item.position.instrument);
+			format.unrealizedPrice = formatFractionAndTranslate(actual.unrealizedPrice, currency, item.position.instrument);
 		}
 	}
 
