@@ -57,6 +57,14 @@ module.exports = (() => {
 		return Decimal.ONE;
 	}
 
+	function calculateForCrypto(instrument, basis, quantity) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
+			return null;
+		}
+
+		return basis.divide(quantity).opposite();
+	}
+
 	function calculateForEquity(instrument, basis, quantity) {
 		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
@@ -116,6 +124,7 @@ module.exports = (() => {
 	const calculators = new Map();
 
 	calculators.set(InstrumentType.CASH, calculateForCash);
+	calculators.set(InstrumentType.CRYPTO, calculateForCrypto);
 	calculators.set(InstrumentType.EQUITY, calculateForEquity);
 	calculators.set(InstrumentType.EQUITY_OPTION, calculateForEquityOption);
 	calculators.set(InstrumentType.FUND, calculateForFund);

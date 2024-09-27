@@ -53,6 +53,10 @@ module.exports = (() => {
 		return new Decimal(quantity);
 	}
 
+	function calculateForCrypto(instrument, price, quantity) {
+		return price.multiply(quantity);
+	}
+
 	function calculateForEquity(instrument, price, quantity) {
 		return price.multiply(quantity);
 	}
@@ -88,6 +92,7 @@ module.exports = (() => {
 	const calculators = new Map();
 
 	calculators.set(InstrumentType.CASH, calculateForCash);
+	calculators.set(InstrumentType.CRYPTO, calculateForCrypto);
 	calculators.set(InstrumentType.EQUITY, calculateForEquity);
 	calculators.set(InstrumentType.EQUITY_OPTION, calculateForEquityOption);
 	calculators.set(InstrumentType.FUND, calculateForFund);

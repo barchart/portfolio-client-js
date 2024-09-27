@@ -235,6 +235,11 @@ module.exports = (() => {
 		validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [ PositionDirection.LONG, PositionDirection.SHORT, PositionDirection.EVEN ]  });
 	}
 
+	associateTypes(InstrumentType.CRYPTO, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.CRYPTO, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.CRYPTO, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.CRYPTO, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
+
 	associateTypes(InstrumentType.EQUITY, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SELL, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
@@ -300,6 +305,10 @@ module.exports = (() => {
 
 		validDirections[instrumentTypeCode].push(positionDirection);
 	}
+
+	associateDirections(InstrumentType.CRYPTO, PositionDirection.EVEN);
+	associateDirections(InstrumentType.CRYPTO, PositionDirection.LONG);
+	associateDirections(InstrumentType.CRYPTO, PositionDirection.SHORT);
 
 	associateDirections(InstrumentType.EQUITY, PositionDirection.EVEN);
 	associateDirections(InstrumentType.EQUITY, PositionDirection.LONG);
