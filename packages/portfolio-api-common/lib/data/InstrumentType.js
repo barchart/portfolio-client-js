@@ -325,7 +325,7 @@ module.exports = (() => {
 				return InstrumentType.EQUITY;
 			} else if (code === 34) {
 				return InstrumentType.EQUITY_OPTION;
-			} else if (code === 5 || code == 15) {
+			} else if (code === 5 || code === 15) {
 				return InstrumentType.FUND;
 			} else if (code === 2) {
 				return InstrumentType.FUTURE;
