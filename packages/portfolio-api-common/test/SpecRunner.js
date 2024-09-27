@@ -58,6 +58,14 @@ module.exports = (() => {
 		return Decimal.ONE;
 	}
 
+	function calculateForCrypto(instrument, basis, quantity) {
+		if (basis === null || quantity === null || quantity.getIsZero()) {
+			return null;
+		}
+
+		return basis.divide(quantity).opposite();
+	}
+
 	function calculateForEquity(instrument, basis, quantity) {
 		if (basis === null || quantity === null || quantity.getIsZero()) {
 			return null;
@@ -117,6 +125,7 @@ module.exports = (() => {
 	const calculators = new Map();
 
 	calculators.set(InstrumentType.CASH, calculateForCash);
+	calculators.set(InstrumentType.CRYPTO, calculateForCrypto);
 	calculators.set(InstrumentType.EQUITY, calculateForEquity);
 	calculators.set(InstrumentType.EQUITY_OPTION, calculateForEquityOption);
 	calculators.set(InstrumentType.FUND, calculateForFund);
@@ -183,6 +192,10 @@ module.exports = (() => {
 		return new Decimal(quantity);
 	}
 
+	function calculateForCrypto(instrument, price, quantity) {
+		return price.multiply(quantity);
+	}
+
 	function calculateForEquity(instrument, price, quantity) {
 		return price.multiply(quantity);
 	}
@@ -218,6 +231,7 @@ module.exports = (() => {
 	const calculators = new Map();
 
 	calculators.set(InstrumentType.CASH, calculateForCash);
+	calculators.set(InstrumentType.CRYPTO, calculateForCrypto);
 	calculators.set(InstrumentType.EQUITY, calculateForEquity);
 	calculators.set(InstrumentType.EQUITY_OPTION, calculateForEquityOption);
 	calculators.set(InstrumentType.FUND, calculateForFund);
@@ -453,6 +467,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Crypto Tokens.
+		 *
+		 * @public
+		 * @static
+		 * @returns {InstrumentType}
+		 */
+		static get CRYPTO() {
+			return crypto;
+		}
+
+		/**
 		 * An equity issue.
 		 *
 		 * @public
@@ -556,12 +581,14 @@ module.exports = (() => {
 				return InstrumentType.EQUITY;
 			} else if (code === 34) {
 				return InstrumentType.EQUITY_OPTION;
-			} else if (code === 5 || code == 15) {
+			} else if (code === 5 || code === 15) {
 				return InstrumentType.FUND;
 			} else if (code === 2) {
 				return InstrumentType.FUTURE;
 			} else if (code === 12) {
 				return InstrumentType.FUTURE_OPTION;
+			} else if (code === 999) {
+				return InstrumentType.CRYPTO;
 			} else {
 				throw new Error(`Unable to determine InstrumentType for [ ${code} ]`);
 			}
@@ -573,6 +600,7 @@ module.exports = (() => {
 	}
 
 	const cash = new InstrumentType('CASH', 'cash', 'Cash', true, false, false, true, false, false, true, false, false, false, instrument => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+	const crypto = new InstrumentType('CRYPTO', 'crypto', 'Crypto', false, false, true, false, true, false, true, false, false, true, instrument => `BARCHART-CRYPTO-${instrument.name.toUpperCase()}`);
 	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', false, true, true, false, true, true, true, true, true, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
 	const equityOption = new InstrumentType('EQUITY_OPTION', 'equity option', 'Equity Options', false, false, true, false, true, false, false, false, false, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
 	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', false, true, false, false, true, true, true,false, true, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
@@ -1947,6 +1975,11 @@ module.exports = (() => {
 		validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [ PositionDirection.LONG, PositionDirection.SHORT, PositionDirection.EVEN ]  });
 	}
 
+	associateTypes(InstrumentType.CRYPTO, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.CRYPTO, TransactionType.SELL, true, [ PositionDirection.LONG ]);
+	associateTypes(InstrumentType.CRYPTO, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
+	associateTypes(InstrumentType.CRYPTO, TransactionType.BUY_SHORT, true, [ PositionDirection.SHORT ]);
+
 	associateTypes(InstrumentType.EQUITY, TransactionType.BUY, true, [ PositionDirection.LONG, PositionDirection.EVEN ]);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SELL, true, [ PositionDirection.LONG ]);
 	associateTypes(InstrumentType.EQUITY, TransactionType.SELL_SHORT, true, [ PositionDirection.SHORT, PositionDirection.EVEN ]);
@@ -2012,6 +2045,10 @@ module.exports = (() => {
 
 		validDirections[instrumentTypeCode].push(positionDirection);
 	}
+
+	associateDirections(InstrumentType.CRYPTO, PositionDirection.EVEN);
+	associateDirections(InstrumentType.CRYPTO, PositionDirection.LONG);
+	associateDirections(InstrumentType.CRYPTO, PositionDirection.SHORT);
 
 	associateDirections(InstrumentType.EQUITY, PositionDirection.EVEN);
 	associateDirections(InstrumentType.EQUITY, PositionDirection.LONG);

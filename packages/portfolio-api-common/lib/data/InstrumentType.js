@@ -222,6 +222,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Crypto Tokens.
+		 *
+		 * @public
+		 * @static
+		 * @returns {InstrumentType}
+		 */
+		static get CRYPTO() {
+			return crypto;
+		}
+
+		/**
 		 * An equity issue.
 		 *
 		 * @public
@@ -325,12 +336,14 @@ module.exports = (() => {
 				return InstrumentType.EQUITY;
 			} else if (code === 34) {
 				return InstrumentType.EQUITY_OPTION;
-			} else if (code === 5 || code == 15) {
+			} else if (code === 5 || code === 15) {
 				return InstrumentType.FUND;
 			} else if (code === 2) {
 				return InstrumentType.FUTURE;
 			} else if (code === 12) {
 				return InstrumentType.FUTURE_OPTION;
+			} else if (code === 999) {
+				return InstrumentType.CRYPTO;
 			} else {
 				throw new Error(`Unable to determine InstrumentType for [ ${code} ]`);
 			}
@@ -342,6 +355,7 @@ module.exports = (() => {
 	}
 
 	const cash = new InstrumentType('CASH', 'cash', 'Cash', true, false, false, true, false, false, true, false, false, false, instrument => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+	const crypto = new InstrumentType('CRYPTO', 'crypto', 'Crypto', false, false, true, false, true, false, true, false, false, true, instrument => `BARCHART-CRYPTO-${instrument.name.toUpperCase()}`);
 	const equity = new InstrumentType('EQUITY', 'equity', 'Equities', false, true, true, false, true, true, true, true, true, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
 	const equityOption = new InstrumentType('EQUITY_OPTION', 'equity option', 'Equity Options', false, false, true, false, true, false, false, false, false, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
 	const fund = new InstrumentType('FUND', 'mutual fund', 'Funds', false, true, false, false, true, true, true,false, true, true, instrument => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
