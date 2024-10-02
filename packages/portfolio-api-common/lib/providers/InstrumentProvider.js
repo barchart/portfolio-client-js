@@ -14,6 +14,11 @@ module.exports = (() => {
 
 	const DEFAULT_MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS = 3 * 1000;
 
+	const regex = { };
+
+	regex.crypto = { };
+	regex.crypto.token = /^(.*) - (USD)$/i;
+
 	/**
 	 * A utility that downloads instrument metadata (i.e. instrument "profile" data).
 	 *
@@ -37,28 +42,37 @@ module.exports = (() => {
 		 * @returns {Promise<Object>}
 		 */
 		async getInstrument(symbol) {
-			return Promise.resolve()
-				.then(() => {
-					assert.argumentIsRequired(symbol, 'symbol', String);
+			assert.argumentIsRequired(symbol, 'symbol', String);
 
-					return promise.timeout(Gateway.invoke(instrumentLookupEndpoint, { symbol }), this._waitInMilliseconds, 'instrument lookup')
-							.catch((e) => {
-								let message;
+			return promise.timeout(Gateway.invoke(instrumentLookupEndpoint, { symbol }), this._waitInMilliseconds, 'instrument lookup')
+				.catch((e) => {
+					let message;
 
-								if (is.string(e) && e === 'timeout') {
-									message = `Instrument lookup for [ ${symbol} ] failed due to timed out`;
-								} else {
-									message = `Instrument lookup for [ ${symbol} ] failed due to an unspecified error`;
-								}
+					if (is.string(e) && e === 'timeout') {
+						message = `Instrument lookup for [ ${symbol} ] failed due to timed out`;
+					} else {
+						message = `Instrument lookup for [ ${symbol} ] failed due to an unspecified error`;
+					}
 
-								return Promise.reject(message);
-							}).then((result) => {
-								if (result.instrument === null) {
-									return Promise.reject(`Instrument lookup for [ ${symbol} ] failed, the instrument does not exist`);
-								}
+					return Promise.reject(message);
+				}).then((result) => {
+					if (result.instrument === null) {
+						return Promise.reject(`Instrument lookup for [ ${symbol} ] failed, the instrument does not exist`);
+					}
 
-								return result;
-							});
+					const instrument = result.instrument;
+
+					if (instrument.symbolType === 18) {
+						const match = instrument.name.match(regex.crypto.token) || null;
+
+						if (match !== null) {
+							instrument.name = match[1];
+							instrument.currency = 'USD';
+							instrument.symbolType = 999;
+						}
+					}
+
+					return result;
 				});
 		}
 
