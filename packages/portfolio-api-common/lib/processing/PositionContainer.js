@@ -609,8 +609,6 @@ module.exports = (() => {
 						} else {
 							this._forexQuotes[index] = rate;
 						}
-
-						recalculatePercentages.call(this);
 					}
 				});
 
