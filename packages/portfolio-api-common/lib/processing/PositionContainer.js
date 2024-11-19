@@ -3,6 +3,7 @@ const array = require('@barchart/common-js/lang/array'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Currency = require('@barchart/common-js/lang/Currency'),
+	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
@@ -23,11 +24,14 @@ const PositionGroup = require('./PositionGroup'),
 module.exports = (() => {
 	'use strict';
 
-	const DEFAULT_CURRENCY = Currency.CAD;
+	const DEFAULT_CURRENCY = Currency.USD;
 
-	const REQUIRED_CURRENCIES = [
+	const SUPPORTED_CURRENCIES = [
+		Currency.AUD,
 		Currency.CAD,
 		Currency.CHF,
+		Currency.GBP,
+		Currency.GBX,
 		Currency.EUR,
 		Currency.HKD,
 		Currency.JPY,
@@ -122,7 +126,7 @@ module.exports = (() => {
 			}, { });
 
 			this._items = positions.reduce((items, position) => {
-				const item = createPositionItem.call(this, position, reportFrame ? true : false);
+				const item = createPositionItem.call(this, position, !!reportFrame);
 
 				if (item) {
 					items.push(item);
@@ -143,22 +147,6 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._currencies = this._items.reduce((map, item) => {
-				const currency = extractCurrency(item.position);
-
-				if (currency) {
-					const code = currency.code;
-
-					if (!map.hasOwnProperty(code)) {
-						map[code] = [ ];
-					}
-
-					map[code].push(item);
-				}
-
-				return map;
-			}, { });
-
 			if (is.array(currencyPairs)) {
 				currencyPairs.forEach((currencyPair) => {
 					currencyPair.sort((a, b) => comparators.compareStrings(a.code, b.code));
@@ -168,20 +156,30 @@ module.exports = (() => {
 					return `^${currencyPair[0].code}${currencyPair[1].code}`;
 				}));
 			} else {
-				const forexCurrencyCodes = array.unique(Object.keys(this._currencies).concat(REQUIRED_CURRENCIES.map(c => c.code)));
-
-				this._forexSymbols = forexCurrencyCodes.reduce((symbols, code) => {
-					if (code !== DEFAULT_CURRENCY.code) {
-						symbols.push(`^${code}${DEFAULT_CURRENCY.code}`);
+				this._forexSymbols = SUPPORTED_CURRENCIES.reduce((symbols, currency) => {
+					if (currency === DEFAULT_CURRENCY || currency === Currency.GBX) {
+						return symbols;
 					}
+
+					symbols.push(`^${DEFAULT_CURRENCY.code}${currency.code}`);
 
 					return symbols;
 				}, [ ]);
+
+				this._forexSymbols.push('^GBXGBP');
 			}
 
-			this._forexQuotes = this._forexSymbols.map((symbol) => {
+			this._currencyTranslator = new CurrencyTranslator(this._forexSymbols);
+
+			const forexQuotes = this._forexSymbols.map((symbol) => {
+				if (symbol === '^GBXGBP') {
+					return Rate.fromPair(0.01, '^GBXGBP');
+				}
+
 				return Rate.fromPair(Decimal.ONE, symbol);
 			});
+
+			this._currencyTranslator.setRates(forexQuotes);
 
 			this._nodes = { };
 
@@ -577,6 +575,22 @@ module.exports = (() => {
 			assert.argumentIsArray(positionQuotes, 'positionQuotes');
 			assert.argumentIsArray(forexQuotes, 'forexQuotes');
 
+			if (forexQuotes.length !== 0) {
+				forexQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					if (symbol) {
+						const rate = Rate.fromPair(quote.lastPrice, symbol);
+
+						this._currencyTranslator.setRate(rate);
+					}
+				});
+
+				Object.keys(this._trees).forEach((key) => {
+					this._trees[key].walk(group => group.refreshTranslations(), true, false);
+				});
+			}
+
 			if (positionQuotes.length !== 0) {
 				positionQuotes.forEach((quote) => {
 					const symbol = quote.symbol;
@@ -586,34 +600,6 @@ module.exports = (() => {
 							this._symbols[ symbol ].forEach(item => item.setQuote(quote));
 						}
 					}
-				});
-			}
-
-			if (forexQuotes.length !== 0) {
-				forexQuotes.forEach((quote) => {
-					const symbol = quote.symbol;
-
-					if (symbol) {
-						const rate = Rate.fromPair(quote.lastPrice, symbol);
-
-						let index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
-
-						if (index < 0) {
-							const inverted = rate.invert();
-
-							index = this._forexQuotes.findIndex(existing => existing.formatPair() === inverted.formatPair());
-						}
-
-						if (index < 0) {
-							this._forexQuotes.push(rate);
-						} else {
-							this._forexQuotes[index] = rate;
-						}
-					}
-				});
-
-				Object.keys(this._trees).forEach((key) => {
-					this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false);
 				});
 			}
 
@@ -651,16 +637,6 @@ module.exports = (() => {
 		 */
 		getForexSymbols() {
 			return this._forexSymbols;
-		}
-
-		/**
-		 * Returns all current forex quotes.
-		 *
-		 * @public
-		 * @returns {Object[]}
-		 */
-		getForexQuotes() {
-			return this._forexQuotes;
 		}
 
 		/**
@@ -949,7 +925,7 @@ module.exports = (() => {
 			return;
 		}
 
-		const rates = this._forexQuotes;
+		const currencyTranslator = this._currencyTranslator;
 
 		const levelDefinition = levelDefinitions[0];
 
@@ -958,7 +934,7 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(levelDefinition, items, rates, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
+			list.push(new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
 
 			return list;
 		}, [ ]);
@@ -971,7 +947,7 @@ module.exports = (() => {
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(levelDefinition, [ ], rates, group.currency, group.key, group.description);
+			return new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
@@ -1133,12 +1109,6 @@ module.exports = (() => {
 
 		if (this._symbolsDisplay.hasOwnProperty(displaySymbol)) {
 			array.remove(this._symbolsDisplay[displaySymbol], i => i === positionItem);
-		}
-
-		const currency = extractCurrency(positionItem.position);
-
-		if (currency && this._currencies.hasOwnProperty(currency.code)) {
-			array.remove(this._currencies[currency.code], i => i === positionItem);
 		}
 
 		Object.keys(this._trees).forEach((key) => {
