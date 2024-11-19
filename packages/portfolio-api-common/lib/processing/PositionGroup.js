@@ -540,7 +540,6 @@ module.exports = (() => {
 					this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
 
 					this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
-
 				}
 			}
 		}
