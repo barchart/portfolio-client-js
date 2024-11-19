@@ -136,7 +136,7 @@ module.exports = (() => {
 	return AveragePriceCalculator;
 })();
 
-},{"./../data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/is":38}],2:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/is":41}],2:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -242,7 +242,7 @@ module.exports = (() => {
 	return ValuationCalculator;
 })();
 
-},{"./../data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/is":38}],3:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/is":41}],3:[function(require,module,exports){
 const uuid = require('uuid');
 
 const assert = require('@barchart/common-js/lang/assert'),
@@ -611,7 +611,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34,"uuid":54}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"uuid":57}],4:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -674,7 +674,7 @@ module.exports = (() => {
 	return OptionSide;
 })();
 
-},{"@barchart/common-js/lang/Enum":29}],5:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum');
@@ -829,7 +829,7 @@ module.exports = (() => {
 	return PositionDirection;
 })();
 
-},{"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34}],6:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -1193,7 +1193,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/array":33,"@barchart/common-js/lang/assert":34}],7:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37}],7:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -1737,7 +1737,7 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34}],8:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],8:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is');
@@ -2079,7 +2079,7 @@ module.exports = (() => {
 	return TransactionValidator;
 })();
 
-},{"./InstrumentType":3,"./PositionDirection":5,"./TransactionType":7,"@barchart/common-js/lang/array":33,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38}],9:[function(require,module,exports){
+},{"./InstrumentType":3,"./PositionDirection":5,"./TransactionType":7,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41}],9:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -2140,12 +2140,13 @@ module.exports = (() => {
 	return ValuationType;
 })();
 
-},{"@barchart/common-js/lang/Enum":29}],10:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32}],10:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Currency = require('@barchart/common-js/lang/Currency'),
+	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
@@ -2166,11 +2167,14 @@ const PositionGroup = require('./PositionGroup'),
 module.exports = (() => {
 	'use strict';
 
-	const DEFAULT_CURRENCY = Currency.CAD;
+	const DEFAULT_CURRENCY = Currency.USD;
 
-	const REQUIRED_CURRENCIES = [
+	const SUPPORTED_CURRENCIES = [
+		Currency.AUD,
 		Currency.CAD,
 		Currency.CHF,
+		Currency.GBP,
+		Currency.GBX,
 		Currency.EUR,
 		Currency.HKD,
 		Currency.JPY,
@@ -2220,6 +2224,7 @@ module.exports = (() => {
 			this._groupBindings = { };
 
 			this._reporting = reportFrame instanceof PositionSummaryFrame;
+			this._useBarchartPriceFormattingRules = false;
 
 			this._positionSymbolAddedEvent = new Event(this);
 			this._positionSymbolRemovedEvent = new Event(this);
@@ -2265,7 +2270,7 @@ module.exports = (() => {
 			}, { });
 
 			this._items = positions.reduce((items, position) => {
-				const item = createPositionItem.call(this, position, reportFrame ? true : false);
+				const item = createPositionItem.call(this, position, !!reportFrame);
 
 				if (item) {
 					items.push(item);
@@ -2286,22 +2291,6 @@ module.exports = (() => {
 				return map;
 			}, { });
 
-			this._currencies = this._items.reduce((map, item) => {
-				const currency = extractCurrency(item.position);
-
-				if (currency) {
-					const code = currency.code;
-
-					if (!map.hasOwnProperty(code)) {
-						map[code] = [ ];
-					}
-
-					map[code].push(item);
-				}
-
-				return map;
-			}, { });
-
 			if (is.array(currencyPairs)) {
 				currencyPairs.forEach((currencyPair) => {
 					currencyPair.sort((a, b) => comparators.compareStrings(a.code, b.code));
@@ -2311,20 +2300,30 @@ module.exports = (() => {
 					return `^${currencyPair[0].code}${currencyPair[1].code}`;
 				}));
 			} else {
-				const forexCurrencyCodes = array.unique(Object.keys(this._currencies).concat(REQUIRED_CURRENCIES.map(c => c.code)));
-
-				this._forexSymbols = forexCurrencyCodes.reduce((symbols, code) => {
-					if (code !== DEFAULT_CURRENCY.code) {
-						symbols.push(`^${code}${DEFAULT_CURRENCY.code}`);
+				this._forexSymbols = SUPPORTED_CURRENCIES.reduce((symbols, currency) => {
+					if (currency === DEFAULT_CURRENCY || currency === Currency.GBX) {
+						return symbols;
 					}
+
+					symbols.push(`^${DEFAULT_CURRENCY.code}${currency.code}`);
 
 					return symbols;
 				}, [ ]);
+
+				this._forexSymbols.push('^GBXGBP');
 			}
 
-			this._forexQuotes = this._forexSymbols.map((symbol) => {
+			this._currencyTranslator = new CurrencyTranslator(this._forexSymbols);
+
+			const forexQuotes = this._forexSymbols.map((symbol) => {
+				if (symbol === '^GBXGBP') {
+					return Rate.fromPair(0.01, '^GBXGBP');
+				}
+
 				return Rate.fromPair(Decimal.ONE, symbol);
 			});
+
+			this._currencyTranslator.setRates(forexQuotes);
 
 			this._nodes = { };
 
@@ -2720,6 +2719,22 @@ module.exports = (() => {
 			assert.argumentIsArray(positionQuotes, 'positionQuotes');
 			assert.argumentIsArray(forexQuotes, 'forexQuotes');
 
+			if (forexQuotes.length !== 0) {
+				forexQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					if (symbol) {
+						const rate = Rate.fromPair(quote.lastPrice, symbol);
+
+						this._currencyTranslator.setRate(rate);
+					}
+				});
+
+				Object.keys(this._trees).forEach((key) => {
+					this._trees[key].walk(group => group.refreshTranslations(), true, false);
+				});
+			}
+
 			if (positionQuotes.length !== 0) {
 				positionQuotes.forEach((quote) => {
 					const symbol = quote.symbol;
@@ -2729,36 +2744,6 @@ module.exports = (() => {
 							this._symbols[ symbol ].forEach(item => item.setQuote(quote));
 						}
 					}
-				});
-			}
-
-			if (forexQuotes.length !== 0) {
-				forexQuotes.forEach((quote) => {
-					const symbol = quote.symbol;
-
-					if (symbol) {
-						const rate = Rate.fromPair(quote.lastPrice, symbol);
-
-						let index = this._forexQuotes.findIndex(existing => existing.formatPair() === rate.formatPair());
-
-						if (index < 0) {
-							const inverted = rate.invert();
-
-							index = this._forexQuotes.findIndex(existing => existing.formatPair() === inverted.formatPair());
-						}
-
-						if (index < 0) {
-							this._forexQuotes.push(rate);
-						} else {
-							this._forexQuotes[index] = rate;
-						}
-
-						recalculatePercentages.call(this);
-					}
-				});
-
-				Object.keys(this._trees).forEach((key) => {
-					this._trees[key].walk(group => group.setForexRates(this._forexQuotes), true, false);
 				});
 			}
 
@@ -2789,18 +2774,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Sets a historical forex quote.
-		 *
-		 * @public
-		 * @param {Object} forexQuote
-		 * @param {Day} date
-		 */
-		setHistoricalForexQuote(forexQuote, date) {
-			assert.argumentIsRequired(forexQuote, 'forexQuote', Object);
-			assert.argumentIsRequired(date, 'date', Day, 'Day');
-		}
-
-		/**
 		 * Returns all forex symbols that are required to do currency translations.
 		 *
 		 * @public
@@ -2808,16 +2781,6 @@ module.exports = (() => {
 		 */
 		getForexSymbols() {
 			return this._forexSymbols;
-		}
-
-		/**
-		 * Returns all current forex quotes.
-		 *
-		 * @public
-		 * @returns {Object[]}
-		 */
-		getForexQuotes() {
-			return this._forexQuotes;
 		}
 
 		/**
@@ -2994,6 +2957,24 @@ module.exports = (() => {
 			return this._positionSymbolRemovedEvent.register(handler);
 		}
 
+		/**
+		 * Changes rules for price formatting.
+		 *
+		 * @public
+		 * @param {boolean} value
+		 */
+		setBarchartPriceFormattingRules(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._useBarchartPriceFormattingRules !== value) {
+				this._useBarchartPriceFormattingRules = value;
+
+				Object.keys(this._trees).forEach((key) => {
+					this._trees[key].walk(group => group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules));
+				});
+			}
+		}
+
 		toString() {
 			return '[PositionContainer]';
 		}
@@ -3030,14 +3011,6 @@ module.exports = (() => {
 	function extractSymbolForDisplay(position) {
 		if (position.instrument && position.instrument.symbol && position.instrument.symbol.display) {
 			return position.instrument.symbol.display;
-		} else {
-			return null;
-		}
-	}
-
-	function extractCurrency(position) {
-		if (position.instrument && position.instrument.currency) {
-			return position.instrument.currency;
 		} else {
 			return null;
 		}
@@ -3106,7 +3079,7 @@ module.exports = (() => {
 			return;
 		}
 
-		const rates = this._forexQuotes;
+		const currencyTranslator = this._currencyTranslator;
 
 		const levelDefinition = levelDefinitions[0];
 
@@ -3115,7 +3088,11 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(levelDefinition, items, rates, levelDefinition.currencySelector(first), key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
+			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash);
+
+			group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
+
+			list.push(group);
 
 			return list;
 		}, [ ]);
@@ -3128,7 +3105,11 @@ module.exports = (() => {
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(levelDefinition, [ ], rates, group.currency, group.key, group.description);
+			const eg = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
+
+			eg.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
+
+			return eg;
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
@@ -3292,12 +3273,6 @@ module.exports = (() => {
 			array.remove(this._symbolsDisplay[displaySymbol], i => i === positionItem);
 		}
 
-		const currency = extractCurrency(positionItem.position);
-
-		if (currency && this._currencies.hasOwnProperty(currency.code)) {
-			array.remove(this._currencies[currency.code], i => i === positionItem);
-		}
-
 		Object.keys(this._trees).forEach((key) => {
 			this._trees[key].walk((group, groupNode) => {
 				if (group.definition.type === PositionLevelType.POSITION && group.key === positionItem.position.position) {
@@ -3322,17 +3297,17 @@ module.exports = (() => {
 
 	return PositionContainer;
 })();
-},{"./../data/PositionSummaryFrame":6,"./PositionGroup":11,"./PositionItem":12,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"./definitions/PositionTreeDefinition":15,"@barchart/common-js/collections/Tree":20,"@barchart/common-js/collections/sorting/ComparatorBuilder":21,"@barchart/common-js/collections/sorting/comparators":22,"@barchart/common-js/collections/specialized/DisposableStack":23,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Rate":31,"@barchart/common-js/lang/array":33,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38,"@barchart/common-js/messaging/Event":40}],11:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":6,"./PositionGroup":11,"./PositionItem":12,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"./definitions/PositionTreeDefinition":15,"@barchart/common-js/collections/Tree":20,"@barchart/common-js/collections/sorting/ComparatorBuilder":23,"@barchart/common-js/collections/sorting/comparators":24,"@barchart/common-js/collections/specialized/DisposableStack":25,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Rate":34,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43}],11:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
+	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
-	is = require('@barchart/common-js/lang/is'),
-	Rate = require('@barchart/common-js/lang/Rate');
+	is = require('@barchart/common-js/lang/is');
 
 const fractionFormatter = require('@barchart/marketdata-api-js/lib/utilities/format/fraction');
 
@@ -3353,26 +3328,28 @@ module.exports = (() => {
 	 * @public
 	 * @param {PositionLevelDefinition} definition
 	 * @param {PositionItem[]} items
-	 * @param {Rate[]} rates
 	 * @param {Currency} currency
+	 * @param {CurrencyTranslator} currencyTranslator
 	 * @param {String} key
 	 * @param {String} description
 	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(definition, items, rates, currency, key, description, aggregateCash) {
+		constructor(definition, items, currency, currencyTranslator, key, description, aggregateCash) {
 			this._id = counter++;
 
 			this._definition = definition;
 
 			this._items = items;
-			this._rates = rates;
 
 			this._parentGroup = null;
 			this._portfolioGroup = null;
 
 			this._currency = currency || Currency.CAD;
+			this._currencyTranslator = currencyTranslator;
 			this._bypassCurrencyTranslation = false;
+
+			this._useBarchartPriceFormattingRules = false;
 
 			this._key = key;
 			this._description = description;
@@ -3730,20 +3707,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Causes aggregated data to be recalculated using a new exchange rate.
-		 *
-		 * @public
-		 * @param {Rate[]} rates
-		 */
-		setForexRates(rates) {
-			this._rates = rates;
-
-			if (!this._bypassCurrencyTranslation) {
-				this.refresh();
-			}
-		}
-
-		/**
 		 * Set a flag to indicate if parent groups should exclude this group's
 		 * items from their calculations.
 		 *
@@ -3802,8 +3765,8 @@ module.exports = (() => {
 		 * @public
 		 */
 		refresh() {
-			calculateStaticData(this, this._rates, this._definition);
-			calculatePriceData(this, this._rates, null, true);
+			calculateStaticData(this, this._definition);
+			calculatePriceData(this,null, true);
 		}
 
 		/**
@@ -3813,7 +3776,20 @@ module.exports = (() => {
 		 * @public
 		 */
 		refreshMarketPercent() {
-			calculateMarketPercent(this, this._rates, this._parentGroup, this._portfolioGroup);
+			calculateMarketPercent(this, this._parentGroup, this._portfolioGroup);
+		}
+
+		/**
+		 * Causes aggregated data to be recalculated using a new exchange rate.
+		 *
+		 * @public
+		 */
+		refreshTranslations() {
+			if (this._bypassCurrencyTranslation) {
+				return;
+			}
+
+			this.refresh();
 		}
 
 		/**
@@ -3838,6 +3814,37 @@ module.exports = (() => {
 			return this._groupExcludedChangeEvent.register(handler);
 		}
 
+		/**
+		 * Changes rules for price formatting.
+		 *
+		 * @public
+		 * @param {boolean} value
+		 */
+		setBarchartPriceFormattingRules(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._useBarchartPriceFormattingRules !== value) {
+				this._useBarchartPriceFormattingRules = value;
+
+				if (this._single && this._dataActual.currentPrice) {
+					const item = this._items[0];
+
+					const instrument = item.position.instrument;
+					const currency = instrument.currency;
+
+					this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument, this._useBarchartPriceFormattingRules);
+
+					this._dataFormat.quoteLast = formatFraction(this._dataActual.quoteLast, currency, instrument, this._useBarchartPriceFormattingRules);
+					this._dataFormat.quoteOpen = formatFraction(this._dataActual.quoteOpen, currency, instrument, this._useBarchartPriceFormattingRules);
+					this._dataFormat.quoteHigh = formatFraction(this._dataActual.quoteHigh, currency, instrument, this._useBarchartPriceFormattingRules);
+					this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
+
+					this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
+
+				}
+			}
+		}
+
 		toString() {
 			return '[PositionGroup]';
 		}
@@ -3848,27 +3855,28 @@ module.exports = (() => {
 			if (this._single) {
 				const instrument = sender.position.instrument;
 				const currency = instrument.currency;
-				const precision = currency.precision;
 
-				this._dataActual.currentPrice = quote.lastPrice;
-				this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument);
+				this._dataActual.currentPrice = is.number(quote.lastPrice) ? quote.lastPrice : null;
+				this._dataActual.quoteLast = is.number(quote.previousPrice) ? quote.previousPrice : null;
+				this._dataActual.quoteOpen = is.number(quote.openPrice) ? quote.openPrice : null;
+				this._dataActual.quoteHigh = is.number(quote.highPrice) ? quote.highPrice : null;
+				this._dataActual.quoteLow = is.number(quote.lowPrice) ? quote.lowPrice : null;
 
-				this._dataActual.quoteLast = quote.previousPrice;
-				this._dataActual.quoteOpen = quote.openPrice;
-				this._dataActual.quoteHigh = quote.highPrice;
-				this._dataActual.quoteLow = quote.lowPrice;
-				this._dataActual.quoteChange = quote.priceChange;
-				this._dataActual.quoteChangePercent = quote.percentChange;
-				this._dataActual.quoteTime = quote.timeDisplay;
-				this._dataActual.quoteVolume = quote.volume;
+				this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteLast = formatFraction(this._dataActual.quoteLast, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteOpen = formatFraction(this._dataActual.quoteOpen, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteHigh = formatFraction(this._dataActual.quoteHigh, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
 
-				this._dataFormat.quoteLast = formatNumber(this._dataActual.quoteLast , precision);
-				this._dataFormat.quoteOpen = formatNumber(this._dataActual.quoteOpen, precision);
-				this._dataFormat.quoteHigh = formatNumber(this._dataActual.quoteHigh, precision);
-				this._dataFormat.quoteLow = formatNumber(this._dataActual.quoteLow, precision);
-				this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument);
+				this._dataActual.quoteChange = is.number(quote.priceChange) ? quote.priceChange : null;
+				this._dataActual.quoteChangePercent = is.number(quote.percentChange) ? quote.percentChange : null;
 
+				this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
 				this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
+
+				this._dataActual.quoteTime = quote.timeDisplay;
+				this._dataActual.quoteVolume = is.number(quote.volume) ? quote.volume : null;
+
 				this._dataFormat.quoteTime = this._dataActual.quoteTime;
 				this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
 
@@ -3883,7 +3891,7 @@ module.exports = (() => {
 				this._dataFormat.currentPrice = null;
 			}
 
-			calculatePriceData(this, this._rates, sender, false);
+			calculatePriceData(this, sender, false);
 		});
 
 		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
@@ -3993,8 +4001,42 @@ module.exports = (() => {
 		}));
 	}
 
-	function formatFraction(value, currency, instrument) {
+	function formatNumber(number, precision) {
+		if (!is.number(number)) {
+			return '—';
+		}
+
+		return formatter.numberToString(number, precision, ',', false);
+	}
+
+	function formatDecimal(decimal, precision) {
+		if (decimal === null) {
+			return '—';
+		}
+
+		return formatNumber(decimal.toFloat(), precision);
+	}
+
+	function formatPercent(decimal, precision, plus) {
+		if (decimal === null) {
+			return '—';
+		}
+
+		let prefix;
+
+		if (is.boolean(plus) && plus && !Decimal.getIsNegative(decimal)) {
+			prefix = '+';
+		} else {
+			prefix = '';
+		}
+
+		return `${prefix}${formatDecimal(decimal.multiply(100), precision)}%`;
+	}
+
+	function formatFraction(value, currency, instrument, useBarchartPriceFormattingRules) {
 		let decimal = value instanceof Decimal;
+
+		let precision = currency.precision;
 
 		if (instrument && value !== null) {
 			const type = instrument.type;
@@ -4005,101 +4047,66 @@ module.exports = (() => {
 
 				return fractionFormatter(rounded, code.fractionFactor, code.fractionDigits, '-', true);
 			}
+
+			if (code && useBarchartPriceFormattingRules) {
+				precision = code.decimalDigits;
+			}
 		}
 
 		if (decimal) {
-			return formatDecimal(value, currency.precision);
+			return formatDecimal(value, precision);
 		} else {
-			return formatNumber(value, currency.precision);
-		}
-	}
-
-	function formatFractionAndTranslate(value, currency, instrument) {
-		let translatedCurrency;
-		let translatedValue;
-
-		if (currency === Currency.GBX) {
-			translatedCurrency = Currency.GBP;
-
-			if (value instanceof Decimal) {
-				translatedValue = Rate.convert(value, Currency.GBX, Currency.GBP);
-			} else if (is.number(value)) {
-				translatedValue = Rate.convert(new Decimal(value), Currency.GBX, Currency.GBP).toFloat();
-			} else {
-				translatedValue = value;
-			}
-		} else {
-			translatedCurrency = currency;
-			translatedValue = value;
-		}
-
-		return formatFraction(translatedValue, translatedCurrency, instrument);
-	}
-
-	function formatNumber(number, precision) {
-		if (is.number(number)) {
-			return formatter.numberToString(number, precision, ',', false);
-		} else {
-			return '—';
-		}
-	}
-
-	function formatDecimal(decimal, precision) {
-		if (decimal !== null) {
-			return formatNumber(decimal.toFloat(), precision);
-		} else {
-			return '—';
-		}
-	}
-
-	function formatPercent(decimal, precision, plus) {
-		if (decimal !== null) {
-			let prefix;
-
-			if (is.boolean(plus) && plus && !Decimal.getIsNegative(decimal)) {
-				prefix = '+';
-			} else {
-				prefix = '';
-			}
-
-			return `${prefix}${formatDecimal(decimal.multiply(100), precision)}%`;
-		} else {
-			return '—';
+			return formatNumber(value, precision);
 		}
 	}
 
 	function formatCurrency(decimal, currency) {
-		let formatted;
+		let translated = decimal;
+		let desired = currency;
 
-		if (decimal === null || currency !== Currency.GBX) {
-			formatted = formatDecimal(decimal, currency.precision);
-		} else {
-			formatted = formatDecimal(Rate.convert(decimal, Currency.GBX, Currency.GBP), Currency.GBP.precision);
+		if (desired === Currency.GBX) {
+			desired = Currency.GBP;
+
+			if (translated !== null) {
+				translated = translated.multiply(0.01);
+			}
 		}
 
-		return formatted;
+		return formatDecimal(translated, desired.precision);
 	}
 
-	function calculateStaticData(group, rates, definition) {
+	function formatFractionSpecial(value, currency, instrument) {
+		let translated = value;
+		let desired = currency;
+
+		if (desired === Currency.GBX) {
+			desired = Currency.GBP;
+
+			if (translated !== null) {
+				translated = translated.multiply(0.01);
+			}
+		}
+
+		return formatFraction(translated, desired, instrument);
+	}
+
+	function calculateStaticData(group, definition) {
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 
 		const currency = group.currency;
+		const currencyTranslator = group._currencyTranslator;
 
 		const items = group._consideredItems;
 
 		group._bypassCurrencyTranslation = items.every(item => item.currency === currency);
 
 		const translate = (item, value) => {
-			let translated;
-
-			if (item.currency !== currency && !value.getIsZero()) {
-				translated = Rate.convert(value, item.currency, currency, ...rates);
-			} else {
-				translated = value;
+			if (item.currency === currency || value.getIsZero()) {
+				return value;
 			}
 
-			return translated;
+			return currencyTranslator.translate(value, item.currency, currency);
 		};
 
 		let updates = items.reduce((updates, item) => {
@@ -4218,7 +4225,7 @@ module.exports = (() => {
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 
 			actual.basisPrice = item.data.basisPrice;
-			format.basisPrice = formatFractionAndTranslate(actual.basisPrice, currency, instrument);
+			format.basisPrice = formatFractionSpecial(actual.basisPrice, currency, instrument);
 
 			actual.periodPrice = item.data.periodPrice;
 			actual.periodPricePrevious = item.data.periodPricePrevious;
@@ -4227,7 +4234,7 @@ module.exports = (() => {
 			format.periodPricePrevious = formatCurrency(actual.periodPricePrevious, currency);
 
 			actual.unrealizedPrice = item.data.unrealizedPrice;
-			format.unrealizedPrice = formatFractionAndTranslate(actual.unrealizedPrice, currency, instrument);
+			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, instrument);
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
@@ -4250,7 +4257,7 @@ module.exports = (() => {
 		format.portfolioType = portfolioType;
 	}
 
-	function calculatePriceData(group, rates, item, forceRefresh) {
+	function calculatePriceData(group, item, forceRefresh) {
 		const currency = group.currency;
 
 		const actual = group._dataActual;
@@ -4262,16 +4269,14 @@ module.exports = (() => {
 			return;
 		}
 
-		const translate = (item, value) => {
-			let translated;
+		const currencyTranslator = group._currencyTranslator;
 
-			if (item.currency !== currency && !value.getIsZero()) {
-				translated = Rate.convert(value, item.currency, currency, ...rates);
-			} else {
-				translated = value;
+		const translate = (item, value) => {
+			if (item.currency === currency || value.getIsZero()) {
+				return value;
 			}
 
-			return translated;
+			return currencyTranslator.translate(value, item.currency, currency);
 		};
 
 		let updates;
@@ -4387,39 +4392,37 @@ module.exports = (() => {
 
 		if (group.single && item) {
 			actual.unrealizedPrice = item.data.unrealizedPrice;
-			format.unrealizedPrice = formatFractionAndTranslate(actual.unrealizedPrice, currency, item.position.instrument);
+			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, item.position.instrument);
 		}
 	}
 
-	function calculateMarketPercent(group, rates, parentGroup, portfolioGroup) {
+	function calculateMarketPercent(group, parentGroup, portfolioGroup) {
 		const actual = group._dataActual;
 		const format = group._dataFormat;
 		const excluded = group._excluded;
 
+		const currencyTranslator = group._currencyTranslator;
+
 		const calculatePercent = (parent) => {
-			let marketPercent;
-
-			if (parent && !excluded) {
-				const parentData = parent._dataActual;
-
-				if (parentData.marketAbsolute !== null && !parentData.marketAbsolute.getIsApproximate(Decimal.ZERO, 4)) {
-					let numerator;
-
-					if (group.currency !== parent.currency) {
-						numerator = Rate.convert(actual.marketAbsolute, group.currency, parent.currency, ...rates);
-					} else {
-						numerator = actual.marketAbsolute;
-					}
-
-					marketPercent = numerator.divide(parentData.marketAbsolute);
-				} else {
-					marketPercent = null;
-				}
-			} else {
-				marketPercent = null;
+			if (!parent || excluded) {
+				return null;
 			}
 
-			return marketPercent;
+			const parentData = parent._dataActual;
+
+			if (parentData.marketAbsolute === null || parentData.marketAbsolute.getIsApproximate(Decimal.ZERO, 4)) {
+				return null;
+			}
+
+			let numerator;
+
+			if (group.currency === parent.currency) {
+				numerator = actual.marketAbsolute;
+			} else {
+				numerator = currencyTranslator.translate(actual.marketAbsolute, group.currency, parent.currency);
+			}
+
+			return numerator.divide(parentData.marketAbsolute);
 		};
 
 		actual.marketPercent = calculatePercent(parentGroup);
@@ -4478,7 +4481,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/collections/specialized/DisposableStack":23,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Disposable":28,"@barchart/common-js/lang/Rate":31,"@barchart/common-js/lang/array":33,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/formatter":36,"@barchart/common-js/lang/is":38,"@barchart/common-js/messaging/Event":40,"@barchart/marketdata-api-js/lib/utilities/format/fraction":48}],12:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/collections/specialized/DisposableStack":25,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/formatter":39,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43,"@barchart/marketdata-api-js/lib/utilities/format/fraction":51}],12:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -5312,7 +5315,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":3,"./../data/PositionDirection":5,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Disposable":28,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38,"@barchart/common-js/messaging/Event":40}],13:[function(require,module,exports){
+},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":3,"./../data/PositionDirection":5,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43}],13:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
@@ -5616,7 +5619,7 @@ module.exports = (() => {
 	return PositionLevelDefinition;
 })();
 
-},{"./../../data/InstrumentType":3,"./PositionLevelType":14,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38}],14:[function(require,module,exports){
+},{"./../../data/InstrumentType":3,"./PositionLevelType":14,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41}],14:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -5677,7 +5680,7 @@ module.exports = (() => {
 	return PositionLevelType;
 })();
 
-},{"@barchart/common-js/lang/Enum":29}],15:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":32}],15:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert');
 
 const PositionLevelDefinition = require('./PositionLevelDefinition');
@@ -5749,7 +5752,7 @@ module.exports = (() => {
 	return PositionTreeDefinitions;
 })();
 
-},{"./PositionLevelDefinition":13,"@barchart/common-js/lang/assert":34}],16:[function(require,module,exports){
+},{"./PositionLevelDefinition":13,"@barchart/common-js/lang/assert":37}],16:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
@@ -5954,7 +5957,7 @@ module.exports = (() => {
 	return PositionSchema;
 })();
 
-},{"./../data/InstrumentType":3,"./../data/OptionSide":4,"./../data/PositionDirection":5,"./../data/ValuationType":9,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/serialization/json/DataType":42,"@barchart/common-js/serialization/json/builders/SchemaBuilder":46,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":47}],17:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./../data/OptionSide":4,"./../data/PositionDirection":5,"./../data/ValuationType":9,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":50}],17:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -6320,7 +6323,7 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":3,"./../data/PositionDirection":5,"./../data/TransactionType":7,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/is":38,"@barchart/common-js/serialization/json/DataType":42,"@barchart/common-js/serialization/json/builders/SchemaBuilder":46}],18:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./../data/PositionDirection":5,"./../data/TransactionType":7,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/is":41,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],18:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -6483,7 +6486,7 @@ module.exports = (() => {
   return Stack;
 })();
 
-},{"./../lang/assert":34}],20:[function(require,module,exports){
+},{"./../lang/assert":37}],20:[function(require,module,exports){
 const is = require('./../lang/is');
 module.exports = (() => {
   'use strict';
@@ -6787,7 +6790,181 @@ module.exports = (() => {
   return Tree;
 })();
 
-},{"./../lang/is":38}],21:[function(require,module,exports){
+},{"./../lang/is":41}],21:[function(require,module,exports){
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * One edge of a directed graph, describing the connection between
+   * two vertices; where the edge has a direction.
+   *
+   * @public
+   * @param {Vertex} from
+   * @param {Vertex} to
+   * @param {*=} data
+   */
+  class Edge {
+    constructor(from, to, data) {
+      this._from = from;
+      this._to = to;
+      this._data = data || null;
+    }
+
+    /**
+     * The starting vertex.
+     *
+     * @public
+     * @returns {Vertex}
+     */
+    get from() {
+      return this._from;
+    }
+
+    /**
+     * The end vertex.
+     *
+     * @public
+     * @returns {Vertex}
+     */
+    get to() {
+      return this._to;
+    }
+
+    /**
+     * Ad hoc data associated with the edge (in other words the "value"
+     * of the edge).
+     *
+     * @public
+     * @returns {*|null}
+     */
+    get data() {
+      return this._data;
+    }
+    toString() {
+      return `[Edge (from=${this.from.data.toString()}, to=${this.to.data.toString()}})]`;
+    }
+  }
+  return Edge;
+})();
+
+},{}],22:[function(require,module,exports){
+const assert = require('./../../lang/assert');
+const Edge = require('./Edge');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * One node (vertex) of a directed graph data structure.
+   *
+   * @public
+   * @param {*=} data
+   */
+  class Vertex {
+    constructor(data) {
+      this._data = data || null;
+      this._edges = [];
+    }
+
+    /**
+     * Ad hoc data associated with the vertex (in other words the "value"
+     * of the vertex).
+     *
+     * @public
+     * @returns {*}
+     */
+    get data() {
+      return this._data;
+    }
+
+    /**
+     * Returns all edges from this vertex to other vertices.
+     *
+     * @public
+     * @returns {Edge[]}
+     */
+    getEdges() {
+      return this._edges;
+    }
+
+    /**
+     * Adds an edge.
+     *
+     * @public
+     * @param {Vertex} other
+     * @param {*=} data
+     * @returns {Edge}
+     */
+    addEdge(other, data) {
+      assert.argumentIsRequired(other, 'other', Vertex, 'Vertex');
+      if (other === this) {
+        throw new Error('Graph vertex cannot connect to itself.');
+      }
+      if (this.hasEdge(other)) {
+        throw new Error(`Graph already has edge between [ ${this.data.toString()} ] and [ ${other.data.toString()} ]`);
+      }
+      const edge = new Edge(this, other, data);
+      this._edges.push(edge);
+      return edge;
+    }
+
+    /**
+     * Locates an edge.
+     *
+     * @public
+     * @param {Vertex} other
+     * @returns {Edge|null}
+     */
+    getEdge(other) {
+      return this._edges.find(e => e.to === other) || null;
+    }
+
+    /**
+     * Indicates if this vertex has an edge.
+     *
+     * @public
+     * @param {Vertex} other
+     * @returns {boolean}
+     */
+    hasEdge(other) {
+      return this.getEdge(other) !== null;
+    }
+
+    /**
+     * Finds all possible paths from this vertex (node) to another vertex (node).
+     *
+     * @public
+     * @param {Vertex} other
+     * @param {Edge[]=} walk
+     * @returns {Edge[][]}
+     */
+    getPaths(other, walk) {
+      if (walk && this === other) {
+        return [walk];
+      }
+      if (walk && walk.some(edge => edge.from === this)) {
+        return [];
+      }
+      let paths = [];
+      this._edges.forEach(edge => {
+        let current;
+        if (walk) {
+          current = walk.slice(0);
+        } else {
+          current = [];
+        }
+        current.push(edge);
+        paths = paths.concat(edge.to.getPaths(other, current));
+      });
+      return paths;
+    }
+    toString() {
+      return `[Vertex (data=${this.data.toString()})]`;
+    }
+  }
+  return Vertex;
+})();
+
+},{"./../../lang/assert":37,"./Edge":21}],23:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   comparators = require('./comparators');
 module.exports = (() => {
@@ -6890,7 +7067,7 @@ module.exports = (() => {
   return ComparatorBuilder;
 })();
 
-},{"./../../lang/assert":34,"./comparators":22}],22:[function(require,module,exports){
+},{"./../../lang/assert":37,"./comparators":24}],24:[function(require,module,exports){
 const assert = require('./../../lang/assert');
 module.exports = (() => {
   'use strict';
@@ -6997,7 +7174,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./../../lang/assert":34}],23:[function(require,module,exports){
+},{"./../../lang/assert":37}],25:[function(require,module,exports){
 const Stack = require('./../Stack');
 const assert = require('./../../lang/assert'),
   Disposable = require('./../../lang/Disposable'),
@@ -7062,7 +7239,7 @@ module.exports = (() => {
   return DisposableStack;
 })();
 
-},{"./../../lang/Disposable":28,"./../../lang/assert":34,"./../../lang/is":38,"./../Stack":19}],24:[function(require,module,exports){
+},{"./../../lang/Disposable":31,"./../../lang/assert":37,"./../../lang/is":41,"./../Stack":19}],26:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -7121,7 +7298,7 @@ module.exports = (() => {
   return AdHoc;
 })();
 
-},{"./assert":34}],25:[function(require,module,exports){
+},{"./assert":37}],27:[function(require,module,exports){
 const assert = require('./assert'),
   Enum = require('./Enum'),
   is = require('./is');
@@ -7293,7 +7470,276 @@ module.exports = (() => {
   return Currency;
 })();
 
-},{"./Enum":29,"./assert":34,"./is":38}],26:[function(require,module,exports){
+},{"./Enum":32,"./assert":37,"./is":41}],28:[function(require,module,exports){
+const assert = require('./assert'),
+  array = require('./array'),
+  Currency = require('./Currency'),
+  Decimal = require('./Decimal'),
+  Rate = require('./Rate');
+const comparators = require('./../collections/sorting/comparators'),
+  ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder');
+const Edge = require('./../collections/graph/Edge'),
+  Vertex = require('./../collections/graph/Vertex'),
+  memoize = require('./memoize');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * A calculator that translates an amount of one currency into an amount
+   * in another currency. The calculator prefers to use direct conversions;
+   * however, it supports indirect conversions (which require conversions
+   * to one or more intermediate currencies before translation to the final,
+   * desired currency).
+   *
+   * @public
+   * @param {String[]} symbols - Forex symbols which will be used for translations.
+   */
+  class CurrencyTranslator {
+    constructor(symbols) {
+      assert.argumentIsArray(symbols, 'symbols', String);
+      this._translators = solve(symbols);
+      this._maps = {};
+      this._maps.rates = new Map();
+      this._maps.translation = new Map();
+      this._translators.forEach(translator => {
+        const path = translator.path;
+        path.forEach(edge => {
+          const from = edge.from.data;
+          const to = edge.to.data;
+          if (!this._maps.rates.has(from)) {
+            this._maps.rates.set(from, new Map());
+          }
+          if (!this._maps.rates.get(from).has(to)) {
+            this._maps.rates.get(from).set(to, {
+              edge: edge,
+              translators: []
+            });
+          }
+          this._maps.rates.get(from).get(to).translators.push(translator);
+        });
+      });
+      this._translators.forEach(translator => {
+        const from = translator.from;
+        const to = translator.to;
+        if (!this._maps.translation.has(from)) {
+          this._maps.translation.set(from, new Map());
+        }
+        this._maps.translation.get(from).set(to, translator);
+      });
+    }
+
+    /**
+     * Updates the calculator with new rates.
+     *
+     * @public
+     * @param {Rate[]} rates
+     */
+    setRates(rates) {
+      rates.forEach(rate => {
+        this.setRate(rate);
+      });
+    }
+
+    /**
+     * Updates the calculator with a new rate.
+     *
+     * @public
+     * @param {Rate} rate
+     */
+    setRate(rate) {
+      assert.argumentIsRequired(rate, 'rate', Rate, 'Rate');
+      updateRate.call(this, rate);
+      updateRate.call(this, rate.invert());
+    }
+
+    /**
+     * Performs a currency translation, using the rates previously supplied to
+     * the calculator.
+     *
+     * @public
+     * @param {Number|Decimal} amount
+     * @param {Currency} current
+     * @param {Currency} desired
+     * @returns {Number|Decimal}
+     */
+    translate(amount, current, desired) {
+      assert.argumentIsRequired(current, 'current', Currency, 'Currency');
+      assert.argumentIsRequired(desired, 'desired', Currency, 'Currency');
+      if (current === desired) {
+        return amount;
+      }
+      return this._maps.translation.get(current).get(desired).translate(amount);
+    }
+    toString() {
+      return `[CurrencyTranslator]`;
+    }
+  }
+  const pairExpression = /^\^?([A-Z]{3})([A-Z]{3})$/;
+  const parsePair = memoize.simple(symbol => {
+    const match = symbol.match(pairExpression);
+    if (match === null) {
+      throw new Error('The "pair" argument cannot be parsed.');
+    }
+    return {
+      quote: Currency.parse(match[1]),
+      base: Currency.parse(match[2])
+    };
+  });
+  const solve = symbols => {
+    const vertices = new Map();
+    const getVertex = (currency, create) => {
+      if (create && !vertices.has(currency)) {
+        vertices.set(currency, new Vertex(currency));
+      }
+      return vertices.get(currency) || null;
+    };
+    const graph = (currencyA, currencyB) => {
+      const vertexA = getVertex(currencyA, true);
+      const vertexB = getVertex(currencyB, true);
+      if (!vertexA.hasEdge(vertexB)) {
+        vertexA.addEdge(vertexB, {
+          rate: null
+        });
+      }
+    };
+    const currencies = new Set();
+    symbols.forEach(symbol => {
+      const pair = parsePair(symbol);
+      currencies.add(pair.quote);
+      currencies.add(pair.base);
+      graph(pair.quote, pair.base);
+      graph(pair.base, pair.quote);
+    });
+    const translators = [];
+    currencies.forEach(currencyA => {
+      currencies.forEach(currencyB => {
+        if (currencyA === currencyB) {
+          return;
+        }
+        const vertexA = getVertex(currencyA, false);
+        const vertexB = getVertex(currencyB, false);
+        const candidates = vertexA.getPaths(vertexB);
+        if (candidates.length === 0) {
+          console.warn(`Unable to find path for [ ${currencyA.code} ] to [ ${currencyB.code} ]`);
+          return;
+        }
+        candidates.sort(pathComparator);
+        translators.push(new Translator(candidates[0]));
+      });
+    });
+    return translators;
+  };
+  function updateRate(rate) {
+    const from = rate.base;
+    const to = rate.quote;
+    const data = this._maps.rates.get(from).get(to);
+    const current = data.edge.data.rate;
+    if (current !== null && current === rate.float) {
+      return;
+    }
+    data.edge.data.rate = rate.float;
+    data.translators.forEach(t => t.clear());
+  }
+
+  /**
+   * Translates values from a source currency to values in another currency.
+   *
+   * @private
+   * @param {Edge[]} path
+   */
+  class Translator {
+    constructor(path) {
+      assert.argumentIsArray(path, 'path', String);
+      this._path = path;
+      this._factors = {};
+      this._factors.float = null;
+      this._factors.decimal = null;
+    }
+
+    /**
+     * The currency of the input value.
+     *
+     * @public
+     * @returns {Currency}
+     */
+    get from() {
+      return array.first(this._path).from.data;
+    }
+
+    /**
+     * The currency of the output value.
+     *
+     * @public
+     * @returns {Currency}
+     */
+    get to() {
+      return array.last(this._path).to.data;
+    }
+
+    /**
+     * The graph edges (steps) used to convert from the source
+     * currency to the desired currency.
+     *
+     * @public
+     * @returns {Edge[]}
+     */
+    get path() {
+      return this._path.slice(0);
+    }
+
+    /**
+     * Clears the cached factor used to convert values.
+     *
+     * @public
+     */
+    clear() {
+      this._factors.float = null;
+      this._factors.decimal = null;
+    }
+
+    /**
+     * Translates an amount in the source currency to the desired currency.
+     *
+     * @public
+     * @param {Number|Decimal} amount
+     * @returns {Number|Decimal}
+     */
+    translate(amount) {
+      const ready = checkFactors.call(this);
+      if (!ready) {
+        throw new Error(`Unable to translate from [ ${this.from.code} ] to [ ${this.to.code} ], exchange rate is unknown.`);
+      }
+      if (amount instanceof Decimal) {
+        return amount.multiply(this._factors.decimal);
+      } else {
+        return amount * this._factors.float;
+      }
+    }
+    toString() {
+      return `[Translator (path=${this._path.map(edge => `${edge.from.code} > ${edge.to.code}`).join()})]`;
+    }
+  }
+  function checkFactors() {
+    if (this._factors.float !== null) {
+      return true;
+    }
+    let factor = 1;
+    for (let i = 0; i < this._path.length; i++) {
+      const edge = this._path[i];
+      if (edge.data.rate === null) {
+        return false;
+      }
+      factor = factor * edge.data.rate;
+    }
+    this._factors.float = factor;
+    this._factors.decimal = Decimal.parse(factor);
+    return true;
+  }
+  const pathComparator = ComparatorBuilder.startWith((a, b) => comparators.compareNumbers(a.length, b.length)).toComparator();
+  return CurrencyTranslator;
+})();
+
+},{"./../collections/graph/Edge":21,"./../collections/graph/Vertex":22,"./../collections/sorting/ComparatorBuilder":23,"./../collections/sorting/comparators":24,"./Currency":27,"./Decimal":30,"./Rate":34,"./array":36,"./assert":37,"./memoize":42}],29:[function(require,module,exports){
 const assert = require('./assert'),
   ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder'),
   comparators = require('./../collections/sorting/comparators'),
@@ -7815,7 +8261,7 @@ module.exports = (() => {
   return Day;
 })();
 
-},{"./../collections/sorting/ComparatorBuilder":21,"./../collections/sorting/comparators":22,"./assert":34,"./is":38}],27:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":23,"./../collections/sorting/comparators":24,"./assert":37,"./is":41}],30:[function(require,module,exports){
 const assert = require('./assert'),
   Enum = require('./Enum'),
   is = require('./is');
@@ -8135,7 +8581,7 @@ module.exports = (() => {
      * this {@link Decimal} instance.
      *
      * @public
-     * @returns {String}
+     * @returns {Number}
      */
     toNumber() {
       return this._big.toNumber();
@@ -8404,7 +8850,7 @@ module.exports = (() => {
   return Decimal;
 })();
 
-},{"./Enum":29,"./assert":34,"./is":38,"big.js":49}],28:[function(require,module,exports){
+},{"./Enum":32,"./assert":37,"./is":41,"big.js":52}],31:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -8500,7 +8946,7 @@ module.exports = (() => {
   return Disposable;
 })();
 
-},{"./assert":34}],29:[function(require,module,exports){
+},{"./assert":37}],32:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -8607,7 +9053,7 @@ module.exports = (() => {
   return Enum;
 })();
 
-},{"./assert":34}],30:[function(require,module,exports){
+},{"./assert":37}],33:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 const Decimal = require('./Decimal'),
@@ -8696,8 +9142,9 @@ module.exports = (() => {
   return Money;
 })();
 
-},{"./Currency":25,"./Decimal":27,"./assert":34,"./is":38}],31:[function(require,module,exports){
+},{"./Currency":27,"./Decimal":30,"./assert":37,"./is":41}],34:[function(require,module,exports){
 const assert = require('./assert'),
+  is = require('./is'),
   memoize = require('./memoize');
 const Currency = require('./Currency'),
   Decimal = require('./Decimal');
@@ -8721,23 +9168,47 @@ module.exports = (() => {
       if (numerator === denominator) {
         throw new Error('A rate cannot use two identical currencies.');
       }
-      const decimal = getDecimal(value);
-      if (!decimal.getIsPositive()) {
+      if (is.number(value)) {
+        this._decimal = null;
+        this._float = value;
+      } else if (value instanceof Decimal) {
+        this._decimal = value;
+        this._float = null;
+      } else {
+        this._decimal = new Decimal(value);
+        this._float = null;
+      }
+      if (this._float !== null && !(this._float > 0) || this._decimal !== null && !this._decimal.getIsPositive()) {
         throw new Error('Rate value must be positive.');
       }
-      this._decimal = decimal;
       this._numerator = numerator;
       this._denominator = denominator;
     }
 
     /**
-     * The rate.
+     * The rate (as a {@link Decimal} instance.
      *
      * @public
      * @returns {Decimal}
      */
     get decimal() {
+      if (this._decimal === null) {
+        this._decimal = new Decimal(this.float);
+      }
       return this._decimal;
+    }
+
+    /**
+     * The rate (as a floating point number).
+     *
+     * @public
+     * @returns {Number}
+     */
+    get float() {
+      if (this._float === null) {
+        this._float = this._decimal.toNumber();
+      }
+      return this._float;
     }
 
     /**
@@ -8792,7 +9263,13 @@ module.exports = (() => {
      * @returns {Rate}
      */
     invert() {
-      return new Rate(Decimal.ONE.divide(this._decimal), this._denominator, this._numerator);
+      let inverted;
+      if (this._decimal === null) {
+        inverted = 1 / this._float;
+      } else {
+        inverted = Decimal.ONE.divide(this.decimal);
+      }
+      return new Rate(inverted, this._denominator, this._numerator);
     }
 
     /**
@@ -8808,13 +9285,13 @@ module.exports = (() => {
     }
 
     /**
-     * An array of constant exchange rates.
+     * Returns the Barchart symbol for the exchange rate.
      *
-     * @static
-     * @returns {Rate[]}
+     * @public
+     * @return {string}
      */
-    static get CONSTANTS() {
-      return [Rate.fromPair(0.01, '^GBXGBP')];
+    getSymbol() {
+      return `^${this.denominator.code}${this.numerator.code}`;
     }
 
     /**
@@ -8848,59 +9325,35 @@ module.exports = (() => {
       assert.argumentIsRequired(amount, 'amount', Decimal, 'Decimal');
       assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
       assert.argumentIsRequired(desiredCurrency, 'desiredCurrency', Currency, 'Currency');
-      //assert.argumentIsArray(rates, 'rates', Rate, 'Rate');
-
-      let converted;
       if (currency === desiredCurrency) {
-        converted = amount;
-      } else {
-        const numerator = desiredCurrency;
-        const denominator = currency;
-        const staticRates = [];
-        Rate.CONSTANTS.forEach(staticRate => {
-          staticRates.push(staticRate);
-          const staticRateInverted = staticRate.invert();
-          rates.forEach(rate => {
-            [staticRate, staticRateInverted].forEach(r => {
-              let indirect;
-              if (rate.numerator === r.denominator) {
-                indirect = new Rate(rate.decimal.multiply(r.decimal), r.numerator, rate.denominator);
-              } else if (rate.denominator === r.denominator) {
-                indirect = new Rate(rate.decimal.divide(r.decimal), rate.numerator, r.numerator);
-              } else {
-                indirect = null;
-              }
-              if (indirect !== null) {
-                staticRates.push(indirect);
-              }
-            });
-          });
-        });
-        let rate = rates.concat(staticRates).find(r => r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator);
-        if (rate) {
-          if (rate.numerator === denominator) {
-            rate = rate.invert();
-          }
-        }
-        if (!rate) {
-          throw new Error('Unable to perform conversion, given the rates provided.');
-        }
-        converted = amount.multiply(rate.decimal);
+        return amount;
       }
-      return converted;
+      if (currency === Currency.GBX) {
+        const gbp = convert(amount, Currency.GBX, Currency.GBP, [GBPGBX]);
+        return convert(gbp, Currency.GBP, desiredCurrency, rates);
+      }
+      if (desiredCurrency === Currency.GBX) {
+        const gbp = convert(amount, currency, Currency.GBP, [GBXGBP, ...rates]);
+        return convert(gbp, Currency.GBP, Currency.GBX, [GBXGBP]);
+      }
+      return convert(amount, currency, desiredCurrency, rates);
+    }
+
+    /**
+     * Returns a list of rates which do no change.
+     *
+     * @public
+     * @static
+     * @returns {Rate[]}
+     */
+    static getStaticRates() {
+      return [new Rate(GBXGBP.float, GBXGBP.numerator, GBXGBP.denominator)];
     }
     toString() {
       return `[Rate]`;
     }
   }
   const pairExpression = /^\^?([A-Z]{3})([A-Z]{3})$/;
-  function getDecimal(value) {
-    if (value instanceof Decimal) {
-      return value;
-    } else {
-      return new Decimal(value);
-    }
-  }
   const parsePair = memoize.simple(symbol => {
     const match = symbol.match(pairExpression);
     if (match === null) {
@@ -8911,10 +9364,27 @@ module.exports = (() => {
       denominator: match[1]
     };
   });
+  function convert(amount, currency, desiredCurrency, rates) {
+    if (currency === desiredCurrency) {
+      return amount;
+    }
+    const numerator = desiredCurrency;
+    const denominator = currency;
+    let rate = rates.find(r => r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator);
+    if (rate && rate.numerator === denominator) {
+      rate = rate.invert();
+    }
+    if (!rate) {
+      throw new Error('Unable to perform conversion, given the rates provided.');
+    }
+    return amount.multiply(rate.decimal);
+  }
+  const GBPGBX = Rate.fromPair(100, '^GBPGBX');
+  const GBXGBP = Rate.fromPair(0.01, '^GBXGBP');
   return Rate;
 })();
 
-},{"./Currency":25,"./Decimal":27,"./assert":34,"./memoize":39}],32:[function(require,module,exports){
+},{"./Currency":27,"./Decimal":30,"./assert":37,"./is":41,"./memoize":42}],35:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 const moment = require('moment-timezone');
@@ -9092,7 +9562,7 @@ module.exports = (() => {
   return Timestamp;
 })();
 
-},{"./assert":34,"./is":38,"moment-timezone":51}],33:[function(require,module,exports){
+},{"./assert":37,"./is":41,"moment-timezone":54}],36:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -9541,7 +10011,7 @@ module.exports = (() => {
   }
 })();
 
-},{"./assert":34,"./is":38}],34:[function(require,module,exports){
+},{"./assert":37,"./is":41}],37:[function(require,module,exports){
 const is = require('./is');
 module.exports = (() => {
   'use strict';
@@ -9669,7 +10139,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./is":38}],35:[function(require,module,exports){
+},{"./is":41}],38:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -9810,7 +10280,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":34,"./is":38}],36:[function(require,module,exports){
+},{"./assert":37,"./is":41}],39:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -9859,7 +10329,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],37:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -9898,7 +10368,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -10100,7 +10570,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -10118,7 +10588,7 @@ module.exports = (() => {
      *
      * @static
      * @public
-     * @param {Function} fn - The function to memoize. This function should accept one parameters whose "toString" function outputs a unique value.
+     * @param {Function} fn - The function to memoize. This function should accept one parameter whose "toString" function outputs a unique value.
      */
     simple(fn) {
       const cache = {};
@@ -10158,7 +10628,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":34}],40:[function(require,module,exports){
+},{"./assert":37}],43:[function(require,module,exports){
 const assert = require('./../lang/assert'),
   Disposable = require('./../lang/Disposable');
 module.exports = (() => {
@@ -10272,7 +10742,7 @@ module.exports = (() => {
   return Event;
 })();
 
-},{"./../lang/Disposable":28,"./../lang/assert":34}],41:[function(require,module,exports){
+},{"./../lang/Disposable":31,"./../lang/assert":37}],44:[function(require,module,exports){
 const Currency = require('./../../lang/Currency'),
   Money = require('./../../lang/Money');
 const DataType = require('./DataType'),
@@ -10339,7 +10809,7 @@ module.exports = (() => {
   return Component;
 })();
 
-},{"./../../lang/Currency":25,"./../../lang/Money":30,"./DataType":42,"./Field":43}],42:[function(require,module,exports){
+},{"./../../lang/Currency":27,"./../../lang/Money":33,"./DataType":45,"./Field":46}],45:[function(require,module,exports){
 const moment = require('moment');
 const AdHoc = require('./../../lang/AdHoc'),
   assert = require('./../../lang/assert'),
@@ -10623,7 +11093,7 @@ module.exports = (() => {
   return DataType;
 })();
 
-},{"./../../lang/AdHoc":24,"./../../lang/Day":26,"./../../lang/Decimal":27,"./../../lang/Enum":29,"./../../lang/Timestamp":32,"./../../lang/assert":34,"./../../lang/is":38,"moment":53}],43:[function(require,module,exports){
+},{"./../../lang/AdHoc":26,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":35,"./../../lang/assert":37,"./../../lang/is":41,"moment":56}],46:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   is = require('./../../lang/is');
 const DataType = require('./DataType');
@@ -10697,7 +11167,7 @@ module.exports = (() => {
   return Field;
 })();
 
-},{"./../../lang/assert":34,"./../../lang/is":38,"./DataType":42}],44:[function(require,module,exports){
+},{"./../../lang/assert":37,"./../../lang/is":41,"./DataType":45}],47:[function(require,module,exports){
 const attributes = require('./../../lang/attributes'),
   functions = require('./../../lang/functions'),
   is = require('./../../lang/is');
@@ -10981,7 +11451,7 @@ module.exports = (() => {
   return Schema;
 })();
 
-},{"./../../collections/LinkedList":18,"./../../collections/Tree":20,"./../../lang/attributes":35,"./../../lang/functions":37,"./../../lang/is":38,"./Component":41,"./Field":43}],45:[function(require,module,exports){
+},{"./../../collections/LinkedList":18,"./../../collections/Tree":20,"./../../lang/attributes":38,"./../../lang/functions":40,"./../../lang/is":41,"./Component":44,"./Field":46}],48:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const Component = require('./../Component'),
   DataType = require('./../DataType'),
@@ -11046,7 +11516,7 @@ module.exports = (() => {
   return ComponentBuilder;
 })();
 
-},{"./../../../lang/assert":34,"./../Component":41,"./../DataType":42,"./../Field":43}],46:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../Component":44,"./../DataType":45,"./../Field":46}],49:[function(require,module,exports){
 const assert = require('./../../../lang/assert'),
   is = require('./../../../lang/is');
 const Component = require('./../Component'),
@@ -11162,7 +11632,7 @@ module.exports = (() => {
   return SchemaBuilder;
 })();
 
-},{"./../../../lang/assert":34,"./../../../lang/is":38,"./../Component":41,"./../DataType":42,"./../Field":43,"./../Schema":44,"./ComponentBuilder":45}],47:[function(require,module,exports){
+},{"./../../../lang/assert":37,"./../../../lang/is":41,"./../Component":44,"./../DataType":45,"./../Field":46,"./../Schema":47,"./ComponentBuilder":48}],50:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
   Decimal = require('@barchart/common-js/lang/Decimal'),
   is = require('@barchart/common-js/lang/is');
@@ -11433,7 +11903,7 @@ module.exports = (() => {
   return UnitCode;
 })();
 
-},{"@barchart/common-js/lang/Decimal":27,"@barchart/common-js/lang/Enum":29,"@barchart/common-js/lang/assert":34,"@barchart/common-js/lang/is":38}],48:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41}],51:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is');
 module.exports = (() => {
   'use strict';
@@ -11506,7 +11976,7 @@ module.exports = (() => {
   return formatFraction;
 })();
 
-},{"@barchart/common-js/lang/is":38}],49:[function(require,module,exports){
+},{"@barchart/common-js/lang/is":41}],52:[function(require,module,exports){
 /*
  *  big.js v6.2.2
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -12551,7 +13021,7 @@ module.exports = (() => {
   }
 })(this);
 
-},{}],50:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports={
 	"version": "2024b",
 	"zones": [
@@ -13404,11 +13874,11 @@ module.exports={
 		"ZW|Africa/Maputo Africa/Harare"
 	]
 }
-},{}],51:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":50,"./moment-timezone":52}],52:[function(require,module,exports){
+},{"./data/packed/latest.json":53,"./moment-timezone":55}],55:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.46
 //! Copyright (c) JS Foundation and other contributors
@@ -14139,7 +14609,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":53}],53:[function(require,module,exports){
+},{"moment":56}],56:[function(require,module,exports){
 //! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -19829,11 +20299,29 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],54:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
+});
+Object.defineProperty(exports, "NIL", {
+  enumerable: true,
+  get: function () {
+    return _nil.default;
+  }
+});
+Object.defineProperty(exports, "parse", {
+  enumerable: true,
+  get: function () {
+    return _parse.default;
+  }
+});
+Object.defineProperty(exports, "stringify", {
+  enumerable: true,
+  get: function () {
+    return _stringify.default;
+  }
 });
 Object.defineProperty(exports, "v1", {
   enumerable: true,
@@ -19859,34 +20347,16 @@ Object.defineProperty(exports, "v5", {
     return _v4.default;
   }
 });
-Object.defineProperty(exports, "NIL", {
-  enumerable: true,
-  get: function () {
-    return _nil.default;
-  }
-});
-Object.defineProperty(exports, "version", {
-  enumerable: true,
-  get: function () {
-    return _version.default;
-  }
-});
 Object.defineProperty(exports, "validate", {
   enumerable: true,
   get: function () {
     return _validate.default;
   }
 });
-Object.defineProperty(exports, "stringify", {
+Object.defineProperty(exports, "version", {
   enumerable: true,
   get: function () {
-    return _stringify.default;
-  }
-});
-Object.defineProperty(exports, "parse", {
-  enumerable: true,
-  get: function () {
-    return _parse.default;
+    return _version.default;
   }
 });
 
@@ -19909,7 +20379,7 @@ var _stringify = _interopRequireDefault(require("./stringify.js"));
 var _parse = _interopRequireDefault(require("./parse.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./nil.js":56,"./parse.js":57,"./stringify.js":61,"./v1.js":62,"./v3.js":63,"./v4.js":65,"./v5.js":66,"./validate.js":67,"./version.js":68}],55:[function(require,module,exports){
+},{"./nil.js":60,"./parse.js":61,"./stringify.js":65,"./v1.js":66,"./v3.js":67,"./v4.js":69,"./v5.js":70,"./validate.js":71,"./version.js":72}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20133,7 +20603,19 @@ function md5ii(a, b, c, d, x, s, t) {
 
 var _default = md5;
 exports.default = _default;
-},{}],56:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+const randomUUID = typeof crypto !== 'undefined' && crypto.randomUUID && crypto.randomUUID.bind(crypto);
+var _default = {
+  randomUUID
+};
+exports.default = _default;
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20142,7 +20624,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = '00000000-0000-0000-0000-000000000000';
 exports.default = _default;
-},{}],57:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20188,7 +20670,7 @@ function parse(uuid) {
 
 var _default = parse;
 exports.default = _default;
-},{"./validate.js":67}],58:[function(require,module,exports){
+},{"./validate.js":71}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20197,7 +20679,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
 exports.default = _default;
-},{}],59:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20213,9 +20695,8 @@ const rnds8 = new Uint8Array(16);
 function rng() {
   // lazy load so that environments that need to polyfill have a chance to do so
   if (!getRandomValues) {
-    // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation. Also,
-    // find the complete implementation of crypto (msCrypto) on IE11.
-    getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto) || typeof msCrypto !== 'undefined' && typeof msCrypto.getRandomValues === 'function' && msCrypto.getRandomValues.bind(msCrypto);
+    // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
+    getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto);
 
     if (!getRandomValues) {
       throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
@@ -20224,7 +20705,7 @@ function rng() {
 
   return getRandomValues(rnds8);
 }
-},{}],60:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20329,13 +20810,14 @@ function sha1(bytes) {
 
 var _default = sha1;
 exports.default = _default;
-},{}],61:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+exports.unsafeStringify = unsafeStringify;
 
 var _validate = _interopRequireDefault(require("./validate.js"));
 
@@ -20348,13 +20830,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const byteToHex = [];
 
 for (let i = 0; i < 256; ++i) {
-  byteToHex.push((i + 0x100).toString(16).substr(1));
+  byteToHex.push((i + 0x100).toString(16).slice(1));
+}
+
+function unsafeStringify(arr, offset = 0) {
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
 }
 
 function stringify(arr, offset = 0) {
-  // Note: Be careful editing this code!  It's been tuned for performance
-  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  const uuid = unsafeStringify(arr, offset); // Consistency check for valid UUID.  If this throws, it's likely due to one
   // of the following:
   // - One or more input array values don't map to a hex octet (leading to
   // "undefined" in the uuid)
@@ -20369,7 +20855,7 @@ function stringify(arr, offset = 0) {
 
 var _default = stringify;
 exports.default = _default;
-},{"./validate.js":67}],62:[function(require,module,exports){
+},{"./validate.js":71}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20379,7 +20865,7 @@ exports.default = void 0;
 
 var _rng = _interopRequireDefault(require("./rng.js"));
 
-var _stringify = _interopRequireDefault(require("./stringify.js"));
+var _stringify = require("./stringify.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20472,12 +20958,12 @@ function v1(options, buf, offset) {
     b[i + n] = node[n];
   }
 
-  return buf || (0, _stringify.default)(b);
+  return buf || (0, _stringify.unsafeStringify)(b);
 }
 
 var _default = v1;
 exports.default = _default;
-},{"./rng.js":59,"./stringify.js":61}],63:[function(require,module,exports){
+},{"./rng.js":63,"./stringify.js":65}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20494,16 +20980,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v3 = (0, _v.default)('v3', 0x30, _md.default);
 var _default = v3;
 exports.default = _default;
-},{"./md5.js":55,"./v35.js":64}],64:[function(require,module,exports){
+},{"./md5.js":58,"./v35.js":68}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = _default;
 exports.URL = exports.DNS = void 0;
+exports.default = v35;
 
-var _stringify = _interopRequireDefault(require("./stringify.js"));
+var _stringify = require("./stringify.js");
 
 var _parse = _interopRequireDefault(require("./parse.js"));
 
@@ -20526,8 +21012,10 @@ exports.DNS = DNS;
 const URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
 exports.URL = URL;
 
-function _default(name, version, hashfunc) {
+function v35(name, version, hashfunc) {
   function generateUUID(value, namespace, buf, offset) {
+    var _namespace;
+
     if (typeof value === 'string') {
       value = stringToBytes(value);
     }
@@ -20536,7 +21024,7 @@ function _default(name, version, hashfunc) {
       namespace = (0, _parse.default)(namespace);
     }
 
-    if (namespace.length !== 16) {
+    if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
       throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
     } // Compute hash of namespace and value, Per 4.3
     // Future: Use spread syntax when supported on all platforms, e.g. `bytes =
@@ -20560,7 +21048,7 @@ function _default(name, version, hashfunc) {
       return buf;
     }
 
-    return (0, _stringify.default)(bytes);
+    return (0, _stringify.unsafeStringify)(bytes);
   } // Function#name is not settable on some platforms (#270)
 
 
@@ -20573,7 +21061,7 @@ function _default(name, version, hashfunc) {
   generateUUID.URL = URL;
   return generateUUID;
 }
-},{"./parse.js":57,"./stringify.js":61}],65:[function(require,module,exports){
+},{"./parse.js":61,"./stringify.js":65}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20581,13 +21069,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _native = _interopRequireDefault(require("./native.js"));
+
 var _rng = _interopRequireDefault(require("./rng.js"));
 
-var _stringify = _interopRequireDefault(require("./stringify.js"));
+var _stringify = require("./stringify.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function v4(options, buf, offset) {
+  if (_native.default.randomUUID && !buf && !options) {
+    return _native.default.randomUUID();
+  }
+
   options = options || {};
 
   const rnds = options.random || (options.rng || _rng.default)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
@@ -20606,12 +21100,12 @@ function v4(options, buf, offset) {
     return buf;
   }
 
-  return (0, _stringify.default)(rnds);
+  return (0, _stringify.unsafeStringify)(rnds);
 }
 
 var _default = v4;
 exports.default = _default;
-},{"./rng.js":59,"./stringify.js":61}],66:[function(require,module,exports){
+},{"./native.js":59,"./rng.js":63,"./stringify.js":65}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20628,7 +21122,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v5 = (0, _v.default)('v5', 0x50, _sha.default);
 var _default = v5;
 exports.default = _default;
-},{"./sha1.js":60,"./v35.js":64}],67:[function(require,module,exports){
+},{"./sha1.js":64,"./v35.js":68}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20646,7 +21140,7 @@ function validate(uuid) {
 
 var _default = validate;
 exports.default = _default;
-},{"./regex.js":58}],68:[function(require,module,exports){
+},{"./regex.js":62}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20663,12 +21157,12 @@ function version(uuid) {
     throw TypeError('Invalid UUID');
   }
 
-  return parseInt(uuid.substr(14, 1), 16);
+  return parseInt(uuid.slice(14, 15), 16);
 }
 
 var _default = version;
 exports.default = _default;
-},{"./validate.js":67}],69:[function(require,module,exports){
+},{"./validate.js":71}],73:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -20811,7 +21305,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(AveragePriceCalculator.calculate(instrument, -800000, 2).toFloat()).toEqual(400000);
 	});
 });
-},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],70:[function(require,module,exports){
+},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":30}],74:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -21066,7 +21560,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(ValuationCalculator.calculate(instrument, null, 4)).toBe(null);
 	});
 });
-},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":27}],71:[function(require,module,exports){
+},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":30}],75:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -21715,7 +22209,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}],72:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30}],76:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day');
 
 const TransactionType = require('./../../../lib/data/TransactionType'),
@@ -21810,7 +22304,7 @@ describe('When requesting all the user-initiated transaction types', () => {
 		expect(userInitiated.length).toEqual(9);
 	});
 });
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":26}],73:[function(require,module,exports){
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":29}],77:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -21997,7 +22491,7 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/processing/PositionContainer":10,"./../../../lib/processing/definitions/PositionLevelDefinition":13,"./../../../lib/processing/definitions/PositionLevelType":14,"./../../../lib/processing/definitions/PositionTreeDefinition":15,"@barchart/common-js/lang/Currency":25,"@barchart/common-js/lang/Decimal":27}],74:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/processing/PositionContainer":10,"./../../../lib/processing/definitions/PositionLevelDefinition":13,"./../../../lib/processing/definitions/PositionLevelType":14,"./../../../lib/processing/definitions/PositionTreeDefinition":15,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Decimal":30}],78:[function(require,module,exports){
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -22063,7 +22557,7 @@ describe('When positions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/serialization/PositionSchema":16}],75:[function(require,module,exports){
+},{"./../../../lib/serialization/PositionSchema":16}],79:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -22130,4 +22624,4 @@ describe('When transactions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/serialization/TransactionSchema":17,"@barchart/common-js/lang/Day":26,"@barchart/common-js/lang/Decimal":27}]},{},[69,70,71,72,73,74,75]);
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/serialization/TransactionSchema":17,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30}]},{},[73,74,75,76,77,78,79]);
