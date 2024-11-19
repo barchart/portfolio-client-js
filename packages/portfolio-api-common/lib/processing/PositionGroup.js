@@ -49,6 +49,8 @@ module.exports = (() => {
 			this._currencyTranslator = currencyTranslator;
 			this._bypassCurrencyTranslation = false;
 
+			this._useBarchartPriceFormattingRules = false;
+
 			this._key = key;
 			this._description = description;
 
@@ -512,6 +514,37 @@ module.exports = (() => {
 			return this._groupExcludedChangeEvent.register(handler);
 		}
 
+		/**
+		 * Changes rules for price formatting.
+		 *
+		 * @public
+		 * @param {boolean} value
+		 */
+		setBarchartPriceFormattingRules(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._useBarchartPriceFormattingRules !== value) {
+				this._useBarchartPriceFormattingRules = value;
+
+				if (this._single && this._dataActual.currentPrice) {
+					const item = this._items[0];
+
+					const instrument = item.position.instrument;
+					const currency = instrument.currency;
+
+					this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument, this._useBarchartPriceFormattingRules);
+
+					this._dataFormat.quoteLast = formatFraction(this._dataActual.quoteLast, currency, instrument, this._useBarchartPriceFormattingRules);
+					this._dataFormat.quoteOpen = formatFraction(this._dataActual.quoteOpen, currency, instrument, this._useBarchartPriceFormattingRules);
+					this._dataFormat.quoteHigh = formatFraction(this._dataActual.quoteHigh, currency, instrument, this._useBarchartPriceFormattingRules);
+					this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
+
+					this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
+
+				}
+			}
+		}
+
 		toString() {
 			return '[PositionGroup]';
 		}
@@ -522,27 +555,28 @@ module.exports = (() => {
 			if (this._single) {
 				const instrument = sender.position.instrument;
 				const currency = instrument.currency;
-				const precision = currency.precision;
 
-				this._dataActual.currentPrice = quote.lastPrice;
-				this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument);
+				this._dataActual.currentPrice = is.number(quote.lastPrice) ? quote.lastPrice : null;
+				this._dataActual.quoteLast = is.number(quote.previousPrice) ? quote.previousPrice : null;
+				this._dataActual.quoteOpen = is.number(quote.openPrice) ? quote.openPrice : null;
+				this._dataActual.quoteHigh = is.number(quote.highPrice) ? quote.highPrice : null;
+				this._dataActual.quoteLow = is.number(quote.lowPrice) ? quote.lowPrice : null;
 
-				this._dataActual.quoteLast = quote.previousPrice;
-				this._dataActual.quoteOpen = quote.openPrice;
-				this._dataActual.quoteHigh = quote.highPrice;
-				this._dataActual.quoteLow = quote.lowPrice;
-				this._dataActual.quoteChange = quote.priceChange;
-				this._dataActual.quoteChangePercent = quote.percentChange;
-				this._dataActual.quoteTime = quote.timeDisplay;
-				this._dataActual.quoteVolume = quote.volume;
+				this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteLast = formatFraction(this._dataActual.quoteLast, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteOpen = formatFraction(this._dataActual.quoteOpen, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteHigh = formatFraction(this._dataActual.quoteHigh, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
 
-				this._dataFormat.quoteLast = formatNumber(this._dataActual.quoteLast , precision);
-				this._dataFormat.quoteOpen = formatNumber(this._dataActual.quoteOpen, precision);
-				this._dataFormat.quoteHigh = formatNumber(this._dataActual.quoteHigh, precision);
-				this._dataFormat.quoteLow = formatNumber(this._dataActual.quoteLow, precision);
-				this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument);
+				this._dataActual.quoteChange = is.number(quote.priceChange) ? quote.priceChange : null;
+				this._dataActual.quoteChangePercent = is.number(quote.percentChange) ? quote.percentChange : null;
 
+				this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
 				this._dataFormat.quoteChangePercent = formatPercent(new Decimal(this._dataActual.quoteChangePercent || 0), 2);
+
+				this._dataActual.quoteTime = quote.timeDisplay;
+				this._dataActual.quoteVolume = is.number(quote.volume) ? quote.volume : null;
+
 				this._dataFormat.quoteTime = this._dataActual.quoteTime;
 				this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
 
@@ -699,8 +733,10 @@ module.exports = (() => {
 		return `${prefix}${formatDecimal(decimal.multiply(100), precision)}%`;
 	}
 
-	function formatFraction(value, currency, instrument) {
+	function formatFraction(value, currency, instrument, useBarchartPriceFormattingRules) {
 		let decimal = value instanceof Decimal;
+
+		let precision = currency.precision;
 
 		if (instrument && value !== null) {
 			const type = instrument.type;
@@ -711,12 +747,16 @@ module.exports = (() => {
 
 				return fractionFormatter(rounded, code.fractionFactor, code.fractionDigits, '-', true);
 			}
+
+			if (code && useBarchartPriceFormattingRules) {
+				precision = code.decimalDigits;
+			}
 		}
 
 		if (decimal) {
-			return formatDecimal(value, currency.precision);
+			return formatDecimal(value, precision);
 		} else {
-			return formatNumber(value, currency.precision);
+			return formatNumber(value, precision);
 		}
 	}
 
@@ -746,9 +786,9 @@ module.exports = (() => {
 				translated = translated.multiply(0.01);
 			}
 		}
+
 		return formatFraction(translated, desired, instrument);
 	}
-
 
 	function calculateStaticData(group, definition) {
 		const actual = group._dataActual;

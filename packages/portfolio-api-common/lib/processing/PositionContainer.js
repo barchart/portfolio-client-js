@@ -81,6 +81,7 @@ module.exports = (() => {
 			this._groupBindings = { };
 
 			this._reporting = reportFrame instanceof PositionSummaryFrame;
+			this._useBarchartPriceFormattingRules = false;
 
 			this._positionSymbolAddedEvent = new Event(this);
 			this._positionSymbolRemovedEvent = new Event(this);
@@ -813,6 +814,24 @@ module.exports = (() => {
 			return this._positionSymbolRemovedEvent.register(handler);
 		}
 
+		/**
+		 * Changes rules for price formatting.
+		 *
+		 * @public
+		 * @param {boolean} value
+		 */
+		setBarchartPriceFormattingRules(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._useBarchartPriceFormattingRules !== value) {
+				this._useBarchartPriceFormattingRules = value;
+
+				Object.keys(this._trees).forEach((key) => {
+					this._trees[key].walk(group => group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules));
+				});
+			}
+		}
+
 		toString() {
 			return '[PositionContainer]';
 		}
@@ -849,14 +868,6 @@ module.exports = (() => {
 	function extractSymbolForDisplay(position) {
 		if (position.instrument && position.instrument.symbol && position.instrument.symbol.display) {
 			return position.instrument.symbol.display;
-		} else {
-			return null;
-		}
-	}
-
-	function extractCurrency(position) {
-		if (position.instrument && position.instrument.currency) {
-			return position.instrument.currency;
 		} else {
 			return null;
 		}
@@ -934,7 +945,11 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			list.push(new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash));
+			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash);
+
+			group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
+
+			list.push(group);
 
 			return list;
 		}, [ ]);
@@ -947,7 +962,11 @@ module.exports = (() => {
 			});
 
 		const empty = missingGroups.map((group) => {
-			return new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
+			const eg = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
+
+			eg.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
+
+			return eg;
 		});
 
 		const compositeGroups = populatedGroups.concat(empty);
