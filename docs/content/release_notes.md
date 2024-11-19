@@ -1,5 +1,19 @@
 # Release Notes
 
+## 6.0.0
+**Breaking Changes**
+
+* Updated [`@barchart/portfolio-api-common`]https://github.com/barchart/portfolio-api-common) to the next major version.
+
+**Technical Enhancements**
+
+* Updated AWS CodeBuild to use Node.js version 20.
+
+## 5.11.1
+**Technical Enhancements**
+
+* Updated the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library, taking changes to the `PositionSchema` enumeration.
+
 ## 5.11.0
 **New Features**
 

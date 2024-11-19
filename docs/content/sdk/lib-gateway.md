@@ -17,13 +17,14 @@
         * [.updatePosition(position)](#PortfolioGatewayupdatePosition) ⇒ [<code>Promise.&lt;Schema.Position&gt;</code>](/content/sdk/lib-data?id=schemaposition)
         * [.deletePosition(portfolio, position)](#PortfolioGatewaydeletePosition) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Position&gt;&gt;</code>](/content/sdk/lib-data?id=schemaposition)
         * [.readPositions([portfolio], [position], [includePreviousPrice])](#PortfolioGatewayreadPositions) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Position&gt;&gt;</code>](/content/sdk/lib-data?id=schemaposition)
-        * [.createTransaction(transaction, options)](#PortfolioGatewaycreateTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
+        * [.createTransaction(transaction, [options])](#PortfolioGatewaycreateTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
         * [.editTransaction(transaction)](#PortfolioGatewayeditTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
         * [.deleteTransaction(portfolio, position, sequence, [force], [echoStart], [echoEnd])](#PortfolioGatewaydeleteTransaction) ⇒ [<code>Promise.&lt;Schema.TransactionMutateResult&gt;</code>](/content/sdk/lib-data?id=schematransactionmutateresult)
         * [.readTransactions(portfolio, [position], [sequence])](#PortfolioGatewayreadTransactions) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Transaction&gt;&gt;</code>](/content/sdk/lib-data?id=schematransaction)
         * [.readValuations(portfolio, [position])](#PortfolioGatewayreadValuations) ⇒ [<code>Promise.&lt;Schema.ValuationContainer&gt;</code>](/content/sdk/lib-data?id=schemavaluationcontainer)
         * [.checkValuations(portfolio)](#PortfolioGatewaycheckValuations) ⇒ <code>Promise.&lt;Schema.ValuationsAvailabilityResult&gt;</code>
         * [.readVersion()](#PortfolioGatewayreadVersion) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.registerAuthorizationObserver(authorizationObserver)](#PortfolioGatewayregisterAuthorizationObserver) ⇒ <code>Disposable</code>
     * _static_
         * [.forTest(jwtProvider, [product])](#PortfolioGatewayforTest) ⇒ [<code>Promise.&lt;PortfolioGateway&gt;</code>](#PortfolioGateway)
         * [.forDemo(jwtProvider, [product])](#PortfolioGatewayforDemo) ⇒ [<code>Promise.&lt;PortfolioGateway&gt;</code>](#PortfolioGateway)
@@ -163,7 +164,7 @@
 
 * * *
 
-### portfolioGateway.createTransaction(transaction, options) :id=portfoliogatewaycreatetransaction
+### portfolioGateway.createTransaction(transaction, [options]) :id=portfoliogatewaycreatetransaction
 > Creates a new transaction.
 
 **Kind**: instance method of [<code>PortfolioGateway</code>](#PortfolioGateway)  
@@ -173,7 +174,7 @@
 | Param | Type |
 | --- | --- |
 | transaction | [<code>Schema.TransactionCreate</code>](/content/sdk/lib-data?id=schematransactioncreate) | 
-| options | <code>Object</code> | 
+| [options] | <code>Object</code> | 
 
 
 * * *
@@ -263,6 +264,20 @@
 **Kind**: instance method of [<code>PortfolioGateway</code>](#PortfolioGateway)  
 **Returns**: <code>Promise.&lt;Object&gt;</code>  
 **Access**: public  
+
+* * *
+
+### portfolioGateway.registerAuthorizationObserver(authorizationObserver) :id=portfoliogatewayregisterauthorizationobserver
+> Registers a callback which will be notified when an authorization event occurs.
+
+**Kind**: instance method of [<code>PortfolioGateway</code>](#PortfolioGateway)  
+**Returns**: <code>Disposable</code>  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| authorizationObserver | <code>function</code> | 
+
 
 * * *
 
