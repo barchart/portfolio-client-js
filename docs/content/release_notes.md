@@ -3,7 +3,7 @@
 ## 6.0.0
 **Breaking Changes**
 
-* Updated [`@barchart/portfolio-api-common`]https://github.com/barchart/portfolio-api-common) to the next major version.
+* Updated [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) to the next major version.
 
 **Technical Enhancements**
 
