@@ -35,6 +35,8 @@ module.exports = (() => {
 		Currency.EUR,
 		Currency.HKD,
 		Currency.JPY,
+		Currency.NOK,
+		Currency.SEK,
 		Currency.USD
 	];
 
