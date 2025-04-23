@@ -2597,9 +2597,21 @@ module.exports = (() => {
 			assert.argumentIsRequired(position, 'position', Object);
 			assert.argumentIsRequired(position.position, 'position.position', String);
 
-			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
+			const positionItemToRemove = this._items.find(item => item.position.position === position.position);
+			const positionToRemove = positionItemToRemove ? positionItemToRemove.position || null : null;
+
+			removePositionItem.call(this, positionItemToRemove);
 
 			recalculatePercentages.call(this);
+
+			if (positionToRemove) {
+				const existingBarchartSymbols = this.getPositionSymbols(false, false);
+				const removedBarchartSymbol = extractSymbolForBarchart(positionToRemove);
+
+				if (removedBarchartSymbol !== null && !existingBarchartSymbols.some(existingBarchartSymbol => existingBarchartSymbol === removedBarchartSymbol)) {
+					this._positionSymbolRemovedEvent.fire(removedBarchartSymbol);
+				}
+			}
 		}
 
 		/**
