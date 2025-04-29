@@ -2728,10 +2728,12 @@ module.exports = (() => {
 		 * @public
 		 * @param {Object[]} positionQuotes
 		 * @param {Object[]} forexQuotes
+		 * @param {Boolean=} force
 		 */
-		setQuotes(positionQuotes, forexQuotes) {
+		setQuotes(positionQuotes, forexQuotes, force) {
 			assert.argumentIsArray(positionQuotes, 'positionQuotes');
 			assert.argumentIsArray(forexQuotes, 'forexQuotes');
+			assert.argumentIsOptional(force, 'force', Boolean);
 
 			if (forexQuotes.length !== 0) {
 				forexQuotes.forEach((quote) => {
@@ -2755,7 +2757,7 @@ module.exports = (() => {
 
 					if (symbol) {
 						if (this._symbols.hasOwnProperty(symbol)) {
-							this._symbols[ symbol ].forEach(item => item.setQuote(quote));
+							this._symbols[ symbol ].forEach(item => item.setQuote(quote, force || false));
 						}
 					}
 				});
@@ -4737,15 +4739,17 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} quote
+		 * @param {Boolean=} force
 		 */
-		setQuote(quote) {
+		setQuote(quote, force) {
 			assert.argumentIsRequired(quote, 'quote', Object);
+			assert.argumentIsOptional(force, 'force', Object);
 
 			if (this.getIsDisposed()) {
 				return;
 			}
 
-			if (this._currentPricePrevious !== quote.lastPrice) {
+			if (this._currentPricePrevious !== quote.lastPrice || force) {
 				if (quote.previousPrice) {
 					this._data.previousPrice = quote.previousPrice;
 				}
