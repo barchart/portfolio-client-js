@@ -240,15 +240,17 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Object} quote
+		 * @param {Boolean=} force
 		 */
-		setQuote(quote) {
+		setQuote(quote, force) {
 			assert.argumentIsRequired(quote, 'quote', Object);
+			assert.argumentIsOptional(force, 'force', Object);
 
 			if (this.getIsDisposed()) {
 				return;
 			}
 
-			if (this._currentPricePrevious !== quote.lastPrice) {
+			if (this._currentPricePrevious !== quote.lastPrice || force) {
 				if (quote.previousPrice) {
 					this._data.previousPrice = quote.previousPrice;
 				}
