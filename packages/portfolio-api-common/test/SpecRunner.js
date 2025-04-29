@@ -4743,7 +4743,7 @@ module.exports = (() => {
 		 */
 		setQuote(quote, force) {
 			assert.argumentIsRequired(quote, 'quote', Object);
-			assert.argumentIsOptional(force, 'force', Object);
+			assert.argumentIsOptional(force, 'force', Boolean);
 
 			if (this.getIsDisposed()) {
 				return;
