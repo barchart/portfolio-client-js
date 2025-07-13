@@ -512,7 +512,7 @@ module.exports = (() => {
 		// 2023/11/28, BRI. Futures contracts do not have their value set to zero
 		// after expiration. At expiration, the contract would have been closed
 		// (but the price would not have been zero). On the other hand, option
-		// contracts can expire worthless and we attempt to represent that here.
+		// contracts can expire worthless, and we attempt to represent that here.
 
 		const worthless = data.expired && (position.instrument.type === InstrumentType.EQUITY_OPTION || position.instrument.type === InstrumentType.FUTURE_OPTION);
 
