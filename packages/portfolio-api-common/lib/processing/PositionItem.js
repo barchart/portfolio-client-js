@@ -61,6 +61,8 @@ module.exports = (() => {
 			this._data.marketAbsolute = null;
 			this._data.marketAbsoluteChange = null;
 
+			this._data.realizedToday = null;
+
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
 
