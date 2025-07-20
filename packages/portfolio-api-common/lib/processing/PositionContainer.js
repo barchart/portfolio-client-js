@@ -40,6 +40,10 @@ module.exports = (() => {
 		Currency.USD
 	];
 
+	const STATIC_RATES = [
+		Rate.fromPair(0.01, '^GBXGBP')
+	];
+
 	/**
 	 * A container for positions which groups the positions into one or more
 	 * trees for aggregation and display purposes. For example, positions could be
@@ -168,21 +172,15 @@ module.exports = (() => {
 
 					return symbols;
 				}, [ ]);
-
-				this._forexSymbols.push('^GBXGBP');
 			}
 
-			this._currencyTranslator = new CurrencyTranslator(this._forexSymbols);
+			this._currencyTranslator = new CurrencyTranslator(this._forexSymbols.concat(STATIC_RATES.map(r => r.getSymbol())));
 
 			const forexQuotes = this._forexSymbols.map((symbol) => {
-				if (symbol === '^GBXGBP') {
-					return Rate.fromPair(0.01, '^GBXGBP');
-				}
-
 				return Rate.fromPair(Decimal.ONE, symbol);
 			});
 
-			this._currencyTranslator.setRates(forexQuotes);
+			this._currencyTranslator.setRates(forexQuotes.concat(STATIC_RATES));
 
 			this._nodes = { };
 
