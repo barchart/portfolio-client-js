@@ -1,5 +1,6 @@
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
+	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
 	Event = require('@barchart/common-js/messaging/Event'),
@@ -43,6 +44,7 @@ module.exports = (() => {
 			this._previousSummaries = previousSummaries || [ ];
 
 			this._reporting = reporting;
+			this._referenceDate = referenceDate;
 
 			this._currentQuote = null;
 			this._previousQuote = null;
@@ -121,7 +123,7 @@ module.exports = (() => {
 			this._positionItemDisposeEvent = new Event(this);
 
 			calculateStaticData(this);
-			calculatePriceData(this, null);
+			calculatePriceData(this, null, null);
 		}
 
 		/**
@@ -257,7 +259,7 @@ module.exports = (() => {
 					this._data.previousPrice = quote.previousPrice;
 				}
 
-				calculatePriceData(this, quote.lastPrice);
+				calculatePriceData(this, quote.lastPrice, quote.lastDay instanceof Day && quote.lastDay.getIsEqual(this._referenceDate));
 
 				this._currentPricePrevious = this._currentPrice;
 				this._currentPrice = quote.lastPrice;
@@ -505,7 +507,7 @@ module.exports = (() => {
 		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, position);
 	}
 
-	function calculatePriceData(item, price) {
+	function calculatePriceData(item, price, today) {
 		const position = item.position;
 		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 
@@ -562,7 +564,13 @@ module.exports = (() => {
 		let unrealizedToday;
 		let unrealizedTodayChange;
 
-		if (data.previousPrice && price) {
+		// 2025/07/20, BRI. The unrealized gain should only be calculated if the position
+		// has quoted today. That means the position item is date-aware at this point. In
+		// words, the phrase "today" is literal. It does not mean the gain on the last known
+		// price change (e.g. friday, last week, sometime in the past when the instrument
+		// was delisted, etc).
+
+		if (today && data.previousPrice && price) {
 			const unrealizedTodayBase = ValuationCalculator.calculate(position.instrument, data.previousPrice, snapshot.open);
 
 			unrealizedToday = market.subtract(unrealizedTodayBase);
