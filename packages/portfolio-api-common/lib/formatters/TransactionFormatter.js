@@ -150,6 +150,12 @@ module.exports = (() => {
 		f.raw.open = getRawForDecimal(f.open);
 	};
 
+	const gainFormatter = (t, f) => {
+		f.gain = t.gain;
+
+		f.raw.gain = getRawForDecimal(f.gain);
+	};
+
 	const averageCostFormatter = (t, f) => {
 		const basis = t.snapshot.basis;
 		const open = t.snapshot.open;
@@ -495,8 +501,8 @@ module.exports = (() => {
 	const formatters = new Map();
 
 	formatters.set(TransactionType.BUY, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
-	formatters.set(TransactionType.SELL, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
-	formatters.set(TransactionType.BUY_SHORT, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
+	formatters.set(TransactionType.SELL, [ basicFormatter, buySellFormatter, averageCostFormatter, gainFormatter ]);
+	formatters.set(TransactionType.BUY_SHORT, [ basicFormatter, buySellFormatter, averageCostFormatter, gainFormatter ]);
 	formatters.set(TransactionType.SELL_SHORT, [ basicFormatter, buySellFormatter, averageCostFormatter ]);
 	formatters.set(TransactionType.DIVIDEND, [ basicFormatter, dividendFormatter, averageCostFormatter ]);
 	formatters.set(TransactionType.DIVIDEND_STOCK, [ basicFormatter, dividendStockFormatter, averageCostFormatter ]);
