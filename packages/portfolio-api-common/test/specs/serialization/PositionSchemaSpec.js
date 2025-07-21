@@ -32,6 +32,10 @@ describe('When positions are serialized', () => {
 					"income": "0",
 					"value": "0"
 				},
+				latest: {
+					date: "2020-06-11",
+					gain: "0"
+				},
 				"system": {
 					"calculate": {
 						"processors": 1
