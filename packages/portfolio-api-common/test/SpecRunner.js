@@ -2183,6 +2183,10 @@ module.exports = (() => {
 		Currency.USD
 	];
 
+	const STATIC_RATES = [
+		Rate.fromPair(0.01, '^GBXGBP')
+	];
+
 	/**
 	 * A container for positions which groups the positions into one or more
 	 * trees for aggregation and display purposes. For example, positions could be
@@ -2311,21 +2315,15 @@ module.exports = (() => {
 
 					return symbols;
 				}, [ ]);
-
-				this._forexSymbols.push('^GBXGBP');
 			}
 
-			this._currencyTranslator = new CurrencyTranslator(this._forexSymbols);
+			this._currencyTranslator = new CurrencyTranslator(this._forexSymbols.concat(STATIC_RATES.map(r => r.getSymbol())));
 
 			const forexQuotes = this._forexSymbols.map((symbol) => {
-				if (symbol === '^GBXGBP') {
-					return Rate.fromPair(0.01, '^GBXGBP');
-				}
-
 				return Rate.fromPair(Decimal.ONE, symbol);
 			});
 
-			this._currencyTranslator.setRates(forexQuotes);
+			this._currencyTranslator.setRates(forexQuotes.concat(STATIC_RATES));
 
 			this._nodes = { };
 
@@ -3447,6 +3445,7 @@ module.exports = (() => {
 			this._dataActual.basis = null;
 			this._dataActual.basis2 = null;
 			this._dataActual.realized = null;
+			this._dataActual.realizedToday = null;
 			this._dataActual.income = null;
 			this._dataActual.market = null;
 			this._dataActual.market2 = null;
@@ -3454,6 +3453,7 @@ module.exports = (() => {
 			this._dataActual.marketPercentPortfolio = null;
 			this._dataActual.unrealized = null;
 			this._dataActual.unrealizedToday = null;
+			this._dataActual.gainToday = null;
 			this._dataActual.total = null;
 			this._dataActual.summaryTotalCurrent = null;
 			this._dataActual.summaryTotalPrevious = null;
@@ -3473,6 +3473,7 @@ module.exports = (() => {
 			this._dataFormat.basis2 = null;
 			this._dataFormat.realized = null;
 			this._dataFormat.realizedPercent = null;
+			this._dataFormat.realizedToday = null;
 			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.market2 = null;
@@ -3484,6 +3485,8 @@ module.exports = (() => {
 			this._dataFormat.unrealizedNegative = false;
 			this._dataFormat.unrealizedToday = null;
 			this._dataFormat.unrealizedTodayNegative = false;
+			this._dataFormat.gainToday = null;
+			this._dataFormat.gainTodayNegative = false;
 			this._dataFormat.total = null;
 			this._dataFormat.totalNegative = false;
 			this._dataFormat.summaryTotalCurrent = null;
@@ -4137,6 +4140,7 @@ module.exports = (() => {
 
 			updates.realized = updates.realized.add(translate(item, item.data.realized));
 			updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
+			updates.realizedToday = updates.realizedToday.add(translate(item, item.data.realizedToday));
 			updates.income = updates.income.add(translate(item, item.data.income));
 			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.periodGain));
 			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.periodGainPrevious));
@@ -4163,6 +4167,7 @@ module.exports = (() => {
 			basis2: Decimal.ZERO,
 			realized: Decimal.ZERO,
 			unrealized: Decimal.ZERO,
+			realizedToday: Decimal.ZERO,
 			income: Decimal.ZERO,
 			summaryTotalCurrent: Decimal.ZERO,
 			summaryTotalPrevious: Decimal.ZERO,
@@ -4183,6 +4188,7 @@ module.exports = (() => {
 		actual.basis2 = updates.basis2;
 		actual.realized = updates.realized;
 		actual.unrealized = updates.unrealized;
+		actual.realizedToday = updates.realizedToday;
 		actual.income = updates.income;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.summaryTotalPrevious = updates.summaryTotalPrevious;
@@ -4202,6 +4208,7 @@ module.exports = (() => {
 		format.basis2 = formatCurrency(actual.basis2, currency);
 		format.realized = formatCurrency(actual.realized, currency);
 		format.unrealized = formatCurrency(actual.unrealized, currency);
+		format.realizedToday = formatCurrency(actual.realizedToday, currency);
 		format.income = formatCurrency(actual.income, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalCurrentNegative = updates.summaryTotalCurrent.getIsNegative();
@@ -4311,6 +4318,7 @@ module.exports = (() => {
 				updates.marketAbsolute = updates.marketAbsolute.add(translate(item, item.data.marketAbsolute));
 				updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 				updates.unrealizedToday = updates.unrealizedToday.add(translate(item, item.data.unrealizedToday));
+				updates.gainToday = updates.gainToday.add(translate(item, item.data.unrealizedToday.add(item.data.realizedToday)));
 				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.periodGain));
 				updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
 
@@ -4322,6 +4330,7 @@ module.exports = (() => {
 				marketDirection: unchanged,
 				unrealized: Decimal.ZERO,
 				unrealizedToday: Decimal.ZERO,
+				gainToday: Decimal.ZERO,
 				summaryTotalCurrent: Decimal.ZERO,
 				periodUnrealized: Decimal.ZERO
 			});
@@ -4340,6 +4349,7 @@ module.exports = (() => {
 			updates.marketDirection = { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() };
 			updates.unrealized = actual.unrealized.add(translate(item, item.data.unrealizedChange));
 			updates.unrealizedToday = actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange));
+			updates.gainToday = actual.gainToday.add(translate(item, item.data.unrealizedTodayChange));
 			updates.summaryTotalCurrent = actual.summaryTotalCurrent.add(translate(item, item.data.periodGainChange));
 			updates.periodUnrealized = actual.periodUnrealized.add(translate(item, item.data.periodUnrealizedChange));
 		}
@@ -4349,6 +4359,7 @@ module.exports = (() => {
 		actual.marketAbsolute = updates.marketAbsolute;
 		actual.unrealized = updates.unrealized;
 		actual.unrealizedToday = updates.unrealizedToday;
+		actual.gainToday = updates.gainToday;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.periodUnrealized = updates.periodUnrealized;
 
@@ -4386,6 +4397,9 @@ module.exports = (() => {
 
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+
+		format.gainToday = formatCurrency(actual.gainToday, currency);
+		format.gainTodayNegative = actual.gainToday.getIsNegative();
 
 		format.summaryTotalCurrent = formatCurrency(actual.summaryTotalCurrent, currency);
 		format.summaryTotalCurrentNegative = actual.summaryTotalCurrent.getIsNegative();
@@ -4499,6 +4513,7 @@ module.exports = (() => {
 },{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/collections/specialized/DisposableStack":25,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/formatter":39,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43,"@barchart/marketdata-api-js/lib/utilities/format/fraction":51}],12:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
+	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
 	Event = require('@barchart/common-js/messaging/Event'),
@@ -4542,6 +4557,7 @@ module.exports = (() => {
 			this._previousSummaries = previousSummaries || [ ];
 
 			this._reporting = reporting;
+			this._referenceDate = referenceDate;
 
 			this._currentQuote = null;
 			this._previousQuote = null;
@@ -4559,6 +4575,8 @@ module.exports = (() => {
 
 			this._data.marketAbsolute = null;
 			this._data.marketAbsoluteChange = null;
+
+			this._data.realizedToday = null;
 
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
@@ -4617,8 +4635,8 @@ module.exports = (() => {
 			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
-			calculateStaticData(this);
-			calculatePriceData(this, null);
+			calculateStaticData(this, this._referenceDate);
+			calculatePriceData(this, null, null);
 		}
 
 		/**
@@ -4754,7 +4772,7 @@ module.exports = (() => {
 					this._data.previousPrice = quote.previousPrice;
 				}
 
-				calculatePriceData(this, quote.lastPrice);
+				calculatePriceData(this, quote.lastPrice, quote.lastDay instanceof Day && quote.lastDay.getIsEqual(this._referenceDate));
 
 				this._currentPricePrevious = this._currentPrice;
 				this._currentPrice = quote.lastPrice;
@@ -4935,7 +4953,7 @@ module.exports = (() => {
 		}
 	}
 
-	function calculateStaticData(item) {
+	function calculateStaticData(item, referenceDate) {
 		const position = item.position;
 
 		const currentSummary = item.currentSummary;
@@ -4965,6 +4983,12 @@ module.exports = (() => {
 
 		data.realized = snapshot.gain;
 		data.unrealized = Decimal.ZERO;
+
+		if (position.latest && position.latest.date && position.latest.date.getIsEqual(referenceDate) && position.latest.gain) {
+			data.realizedToday = position.latest.gain;
+		} else {
+			data.realizedToday = Decimal.ZERO;
+		}
 
 		data.income = snapshot.income;
 
@@ -5002,7 +5026,7 @@ module.exports = (() => {
 		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, position);
 	}
 
-	function calculatePriceData(item, price) {
+	function calculatePriceData(item, price, today) {
 		const position = item.position;
 		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 
@@ -5011,7 +5035,7 @@ module.exports = (() => {
 		// 2023/11/28, BRI. Futures contracts do not have their value set to zero
 		// after expiration. At expiration, the contract would have been closed
 		// (but the price would not have been zero). On the other hand, option
-		// contracts can expire worthless and we attempt to represent that here.
+		// contracts can expire worthless, and we attempt to represent that here.
 
 		const worthless = data.expired && (position.instrument.type === InstrumentType.EQUITY_OPTION || position.instrument.type === InstrumentType.FUTURE_OPTION);
 
@@ -5059,7 +5083,13 @@ module.exports = (() => {
 		let unrealizedToday;
 		let unrealizedTodayChange;
 
-		if (data.previousPrice && price) {
+		// 2025/07/20, BRI. The unrealized gain should only be calculated if the position
+		// has quoted today. That means the position item is date-aware at this point. In
+		// words, the phrase "today" is literal. It does not mean the gain on the last known
+		// price change (e.g. friday, last week, sometime in the past when the instrument
+		// was delisted, etc).
+
+		if (today && data.previousPrice && price) {
 			const unrealizedTodayBase = ValuationCalculator.calculate(position.instrument, data.previousPrice, snapshot.open);
 
 			unrealizedToday = market.subtract(unrealizedTodayBase);
@@ -5332,7 +5362,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":3,"./../data/PositionDirection":5,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43}],13:[function(require,module,exports){
+},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":3,"./../data/PositionDirection":5,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43}],13:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
@@ -5893,6 +5923,8 @@ module.exports = (() => {
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
 		.withField('snapshot.initial', DataType.forEnum(PositionDirection, 'PositionDirection'), true)
+		.withField('latest.date', DataType.DAY)
+		.withField('latest.gain', DataType.DECIMAL)
 		.withField('legacy.system', DataType.STRING, true)
 		.withField('legacy.user', DataType.STRING, true)
 		.withField('legacy.portfolio', DataType.STRING, true)
@@ -5940,6 +5972,8 @@ module.exports = (() => {
 		.withField('snapshot.income', DataType.DECIMAL)
 		.withField('snapshot.value', DataType.DECIMAL)
 		.withField('snapshot.initial', DataType.forEnum(PositionDirection, 'PositionDirection'), true)
+		.withField('latest.date', DataType.DAY)
+		.withField('latest.gain', DataType.DECIMAL)
 		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('system.locked', DataType.BOOLEAN, true)
 		.withField('previous', DataType.NUMBER, true)
@@ -6114,6 +6148,7 @@ module.exports = (() => {
 		.withField('amount', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('gain', DataType.DECIMAL)
 		.withField('reference.position', DataType.STRING, true)
 		.withField('reference.transaction', DataType.STRING, true)
 		.withField('snapshot.open', DataType.DECIMAL)
@@ -6164,6 +6199,7 @@ module.exports = (() => {
 		.withField('amount', DataType.DECIMAL)
 		.withField('quantity', DataType.DECIMAL)
 		.withField('fee', DataType.DECIMAL, true)
+		.withField('gain', DataType.DECIMAL)
 		.withField('reference.position', DataType.STRING, true)
 		.withField('reference.transaction', DataType.NUMBER, true)
 		.withField('snapshot.open', DataType.DECIMAL)
@@ -22612,6 +22648,10 @@ describe('When positions are serialized', () => {
 					"basis": "0",
 					"income": "0",
 					"value": "0"
+				},
+				latest: {
+					date: "2020-06-11",
+					gain: "0"
 				},
 				"system": {
 					"calculate": {
