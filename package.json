@@ -28,8 +28,8 @@
     "SDK"
   ],
   "dependencies": {
-    "@barchart/common-js": "^4.46.1",
-    "@barchart/portfolio-api-common": "^2.0.0"
+    "@barchart/common-js": "^4.58.0",
+    "@barchart/portfolio-api-common": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.1",
