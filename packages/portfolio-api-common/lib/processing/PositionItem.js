@@ -122,7 +122,7 @@ module.exports = (() => {
 			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
-			calculateStaticData(this);
+			calculateStaticData(this, this._referenceDate);
 			calculatePriceData(this, null, null);
 		}
 
@@ -440,7 +440,7 @@ module.exports = (() => {
 		}
 	}
 
-	function calculateStaticData(item) {
+	function calculateStaticData(item, referenceDate) {
 		const position = item.position;
 
 		const currentSummary = item.currentSummary;
@@ -470,6 +470,12 @@ module.exports = (() => {
 
 		data.realized = snapshot.gain;
 		data.unrealized = Decimal.ZERO;
+
+		if (position.latest && position.latest.date && position.latest.date.getIsEqual(referenceDate) && position.latest.gain) {
+			data.realizedToday = position.latest.gain;
+		} else {
+			data.realizedToday = Decimal.ZERO;
+		}
 
 		data.income = snapshot.income;
 
