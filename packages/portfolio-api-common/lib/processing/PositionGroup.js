@@ -601,49 +601,51 @@ module.exports = (() => {
 		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single) {
 				this._dataFormat.fundamental = data;
-			} else {
-				const fundamentalFields = [ 'percentChange1m', 'percentChange1y', 'percentChange3m', 'percentChangeYtd' ];
 
-				const fundamentalData = this.items.reduce((sums, item, i) => {
-					if (item.data && item.data.fundamental && item.data.fundamental.raw) {
-						const fundamental = item.data.fundamental.raw;
-
-						fundamentalFields.forEach((fieldName) => {
-							const summary = sums[fieldName];
-							const value = fundamental[fieldName];
-
-							if (is.number(value)) {
-								summary.total = sums[fieldName].total + value;
-								summary.count = sums[fieldName].count + 1;
-							}
-
-							if ((i + 1) == this.items.length) {
-								let averageFormat;
-
-								if (summary.count > 0) {
-									averageFormat = formatPercent(new Decimal(summary.total / summary.count), 2, true);
-								} else {
-									averageFormat = '—';
-								}
-
-								summary.averageFormat = averageFormat;
-							}
-						});
-					}
-
-					return sums;
-				}, fundamentalFields.reduce((sums, fieldName) => {
-					sums[fieldName] = { total: 0, count: 0, averageFormat: '—' };
-
-					return sums;
-				}, { }));
-
-				this._dataFormat.fundamental = fundamentalFields.reduce((sums, fieldName) => {
-					sums[fieldName] = fundamentalData[fieldName].averageFormat;
-
-					return sums;
-				}, { });
+				return;
 			}
+
+			const fundamentalFields = [ 'percentChange1m', 'percentChange1y', 'percentChange3m', 'percentChangeYtd' ];
+
+			const fundamentalData = this.items.reduce((sums, item, i) => {
+				if (item.data && item.data.fundamental && item.data.fundamental.raw) {
+					const fundamental = item.data.fundamental.raw;
+
+					fundamentalFields.forEach((fieldName) => {
+						const summary = sums[fieldName];
+						const value = fundamental[fieldName];
+
+						if (is.number(value)) {
+							summary.total = sums[fieldName].total + value;
+							summary.count = sums[fieldName].count + 1;
+						}
+
+						if ((i + 1) == this.items.length) {
+							let averageFormat;
+
+							if (summary.count > 0) {
+								averageFormat = formatPercent(new Decimal(summary.total / summary.count), 2, true);
+							} else {
+								averageFormat = '—';
+							}
+
+							summary.averageFormat = averageFormat;
+						}
+					});
+				}
+
+				return sums;
+			}, fundamentalFields.reduce((sums, fieldName) => {
+				sums[fieldName] = { total: 0, count: 0, averageFormat: '—' };
+
+				return sums;
+			}, { }));
+
+			this._dataFormat.fundamental = fundamentalFields.reduce((sums, fieldName) => {
+				sums[fieldName] = fundamentalData[fieldName].averageFormat;
+
+				return sums;
+			}, { });
 		});
 
 		let newsBinding = Disposable.getEmpty();
