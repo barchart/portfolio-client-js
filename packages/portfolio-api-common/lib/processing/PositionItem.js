@@ -467,6 +467,7 @@ module.exports = (() => {
 			this._newsExistsChangedEvent.clear();
 			this._fundamentalDataChangedEvent.clear();
 			this._lockChangedEvent.clear();
+			this._calculatingChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
 			this._referenceDateChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
