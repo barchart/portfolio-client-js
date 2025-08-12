@@ -4,7 +4,6 @@ const array = require('@barchart/common-js/lang/array'),
 	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
-	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
 	is = require('@barchart/common-js/lang/is');
@@ -62,8 +61,6 @@ module.exports = (() => {
 
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
-
-			this._disposeStack = new DisposableStack();
 
 			this._excludedItems = [ ];
 			this._excludedItemMap = { };
@@ -667,7 +664,7 @@ module.exports = (() => {
 			});
 		}
 
-		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio) => {
+		const portfolioChangeBinding = item.registerPortfolioChangeHandler((portfolio) => {
 			const descriptionSelector = this._definition.descriptionSelector;
 
 			this._description = descriptionSelector(this._items[0]);
@@ -682,24 +679,26 @@ module.exports = (() => {
 			const currencySelector = this._definition.currencySelector;
 
 			this.changeCurrency(currencySelector({ portfolio }));
-		}));
+		});
 
-		this._disposeStack.push(fundamentalBinding);
-		this._disposeStack.push(quoteBinding);
-		this._disposeStack.push(lockedBinding);
-		this._disposeStack.push(calculatingBinding);
-		this._disposeStack.push(newsBinding);
-
-		this._disposeStack.push(item.registerReferenceDateChangeHandler((referenceDate, sender) => {
+		const referenceDateBinding = item.registerReferenceDateChangeHandler(() => {
 			this.refresh();
-		}));
+		});
 
-		this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
-			fundamentalBinding.dispose();
+		let disposalBinding = null;
+
+		disposalBinding = item.registerPositionItemDisposeHandler(() => {
 			quoteBinding.dispose();
+			fundamentalBinding.dispose();
+
 			newsBinding.dispose();
 			lockedBinding.dispose();
 			calculatingBinding.dispose();
+
+			portfolioChangeBinding.dispose();
+			referenceDateBinding.dispose();
+
+			disposalBinding.dispose();
 
 			array.remove(this._items, i => i === item);
 			array.remove(this._excludedItems, i => i === item);
@@ -708,7 +707,7 @@ module.exports = (() => {
 			delete this._excludedItemMap[item.position.position];
 
 			this.refresh();
-		}));
+		});
 	}
 
 	function formatNumber(number, precision) {
