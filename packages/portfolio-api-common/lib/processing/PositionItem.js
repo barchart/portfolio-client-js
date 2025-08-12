@@ -120,6 +120,7 @@ module.exports = (() => {
 			this._lockChangedEvent = new Event(this);
 			this._calculatingChangedEvent = new Event(this);
 			this._portfolioChangedEvent = new Event(this);
+			this._referenceDateChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
 			calculateStaticData(this, this._referenceDate);
@@ -254,14 +255,13 @@ module.exports = (() => {
 				return;
 			}
 
-			if (this._currentPricePrevious !== quote.lastPrice || force) {
+			if (this._currentPrice !== quote.lastPrice || force) {
 				if (quote.previousPrice) {
 					this._data.previousPrice = quote.previousPrice;
 				}
 
-				calculatePriceData(this, quote.lastPrice, quote.lastDay instanceof Day && quote.lastDay.getIsEqual(this._referenceDate));
+				calculatePriceData(this, quote.lastPrice, getQuoteIsToday(quote, this._referenceDate));
 
-				this._currentPricePrevious = this._currentPrice;
 				this._currentPrice = quote.lastPrice;
 
 				this._previousQuote = this._currentQuote;
@@ -347,6 +347,31 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets the reference date (today).
+		 *
+		 * @public
+		 * @param {Day} referenceDate
+		 */
+		setReferenceDate(referenceDate) {
+			assert.argumentIsRequired(referenceDate, 'referenceDate', Day, 'Day');
+
+			if (this.getIsDisposed()) {
+				return;
+			}
+
+			if (this._referenceDate.getIsEqual(referenceDate)) {
+				return;
+			}
+
+			this._referenceDate = referenceDate;
+
+			calculateStaticData(this, this._referenceDate);
+			calculatePriceData(this, this._currentPrice, getQuoteIsToday(this._currentQuote, this._referenceDate));
+
+			this._referenceDateChangedEvent.fire(this._referenceDate);
+		}
+
+		/**
 		 * Registers an observer for quote changes, which is fired after internal recalculations
 		 * of position data are complete.
 		 *
@@ -403,7 +428,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Registers an observer changes to portfolio metadata.
+		 * Registers an observer for changes to portfolio metadata.
 		 *
 		 * @public
 		 * @param {Function} handler
@@ -411,6 +436,17 @@ module.exports = (() => {
 		 */
 		registerPortfolioChangeHandler(handler) {
 			return this._portfolioChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for changes to the reference date (today).
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerReferenceDateChangeHandler(handler) {
+			return this._referenceDateChangedEvent.register(handler);
 		}
 
 		/**
@@ -432,6 +468,7 @@ module.exports = (() => {
 			this._fundamentalDataChangedEvent.clear();
 			this._lockChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
+			this._referenceDateChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
 		}
 
@@ -844,6 +881,10 @@ module.exports = (() => {
 		}
 
 		return snapshot;
+	}
+
+	function getQuoteIsToday(quote, referenceDate) {
+		return quote && quote.lastDay instanceof Day && referenceDate instanceof Day && quote.lastDay.getIsEqual(referenceDate);
 	}
 
 	return PositionItem;

@@ -624,6 +624,20 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets the reference date (today).
+		 *
+		 * @public
+		 * @param {Day} referenceDate
+		 */
+		setReferenceDate(referenceDate) {
+			this._referenceDate = referenceDate;
+
+			this._items.forEach((item) => {
+				item.setReferenceDate(this._referenceDate);
+			});
+		}
+
+		/**
 		 * Returns current price for symbol provided.
 		 *
 		 * @public

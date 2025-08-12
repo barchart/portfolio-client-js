@@ -598,7 +598,7 @@ module.exports = (() => {
 			calculatePriceData(this, sender, false);
 		});
 
-		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
+		const fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single) {
 				this._dataFormat.fundamental = data;
 
@@ -689,6 +689,10 @@ module.exports = (() => {
 		this._disposeStack.push(lockedBinding);
 		this._disposeStack.push(calculatingBinding);
 		this._disposeStack.push(newsBinding);
+
+		this._disposeStack.push(item.registerReferenceDateChangeHandler((referenceDate, sender) => {
+			this.refresh();
+		}));
 
 		this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
 			fundamentalBinding.dispose();
