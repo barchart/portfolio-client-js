@@ -2767,6 +2767,20 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets the reference date (today).
+		 *
+		 * @public
+		 * @param {Day} referenceDate
+		 */
+		setReferenceDate(referenceDate) {
+			this._referenceDate = referenceDate;
+
+			this._items.forEach((item) => {
+				item.setReferenceDate(this._referenceDate);
+			});
+		}
+
+		/**
 		 * Returns current price for symbol provided.
 		 *
 		 * @public
@@ -3318,7 +3332,6 @@ const array = require('@barchart/common-js/lang/array'),
 	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
-	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	formatter = require('@barchart/common-js/lang/formatter'),
 	is = require('@barchart/common-js/lang/is');
@@ -3376,8 +3389,6 @@ module.exports = (() => {
 
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
-
-			this._disposeStack = new DisposableStack();
 
 			this._excludedItems = [ ];
 			this._excludedItemMap = { };
@@ -3912,52 +3923,54 @@ module.exports = (() => {
 			calculatePriceData(this, sender, false);
 		});
 
-		let fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
+		const fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single) {
 				this._dataFormat.fundamental = data;
-			} else {
-				const fundamentalFields = [ 'percentChange1m', 'percentChange1y', 'percentChange3m', 'percentChangeYtd' ];
 
-				const fundamentalData = this.items.reduce((sums, item, i) => {
-					if (item.data && item.data.fundamental && item.data.fundamental.raw) {
-						const fundamental = item.data.fundamental.raw;
-
-						fundamentalFields.forEach((fieldName) => {
-							const summary = sums[fieldName];
-							const value = fundamental[fieldName];
-
-							if (is.number(value)) {
-								summary.total = sums[fieldName].total + value;
-								summary.count = sums[fieldName].count + 1;
-							}
-
-							if ((i + 1) == this.items.length) {
-								let averageFormat;
-
-								if (summary.count > 0) {
-									averageFormat = formatPercent(new Decimal(summary.total / summary.count), 2, true);
-								} else {
-									averageFormat = '—';
-								}
-
-								summary.averageFormat = averageFormat;
-							}
-						});
-					}
-
-					return sums;
-				}, fundamentalFields.reduce((sums, fieldName) => {
-					sums[fieldName] = { total: 0, count: 0, averageFormat: '—' };
-
-					return sums;
-				}, { }));
-
-				this._dataFormat.fundamental = fundamentalFields.reduce((sums, fieldName) => {
-					sums[fieldName] = fundamentalData[fieldName].averageFormat;
-
-					return sums;
-				}, { });
+				return;
 			}
+
+			const fundamentalFields = [ 'percentChange1m', 'percentChange1y', 'percentChange3m', 'percentChangeYtd' ];
+
+			const fundamentalData = this.items.reduce((sums, item, i) => {
+				if (item.data && item.data.fundamental && item.data.fundamental.raw) {
+					const fundamental = item.data.fundamental.raw;
+
+					fundamentalFields.forEach((fieldName) => {
+						const summary = sums[fieldName];
+						const value = fundamental[fieldName];
+
+						if (is.number(value)) {
+							summary.total = sums[fieldName].total + value;
+							summary.count = sums[fieldName].count + 1;
+						}
+
+						if ((i + 1) == this.items.length) {
+							let averageFormat;
+
+							if (summary.count > 0) {
+								averageFormat = formatPercent(new Decimal(summary.total / summary.count), 2, true);
+							} else {
+								averageFormat = '—';
+							}
+
+							summary.averageFormat = averageFormat;
+						}
+					});
+				}
+
+				return sums;
+			}, fundamentalFields.reduce((sums, fieldName) => {
+				sums[fieldName] = { total: 0, count: 0, averageFormat: '—' };
+
+				return sums;
+			}, { }));
+
+			this._dataFormat.fundamental = fundamentalFields.reduce((sums, fieldName) => {
+				sums[fieldName] = fundamentalData[fieldName].averageFormat;
+
+				return sums;
+			}, { });
 		});
 
 		let newsBinding = Disposable.getEmpty();
@@ -3979,7 +3992,7 @@ module.exports = (() => {
 			});
 		}
 
-		this._disposeStack.push(item.registerPortfolioChangeHandler((portfolio) => {
+		const portfolioChangeBinding = item.registerPortfolioChangeHandler((portfolio) => {
 			const descriptionSelector = this._definition.descriptionSelector;
 
 			this._description = descriptionSelector(this._items[0]);
@@ -3994,20 +4007,26 @@ module.exports = (() => {
 			const currencySelector = this._definition.currencySelector;
 
 			this.changeCurrency(currencySelector({ portfolio }));
-		}));
+		});
 
-		this._disposeStack.push(fundamentalBinding);
-		this._disposeStack.push(quoteBinding);
-		this._disposeStack.push(lockedBinding);
-		this._disposeStack.push(calculatingBinding);
-		this._disposeStack.push(newsBinding);
+		const referenceDateBinding = item.registerReferenceDateChangeHandler(() => {
+			this.refresh();
+		});
 
-		this._disposeStack.push(item.registerPositionItemDisposeHandler(() => {
-			fundamentalBinding.dispose();
+		let disposalBinding = null;
+
+		disposalBinding = item.registerPositionItemDisposeHandler(() => {
 			quoteBinding.dispose();
+			fundamentalBinding.dispose();
+
 			newsBinding.dispose();
 			lockedBinding.dispose();
 			calculatingBinding.dispose();
+
+			portfolioChangeBinding.dispose();
+			referenceDateBinding.dispose();
+
+			disposalBinding.dispose();
 
 			array.remove(this._items, i => i === item);
 			array.remove(this._excludedItems, i => i === item);
@@ -4016,7 +4035,7 @@ module.exports = (() => {
 			delete this._excludedItemMap[item.position.position];
 
 			this.refresh();
-		}));
+		});
 	}
 
 	function formatNumber(number, precision) {
@@ -4510,7 +4529,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/collections/specialized/DisposableStack":25,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/formatter":39,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43,"@barchart/marketdata-api-js/lib/utilities/format/fraction":51}],12:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/formatter":39,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43,"@barchart/marketdata-api-js/lib/utilities/format/fraction":51}],12:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -4633,6 +4652,7 @@ module.exports = (() => {
 			this._lockChangedEvent = new Event(this);
 			this._calculatingChangedEvent = new Event(this);
 			this._portfolioChangedEvent = new Event(this);
+			this._referenceDateChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
 			calculateStaticData(this, this._referenceDate);
@@ -4767,14 +4787,13 @@ module.exports = (() => {
 				return;
 			}
 
-			if (this._currentPricePrevious !== quote.lastPrice || force) {
+			if (this._currentPrice !== quote.lastPrice || force) {
 				if (quote.previousPrice) {
 					this._data.previousPrice = quote.previousPrice;
 				}
 
-				calculatePriceData(this, quote.lastPrice, quote.lastDay instanceof Day && quote.lastDay.getIsEqual(this._referenceDate));
+				calculatePriceData(this, quote.lastPrice, getQuoteIsToday(quote, this._referenceDate));
 
-				this._currentPricePrevious = this._currentPrice;
 				this._currentPrice = quote.lastPrice;
 
 				this._previousQuote = this._currentQuote;
@@ -4860,6 +4879,31 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Sets the reference date (today).
+		 *
+		 * @public
+		 * @param {Day} referenceDate
+		 */
+		setReferenceDate(referenceDate) {
+			assert.argumentIsRequired(referenceDate, 'referenceDate', Day, 'Day');
+
+			if (this.getIsDisposed()) {
+				return;
+			}
+
+			if (this._referenceDate.getIsEqual(referenceDate)) {
+				return;
+			}
+
+			this._referenceDate = referenceDate;
+
+			calculateStaticData(this, this._referenceDate);
+			calculatePriceData(this, this._currentPrice, getQuoteIsToday(this._currentQuote, this._referenceDate));
+
+			this._referenceDateChangedEvent.fire(this._referenceDate);
+		}
+
+		/**
 		 * Registers an observer for quote changes, which is fired after internal recalculations
 		 * of position data are complete.
 		 *
@@ -4916,7 +4960,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Registers an observer changes to portfolio metadata.
+		 * Registers an observer for changes to portfolio metadata.
 		 *
 		 * @public
 		 * @param {Function} handler
@@ -4924,6 +4968,17 @@ module.exports = (() => {
 		 */
 		registerPortfolioChangeHandler(handler) {
 			return this._portfolioChangedEvent.register(handler);
+		}
+
+		/**
+		 * Registers an observer for changes to the reference date (today).
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerReferenceDateChangeHandler(handler) {
+			return this._referenceDateChangedEvent.register(handler);
 		}
 
 		/**
@@ -4944,7 +4999,9 @@ module.exports = (() => {
 			this._newsExistsChangedEvent.clear();
 			this._fundamentalDataChangedEvent.clear();
 			this._lockChangedEvent.clear();
+			this._calculatingChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
+			this._referenceDateChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
 		}
 
@@ -5357,6 +5414,10 @@ module.exports = (() => {
 		}
 
 		return snapshot;
+	}
+
+	function getQuoteIsToday(quote, referenceDate) {
+		return quote && quote.lastDay instanceof Day && referenceDate instanceof Day && quote.lastDay.getIsEqual(referenceDate);
 	}
 
 	return PositionItem;
