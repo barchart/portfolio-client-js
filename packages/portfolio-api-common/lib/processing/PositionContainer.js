@@ -630,6 +630,8 @@ module.exports = (() => {
 		 * @param {Day} referenceDate
 		 */
 		setReferenceDate(referenceDate) {
+			assert.argumentIsRequired(referenceDate, 'referenceDate', Day, 'Day');
+
 			this._referenceDate = referenceDate;
 
 			this._items.forEach((item) => {
