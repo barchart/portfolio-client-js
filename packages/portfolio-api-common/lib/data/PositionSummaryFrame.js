@@ -213,7 +213,7 @@ module.exports = (() => {
 	 */
 
 	/**
-	 * The start and and date for a {@link PositionSummaryFrame} along with the frame type.
+	 * The start and end date for a {@link PositionSummaryFrame} along with the frame type.
 	 *
 	 * @typedef PositionSummaryDefinition
 	 * @type {Object}
