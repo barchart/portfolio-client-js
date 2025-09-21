@@ -1045,7 +1045,7 @@ module.exports = (() => {
 	 */
 
 	/**
-	 * The start and and date for a {@link PositionSummaryFrame} along with the frame type.
+	 * The start and end date for a {@link PositionSummaryFrame} along with the frame type.
 	 *
 	 * @typedef PositionSummaryDefinition
 	 * @type {Object}
@@ -2773,6 +2773,8 @@ module.exports = (() => {
 		 * @param {Day} referenceDate
 		 */
 		setReferenceDate(referenceDate) {
+			assert.argumentIsRequired(referenceDate, 'referenceDate', Day, 'Day');
+
 			this._referenceDate = referenceDate;
 
 			this._items.forEach((item) => {
@@ -5956,6 +5958,7 @@ module.exports = (() => {
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
 		.withField('instrument.code', DataType.forEnum(UnitCode, 'UnitCode'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('instrument.exchange', DataType.STRING, true)
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.future.expiration', DataType.DAY, true)
 		.withField('instrument.future.tick', DataType.DECIMAL, true)
@@ -6005,6 +6008,7 @@ module.exports = (() => {
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'))
 		.withField('instrument.code', DataType.forEnum(UnitCode, 'UnitCode'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'))
+		.withField('instrument.exchange', DataType.STRING, true)
 		.withField('instrument.delist', DataType.DAY, true)
 		.withField('instrument.future.expiration', DataType.DAY, true)
 		.withField('instrument.future.tick', DataType.DECIMAL, true)
