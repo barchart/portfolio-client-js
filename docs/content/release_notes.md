@@ -1,9 +1,32 @@
 # Release Notes
 
+## 9.0.0
+**Breaking Changes**
+
+* Updated the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library to the next major version.
+
+
+## 8.0.0
+**Breaking Changes**
+
+* Updated the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library to the next major version (since schemas for positions have changed).
+
+
+## 7.0.0
+**Breaking Changes**
+
+* Updated the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library to the next major version (since schemas for transactions and positions have changed).
+
+
+## 6.0.1
+**Technical Enhancements**
+
+* Updated AWS CodeBuild to use Node.js version 22.
+
 ## 6.0.0
 **Breaking Changes**
 
-* Updated [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) to the next major version.
+* Updated the [`@barchart/portfolio-api-common`](https://github.com/barchart/portfolio-api-common) library to the next major version.
 
 **Technical Enhancements**
 
