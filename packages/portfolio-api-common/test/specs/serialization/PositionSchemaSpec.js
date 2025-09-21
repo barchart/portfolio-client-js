@@ -15,7 +15,7 @@ describe('When positions are serialized', () => {
 					"id": "TGAM-CASH-USD",
 					"name": "US Dollar",
 					"type": "CASH",
-					"currency": "USD"
+					"currency": "USD",
 				},
 				"position": "a5cdc2e8-d9c6-4a1f-8f05-e271a5824f87",
 				"transaction": 2987,

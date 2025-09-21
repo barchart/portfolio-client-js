@@ -92,6 +92,8 @@ module.exports = (() => {
 			this._positionSymbolAddedEvent = new Event(this);
 			this._positionSymbolRemovedEvent = new Event(this);
 
+			this._exchanges = { };
+
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
 
@@ -99,7 +101,7 @@ module.exports = (() => {
 			}, { });
 
 			if (reportFrame) {
-				this._referenceDate = reportDate;
+				this._reportDate = reportDate;
 
 				this._currentSummaryFrame = reportFrame;
 				this._currentSummaryRange = array.last(this._currentSummaryFrame.getPriorRanges(reportDate, 0));
@@ -109,7 +111,7 @@ module.exports = (() => {
 
 				this._previousSummaryRanges.pop();
 			} else {
-				this._referenceDate = Day.getToday();
+				this._reportDate = null;
 
 				this._currentSummaryFrame = PositionSummaryFrame.YTD;
 				this._currentSummaryRange = array.first(this._currentSummaryFrame.getRecentRanges(0));
@@ -374,12 +376,24 @@ module.exports = (() => {
 
 			const existingBarchartSymbols = this.getPositionSymbols(false);
 
-			let similarPositionItem;
+			let exchange;
+
+			if (extractExchangeCode(position)) {
+				const code = extractExchangeCode(position);
+
+				exchange = this._exchanges[code] || null;
+			}
+
+			let currentQuote = null;
+			let previousQuote = null;
 
 			if (extractSymbolForBarchart(position)) {
-				similarPositionItem = this._items.find(item => extractSymbolForBarchart(item.position) === extractSymbolForBarchart(position)) || null;
-			} else {
-				similarPositionItem = null;
+				const similarPositionItem = this._items.find(item => extractSymbolForBarchart(item.position) === extractSymbolForBarchart(position)) || null;
+
+				if (similarPositionItem !== null) {
+					currentQuote = similarPositionItem.quote || null;
+					previousQuote = similarPositionItem.previousQuote || null;
+				}
 			}
 
 			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
@@ -429,14 +443,16 @@ module.exports = (() => {
 				this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
 			}
 
-			if (similarPositionItem !== null) {
-				if (similarPositionItem.previousQuote) {
-					item.setQuote(similarPositionItem.previousQuote);
-				}
+			if (exchange) {
+				item.setExchangeStatus(exchange);
+			}
 
-				if (similarPositionItem.quote) {
-					item.setQuote(similarPositionItem.quote);
-				}
+			if (previousQuote !== null) {
+				item.setQuote(previousQuote);
+			}
+
+			if (currentQuote !== null) {
+				item.setQuote(currentQuote);
 			}
 
 			recalculatePercentages.call(this);
@@ -581,8 +597,8 @@ module.exports = (() => {
 		 * triggering updates to position(s) and data aggregation(s).
 		 *
 		 * @public
-		 * @param {Object[]} positionQuotes
-		 * @param {Object[]} forexQuotes
+		 * @param {Quote[]} positionQuotes
+		 * @param {Quote[]} forexQuotes
 		 * @param {Boolean=} force
 		 */
 		setQuotes(positionQuotes, forexQuotes, force) {
@@ -612,7 +628,7 @@ module.exports = (() => {
 
 					if (symbol) {
 						if (this._symbols.hasOwnProperty(symbol)) {
-							this._symbols[ symbol ].forEach(item => item.setQuote(quote, force || false));
+							this._symbols[symbol].forEach(item => item.setQuote(quote, force || false));
 						}
 					}
 				});
@@ -624,18 +640,26 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Sets the reference date (today).
+		 * Performs an update of an exchange's status, triggering updates to position(s) and
+		 * data aggregation(s).
 		 *
 		 * @public
-		 * @param {Day} referenceDate
+		 * @param {ExchangeStatus} exchange
 		 */
-		setReferenceDate(referenceDate) {
-			assert.argumentIsRequired(referenceDate, 'referenceDate', Day, 'Day');
+		setExchangeStatus(exchange) {
+			assert.argumentIsRequired(exchange, 'exchange', Object);
+			assert.argumentIsRequired(exchange.code, 'exchange.code', String);
+			assert.argumentIsRequired(exchange.currentDay, 'exchange.currentDay', Day, 'Day');
+			assert.argumentIsRequired(exchange.currentOpened, 'exchange.currentOpened', Boolean);
 
-			this._referenceDate = referenceDate;
+			const code = exchange.code;
+
+			this._exchanges[code] = exchange;
 
 			this._items.forEach((item) => {
-				item.setReferenceDate(this._referenceDate);
+				if (extractExchangeCode(item.position) === code) {
+					item.setExchangeStatus(exchange);
+				}
 			});
 		}
 
@@ -903,6 +927,14 @@ module.exports = (() => {
 		}
 	}
 
+	function extractExchangeCode(position) {
+		if (position.instrument && position.instrument.exchange) {
+			return position.instrument.exchange;
+		} else {
+			return null;
+		}
+	}
+
 	function addGroupBinding(group, dispoable) {
 		const id = group.id;
 
@@ -1127,7 +1159,7 @@ module.exports = (() => {
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
 			if (!requireCurrentSummary || currentSummary !== null) {
-				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._referenceDate);
+				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate);
 			} else {
 				returnRef = null;
 			}
@@ -1181,6 +1213,37 @@ module.exports = (() => {
 			this._trees[key].walk(group => group.refreshMarketPercent(), false, false);
 		});
 	}
+
+	/**
+	 * @namespace Schema
+	 */
+
+	/**
+	 * @typedef Quote
+	 * @memberOf Schema
+	 * @type Object
+	 * @property {string} symbol
+	 * @property {number} lastPrice
+	 * @property {string} lastPriceDirection
+	 * @property {number} previousPrice
+	 * @property {number} priceChange
+	 * @property {number} percentChange
+	 * @property {number} openPrice
+	 * @property {number} highPrice
+	 * @property {number} lowPrice
+	 * @property {number} volume
+	 * @property {string} timeDisplay
+	 * @property {Day|null} lastDay
+	 */
+
+	/**
+	 * @typedef ExchangeStatus
+	 * @memberOf Schema
+	 * @type Object
+	 * @property {string} code
+	 * @property {Day} currentDay
+	 * @property {boolean} currentOpened
+	 */
 
 	return PositionContainer;
 })();

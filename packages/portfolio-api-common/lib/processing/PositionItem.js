@@ -26,10 +26,10 @@ module.exports = (() => {
 	 * @param {Object} currentSummary
 	 * @param {Object[]} previousSummaries
 	 * @param {Boolean} reporting
-	 * @param {Day} referenceDate
+	 * @param {Day|null} reportDate
 	 */
 	class PositionItem extends Disposable {
-		constructor(portfolio, position, currentSummary, previousSummaries, reporting, referenceDate) {
+		constructor(portfolio, position, currentSummary, previousSummaries, reporting, reportDate) {
 			super();
 
 			this._portfolio = portfolio;
@@ -44,11 +44,15 @@ module.exports = (() => {
 			this._previousSummaries = previousSummaries || [ ];
 
 			this._reporting = reporting;
-			this._referenceDate = referenceDate;
+			this._reportDate = reportDate || null;
+
+			this._exchangeStatus = null;
 
 			this._currentQuote = null;
 			this._previousQuote = null;
 			this._currentPrice = null;
+
+			const today = calculateToday(this._reportDate, this._exchangeStatus);
 
 			this._data = { };
 
@@ -64,6 +68,7 @@ module.exports = (() => {
 			this._data.marketAbsoluteChange = null;
 
 			this._data.realizedToday = null;
+			this._data.realizedTodayChange = null;
 
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
@@ -112,7 +117,7 @@ module.exports = (() => {
 			this._data.fundamental = { };
 			this._data.calculating = getIsCalculating(position);
 			this._data.locked = getIsLocked(position);
-			this._data.expired = getIsExpired(position, referenceDate);
+			this._data.expired = getIsExpired(position, today);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
@@ -120,11 +125,10 @@ module.exports = (() => {
 			this._lockChangedEvent = new Event(this);
 			this._calculatingChangedEvent = new Event(this);
 			this._portfolioChangedEvent = new Event(this);
-			this._referenceDateChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
-			calculateStaticData(this, this._referenceDate);
-			calculatePriceData(this, null, null);
+			calculateStaticData(this, today);
+			calculatePriceData(this, null, today, false);
 		}
 
 		/**
@@ -244,7 +248,7 @@ module.exports = (() => {
 		 * be recalculated.
 		 *
 		 * @public
-		 * @param {Object} quote
+		 * @param {Quote} quote
 		 * @param {Boolean=} force
 		 */
 		setQuote(quote, force) {
@@ -260,7 +264,9 @@ module.exports = (() => {
 					this._data.previousPrice = quote.previousPrice;
 				}
 
-				calculatePriceData(this, quote.lastPrice, getQuoteIsToday(quote, this._referenceDate));
+				const today = calculateToday(this._reportDate, this._exchangeStatus);
+
+				calculatePriceData(this, quote.lastPrice, today, getQuoteIsToday(quote, today));
 
 				this._currentPrice = quote.lastPrice;
 
@@ -268,6 +274,28 @@ module.exports = (() => {
 				this._currentQuote = quote;
 
 				this._quoteChangedEvent.fire(this._currentQuote);
+			}
+		}
+
+		/**
+		 * Sets the current exchange status -- causing position-level data (e.g. today's gain) to
+		 * be recalculated.
+		 *
+		 * @public
+		 * @param {ExchangeStatus} exchange
+		 */
+		setExchangeStatus(exchange) {
+			assert.argumentIsRequired(exchange, 'exchange', Object);
+			assert.argumentIsRequired(exchange.code, 'exchange.code', String);
+			assert.argumentIsRequired(exchange.currentDay, 'exchange.currentDay', Day, 'Day');
+			assert.argumentIsRequired(exchange.currentOpened, 'exchange.currentOpened', Boolean);
+
+			if (this._exchangeStatus === null || !(exchange.currentDay.getIsEqual(this._exchangeStatus.currentDay) && exchange.currentOpened === this._exchangeStatus.currentOpened)) {
+				this._exchangeStatus = exchange;
+
+				if (this._currentQuote) {
+					this.setQuote(this._currentQuote, true);
+				}
 			}
 		}
 
@@ -347,31 +375,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Sets the reference date (today).
-		 *
-		 * @public
-		 * @param {Day} referenceDate
-		 */
-		setReferenceDate(referenceDate) {
-			assert.argumentIsRequired(referenceDate, 'referenceDate', Day, 'Day');
-
-			if (this.getIsDisposed()) {
-				return;
-			}
-
-			if (this._referenceDate.getIsEqual(referenceDate)) {
-				return;
-			}
-
-			this._referenceDate = referenceDate;
-
-			calculateStaticData(this, this._referenceDate);
-			calculatePriceData(this, this._currentPrice, getQuoteIsToday(this._currentQuote, this._referenceDate));
-
-			this._referenceDateChangedEvent.fire(this._referenceDate);
-		}
-
-		/**
 		 * Registers an observer for quote changes, which is fired after internal recalculations
 		 * of position data are complete.
 		 *
@@ -439,17 +442,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Registers an observer for changes to the reference date (today).
-		 *
-		 * @public
-		 * @param {Function} handler
-		 * @returns {Disposable}
-		 */
-		registerReferenceDateChangeHandler(handler) {
-			return this._referenceDateChangedEvent.register(handler);
-		}
-
-		/**
 		 * Registers an observer for object disposal.
 		 *
 		 * @public
@@ -469,7 +461,6 @@ module.exports = (() => {
 			this._lockChangedEvent.clear();
 			this._calculatingChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
-			this._referenceDateChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
 		}
 
@@ -478,7 +469,12 @@ module.exports = (() => {
 		}
 	}
 
-	function calculateStaticData(item, referenceDate) {
+	/**
+	 * @private
+	 * @param {PositionItem} item
+	 * @param {Day|null} day
+	 */
+	function calculateStaticData(item, day) {
 		const position = item.position;
 
 		const currentSummary = item.currentSummary;
@@ -509,7 +505,7 @@ module.exports = (() => {
 		data.realized = snapshot.gain;
 		data.unrealized = Decimal.ZERO;
 
-		if (position.latest && position.latest.date && position.latest.date.getIsEqual(referenceDate) && position.latest.gain) {
+		if (position.latest && position.latest.date && position.latest.date.getIsEqual(day) && position.latest.gain) {
 			data.realizedToday = position.latest.gain;
 		} else {
 			data.realizedToday = Decimal.ZERO;
@@ -551,7 +547,14 @@ module.exports = (() => {
 		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, position);
 	}
 
-	function calculatePriceData(item, price, today) {
+	/**
+	 * @private
+	 * @param {PositionItem} item
+	 * @param {Decimal|number} price
+	 * @param {Day} day
+	 * @param {Boolean} today
+	 */
+	function calculatePriceData(item, price, day, today) {
 		const position = item.position;
 		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 
@@ -631,6 +634,24 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+
+		let realizedToday;
+		let realizedTodayChange;
+
+		if (position.latest && position.latest.date && position.latest.date.getIsEqual(day) && position.latest.gain) {
+			realizedToday = position.latest.gain;
+		} else {
+			realizedToday = Decimal.ZERO;
+		}
+
+		if (data.realizedToday) {
+			realizedTodayChange = realizedToday.subtract(data.realizedToday);
+		} else {
+			realizedTodayChange = realizedToday;
+		}
+
+		data.realizedToday = realizedToday;
+		data.realizedTodayChange = realizedTodayChange;
 
 		const currentSummary = item.currentSummary;
 		const previousSummary = getPreviousSummary(item.previousSummaries, 1);
@@ -884,8 +905,20 @@ module.exports = (() => {
 		return snapshot;
 	}
 
-	function getQuoteIsToday(quote, referenceDate) {
-		return quote && quote.lastDay instanceof Day && referenceDate instanceof Day && quote.lastDay.getIsEqual(referenceDate);
+	function calculateToday(reportDate, exchangeStatus) {
+		if (reportDate !== null) {
+			return reportDate;
+		}
+
+		if (exchangeStatus !== null) {
+			return exchangeStatus.currentDay;
+		}
+
+		return Day.getToday();
+	}
+
+	function getQuoteIsToday(quote, today) {
+		return quote && quote.lastDay instanceof Day && today instanceof Day && quote.lastDay.getIsEqual(today);
 	}
 
 	return PositionItem;

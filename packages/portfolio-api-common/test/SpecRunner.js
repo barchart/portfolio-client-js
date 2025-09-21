@@ -2235,6 +2235,8 @@ module.exports = (() => {
 			this._positionSymbolAddedEvent = new Event(this);
 			this._positionSymbolRemovedEvent = new Event(this);
 
+			this._exchanges = { };
+
 			this._portfolios = portfolios.reduce((map, portfolio) => {
 				map[portfolio.portfolio] = portfolio;
 
@@ -2242,7 +2244,7 @@ module.exports = (() => {
 			}, { });
 
 			if (reportFrame) {
-				this._referenceDate = reportDate;
+				this._reportDate = reportDate;
 
 				this._currentSummaryFrame = reportFrame;
 				this._currentSummaryRange = array.last(this._currentSummaryFrame.getPriorRanges(reportDate, 0));
@@ -2252,7 +2254,7 @@ module.exports = (() => {
 
 				this._previousSummaryRanges.pop();
 			} else {
-				this._referenceDate = Day.getToday();
+				this._reportDate = null;
 
 				this._currentSummaryFrame = PositionSummaryFrame.YTD;
 				this._currentSummaryRange = array.first(this._currentSummaryFrame.getRecentRanges(0));
@@ -2517,12 +2519,24 @@ module.exports = (() => {
 
 			const existingBarchartSymbols = this.getPositionSymbols(false);
 
-			let similarPositionItem;
+			let exchange;
+
+			if (extractExchangeCode(position)) {
+				const code = extractExchangeCode(position);
+
+				exchange = this._exchanges[code] || null;
+			}
+
+			let currentQuote = null;
+			let previousQuote = null;
 
 			if (extractSymbolForBarchart(position)) {
-				similarPositionItem = this._items.find(item => extractSymbolForBarchart(item.position) === extractSymbolForBarchart(position)) || null;
-			} else {
-				similarPositionItem = null;
+				const similarPositionItem = this._items.find(item => extractSymbolForBarchart(item.position) === extractSymbolForBarchart(position)) || null;
+
+				if (similarPositionItem !== null) {
+					currentQuote = similarPositionItem.quote || null;
+					previousQuote = similarPositionItem.previousQuote || null;
+				}
 			}
 
 			removePositionItem.call(this, this._items.find(item => item.position.position === position.position));
@@ -2572,14 +2586,16 @@ module.exports = (() => {
 				this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
 			}
 
-			if (similarPositionItem !== null) {
-				if (similarPositionItem.previousQuote) {
-					item.setQuote(similarPositionItem.previousQuote);
-				}
+			if (exchange) {
+				item.setExchangeStatus(exchange);
+			}
 
-				if (similarPositionItem.quote) {
-					item.setQuote(similarPositionItem.quote);
-				}
+			if (previousQuote !== null) {
+				item.setQuote(previousQuote);
+			}
+
+			if (currentQuote !== null) {
+				item.setQuote(currentQuote);
 			}
 
 			recalculatePercentages.call(this);
@@ -2724,8 +2740,8 @@ module.exports = (() => {
 		 * triggering updates to position(s) and data aggregation(s).
 		 *
 		 * @public
-		 * @param {Object[]} positionQuotes
-		 * @param {Object[]} forexQuotes
+		 * @param {Quote[]} positionQuotes
+		 * @param {Quote[]} forexQuotes
 		 * @param {Boolean=} force
 		 */
 		setQuotes(positionQuotes, forexQuotes, force) {
@@ -2755,7 +2771,7 @@ module.exports = (() => {
 
 					if (symbol) {
 						if (this._symbols.hasOwnProperty(symbol)) {
-							this._symbols[ symbol ].forEach(item => item.setQuote(quote, force || false));
+							this._symbols[symbol].forEach(item => item.setQuote(quote, force || false));
 						}
 					}
 				});
@@ -2767,18 +2783,26 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Sets the reference date (today).
+		 * Performs an update of an exchange's status, triggering updates to position(s) and
+		 * data aggregation(s).
 		 *
 		 * @public
-		 * @param {Day} referenceDate
+		 * @param {ExchangeStatus} exchange
 		 */
-		setReferenceDate(referenceDate) {
-			assert.argumentIsRequired(referenceDate, 'referenceDate', Day, 'Day');
+		setExchangeStatus(exchange) {
+			assert.argumentIsRequired(exchange, 'exchange', Object);
+			assert.argumentIsRequired(exchange.code, 'exchange.code', String);
+			assert.argumentIsRequired(exchange.currentDay, 'exchange.currentDay', Day, 'Day');
+			assert.argumentIsRequired(exchange.currentOpened, 'exchange.currentOpened', Boolean);
 
-			this._referenceDate = referenceDate;
+			const code = exchange.code;
+
+			this._exchanges[code] = exchange;
 
 			this._items.forEach((item) => {
-				item.setReferenceDate(this._referenceDate);
+				if (extractExchangeCode(item.position) === code) {
+					item.setExchangeStatus(exchange);
+				}
 			});
 		}
 
@@ -3046,6 +3070,14 @@ module.exports = (() => {
 		}
 	}
 
+	function extractExchangeCode(position) {
+		if (position.instrument && position.instrument.exchange) {
+			return position.instrument.exchange;
+		} else {
+			return null;
+		}
+	}
+
 	function addGroupBinding(group, dispoable) {
 		const id = group.id;
 
@@ -3270,7 +3302,7 @@ module.exports = (() => {
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
 			if (!requireCurrentSummary || currentSummary !== null) {
-				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._referenceDate);
+				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate);
 			} else {
 				returnRef = null;
 			}
@@ -3324,6 +3356,37 @@ module.exports = (() => {
 			this._trees[key].walk(group => group.refreshMarketPercent(), false, false);
 		});
 	}
+
+	/**
+	 * @namespace Schema
+	 */
+
+	/**
+	 * @typedef Quote
+	 * @memberOf Schema
+	 * @type Object
+	 * @property {string} symbol
+	 * @property {number} lastPrice
+	 * @property {string} lastPriceDirection
+	 * @property {number} previousPrice
+	 * @property {number} priceChange
+	 * @property {number} percentChange
+	 * @property {number} openPrice
+	 * @property {number} highPrice
+	 * @property {number} lowPrice
+	 * @property {number} volume
+	 * @property {string} timeDisplay
+	 * @property {Day|null} lastDay
+	 */
+
+	/**
+	 * @typedef ExchangeStatus
+	 * @memberOf Schema
+	 * @type Object
+	 * @property {string} code
+	 * @property {Day} currentDay
+	 * @property {boolean} currentOpened
+	 */
 
 	return PositionContainer;
 })();
@@ -4011,10 +4074,6 @@ module.exports = (() => {
 			this.changeCurrency(currencySelector({ portfolio }));
 		});
 
-		const referenceDateBinding = item.registerReferenceDateChangeHandler(() => {
-			this.refresh();
-		});
-
 		let disposalBinding = null;
 
 		disposalBinding = item.registerPositionItemDisposeHandler(() => {
@@ -4026,7 +4085,6 @@ module.exports = (() => {
 			calculatingBinding.dispose();
 
 			portfolioChangeBinding.dispose();
-			referenceDateBinding.dispose();
 
 			disposalBinding.dispose();
 
@@ -4339,6 +4397,7 @@ module.exports = (() => {
 				updates.marketAbsolute = updates.marketAbsolute.add(translate(item, item.data.marketAbsolute));
 				updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 				updates.unrealizedToday = updates.unrealizedToday.add(translate(item, item.data.unrealizedToday));
+				updates.realizedToday = updates.realizedToday.add(translate(item, item.data.realizedToday));
 				updates.gainToday = updates.gainToday.add(translate(item, item.data.unrealizedToday.add(item.data.realizedToday)));
 				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.periodGain));
 				updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
@@ -4351,6 +4410,7 @@ module.exports = (() => {
 				marketDirection: unchanged,
 				unrealized: Decimal.ZERO,
 				unrealizedToday: Decimal.ZERO,
+				realizedToday: Decimal.ZERO,
 				gainToday: Decimal.ZERO,
 				summaryTotalCurrent: Decimal.ZERO,
 				periodUnrealized: Decimal.ZERO
@@ -4370,7 +4430,8 @@ module.exports = (() => {
 			updates.marketDirection = { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() };
 			updates.unrealized = actual.unrealized.add(translate(item, item.data.unrealizedChange));
 			updates.unrealizedToday = actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange));
-			updates.gainToday = actual.gainToday.add(translate(item, item.data.unrealizedTodayChange));
+			updates.realizedToday = actual.realizedToday.add(translate(item, item.data.realizedTodayChange));
+			updates.gainToday = actual.gainToday.add(translate(item, item.data.unrealizedTodayChange).add(item.data.realizedTodayChange));
 			updates.summaryTotalCurrent = actual.summaryTotalCurrent.add(translate(item, item.data.periodGainChange));
 			updates.periodUnrealized = actual.periodUnrealized.add(translate(item, item.data.periodUnrealizedChange));
 		}
@@ -4380,6 +4441,7 @@ module.exports = (() => {
 		actual.marketAbsolute = updates.marketAbsolute;
 		actual.unrealized = updates.unrealized;
 		actual.unrealizedToday = updates.unrealizedToday;
+		actual.realizedToday = updates.realizedToday;
 		actual.gainToday = updates.gainToday;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.periodUnrealized = updates.periodUnrealized;
@@ -4418,6 +4480,8 @@ module.exports = (() => {
 
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+
+		format.realizedToday = formatCurrency(actual.realizedToday, currency);
 
 		format.gainToday = formatCurrency(actual.gainToday, currency);
 		format.gainTodayNegative = actual.gainToday.getIsNegative();
@@ -4560,10 +4624,10 @@ module.exports = (() => {
 	 * @param {Object} currentSummary
 	 * @param {Object[]} previousSummaries
 	 * @param {Boolean} reporting
-	 * @param {Day} referenceDate
+	 * @param {Day|null} reportDate
 	 */
 	class PositionItem extends Disposable {
-		constructor(portfolio, position, currentSummary, previousSummaries, reporting, referenceDate) {
+		constructor(portfolio, position, currentSummary, previousSummaries, reporting, reportDate) {
 			super();
 
 			this._portfolio = portfolio;
@@ -4578,11 +4642,15 @@ module.exports = (() => {
 			this._previousSummaries = previousSummaries || [ ];
 
 			this._reporting = reporting;
-			this._referenceDate = referenceDate;
+			this._reportDate = reportDate || null;
+
+			this._exchangeStatus = null;
 
 			this._currentQuote = null;
 			this._previousQuote = null;
 			this._currentPrice = null;
+
+			const today = calculateToday(this._reportDate, this._exchangeStatus);
 
 			this._data = { };
 
@@ -4598,6 +4666,7 @@ module.exports = (() => {
 			this._data.marketAbsoluteChange = null;
 
 			this._data.realizedToday = null;
+			this._data.realizedTodayChange = null;
 
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
@@ -4646,7 +4715,7 @@ module.exports = (() => {
 			this._data.fundamental = { };
 			this._data.calculating = getIsCalculating(position);
 			this._data.locked = getIsLocked(position);
-			this._data.expired = getIsExpired(position, referenceDate);
+			this._data.expired = getIsExpired(position, today);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
@@ -4654,11 +4723,10 @@ module.exports = (() => {
 			this._lockChangedEvent = new Event(this);
 			this._calculatingChangedEvent = new Event(this);
 			this._portfolioChangedEvent = new Event(this);
-			this._referenceDateChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
-			calculateStaticData(this, this._referenceDate);
-			calculatePriceData(this, null, null);
+			calculateStaticData(this, today);
+			calculatePriceData(this, null, today, false);
 		}
 
 		/**
@@ -4778,7 +4846,7 @@ module.exports = (() => {
 		 * be recalculated.
 		 *
 		 * @public
-		 * @param {Object} quote
+		 * @param {Quote} quote
 		 * @param {Boolean=} force
 		 */
 		setQuote(quote, force) {
@@ -4794,7 +4862,9 @@ module.exports = (() => {
 					this._data.previousPrice = quote.previousPrice;
 				}
 
-				calculatePriceData(this, quote.lastPrice, getQuoteIsToday(quote, this._referenceDate));
+				const today = calculateToday(this._reportDate, this._exchangeStatus);
+
+				calculatePriceData(this, quote.lastPrice, today, getQuoteIsToday(quote, today));
 
 				this._currentPrice = quote.lastPrice;
 
@@ -4802,6 +4872,28 @@ module.exports = (() => {
 				this._currentQuote = quote;
 
 				this._quoteChangedEvent.fire(this._currentQuote);
+			}
+		}
+
+		/**
+		 * Sets the current exchange status -- causing position-level data (e.g. today's gain) to
+		 * be recalculated.
+		 *
+		 * @public
+		 * @param {ExchangeStatus} exchange
+		 */
+		setExchangeStatus(exchange) {
+			assert.argumentIsRequired(exchange, 'exchange', Object);
+			assert.argumentIsRequired(exchange.code, 'exchange.code', String);
+			assert.argumentIsRequired(exchange.currentDay, 'exchange.currentDay', Day, 'Day');
+			assert.argumentIsRequired(exchange.currentOpened, 'exchange.currentOpened', Boolean);
+
+			if (this._exchangeStatus === null || !(exchange.currentDay.getIsEqual(this._exchangeStatus.currentDay) && exchange.currentOpened === this._exchangeStatus.currentOpened)) {
+				this._exchangeStatus = exchange;
+
+				if (this._currentQuote) {
+					this.setQuote(this._currentQuote, true);
+				}
 			}
 		}
 
@@ -4881,31 +4973,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Sets the reference date (today).
-		 *
-		 * @public
-		 * @param {Day} referenceDate
-		 */
-		setReferenceDate(referenceDate) {
-			assert.argumentIsRequired(referenceDate, 'referenceDate', Day, 'Day');
-
-			if (this.getIsDisposed()) {
-				return;
-			}
-
-			if (this._referenceDate.getIsEqual(referenceDate)) {
-				return;
-			}
-
-			this._referenceDate = referenceDate;
-
-			calculateStaticData(this, this._referenceDate);
-			calculatePriceData(this, this._currentPrice, getQuoteIsToday(this._currentQuote, this._referenceDate));
-
-			this._referenceDateChangedEvent.fire(this._referenceDate);
-		}
-
-		/**
 		 * Registers an observer for quote changes, which is fired after internal recalculations
 		 * of position data are complete.
 		 *
@@ -4973,17 +5040,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Registers an observer for changes to the reference date (today).
-		 *
-		 * @public
-		 * @param {Function} handler
-		 * @returns {Disposable}
-		 */
-		registerReferenceDateChangeHandler(handler) {
-			return this._referenceDateChangedEvent.register(handler);
-		}
-
-		/**
 		 * Registers an observer for object disposal.
 		 *
 		 * @public
@@ -5003,7 +5059,6 @@ module.exports = (() => {
 			this._lockChangedEvent.clear();
 			this._calculatingChangedEvent.clear();
 			this._portfolioChangedEvent.clear();
-			this._referenceDateChangedEvent.clear();
 			this._positionItemDisposeEvent.clear();
 		}
 
@@ -5012,7 +5067,12 @@ module.exports = (() => {
 		}
 	}
 
-	function calculateStaticData(item, referenceDate) {
+	/**
+	 * @private
+	 * @param {PositionItem} item
+	 * @param {Day|null} day
+	 */
+	function calculateStaticData(item, day) {
 		const position = item.position;
 
 		const currentSummary = item.currentSummary;
@@ -5043,7 +5103,7 @@ module.exports = (() => {
 		data.realized = snapshot.gain;
 		data.unrealized = Decimal.ZERO;
 
-		if (position.latest && position.latest.date && position.latest.date.getIsEqual(referenceDate) && position.latest.gain) {
+		if (position.latest && position.latest.date && position.latest.date.getIsEqual(day) && position.latest.gain) {
 			data.realizedToday = position.latest.gain;
 		} else {
 			data.realizedToday = Decimal.ZERO;
@@ -5085,7 +5145,14 @@ module.exports = (() => {
 		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, position);
 	}
 
-	function calculatePriceData(item, price, today) {
+	/**
+	 * @private
+	 * @param {PositionItem} item
+	 * @param {Decimal|number} price
+	 * @param {Day} day
+	 * @param {Boolean} today
+	 */
+	function calculatePriceData(item, price, day, today) {
 		const position = item.position;
 		const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
 
@@ -5165,6 +5232,24 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+
+		let realizedToday;
+		let realizedTodayChange;
+
+		if (position.latest && position.latest.date && position.latest.date.getIsEqual(day) && position.latest.gain) {
+			realizedToday = position.latest.gain;
+		} else {
+			realizedToday = Decimal.ZERO;
+		}
+
+		if (data.realizedToday) {
+			realizedTodayChange = realizedToday.subtract(data.realizedToday);
+		} else {
+			realizedTodayChange = realizedToday;
+		}
+
+		data.realizedToday = realizedToday;
+		data.realizedTodayChange = realizedTodayChange;
 
 		const currentSummary = item.currentSummary;
 		const previousSummary = getPreviousSummary(item.previousSummaries, 1);
@@ -5418,8 +5503,20 @@ module.exports = (() => {
 		return snapshot;
 	}
 
-	function getQuoteIsToday(quote, referenceDate) {
-		return quote && quote.lastDay instanceof Day && referenceDate instanceof Day && quote.lastDay.getIsEqual(referenceDate);
+	function calculateToday(reportDate, exchangeStatus) {
+		if (reportDate !== null) {
+			return reportDate;
+		}
+
+		if (exchangeStatus !== null) {
+			return exchangeStatus.currentDay;
+		}
+
+		return Day.getToday();
+	}
+
+	function getQuoteIsToday(quote, today) {
+		return quote && quote.lastDay instanceof Day && today instanceof Day && quote.lastDay.getIsEqual(today);
 	}
 
 	return PositionItem;
@@ -6305,6 +6402,7 @@ module.exports = (() => {
 		.withField('instrument.code', DataType.NUMBER, true) // Not intended to be the unit code. Same value as [profile] table [type] column. See `InstrumentType.fromSymbolType` function.
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.exchange', DataType.STRING, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
@@ -6355,6 +6453,7 @@ module.exports = (() => {
 		.withField('instrument.code', DataType.NUMBER, true) // Not intended to be the unit code. Same value as [profile] table [type] column. See `InstrumentType.fromSymbolType` function.
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.exchange', DataType.STRING, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
@@ -22697,7 +22796,7 @@ describe('When positions are serialized', () => {
 					"id": "TGAM-CASH-USD",
 					"name": "US Dollar",
 					"type": "CASH",
-					"currency": "USD"
+					"currency": "USD",
 				},
 				"position": "a5cdc2e8-d9c6-4a1f-8f05-e271a5824f87",
 				"transaction": 2987,

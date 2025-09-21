@@ -229,6 +229,7 @@ module.exports = (() => {
 		.withField('instrument.code', DataType.NUMBER, true) // Not intended to be the unit code. Same value as [profile] table [type] column. See `InstrumentType.fromSymbolType` function.
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.exchange', DataType.STRING, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)
@@ -279,6 +280,7 @@ module.exports = (() => {
 		.withField('instrument.code', DataType.NUMBER, true) // Not intended to be the unit code. Same value as [profile] table [type] column. See `InstrumentType.fromSymbolType` function.
 		.withField('instrument.type', DataType.forEnum(InstrumentType, 'InstrumentType'), true)
 		.withField('instrument.currency', DataType.forEnum(Currency, 'Currency'), true)
+		.withField('instrument.exchange', DataType.STRING, true)
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('date', DataType.DAY)

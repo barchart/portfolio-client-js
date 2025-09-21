@@ -681,10 +681,6 @@ module.exports = (() => {
 			this.changeCurrency(currencySelector({ portfolio }));
 		});
 
-		const referenceDateBinding = item.registerReferenceDateChangeHandler(() => {
-			this.refresh();
-		});
-
 		let disposalBinding = null;
 
 		disposalBinding = item.registerPositionItemDisposeHandler(() => {
@@ -696,7 +692,6 @@ module.exports = (() => {
 			calculatingBinding.dispose();
 
 			portfolioChangeBinding.dispose();
-			referenceDateBinding.dispose();
 
 			disposalBinding.dispose();
 
@@ -1009,6 +1004,7 @@ module.exports = (() => {
 				updates.marketAbsolute = updates.marketAbsolute.add(translate(item, item.data.marketAbsolute));
 				updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 				updates.unrealizedToday = updates.unrealizedToday.add(translate(item, item.data.unrealizedToday));
+				updates.realizedToday = updates.realizedToday.add(translate(item, item.data.realizedToday));
 				updates.gainToday = updates.gainToday.add(translate(item, item.data.unrealizedToday.add(item.data.realizedToday)));
 				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.periodGain));
 				updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
@@ -1021,6 +1017,7 @@ module.exports = (() => {
 				marketDirection: unchanged,
 				unrealized: Decimal.ZERO,
 				unrealizedToday: Decimal.ZERO,
+				realizedToday: Decimal.ZERO,
 				gainToday: Decimal.ZERO,
 				summaryTotalCurrent: Decimal.ZERO,
 				periodUnrealized: Decimal.ZERO
@@ -1040,7 +1037,8 @@ module.exports = (() => {
 			updates.marketDirection = { up: item.data.marketChange.getIsPositive(), down: item.data.marketChange.getIsNegative() };
 			updates.unrealized = actual.unrealized.add(translate(item, item.data.unrealizedChange));
 			updates.unrealizedToday = actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange));
-			updates.gainToday = actual.gainToday.add(translate(item, item.data.unrealizedTodayChange));
+			updates.realizedToday = actual.realizedToday.add(translate(item, item.data.realizedTodayChange));
+			updates.gainToday = actual.gainToday.add(translate(item, item.data.unrealizedTodayChange).add(item.data.realizedTodayChange));
 			updates.summaryTotalCurrent = actual.summaryTotalCurrent.add(translate(item, item.data.periodGainChange));
 			updates.periodUnrealized = actual.periodUnrealized.add(translate(item, item.data.periodUnrealizedChange));
 		}
@@ -1050,6 +1048,7 @@ module.exports = (() => {
 		actual.marketAbsolute = updates.marketAbsolute;
 		actual.unrealized = updates.unrealized;
 		actual.unrealizedToday = updates.unrealizedToday;
+		actual.realizedToday = updates.realizedToday;
 		actual.gainToday = updates.gainToday;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.periodUnrealized = updates.periodUnrealized;
@@ -1088,6 +1087,8 @@ module.exports = (() => {
 
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
+
+		format.realizedToday = formatCurrency(actual.realizedToday, currency);
 
 		format.gainToday = formatCurrency(actual.gainToday, currency);
 		format.gainTodayNegative = actual.gainToday.getIsNegative();
