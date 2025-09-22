@@ -685,6 +685,27 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns the exchange code for the symbol
+		 *
+		 * @public
+		 * @param {string} symbol
+		 * @returns {string|null}
+		 */
+		getExchangeCode(symbol) {
+			assert.argumentIsRequired(symbol, 'symbol', String);
+
+			let code;
+
+			if (this._symbols.hasOwnProperty(symbol) && this._symbols[symbol].length > 0) {
+				code = extractExchangeCode(this._symbols[symbol][0].position);
+			} else {
+				code = null;
+			}
+
+			return code;
+		}
+
+		/**
 		 * Returns all forex symbols that are required to do currency translations.
 		 *
 		 * @public
