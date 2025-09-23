@@ -224,6 +224,7 @@ module.exports = (() => {
 		/**
 		 * The current price.
 		 *
+		 * @public
 		 * @return {null|Number}
 		 */
 		get currentPrice() {
