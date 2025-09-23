@@ -2828,6 +2828,27 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns the exchange code for the symbol
+		 *
+		 * @public
+		 * @param {string} symbol
+		 * @returns {string|null}
+		 */
+		getExchangeCode(symbol) {
+			assert.argumentIsRequired(symbol, 'symbol', String);
+
+			let code;
+
+			if (this._symbols.hasOwnProperty(symbol) && this._symbols[symbol].length > 0) {
+				code = extractExchangeCode(this._symbols[symbol][0].position);
+			} else {
+				code = null;
+			}
+
+			return code;
+		}
+
+		/**
 		 * Returns all forex symbols that are required to do currency translations.
 		 *
 		 * @public
@@ -4638,19 +4659,19 @@ module.exports = (() => {
 			this._currency = instrument.currency || Currency.CAD;
 			this._invalid = instrument.type.usesSymbols && (!is.object(instrument.symbol) || !is.string(instrument.symbol.barchart));
 
+			this._exchangeStatus = null;
+
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];
 
 			this._reporting = reporting;
 			this._reportDate = reportDate || null;
 
-			this._exchangeStatus = null;
+			this._today = calculateToday(this._reportDate, this._exchangeStatus);
 
 			this._currentQuote = null;
 			this._previousQuote = null;
 			this._currentPrice = null;
-
-			const today = calculateToday(this._reportDate, this._exchangeStatus);
 
 			this._data = { };
 
@@ -4715,7 +4736,7 @@ module.exports = (() => {
 			this._data.fundamental = { };
 			this._data.calculating = getIsCalculating(position);
 			this._data.locked = getIsLocked(position);
-			this._data.expired = getIsExpired(position, today);
+			this._data.expired = getIsExpired(position, this._today);
 
 			this._quoteChangedEvent = new Event(this);
 			this._newsExistsChangedEvent = new Event(this);
@@ -4725,8 +4746,8 @@ module.exports = (() => {
 			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
-			calculateStaticData(this, today);
-			calculatePriceData(this, null, today, false);
+			calculateStaticData(this, this._today);
+			calculatePriceData(this, null, null, this._today);
 		}
 
 		/**
@@ -4822,6 +4843,7 @@ module.exports = (() => {
 		/**
 		 * The current price.
 		 *
+		 * @public
 		 * @return {null|Number}
 		 */
 		get currentPrice() {
@@ -4862,9 +4884,7 @@ module.exports = (() => {
 					this._data.previousPrice = quote.previousPrice;
 				}
 
-				const today = calculateToday(this._reportDate, this._exchangeStatus);
-
-				calculatePriceData(this, quote.lastPrice, today, getQuoteIsToday(quote, today));
+				calculatePriceData(this, quote.lastPrice, calculateQuoteDay(quote), this._today);
 
 				this._currentPrice = quote.lastPrice;
 
@@ -4890,6 +4910,8 @@ module.exports = (() => {
 
 			if (this._exchangeStatus === null || !(exchange.currentDay.getIsEqual(this._exchangeStatus.currentDay) && exchange.currentOpened === this._exchangeStatus.currentOpened)) {
 				this._exchangeStatus = exchange;
+
+				this._today = calculateToday(this._reportDate, this._exchangeStatus);
 
 				if (this._currentQuote) {
 					this.setQuote(this._currentQuote, true);
@@ -5103,12 +5125,6 @@ module.exports = (() => {
 		data.realized = snapshot.gain;
 		data.unrealized = Decimal.ZERO;
 
-		if (position.latest && position.latest.date && position.latest.date.getIsEqual(day) && position.latest.gain) {
-			data.realizedToday = position.latest.gain;
-		} else {
-			data.realizedToday = Decimal.ZERO;
-		}
-
 		data.income = snapshot.income;
 
 		data.marketPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.value;
@@ -5148,9 +5164,9 @@ module.exports = (() => {
 	/**
 	 * @private
 	 * @param {PositionItem} item
-	 * @param {Decimal|number} price
-	 * @param {Day} day
-	 * @param {Boolean} today
+	 * @param {Decimal|number|null} price
+	 * @param {Day|null} day
+	 * @param {Day} today
 	 */
 	function calculatePriceData(item, price, day, today) {
 		const position = item.position;
@@ -5215,19 +5231,20 @@ module.exports = (() => {
 		// price change (e.g. friday, last week, sometime in the past when the instrument
 		// was delisted, etc).
 
-		if (today && data.previousPrice && price) {
+		const priceIsToday = day && today.getIsEqual(day);
+
+		if (priceIsToday && data.previousPrice && price) {
 			const unrealizedTodayBase = ValuationCalculator.calculate(position.instrument, data.previousPrice, snapshot.open);
 
 			unrealizedToday = market.subtract(unrealizedTodayBase);
-
-			if (data.unrealizedToday !== null) {
-				unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
-			} else {
-				unrealizedTodayChange = unrealizedToday;
-			}
 		} else {
 			unrealizedToday = Decimal.ZERO;
-			unrealizedTodayChange = Decimal.ZERO;
+		}
+
+		if (data.unrealizedToday !== null) {
+			unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
+		} else {
+			unrealizedTodayChange = unrealizedToday;
 		}
 
 		data.unrealizedToday = unrealizedToday;
@@ -5236,7 +5253,7 @@ module.exports = (() => {
 		let realizedToday;
 		let realizedTodayChange;
 
-		if (position.latest && position.latest.date && position.latest.date.getIsEqual(day) && position.latest.gain) {
+		if (position.latest && position.latest.gain && position.latest.date && day && position.latest.date.getIsEqual(day)) {
 			realizedToday = position.latest.gain;
 		} else {
 			realizedToday = Decimal.ZERO;
@@ -5504,19 +5521,23 @@ module.exports = (() => {
 	}
 
 	function calculateToday(reportDate, exchangeStatus) {
-		if (reportDate !== null) {
+		if (reportDate instanceof Day) {
 			return reportDate;
 		}
 
-		if (exchangeStatus !== null) {
+		if (exchangeStatus && exchangeStatus.currentDay instanceof Day) {
 			return exchangeStatus.currentDay;
 		}
 
 		return Day.getToday();
 	}
 
-	function getQuoteIsToday(quote, today) {
-		return quote && quote.lastDay instanceof Day && today instanceof Day && quote.lastDay.getIsEqual(today);
+	function calculateQuoteDay(quote) {
+		if (quote && quote.lastDay instanceof Day) {
+			return quote.lastDay;
+		}
+
+		return null;
 	}
 
 	return PositionItem;
