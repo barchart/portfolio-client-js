@@ -621,15 +621,14 @@ module.exports = (() => {
 			const unrealizedTodayBase = ValuationCalculator.calculate(position.instrument, data.previousPrice, snapshot.open);
 
 			unrealizedToday = market.subtract(unrealizedTodayBase);
-
-			if (data.unrealizedToday !== null) {
-				unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
-			} else {
-				unrealizedTodayChange = unrealizedToday;
-			}
 		} else {
 			unrealizedToday = Decimal.ZERO;
-			unrealizedTodayChange = Decimal.ZERO;
+		}
+
+		if (data.unrealizedToday !== null) {
+			unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
+		} else {
+			unrealizedTodayChange = unrealizedToday;
 		}
 
 		data.unrealizedToday = unrealizedToday;
