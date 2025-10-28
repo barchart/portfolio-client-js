@@ -1740,6 +1740,7 @@ module.exports = (() => {
 },{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],8:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is');
 
 const InstrumentType = require('./InstrumentType'),
@@ -1845,6 +1846,49 @@ module.exports = (() => {
 			assert.argumentIsOptional(strict, 'strict', Boolean);
 
 			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && is.boolean(strict) && strict && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
+		}
+
+		static getSwitchIndex(transactions, position) {
+			assert.argumentIsArray(transactions, 'transactions');
+			assert.argumentIsOptional(position, 'position');
+
+			let open;
+
+			if (position) {
+				open = position.snapshot.open;
+			} else {
+				open = Decimal.ZERO;
+			}
+
+			let initial;
+
+			if (open.getIsZero()) {
+				initial = null;
+			} else {
+				initial = PositionDirection.for(open);
+			}
+
+			return transactions.findIndex((t) => {
+				let quantity = t.quantity.absolute();
+
+				if (t.type.sale) {
+					quantity = quantity.opposite();
+				}
+
+				open = open.add(quantity);
+
+				const current = PositionDirection.for(open);
+
+				if (initial !== null && initial !== current && current !== PositionDirection.EVEN) {
+					return true;
+				}
+
+				if (initial === null && !open.getIsZero()) {
+					initial = current;
+				}
+
+				return false;
+			});
 		}
 
 		/**
@@ -2079,7 +2123,7 @@ module.exports = (() => {
 	return TransactionValidator;
 })();
 
-},{"./InstrumentType":3,"./PositionDirection":5,"./TransactionType":7,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41}],9:[function(require,module,exports){
+},{"./InstrumentType":3,"./PositionDirection":5,"./TransactionType":7,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41}],9:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -22518,7 +22562,8 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 });
 
 },{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30}],76:[function(require,module,exports){
-const Day = require('@barchart/common-js/lang/Day');
+const Day = require('@barchart/common-js/lang/Day'),
+	Decimal = require('@barchart/common-js/lang/Decimal');
 
 const TransactionType = require('./../../../lib/data/TransactionType'),
 	TransactionValidator = require('./../../../lib/data/TransactionValidator');
@@ -22612,7 +22657,198 @@ describe('When requesting all the user-initiated transaction types', () => {
 		expect(userInitiated.length).toEqual(9);
 	});
 });
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":29}],77:[function(require,module,exports){
+
+describe('When checking for a transaction that would switch position direction (without a position)', () => {
+	'use strict';
+
+	describe('Where the transaction list only contains BUY transactions', () => {
+		let transactions;
+
+		beforeEach(() => {
+			transactions = [
+				{ type: TransactionType.BUY, quantity: new Decimal(1) },
+				{ type: TransactionType.BUY, quantity: new Decimal(2) },
+				{ type: TransactionType.BUY, quantity: new Decimal(3) }
+			];
+		});
+
+		it('No transaction should be identified which switches the position direction', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
+		});
+	});
+
+	describe('where the transaction list only contains SELL transactions (with positive quantities)', () => {
+		let transactions;
+
+		beforeEach(() => {
+			transactions = [
+				{ type: TransactionType.SELL, quantity: new Decimal(1) },
+				{ type: TransactionType.SELL, quantity: new Decimal(2) },
+				{ type: TransactionType.SELL, quantity: new Decimal(3) }
+			];
+		});
+
+		it('No transaction should be identified which switches the position direction', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
+		});
+	});
+
+	describe('where the transaction list only contains SELL_SHORT transactions (with positive quantities)', () => {
+		let transactions;
+
+		beforeEach(() => {
+			transactions = [
+				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(-1) },
+				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(-2) },
+				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(-3) }
+			];
+		});
+
+		it('No transaction should be identified which switches the position direction', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
+		});
+	});
+
+	describe('Where the transaction list buys 100 shares then sells 50 shares', () => {
+		let transactions;
+
+		beforeEach(() => {
+			transactions = [
+				{ type: TransactionType.BUY, quantity: new Decimal(100) },
+				{ type: TransactionType.SELL, quantity: new Decimal(50) }
+			];
+		});
+
+		it('No transaction should be identified', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
+		});
+	});
+
+	describe('Where the transaction list sells 100 shares short then buys 50 shares to cover', () => {
+		let transactions;
+
+		beforeEach(() => {
+			transactions = [
+				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(50) }
+			];
+		});
+
+		it('No transaction should be identified', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
+		});
+	});
+
+	describe('Where the transaction list sells 100 shares short then sells 50 shares short then buys 150 shares to cover', () => {
+		let transactions;
+
+		beforeEach(() => {
+			transactions = [
+				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
+				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(50) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(150) }
+			];
+		});
+
+		it('No transaction should be identified', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
+		});
+	});
+
+	describe('Where the transaction list buys 100 shares then sells 200 shares', () => {
+		let transactions;
+
+		beforeEach(() => {
+			transactions = [
+				{ type: TransactionType.BUY, quantity: new Decimal(100) },
+				{ type: TransactionType.SELL, quantity: new Decimal(200) }
+			];
+		});
+
+		it('The second transaction should be identified as switching the direction', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(1);
+		});
+	});
+
+	describe('Where the transaction list sells 100 shares short then sells 50 shares short then buys 151 shares to cover', () => {
+		let transactions;
+
+		beforeEach(() => {
+			transactions = [
+				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
+				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(50) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(151) }
+			];
+		});
+
+		it('The third transaction should be identified as switching the direction', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(2);
+		});
+	});
+});
+
+describe('When checking for a transaction that would switch position direction (with a LONG position)', () => {
+	'use strict';
+
+	describe('Where the transaction list attempts to SELL too many shares', () => {
+		let position;
+		let transactions;
+
+		beforeEach(() => {
+			position = {
+				snapshot: {
+					open: new Decimal(5)
+				}
+			};
+
+			transactions = [
+				{ type: TransactionType.SELL, quantity: new Decimal(1) },
+				{ type: TransactionType.SELL, quantity: new Decimal(1) },
+				{ type: TransactionType.SELL, quantity: new Decimal(1) },
+				{ type: TransactionType.SELL, quantity: new Decimal(1) },
+				{ type: TransactionType.SELL, quantity: new Decimal(1) },
+				{ type: TransactionType.SELL, quantity: new Decimal(1) },
+				{ type: TransactionType.SELL, quantity: new Decimal(1) }
+			];
+		});
+
+		it('The sixth transaction should be identified as switching the direction', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions, position)).toEqual(5);
+		});
+	});
+});
+
+describe('When checking for a transaction that would switch position direction (with a SHORT position)', () => {
+	'use strict';
+
+	describe('Where the transaction list attempts to SELL too many shares', () => {
+		let position;
+		let transactions;
+
+		beforeEach(() => {
+			position = {
+				snapshot: {
+					open: new Decimal(-5)
+				}
+			};
+
+			transactions = [
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) }
+			];
+		});
+
+		it('The sixth transaction should be identified as switching the direction', () => {
+			expect(TransactionValidator.getSwitchIndex(transactions, position)).toEqual(5);
+		});
+	});
+});
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30}],77:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
