@@ -1,5 +1,6 @@
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
+	Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is');
 
 const InstrumentType = require('./InstrumentType'),
@@ -105,6 +106,49 @@ module.exports = (() => {
 			assert.argumentIsOptional(strict, 'strict', Boolean);
 
 			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && is.boolean(strict) && strict && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
+		}
+
+		static getSwitchIndex(transactions, position) {
+			assert.argumentIsArray(transactions, 'transactions');
+			assert.argumentIsOptional(position, 'position');
+
+			let open;
+
+			if (position) {
+				open = position.snapshot.open;
+			} else {
+				open = Decimal.ZERO;
+			}
+
+			let initial;
+
+			if (open.getIsZero()) {
+				initial = null;
+			} else {
+				initial = PositionDirection.for(open);
+			}
+
+			return transactions.findIndex((t) => {
+				let quantity = t.quantity.absolute();
+
+				if (t.type.sale) {
+					quantity = quantity.opposite();
+				}
+
+				open = open.add(quantity);
+
+				const current = PositionDirection.for(open);
+
+				if (initial !== null && initial !== current && current !== PositionDirection.EVEN) {
+					return true;
+				}
+
+				if (initial === null && !open.getIsZero()) {
+					initial = current;
+				}
+
+				return false;
+			});
 		}
 
 		/**
