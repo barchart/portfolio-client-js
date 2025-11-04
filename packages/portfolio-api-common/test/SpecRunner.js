@@ -1848,94 +1848,69 @@ module.exports = (() => {
 			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && is.boolean(strict) && strict && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
 		}
 
-		static getSwitchIndex(transactions, position) {
-			assert.argumentIsArray(transactions, 'transactions');
-			assert.argumentIsOptional(position, 'position');
-
-			let open;
-
-			if (position) {
-				open = position.snapshot.open;
-			} else {
-				open = Decimal.ZERO;
-			}
-
-			let initial;
-
-			if (open.getIsZero()) {
-				initial = null;
-			} else {
-				initial = PositionDirection.for(open);
-			}
-
-			return transactions.findIndex((t) => {
-				let quantity = t.quantity.absolute();
-
-				if (t.type.sale) {
-					quantity = quantity.opposite();
-				}
-
-				open = open.add(quantity);
-
-				const current = PositionDirection.for(open);
-
-				if (initial !== null && initial !== current && current !== PositionDirection.EVEN) {
-					return true;
-				}
-
-				if (initial === null && !open.getIsZero()) {
-					initial = current;
-				}
-
-				return false;
-			});
-		}
-
-        static getPositionViolationIndex(transactions, position) {
+        static getSwitchIndex(transactions, instrumentType, position) {
             assert.argumentIsArray(transactions, 'transactions');
+            assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
             assert.argumentIsOptional(position, 'position');
 
-            let open;
-
-            if (position) {
-                open = position.snapshot.open;
-            } else {
-                open = Decimal.ZERO;
-            }
+            let open = position ? position.snapshot.open : Decimal.ZERO;
+            let currentDirection = open.getIsZero() ? null : PositionDirection.for(open);
 
             return transactions.findIndex((t) => {
-                const type = t.type;
-                const quantity = t.quantity.absolute();
+                let quantity = t.quantity.absolute();
 
-                if (open.getIsZero()) {
-                    if ((type.sale && !type.opening) || (type.purchase && type.closing)) {
-                        return true;
-                    }
+                if (t.type.sale) {
+                    quantity = quantity.opposite();
                 }
 
-                if (open.getIsGreaterThan(Decimal.ZERO)) {
-                    if ((type.sale && type.opening) || (type.purchase && type.closing)) {
-                        return true;
-                    }
+                const nextOpen = open.add(quantity);
+                const nextDirection = nextOpen.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(nextOpen);
+
+                const isValidSwitch = TransactionValidator.validateDirectionSwitch(instrumentType, currentDirection, nextDirection);
+
+                if (!isValidSwitch) {
+                    return true;
                 }
 
-                if (open.getIsLessThan(Decimal.ZERO)) {
-                    if (type.purchase && type.opening) {
-                        return true;
-                    }
-                }
-
-                let delta = quantity;
-
-                if (type.sale) {
-                    delta = delta.opposite();
-                }
-
-                open = open.add(delta);
+                open = nextOpen;
+                currentDirection = nextDirection;
 
                 return false;
             });
         }
+
+        static getPositionViolationIndex(transactions, instrumentType, position) {
+            assert.argumentIsArray(transactions, 'transactions');
+            assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
+            assert.argumentIsOptional(position, 'position');
+
+            let open = position ? position.snapshot.open : Decimal.ZERO;
+            let currentDirection = open.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(open);
+
+            return transactions.findIndex((t) => {
+                const quantity = t.quantity.absolute();
+                const type = t.type;
+
+                // ✅ 1. Proveri da li je tip transakcije validan za trenutni direction
+                const validTypes = TransactionValidator.getTransactionTypesFor(instrumentType, true, currentDirection);
+                const isValidType = validTypes.includes(type);
+
+                if (!isValidType) {
+                    return true; // Nevalidan tip — greška
+                }
+
+                // ✅ 2. Ako je tip validan, samo ažuriraj stanje open/position
+                const delta = type.sale ? quantity.opposite() : quantity;
+                const nextOpen = open.add(delta);
+                const nextDirection = nextOpen.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(nextOpen);
+
+                open = nextOpen;
+                currentDirection = nextDirection;
+
+                return false; // sve OK, idi dalje
+            });
+        }
+
 
         /**
 		 * Given an instrument type, returns all valid transaction types.
@@ -22741,6 +22716,8 @@ const Day = require('@barchart/common-js/lang/Day'),
 const TransactionType = require('./../../../lib/data/TransactionType'),
 	TransactionValidator = require('./../../../lib/data/TransactionValidator');
 
+const InstrumentType = require('./../../../lib/data/InstrumentType');
+
 describe('When validating transaction order', () => {
 	'use strict';
 
@@ -22832,385 +22809,243 @@ describe('When requesting all the user-initiated transaction types', () => {
 });
 
 describe('When checking for a transaction that would switch position direction (without a position)', () => {
-	'use strict';
-
-	describe('Where the transaction list only contains BUY transactions', () => {
-		let transactions;
-
-		beforeEach(() => {
-			transactions = [
-				{ type: TransactionType.BUY, quantity: new Decimal(1) },
-				{ type: TransactionType.BUY, quantity: new Decimal(2) },
-				{ type: TransactionType.BUY, quantity: new Decimal(3) }
-			];
-		});
-
-		it('No transaction should be identified which switches the position direction', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
-		});
-	});
-
-	describe('where the transaction list only contains SELL transactions (with positive quantities)', () => {
-		let transactions;
-
-		beforeEach(() => {
-			transactions = [
-				{ type: TransactionType.SELL, quantity: new Decimal(1) },
-				{ type: TransactionType.SELL, quantity: new Decimal(2) },
-				{ type: TransactionType.SELL, quantity: new Decimal(3) }
-			];
-		});
-
-		it('No transaction should be identified which switches the position direction', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
-		});
-	});
-
-	describe('where the transaction list only contains SELL_SHORT transactions (with positive quantities)', () => {
-		let transactions;
-
-		beforeEach(() => {
-			transactions = [
-				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(-1) },
-				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(-2) },
-				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(-3) }
-			];
-		});
-
-		it('No transaction should be identified which switches the position direction', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
-		});
-	});
-
-	describe('Where the transaction list buys 100 shares then sells 50 shares', () => {
-		let transactions;
-
-		beforeEach(() => {
-			transactions = [
-				{ type: TransactionType.BUY, quantity: new Decimal(100) },
-				{ type: TransactionType.SELL, quantity: new Decimal(50) }
-			];
-		});
-
-		it('No transaction should be identified', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
-		});
-	});
-
-	describe('Where the transaction list sells 100 shares short then buys 50 shares to cover', () => {
-		let transactions;
-
-		beforeEach(() => {
-			transactions = [
-				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(50) }
-			];
-		});
-
-		it('No transaction should be identified', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
-		});
-	});
-
-	describe('Where the transaction list sells 100 shares short then sells 50 shares short then buys 150 shares to cover', () => {
-		let transactions;
-
-		beforeEach(() => {
-			transactions = [
-				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
-				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(50) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(150) }
-			];
-		});
-
-		it('No transaction should be identified', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(-1);
-		});
-	});
-
-	describe('Where the transaction list buys 100 shares then sells 200 shares', () => {
-		let transactions;
-
-		beforeEach(() => {
-			transactions = [
-				{ type: TransactionType.BUY, quantity: new Decimal(100) },
-				{ type: TransactionType.SELL, quantity: new Decimal(200) }
-			];
-		});
-
-		it('The second transaction should be identified as switching the direction', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(1);
-		});
-	});
-
-	describe('Where the transaction list sells 100 shares short then sells 50 shares short then buys 151 shares to cover', () => {
-		let transactions;
-
-		beforeEach(() => {
-			transactions = [
-				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
-				{ type: TransactionType.SELL_SHORT, quantity: new Decimal(50) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(151) }
-			];
-		});
-
-		it('The third transaction should be identified as switching the direction', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions)).toEqual(2);
-		});
-	});
-});
-
-describe('When checking for a transaction that would switch position direction (with a LONG position)', () => {
-	'use strict';
-
-	describe('Where the transaction list attempts to SELL too many shares', () => {
-		let position;
-		let transactions;
-
-		beforeEach(() => {
-			position = {
-				snapshot: {
-					open: new Decimal(5)
-				}
-			};
-
-			transactions = [
-				{ type: TransactionType.SELL, quantity: new Decimal(1) },
-				{ type: TransactionType.SELL, quantity: new Decimal(1) },
-				{ type: TransactionType.SELL, quantity: new Decimal(1) },
-				{ type: TransactionType.SELL, quantity: new Decimal(1) },
-				{ type: TransactionType.SELL, quantity: new Decimal(1) },
-				{ type: TransactionType.SELL, quantity: new Decimal(1) },
-				{ type: TransactionType.SELL, quantity: new Decimal(1) }
-			];
-		});
-
-		it('The sixth transaction should be identified as switching the direction', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions, position)).toEqual(5);
-		});
-	});
-});
-
-describe('When checking for a transaction that would switch position direction (with a SHORT position)', () => {
-	'use strict';
-
-	describe('Where the transaction list attempts to SELL too many shares', () => {
-		let position;
-		let transactions;
-
-		beforeEach(() => {
-			position = {
-				snapshot: {
-					open: new Decimal(-5)
-				}
-			};
-
-			transactions = [
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
-				{ type: TransactionType.BUY_SHORT, quantity: new Decimal(1) }
-			];
-		});
-
-		it('The sixth transaction should be identified as switching the direction', () => {
-			expect(TransactionValidator.getSwitchIndex(transactions, position)).toEqual(5);
-		});
-	});
-});
-
-describe('When checking for position rule violations (without a position)', () => {
     'use strict';
 
-    describe('Where the transaction list starts with a SELL (no open position)', () => {
+    const instrumentType = InstrumentType.EQUITY;
+
+    describe('Where the transaction list only contains BUY transactions', () => {
         let transactions;
 
         beforeEach(() => {
             transactions = [
-                { type: TransactionType.SELL, quantity: new Decimal(1) },
-                { type: TransactionType.BUY, quantity: new Decimal(1) }
-            ];
-        });
-
-        it('The first transaction should be identified as invalid', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(0);
-        });
-    });
-
-    describe('Where the transaction list starts with a BUY_SHORT (no short position)', () => {
-        let transactions;
-
-        beforeEach(() => {
-            transactions = [
-                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) }
-            ];
-        });
-
-        it('The first transaction should be identified as invalid', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(0);
-        });
-    });
-
-    describe('Where the transaction list starts correctly with a BUY', () => {
-        let transactions;
-
-        beforeEach(() => {
-            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(1) },
                 { type: TransactionType.BUY, quantity: new Decimal(2) },
-                { type: TransactionType.SELL, quantity: new Decimal(1) },
-                { type: TransactionType.SELL, quantity: new Decimal(1) }
+                { type: TransactionType.BUY, quantity: new Decimal(3) }
             ];
         });
 
-        it('No invalid transaction should be identified', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(-1);
+        it('No transaction should be identified which switches the position direction', () => {
+            expect(TransactionValidator.getSwitchIndex(transactions, instrumentType)).toEqual(-1);
+        });
+    });
+
+    describe('Where the transaction list only contains SELL transactions (with positive quantities)', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(2) },
+                { type: TransactionType.SELL, quantity: new Decimal(3) }
+            ];
+        });
+
+        it('No transaction should be identified which switches the position direction', () => {
+            expect(TransactionValidator.getSwitchIndex(transactions, instrumentType)).toEqual(-1);
+        });
+    });
+
+    describe('Where the transaction list only contains SELL_SHORT transactions', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-1) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-2) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-3) }
+            ];
+        });
+
+        it('No transaction should be identified which switches the position direction', () => {
+            expect(TransactionValidator.getSwitchIndex(transactions, instrumentType)).toEqual(-1);
+        });
+    });
+
+    describe('Where the transaction list buys 100 shares then sells 50 shares', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(100) },
+                { type: TransactionType.SELL, quantity: new Decimal(50) }
+            ];
+        });
+
+        it('No transaction should be identified', () => {
+            expect(TransactionValidator.getSwitchIndex(transactions, instrumentType)).toEqual(-1);
+        });
+    });
+
+    describe('Where the transaction list sells 100 shares short then buys 50 shares to cover', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(50) }
+            ];
+        });
+
+        it('No transaction should be identified', () => {
+            expect(TransactionValidator.getSwitchIndex(transactions, instrumentType)).toEqual(-1);
+        });
+    });
+
+    describe('Where the transaction list sells 100 shares short then sells 50 shares short then buys 150 shares to cover', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(50) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(150) }
+            ];
+        });
+
+        it('No transaction should be identified', () => {
+            expect(TransactionValidator.getSwitchIndex(transactions, instrumentType)).toEqual(-1);
+        });
+    });
+
+    describe('Where the transaction list buys 100 shares then sells 200 shares', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(100) },
+                { type: TransactionType.SELL, quantity: new Decimal(200) }
+            ];
+        });
+
+        it('The second transaction should be identified as switching the direction', () => {
+            expect(TransactionValidator.getSwitchIndex(transactions, instrumentType)).toEqual(1);
+        });
+    });
+
+    describe('Where the transaction list sells 100 shares short then sells 50 shares short then buys 151 shares to cover', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(100) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(50) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(151) }
+            ];
+        });
+
+        it('The third transaction should be identified as switching the direction', () => {
+            expect(TransactionValidator.getSwitchIndex(transactions, instrumentType)).toEqual(2);
         });
     });
 });
 
-describe('When checking for position rule violations (with a LONG position)', () => {
+describe('When validating position violations', () => {
     'use strict';
 
-    describe('Where the transaction list tries to open a short while already long', () => {
-        let position;
+    const instrumentType = InstrumentType.EQUITY;
+
+    describe('With all BUY transactions', () => {
         let transactions;
 
         beforeEach(() => {
-            position = {
-                snapshot: {
-                    open: new Decimal(10)
-                }
-            };
-
             transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(1) },
+                { type: TransactionType.BUY, quantity: new Decimal(2) }
+            ];
+        });
+
+        it('Should return -1 (no violations)', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType)).toEqual(-1);
+        });
+    });
+
+    describe('With all SELL transactions', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(2) }
+            ];
+        });
+
+        it('Should detect violation at index 0', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType)).toEqual(0);
+        });
+    });
+
+    describe('With invalid transition BUY → SELL_SHORT', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(10) },
                 { type: TransactionType.SELL_SHORT, quantity: new Decimal(5) }
             ];
         });
 
-        it('The first transaction should be identified as invalid', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
+        it('Should detect violation at index 1', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType)).toEqual(1);
         });
     });
 
-    describe('Where the transaction list tries to close with BUY_SHORT while long', () => {
-        let position;
+    describe('With valid closing then switch LONG → SHORT', () => {
         let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(10) },
+                { type: TransactionType.SELL, quantity: new Decimal(10) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(5) }
+            ];
+        });
+
+        it('Should return -1 (no violations)', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType)).toEqual(-1);
+        });
+    });
+
+    describe('With an open LONG position continuing correctly', () => {
+        let transactions;
+        let position;
 
         beforeEach(() => {
             position = {
                 snapshot: {
-                    open: new Decimal(10)
+                    open: new Decimal(100)
                 }
             };
-
             transactions = [
-                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
+                { type: TransactionType.BUY, quantity: new Decimal(20) },
+                { type: TransactionType.SELL, quantity: new Decimal(50) }
             ];
         });
 
-        it('The first transaction should be identified as invalid', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
+        it('Should return -1 (no violations)', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType, position)).toEqual(-1);
         });
     });
 
-    describe('Where the transaction list properly sells part of the position', () => {
-        let position;
+    describe('With an open SHORT position and invalid BUY', () => {
         let transactions;
+        let position;
 
         beforeEach(() => {
             position = {
-                snapshot: {
-                    open: new Decimal(10)
-                }
+                snapshot: { open: new Decimal(-50) }
             };
-
             transactions = [
-                { type: TransactionType.SELL, quantity: new Decimal(5) },
-                { type: TransactionType.SELL, quantity: new Decimal(5) }
+                { type: TransactionType.BUY, quantity: new Decimal(10) }
             ];
         });
 
-        it('No invalid transaction should be identified', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
+        it('Should detect violation at index 0', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType, position)).toEqual(0);
         });
     });
 });
 
-describe('When checking for position rule violations (with a SHORT position)', () => {
-    'use strict';
-
-    describe('Where the transaction list starts with a BUY (invalid opening while short)', () => {
-        let position;
-        let transactions;
-
-        beforeEach(() => {
-            position = {
-                snapshot: {
-                    open: new Decimal(-5)
-                }
-            };
-
-            transactions = [
-                { type: TransactionType.BUY, quantity: new Decimal(2) },
-                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
-            ];
-        });
-
-        it('The first transaction should be identified as invalid', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
-        });
-    });
-
-    describe('Where the transaction list tries to open a new short while already short', () => {
-        let position;
-        let transactions;
-
-        beforeEach(() => {
-            position = {
-                snapshot: {
-                    open: new Decimal(-5)
-                }
-            };
-
-            transactions = [
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) },
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) }
-            ];
-        });
-
-        it('No invalid transaction should be identified', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
-        });
-    });
-
-    describe('Where the transaction list correctly buys to cover part of the short position', () => {
-        let position;
-        let transactions;
-
-        beforeEach(() => {
-            position = {
-                snapshot: {
-                    open: new Decimal(-5)
-                }
-            };
-
-            transactions = [
-                { type: TransactionType.BUY_SHORT, quantity: new Decimal(3) },
-                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
-            ];
-        });
-
-        it('No invalid transaction should be identified', () => {
-            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
-        });
-    });
-});
-
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":31}],78:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":31}],78:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 

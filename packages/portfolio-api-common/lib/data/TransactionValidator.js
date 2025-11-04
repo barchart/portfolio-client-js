@@ -108,94 +108,87 @@ module.exports = (() => {
 			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && is.boolean(strict) && strict && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
 		}
 
-		static getSwitchIndex(transactions, position) {
-			assert.argumentIsArray(transactions, 'transactions');
-			assert.argumentIsOptional(position, 'position');
-
-			let open;
-
-			if (position) {
-				open = position.snapshot.open;
-			} else {
-				open = Decimal.ZERO;
-			}
-
-			let initial;
-
-			if (open.getIsZero()) {
-				initial = null;
-			} else {
-				initial = PositionDirection.for(open);
-			}
-
-			return transactions.findIndex((t) => {
-				let quantity = t.quantity.absolute();
-
-				if (t.type.sale) {
-					quantity = quantity.opposite();
-				}
-
-				open = open.add(quantity);
-
-				const current = PositionDirection.for(open);
-
-				if (initial !== null && initial !== current && current !== PositionDirection.EVEN) {
-					return true;
-				}
-
-				if (initial === null && !open.getIsZero()) {
-					initial = current;
-				}
-
-				return false;
-			});
-		}
-
-        static getPositionViolationIndex(transactions, position) {
+        /**
+         * Given an array of transactions, returns the index of the first transaction that would cause an invalid direction switch.
+         *
+         * @public
+         * @static
+         * @param {Object[]} transactions
+         * @param {InstrumentType} instrumentType
+         * @param {Object} position
+         * @return {Number}
+         */
+        static getSwitchIndex(transactions, instrumentType, position) {
             assert.argumentIsArray(transactions, 'transactions');
+            assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
             assert.argumentIsOptional(position, 'position');
 
-            let open;
-
-            if (position) {
-                open = position.snapshot.open;
-            } else {
-                open = Decimal.ZERO;
-            }
+            let open = position ? position.snapshot.open : Decimal.ZERO;
+            let currentDirection = open.getIsZero() ? null : PositionDirection.for(open);
 
             return transactions.findIndex((t) => {
-                const type = t.type;
-                const quantity = t.quantity.absolute();
+                let quantity = t.quantity.absolute();
 
-                if (open.getIsZero()) {
-                    if ((type.sale && !type.opening) || (type.purchase && type.closing)) {
-                        return true;
-                    }
+                if (t.type.sale) {
+                    quantity = quantity.opposite();
                 }
 
-                if (open.getIsGreaterThan(Decimal.ZERO)) {
-                    if ((type.sale && type.opening) || (type.purchase && type.closing)) {
-                        return true;
-                    }
+                const nextOpen = open.add(quantity);
+                const nextDirection = nextOpen.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(nextOpen);
+
+                const isValidSwitch = TransactionValidator.validateDirectionSwitch(instrumentType, currentDirection, nextDirection);
+
+                if (!isValidSwitch) {
+                    return true;
                 }
 
-                if (open.getIsLessThan(Decimal.ZERO)) {
-                    if (type.purchase && type.opening) {
-                        return true;
-                    }
-                }
-
-                let delta = quantity;
-
-                if (type.sale) {
-                    delta = delta.opposite();
-                }
-
-                open = open.add(delta);
+                open = nextOpen;
+                currentDirection = nextDirection;
 
                 return false;
             });
         }
+
+        /**
+         * Given an array of transactions, returns the index of the first transaction that would violate position rules.
+         *
+         * @param {Object[]} transactions
+         * @param {InstrumentType} instrumentType
+         * @param {Object} position
+         * @return {Number}
+         */
+        static getPositionViolationIndex(transactions, instrumentType, position) {
+            assert.argumentIsArray(transactions, 'transactions');
+            assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
+            assert.argumentIsOptional(position, 'position');
+
+            let open = position ? position.snapshot.open : Decimal.ZERO;
+            let currentDirection = open.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(open);
+
+            return transactions.findIndex((t) => {
+                const quantity = t.quantity.absolute();
+                const type = t.type;
+
+                const validTypes = TransactionValidator.getTransactionTypesFor(instrumentType, true, currentDirection);
+
+                const isValidType = validTypes.includes(type);
+
+                if (!isValidType) {
+                    return true;
+                }
+
+                const delta = type.sale ? quantity.opposite() : quantity;
+
+                const nextOpen = open.add(delta);
+                const nextDirection = nextOpen.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(nextOpen);
+
+                open = nextOpen;
+                currentDirection = nextDirection;
+
+                return false;
+            });
+        }
+
 
         /**
 		 * Given an instrument type, returns all valid transaction types.
