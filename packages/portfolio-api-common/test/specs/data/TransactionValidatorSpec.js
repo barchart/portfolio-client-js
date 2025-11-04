@@ -138,9 +138,9 @@ describe('When checking for a transaction that would switch position direction (
 
         beforeEach(() => {
             transactions = [
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-1) },
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-2) },
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-3) }
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(2) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(3) }
             ];
         });
 
@@ -322,6 +322,7 @@ describe('When validating position violations', () => {
             position = {
                 snapshot: { open: new Decimal(-50) }
             };
+
             transactions = [
                 { type: TransactionType.BUY, quantity: new Decimal(10) }
             ];
@@ -329,6 +330,60 @@ describe('When validating position violations', () => {
 
         it('Should detect violation at index 0', () => {
             expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType, position)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list attempts to SELL too many shares', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(-5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('The sixth transaction should be identified as switching the direction', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType, position)).toEqual(5);
+        });
+    });
+
+    describe('Where the transaction list attempts to SELL too many shares', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('The sixth transaction should be identified as switching the direction', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType, position)).toEqual(5);
         });
     });
 });

@@ -1848,6 +1848,16 @@ module.exports = (() => {
 			return transactions.findIndex((t, i, a) => t.sequence !== (i + 1) || (i !== 0 && t.date.getIsBefore(a[ i - 1 ].date)) || (i !== 0 && is.boolean(strict) && strict && t.date.getIsEqual(a[i - 1].date) && t.type.sequence < a[i - 1].type.sequence));
 		}
 
+        /**
+         * Given an array of transactions, returns the index of the first transaction that would cause an invalid direction switch.
+         *
+         * @public
+         * @static
+         * @param {Object[]} transactions
+         * @param {InstrumentType} instrumentType
+         * @param {Object} position
+         * @return {Number}
+         */
         static getSwitchIndex(transactions, instrumentType, position) {
             assert.argumentIsArray(transactions, 'transactions');
             assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
@@ -1879,6 +1889,14 @@ module.exports = (() => {
             });
         }
 
+        /**
+         * Given an array of transactions, returns the index of the first transaction that would violate position rules.
+         *
+         * @param {Object[]} transactions
+         * @param {InstrumentType} instrumentType
+         * @param {Object} position
+         * @return {Number}
+         */
         static getPositionViolationIndex(transactions, instrumentType, position) {
             assert.argumentIsArray(transactions, 'transactions');
             assert.argumentIsRequired(instrumentType, 'instrumentType', InstrumentType, 'InstrumentType');
@@ -1891,26 +1909,25 @@ module.exports = (() => {
                 const quantity = t.quantity.absolute();
                 const type = t.type;
 
-                // ✅ 1. Proveri da li je tip transakcije validan za trenutni direction
                 const validTypes = TransactionValidator.getTransactionTypesFor(instrumentType, true, currentDirection);
+
                 const isValidType = validTypes.includes(type);
 
                 if (!isValidType) {
-                    return true; // Nevalidan tip — greška
+                    return true;
                 }
 
-                // ✅ 2. Ako je tip validan, samo ažuriraj stanje open/position
                 const delta = type.sale ? quantity.opposite() : quantity;
+
                 const nextOpen = open.add(delta);
                 const nextDirection = nextOpen.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(nextOpen);
 
                 open = nextOpen;
                 currentDirection = nextDirection;
 
-                return false; // sve OK, idi dalje
+                return false;
             });
         }
-
 
         /**
 		 * Given an instrument type, returns all valid transaction types.
@@ -22850,9 +22867,9 @@ describe('When checking for a transaction that would switch position direction (
 
         beforeEach(() => {
             transactions = [
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-1) },
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-2) },
-                { type: TransactionType.SELL_SHORT, quantity: new Decimal(-3) }
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(2) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(3) }
             ];
         });
 
@@ -23034,6 +23051,7 @@ describe('When validating position violations', () => {
             position = {
                 snapshot: { open: new Decimal(-50) }
             };
+
             transactions = [
                 { type: TransactionType.BUY, quantity: new Decimal(10) }
             ];
@@ -23041,6 +23059,60 @@ describe('When validating position violations', () => {
 
         it('Should detect violation at index 0', () => {
             expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType, position)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list attempts to SELL too many shares', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(-5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('The sixth transaction should be identified as switching the direction', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType, position)).toEqual(5);
+        });
+    });
+
+    describe('Where the transaction list attempts to SELL too many shares', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('The sixth transaction should be identified as switching the direction', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, instrumentType, position)).toEqual(5);
         });
     });
 });

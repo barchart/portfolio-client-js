@@ -189,7 +189,6 @@ module.exports = (() => {
             });
         }
 
-
         /**
 		 * Given an instrument type, returns all valid transaction types.
 		 *
