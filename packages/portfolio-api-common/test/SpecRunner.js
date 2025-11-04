@@ -136,7 +136,7 @@ module.exports = (() => {
 	return AveragePriceCalculator;
 })();
 
-},{"./../data/InstrumentType":3,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/is":41}],2:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/is":42}],2:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -242,7 +242,7 @@ module.exports = (() => {
 	return ValuationCalculator;
 })();
 
-},{"./../data/InstrumentType":3,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/is":41}],3:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/is":42}],3:[function(require,module,exports){
 const uuid = require('uuid');
 
 const assert = require('@barchart/common-js/lang/assert'),
@@ -611,7 +611,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"uuid":57}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":33,"@barchart/common-js/lang/assert":38,"uuid":58}],4:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -674,7 +674,7 @@ module.exports = (() => {
 	return OptionSide;
 })();
 
-},{"@barchart/common-js/lang/Enum":32}],5:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":33}],5:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum');
@@ -829,7 +829,7 @@ module.exports = (() => {
 	return PositionDirection;
 })();
 
-},{"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],6:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/Enum":33,"@barchart/common-js/lang/assert":38}],6:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -1193,7 +1193,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37}],7:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/Enum":33,"@barchart/common-js/lang/array":37,"@barchart/common-js/lang/assert":38}],7:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -1737,7 +1737,7 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37}],8:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":33,"@barchart/common-js/lang/assert":38}],8:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -1891,7 +1891,53 @@ module.exports = (() => {
 			});
 		}
 
-		/**
+        static getPositionViolationIndex(transactions, position) {
+            assert.argumentIsArray(transactions, 'transactions');
+            assert.argumentIsOptional(position, 'position');
+
+            let open;
+
+            if (position) {
+                open = position.snapshot.open;
+            } else {
+                open = Decimal.ZERO;
+            }
+
+            return transactions.findIndex((t) => {
+                const type = t.type;
+                const quantity = t.quantity.absolute();
+
+                if (open.getIsZero()) {
+                    if ((type.sale && !type.opening) || (type.purchase && type.closing)) {
+                        return true;
+                    }
+                }
+
+                if (open.getIsGreaterThan(Decimal.ZERO)) {
+                    if ((type.sale && type.opening) || (type.purchase && type.closing)) {
+                        return true;
+                    }
+                }
+
+                if (open.getIsLessThan(Decimal.ZERO)) {
+                    if (type.purchase && type.opening) {
+                        return true;
+                    }
+                }
+
+                let delta = quantity;
+
+                if (type.sale) {
+                    delta = delta.opposite();
+                }
+
+                open = open.add(delta);
+
+                return false;
+            });
+        }
+
+        /**
 		 * Given an instrument type, returns all valid transaction types.
 		 *
 		 * @static
@@ -2123,7 +2169,7 @@ module.exports = (() => {
 	return TransactionValidator;
 })();
 
-},{"./InstrumentType":3,"./PositionDirection":5,"./TransactionType":7,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41}],9:[function(require,module,exports){
+},{"./InstrumentType":3,"./PositionDirection":5,"./TransactionType":7,"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/array":37,"@barchart/common-js/lang/assert":38,"@barchart/common-js/lang/is":42}],9:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -2184,7 +2230,7 @@ module.exports = (() => {
 	return ValuationType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32}],10:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":33}],10:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
@@ -3455,7 +3501,7 @@ module.exports = (() => {
 
 	return PositionContainer;
 })();
-},{"./../data/PositionSummaryFrame":6,"./PositionGroup":11,"./PositionItem":12,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"./definitions/PositionTreeDefinition":15,"@barchart/common-js/collections/Tree":20,"@barchart/common-js/collections/sorting/ComparatorBuilder":23,"@barchart/common-js/collections/sorting/comparators":24,"@barchart/common-js/collections/specialized/DisposableStack":25,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Rate":34,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43}],11:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":6,"./PositionGroup":11,"./PositionItem":12,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"./definitions/PositionTreeDefinition":15,"@barchart/common-js/collections/Tree":20,"@barchart/common-js/collections/sorting/ComparatorBuilder":23,"@barchart/common-js/collections/sorting/comparators":24,"@barchart/common-js/collections/specialized/DisposableStack":25,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/Rate":35,"@barchart/common-js/lang/array":37,"@barchart/common-js/lang/assert":38,"@barchart/common-js/lang/is":42,"@barchart/common-js/messaging/Event":44}],11:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -4660,7 +4706,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/array":36,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/formatter":39,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43,"@barchart/marketdata-api-js/lib/utilities/format/fraction":51}],12:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./definitions/PositionLevelDefinition":13,"./definitions/PositionLevelType":14,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/CurrencyTranslator":28,"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/Disposable":32,"@barchart/common-js/lang/array":37,"@barchart/common-js/lang/assert":38,"@barchart/common-js/lang/formatter":40,"@barchart/common-js/lang/is":42,"@barchart/common-js/messaging/Event":44,"@barchart/marketdata-api-js/lib/utilities/format/fraction":52}],12:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -5587,7 +5633,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":3,"./../data/PositionDirection":5,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41,"@barchart/common-js/messaging/Event":43}],13:[function(require,module,exports){
+},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":3,"./../data/PositionDirection":5,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/Disposable":32,"@barchart/common-js/lang/assert":38,"@barchart/common-js/lang/is":42,"@barchart/common-js/messaging/Event":44}],13:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
@@ -5891,7 +5937,7 @@ module.exports = (() => {
 	return PositionLevelDefinition;
 })();
 
-},{"./../../data/InstrumentType":3,"./PositionLevelType":14,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41}],14:[function(require,module,exports){
+},{"./../../data/InstrumentType":3,"./PositionLevelType":14,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/assert":38,"@barchart/common-js/lang/is":42}],14:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -5952,7 +5998,7 @@ module.exports = (() => {
 	return PositionLevelType;
 })();
 
-},{"@barchart/common-js/lang/Enum":32}],15:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":33}],15:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert');
 
 const PositionLevelDefinition = require('./PositionLevelDefinition');
@@ -6024,7 +6070,7 @@ module.exports = (() => {
 	return PositionTreeDefinitions;
 })();
 
-},{"./PositionLevelDefinition":13,"@barchart/common-js/lang/assert":37}],16:[function(require,module,exports){
+},{"./PositionLevelDefinition":13,"@barchart/common-js/lang/assert":38}],16:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
@@ -6235,7 +6281,7 @@ module.exports = (() => {
 	return PositionSchema;
 })();
 
-},{"./../data/InstrumentType":3,"./../data/OptionSide":4,"./../data/PositionDirection":5,"./../data/ValuationType":9,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":50}],17:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./../data/OptionSide":4,"./../data/PositionDirection":5,"./../data/ValuationType":9,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Enum":33,"@barchart/common-js/serialization/json/DataType":46,"@barchart/common-js/serialization/json/builders/SchemaBuilder":50,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":51}],17:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -6605,7 +6651,7 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":3,"./../data/PositionDirection":5,"./../data/TransactionType":7,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/is":41,"@barchart/common-js/serialization/json/DataType":45,"@barchart/common-js/serialization/json/builders/SchemaBuilder":49}],18:[function(require,module,exports){
+},{"./../data/InstrumentType":3,"./../data/PositionDirection":5,"./../data/TransactionType":7,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Enum":33,"@barchart/common-js/lang/is":42,"@barchart/common-js/serialization/json/DataType":46,"@barchart/common-js/serialization/json/builders/SchemaBuilder":50}],18:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -6768,7 +6814,7 @@ module.exports = (() => {
   return Stack;
 })();
 
-},{"./../lang/assert":37}],20:[function(require,module,exports){
+},{"./../lang/assert":38}],20:[function(require,module,exports){
 const is = require('./../lang/is');
 module.exports = (() => {
   'use strict';
@@ -7072,7 +7118,7 @@ module.exports = (() => {
   return Tree;
 })();
 
-},{"./../lang/is":41}],21:[function(require,module,exports){
+},{"./../lang/is":42}],21:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -7246,7 +7292,7 @@ module.exports = (() => {
   return Vertex;
 })();
 
-},{"./../../lang/assert":37,"./Edge":21}],23:[function(require,module,exports){
+},{"./../../lang/assert":38,"./Edge":21}],23:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   comparators = require('./comparators');
 module.exports = (() => {
@@ -7349,7 +7395,7 @@ module.exports = (() => {
   return ComparatorBuilder;
 })();
 
-},{"./../../lang/assert":37,"./comparators":24}],24:[function(require,module,exports){
+},{"./../../lang/assert":38,"./comparators":24}],24:[function(require,module,exports){
 const assert = require('./../../lang/assert');
 module.exports = (() => {
   'use strict';
@@ -7456,7 +7502,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./../../lang/assert":37}],25:[function(require,module,exports){
+},{"./../../lang/assert":38}],25:[function(require,module,exports){
 const Stack = require('./../Stack');
 const assert = require('./../../lang/assert'),
   Disposable = require('./../../lang/Disposable'),
@@ -7521,7 +7567,7 @@ module.exports = (() => {
   return DisposableStack;
 })();
 
-},{"./../../lang/Disposable":31,"./../../lang/assert":37,"./../../lang/is":41,"./../Stack":19}],26:[function(require,module,exports){
+},{"./../../lang/Disposable":32,"./../../lang/assert":38,"./../../lang/is":42,"./../Stack":19}],26:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -7580,7 +7626,7 @@ module.exports = (() => {
   return AdHoc;
 })();
 
-},{"./assert":37}],27:[function(require,module,exports){
+},{"./assert":38}],27:[function(require,module,exports){
 const assert = require('./assert'),
   Enum = require('./Enum'),
   is = require('./is');
@@ -7776,7 +7822,7 @@ module.exports = (() => {
   return Currency;
 })();
 
-},{"./Enum":32,"./assert":37,"./is":41}],28:[function(require,module,exports){
+},{"./Enum":33,"./assert":38,"./is":42}],28:[function(require,module,exports){
 const assert = require('./assert'),
   array = require('./array'),
   Currency = require('./Currency'),
@@ -8045,10 +8091,11 @@ module.exports = (() => {
   return CurrencyTranslator;
 })();
 
-},{"./../collections/graph/Edge":21,"./../collections/graph/Vertex":22,"./../collections/sorting/ComparatorBuilder":23,"./../collections/sorting/comparators":24,"./Currency":27,"./Decimal":30,"./Rate":34,"./array":36,"./assert":37,"./memoize":42}],29:[function(require,module,exports){
+},{"./../collections/graph/Edge":21,"./../collections/graph/Vertex":22,"./../collections/sorting/ComparatorBuilder":23,"./../collections/sorting/comparators":24,"./Currency":27,"./Decimal":31,"./Rate":35,"./array":37,"./assert":38,"./memoize":43}],29:[function(require,module,exports){
 const assert = require('./assert'),
   ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder'),
   comparators = require('./../collections/sorting/comparators'),
+  DayFormatType = require('.//DayFormatType'),
   is = require('./is');
 module.exports = (() => {
   'use strict';
@@ -8389,15 +8436,22 @@ module.exports = (() => {
      * @public
      * @static
      * @param {String} value
+     * @param {DayFormatType=} type
      * @returns {Day}
      */
-    static parse(value) {
+    static parse(value, type) {
       assert.argumentIsRequired(value, 'value', String);
-      const match = value.match(dayRegex);
+      let t;
+      if (type instanceof DayFormatType) {
+        t = type;
+      } else {
+        t = DayFormatType.YYYY_MM_DD;
+      }
+      const match = value.match(t.regex);
       if (match === null) {
         throw new Error(`Unable to parse value as Day [ ${value} ]`);
       }
-      return new Day(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+      return new Day(parseInt(match[t.yearIndex]) + t.yearShift, parseInt(match[t.monthIndex]), parseInt(match[t.dayIndex]));
     }
 
     /**
@@ -8555,7 +8609,6 @@ module.exports = (() => {
       return '[Day]';
     }
   }
-  const dayRegex = /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/;
   function leftPad(value, digits, character) {
     let string = value.toString();
     let padding = digits - string.length;
@@ -8567,7 +8620,126 @@ module.exports = (() => {
   return Day;
 })();
 
-},{"./../collections/sorting/ComparatorBuilder":23,"./../collections/sorting/comparators":24,"./assert":37,"./is":41}],30:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":23,"./../collections/sorting/comparators":24,".//DayFormatType":30,"./assert":38,"./is":42}],30:[function(require,module,exports){
+const Enum = require('./Enum');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Describes for a day can be formatted.
+   *
+   * @public
+   * @extends {Enum}
+   * @param {String} description
+   */
+  class DayFormatType extends Enum {
+    constructor(description, regex, yearIndex, monthIndex, dayIndex, yearShift) {
+      super(description, description);
+      this._regex = regex;
+      this._yearIndex = yearIndex;
+      this._monthIndex = monthIndex;
+      this._dayIndex = dayIndex;
+      this._yearShift = yearShift;
+    }
+
+    /**
+     * A regular expression for parsing the day type.
+     *
+     * @public
+     * @returns {RegExp}
+     */
+    get regex() {
+      return this._regex;
+    }
+
+    /**
+     * The index used to read the year from a regular expression match.
+     *
+     * @public
+     * @returns {number}
+     */
+    get yearIndex() {
+      return this._yearIndex;
+    }
+
+    /**
+     * The index used to read the month from a regular expression match.
+     *
+     * @public
+     * @returns {number}
+     */
+    get monthIndex() {
+      return this._monthIndex;
+    }
+
+    /**
+     * The index used to read the day from a regular expression match.
+     *
+     * @public
+     * @returns {number}
+     */
+    get dayIndex() {
+      return this._dayIndex;
+    }
+
+    /**
+     * The amount to add to the year (extracted from a formatted string) to get the
+     * full year (e.g. for "11-31-25" of a MM-DD-YY string, the value will be 2000).
+     *
+     * @public
+     * @returns {number}
+     */
+    get yearShift() {
+      return this._yearShift;
+    }
+
+    /**
+     * Specifies date formatting as four-digit year, then month, then day (e.g. 2025-11-31).
+     *
+     * @public
+     * @static
+     * @returns {DayFormatType}
+     */
+    static get YYYY_MM_DD() {
+      return yyyymmdd;
+    }
+
+    /**
+     * Specifies date formatting as month, then day, then four-digit year (e.g. 11-31-2025).
+     *
+     * @public
+     * @static
+     * @returns {DayFormatType}
+     */
+    static get MM_DD_YYYY() {
+      return mmddyyyy;
+    }
+
+    /**
+     * Specifies date formatting as month, then day, then two-digit year (e.g. 11-31-25).
+     *
+     * @public
+     * @static
+     * @returns {DayFormatType}
+     */
+    static get MM_DD_YY() {
+      return mmddyy;
+    }
+    toString() {
+      return `[DayFormatType (description=${this.description})]`;
+    }
+  }
+  function getMillenniumShift() {
+    const today = new Date();
+    return Math.floor(today.getFullYear() / 100) * 100;
+  }
+  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/, 1, 2, 3, 0);
+  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{4})$/, 3, 1, 2, 0);
+  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
+  return DayFormatType;
+})();
+
+},{"./Enum":33}],31:[function(require,module,exports){
 const assert = require('./assert'),
   Enum = require('./Enum'),
   is = require('./is');
@@ -9156,7 +9328,7 @@ module.exports = (() => {
   return Decimal;
 })();
 
-},{"./Enum":32,"./assert":37,"./is":41,"big.js":52}],31:[function(require,module,exports){
+},{"./Enum":33,"./assert":38,"./is":42,"big.js":53}],32:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -9252,7 +9424,7 @@ module.exports = (() => {
   return Disposable;
 })();
 
-},{"./assert":37}],32:[function(require,module,exports){
+},{"./assert":38}],33:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -9398,7 +9570,7 @@ module.exports = (() => {
   return Enum;
 })();
 
-},{"./assert":37,"./is":41}],33:[function(require,module,exports){
+},{"./assert":38,"./is":42}],34:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 const Decimal = require('./Decimal'),
@@ -9487,7 +9659,7 @@ module.exports = (() => {
   return Money;
 })();
 
-},{"./Currency":27,"./Decimal":30,"./assert":37,"./is":41}],34:[function(require,module,exports){
+},{"./Currency":27,"./Decimal":31,"./assert":38,"./is":42}],35:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is'),
   memoize = require('./memoize');
@@ -9729,7 +9901,7 @@ module.exports = (() => {
   return Rate;
 })();
 
-},{"./Currency":27,"./Decimal":30,"./assert":37,"./is":41,"./memoize":42}],35:[function(require,module,exports){
+},{"./Currency":27,"./Decimal":31,"./assert":38,"./is":42,"./memoize":43}],36:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 const moment = require('moment-timezone');
@@ -9907,7 +10079,7 @@ module.exports = (() => {
   return Timestamp;
 })();
 
-},{"./assert":37,"./is":41,"moment-timezone":54}],36:[function(require,module,exports){
+},{"./assert":38,"./is":42,"moment-timezone":55}],37:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -10356,7 +10528,7 @@ module.exports = (() => {
   }
 })();
 
-},{"./assert":37,"./is":41}],37:[function(require,module,exports){
+},{"./assert":38,"./is":42}],38:[function(require,module,exports){
 const is = require('./is');
 module.exports = (() => {
   'use strict';
@@ -10484,7 +10656,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./is":41}],38:[function(require,module,exports){
+},{"./is":42}],39:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -10625,7 +10797,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":37,"./is":41}],39:[function(require,module,exports){
+},{"./assert":38,"./is":42}],40:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -10681,7 +10853,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -10720,7 +10892,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -10922,7 +11094,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -10980,7 +11152,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":37}],43:[function(require,module,exports){
+},{"./assert":38}],44:[function(require,module,exports){
 const assert = require('./../lang/assert'),
   Disposable = require('./../lang/Disposable');
 module.exports = (() => {
@@ -11094,7 +11266,7 @@ module.exports = (() => {
   return Event;
 })();
 
-},{"./../lang/Disposable":31,"./../lang/assert":37}],44:[function(require,module,exports){
+},{"./../lang/Disposable":32,"./../lang/assert":38}],45:[function(require,module,exports){
 const Currency = require('./../../lang/Currency'),
   Money = require('./../../lang/Money');
 const DataType = require('./DataType'),
@@ -11161,7 +11333,7 @@ module.exports = (() => {
   return Component;
 })();
 
-},{"./../../lang/Currency":27,"./../../lang/Money":33,"./DataType":45,"./Field":46}],45:[function(require,module,exports){
+},{"./../../lang/Currency":27,"./../../lang/Money":34,"./DataType":46,"./Field":47}],46:[function(require,module,exports){
 const moment = require('moment');
 const AdHoc = require('./../../lang/AdHoc'),
   assert = require('./../../lang/assert'),
@@ -11445,7 +11617,7 @@ module.exports = (() => {
   return DataType;
 })();
 
-},{"./../../lang/AdHoc":26,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":35,"./../../lang/assert":37,"./../../lang/is":41,"moment":56}],46:[function(require,module,exports){
+},{"./../../lang/AdHoc":26,"./../../lang/Day":29,"./../../lang/Decimal":31,"./../../lang/Enum":33,"./../../lang/Timestamp":36,"./../../lang/assert":38,"./../../lang/is":42,"moment":57}],47:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   is = require('./../../lang/is');
 const DataType = require('./DataType');
@@ -11519,7 +11691,7 @@ module.exports = (() => {
   return Field;
 })();
 
-},{"./../../lang/assert":37,"./../../lang/is":41,"./DataType":45}],47:[function(require,module,exports){
+},{"./../../lang/assert":38,"./../../lang/is":42,"./DataType":46}],48:[function(require,module,exports){
 const attributes = require('./../../lang/attributes'),
   functions = require('./../../lang/functions'),
   is = require('./../../lang/is');
@@ -11803,7 +11975,7 @@ module.exports = (() => {
   return Schema;
 })();
 
-},{"./../../collections/LinkedList":18,"./../../collections/Tree":20,"./../../lang/attributes":38,"./../../lang/functions":40,"./../../lang/is":41,"./Component":44,"./Field":46}],48:[function(require,module,exports){
+},{"./../../collections/LinkedList":18,"./../../collections/Tree":20,"./../../lang/attributes":39,"./../../lang/functions":41,"./../../lang/is":42,"./Component":45,"./Field":47}],49:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const Component = require('./../Component'),
   DataType = require('./../DataType'),
@@ -11868,7 +12040,7 @@ module.exports = (() => {
   return ComponentBuilder;
 })();
 
-},{"./../../../lang/assert":37,"./../Component":44,"./../DataType":45,"./../Field":46}],49:[function(require,module,exports){
+},{"./../../../lang/assert":38,"./../Component":45,"./../DataType":46,"./../Field":47}],50:[function(require,module,exports){
 const assert = require('./../../../lang/assert'),
   is = require('./../../../lang/is');
 const Component = require('./../Component'),
@@ -11984,7 +12156,7 @@ module.exports = (() => {
   return SchemaBuilder;
 })();
 
-},{"./../../../lang/assert":37,"./../../../lang/is":41,"./../Component":44,"./../DataType":45,"./../Field":46,"./../Schema":47,"./ComponentBuilder":48}],50:[function(require,module,exports){
+},{"./../../../lang/assert":38,"./../../../lang/is":42,"./../Component":45,"./../DataType":46,"./../Field":47,"./../Schema":48,"./ComponentBuilder":49}],51:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
   Decimal = require('@barchart/common-js/lang/Decimal'),
   is = require('@barchart/common-js/lang/is');
@@ -12255,7 +12427,7 @@ module.exports = (() => {
   return UnitCode;
 })();
 
-},{"@barchart/common-js/lang/Decimal":30,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":37,"@barchart/common-js/lang/is":41}],51:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":31,"@barchart/common-js/lang/Enum":33,"@barchart/common-js/lang/assert":38,"@barchart/common-js/lang/is":42}],52:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is');
 module.exports = (() => {
   'use strict';
@@ -12328,7 +12500,7 @@ module.exports = (() => {
   return formatFraction;
 })();
 
-},{"@barchart/common-js/lang/is":41}],52:[function(require,module,exports){
+},{"@barchart/common-js/lang/is":42}],53:[function(require,module,exports){
 /*
  *  big.js v6.2.2
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -13373,9 +13545,9 @@ module.exports = (() => {
   }
 })(this);
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports={
-	"version": "2025a",
+	"version": "2025b",
 	"zones": [
 		"Africa/Abidjan|LMT GMT|g.8 0|01|-2ldXH.Q|48e5",
 		"Africa/Nairobi|LMT +0230 EAT +0245|-2r.g -2u -30 -2J|012132|-2ua2r.g N6nV.g 3Fbu h1cu dzbJ|47e5",
@@ -13431,6 +13603,7 @@ module.exports={
 		"America/Chihuahua|LMT MST CST MDT CDT|74.k 70 60 60 50|0121312424231313131313131313131313131313131313131313131313132|-1UQF0 deo0 8lz0 16p0 11z0 1dd0 2zQN0 1lb0 14p0 1lb0 14q0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0|81e4",
 		"America/Ciudad_Juarez|LMT MST CST MDT CDT|75.U 70 60 60 50|01213124242313131313131313131313131313131313131313131313131321313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131|-1UQF0 deo0 8lz0 16p0 11z0 1dd0 2zQN0 1lb0 14p0 1lb0 14q0 1lb0 14p0 1nX0 11B0 1nX0 1fB0 WL0 1fB0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 U10 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1wn0 cm0 EP0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|",
 		"America/Costa_Rica|LMT SJMT CST CDT|5A.d 5A.d 60 50|01232323232|-3eLun.L 1fyo0 2lu0n.L Db0 1Kp0 Db0 pRB0 15b0 1kp0 mL0|12e5",
+		"America/Coyhaique|LMT SMT -05 -04 -03|4M.g 4G.J 50 40 30|012131323232323232323434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434|-3eLvb.I MJbS.t fJAh.f 5knG.J 1Vzh.f jRAG.J 1pbh.f 11d0 1oL0 11d0 1oL0 11d0 1oL0 11d0 1pb0 11d0 nHX0 op0 blz0 ko0 Qeo0 WL0 1zd0 On0 1ip0 11z0 1o10 11z0 1qN0 WL0 1ld0 14n0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 WL0 1qN0 1cL0 1cN0 11z0 1o10 11z0 1qN0 WL0 1fB0 19X0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1ip0 1fz0 1fB0 11z0 1qN0 WL0 1qN0 WL0 1qN0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 17b0 1ip0 11z0 1o10 19X0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1zb0 11B0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 11B0 1qL0 11B0|",
 		"America/Phoenix|LMT MST MDT MWT|7s.i 70 60 60|012121313121|-3tFF0 1nEe0 1nX0 11B0 1nX0 SgN0 4Al1 Ap0 1db0 SWqX 1cL0|42e5",
 		"America/Cuiaba|LMT -04 -03|3I.k 40 30|012121212121212121212121212121212121212121212121212121212121212121212121212121212121212121|-2glwf.E HdLf.E 1cc0 1e10 1bX0 Ezd0 So0 1vA0 Mn0 1BB0 ML0 1BB0 zX0 qe10 xb0 2ep0 nz0 1C10 zX0 1C10 LX0 1C10 Mn0 H210 Rb0 1tB0 IL0 1Fd0 FX0 1EN0 FX0 1HB0 Lz0 1EN0 Lz0 1C10 IL0 1HB0 Db0 1HB0 On0 1zd0 On0 1zd0 Lz0 1zd0 Rb0 1wN0 Wn0 1tB0 Rb0 1tB0 WL0 1tB0 Rb0 1zd0 On0 1HB0 FX0 4a10 HX0 1zd0 On0 1HB0 IL0 1wp0 On0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1HB0 FX0|54e4",
 		"America/Danmarkshavn|LMT -03 -02 GMT|1e.E 30 20 0|01212121212121212121212121212121213|-2a5WJ.k 2z5fJ.k 19U0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 DC0|8",
@@ -13593,7 +13766,7 @@ module.exports={
 		"Asia/Taipei|LMT CST JST CDT|-86 -80 -90 -90|012131313131313131313131313131313131313131|-30bk6 1FDc6 joM0 1yo0 Tz0 1ip0 1jX0 1cN0 11b0 1oN0 11b0 1oN0 11b0 1oN0 11b0 10N0 1BX0 10p0 1pz0 10p0 1pz0 10p0 1db0 1dd0 1db0 1cN0 1db0 1cN0 1db0 1cN0 1db0 1BB0 ML0 1Bd0 ML0 uq10 1db0 1cN0 1db0 97B0 AL0|74e5",
 		"Asia/Tashkent|LMT +05 +06 +07|-4B.b -50 -60 -70|012323232323232323232321|-1Pc4B.b eUnB.b 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0|23e5",
 		"Asia/Tbilisi|LMT TBMT +03 +04 +05|-2X.b -2X.b -30 -40 -50|01234343434343434343434323232343434343434343434323|-3D8OX.b 1LUM0 1jUnX.b WCL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 1cK0 1cL0 1cN0 1cL0 1cN0 2pz0 1cL0 1fB0 3Nz0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 An0 Os0 WM0|11e5",
-		"Asia/Tehran|LMT TMT +0330 +0430 +04 +05|-3p.I -3p.I -3u -4u -40 -50|012345423232323232323232323232323232323232323232323232323232323232323232|-2btDp.I Llc0 1FHaT.I 1pc0 120u Rc0 XA0 Wou JX0 1dB0 1en0 pNB0 UL0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 64p0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0|14e6",
+		"Asia/Tehran|LMT TMT +0330 +0430 +04 +05|-3p.I -3p.I -3u -4u -40 -50|012345423232323232323232323232323232323232323232323232323232323232323232|-2btDp.I Llc0 1FHaT.I 1pc0 120u Rc0 Dc0 1iMu JX0 1dB0 1en0 pNB0 UL0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 64p0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0|14e6",
 		"Asia/Thimphu|LMT +0530 +06|-5W.A -5u -60|012|-Su5W.A 1BGMs.A|79e3",
 		"Asia/Tokyo|LMT JST JDT|-9i.X -90 -a0|0121212121|-3jE90 2qSo0 Rc0 1lc0 14o0 1zc0 Oo0 1zc0 Oo0|38e6",
 		"Asia/Tomsk|LMT +06 +07 +08|-5D.P -60 -70 -80|0123232323232323232323212323232323232323232323212121212121212121212|-21NhD.P pxzD.P 23CL0 1db0 1cN0 1db0 1cN0 1db0 1dd0 1cO0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 2pB0 IM0 rX0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 co0 1bB0 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 8Hz0 3Qp0|10e5",
@@ -14021,7 +14194,7 @@ module.exports={
 		"CH|Europe/Zurich",
 		"CI|Africa/Abidjan",
 		"CK|Pacific/Rarotonga",
-		"CL|America/Santiago America/Punta_Arenas Pacific/Easter",
+		"CL|America/Santiago America/Coyhaique America/Punta_Arenas Pacific/Easter",
 		"CM|Africa/Lagos Africa/Douala",
 		"CN|Asia/Shanghai Asia/Urumqi",
 		"CO|America/Bogota",
@@ -14226,13 +14399,13 @@ module.exports={
 		"ZW|Africa/Maputo Africa/Harare"
 	]
 }
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":53,"./moment-timezone":55}],55:[function(require,module,exports){
+},{"./data/packed/latest.json":54,"./moment-timezone":56}],56:[function(require,module,exports){
 //! moment-timezone.js
-//! version : 0.5.47
+//! version : 0.5.48
 //! Copyright (c) JS Foundation and other contributors
 //! license : MIT
 //! github.com/moment/moment-timezone
@@ -14262,7 +14435,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	// 	return moment;
 	// }
 
-	var VERSION = "0.5.47",
+	var VERSION = "0.5.48",
 		zones = {},
 		links = {},
 		countries = {},
@@ -14961,7 +15134,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":56}],56:[function(require,module,exports){
+},{"moment":57}],57:[function(require,module,exports){
 //! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -20651,7 +20824,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20731,7 +20904,7 @@ var _stringify = _interopRequireDefault(require("./stringify.js"));
 var _parse = _interopRequireDefault(require("./parse.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./nil.js":60,"./parse.js":61,"./stringify.js":65,"./v1.js":66,"./v3.js":67,"./v4.js":69,"./v5.js":70,"./validate.js":71,"./version.js":72}],58:[function(require,module,exports){
+},{"./nil.js":61,"./parse.js":62,"./stringify.js":66,"./v1.js":67,"./v3.js":68,"./v4.js":70,"./v5.js":71,"./validate.js":72,"./version.js":73}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20955,7 +21128,7 @@ function md5ii(a, b, c, d, x, s, t) {
 
 var _default = md5;
 exports.default = _default;
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20967,7 +21140,7 @@ var _default = {
   randomUUID
 };
 exports.default = _default;
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20976,7 +21149,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = '00000000-0000-0000-0000-000000000000';
 exports.default = _default;
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21022,7 +21195,7 @@ function parse(uuid) {
 
 var _default = parse;
 exports.default = _default;
-},{"./validate.js":71}],62:[function(require,module,exports){
+},{"./validate.js":72}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21031,7 +21204,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
 exports.default = _default;
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21057,7 +21230,7 @@ function rng() {
 
   return getRandomValues(rnds8);
 }
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21162,7 +21335,7 @@ function sha1(bytes) {
 
 var _default = sha1;
 exports.default = _default;
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21207,7 +21380,7 @@ function stringify(arr, offset = 0) {
 
 var _default = stringify;
 exports.default = _default;
-},{"./validate.js":71}],66:[function(require,module,exports){
+},{"./validate.js":72}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21315,7 +21488,7 @@ function v1(options, buf, offset) {
 
 var _default = v1;
 exports.default = _default;
-},{"./rng.js":63,"./stringify.js":65}],67:[function(require,module,exports){
+},{"./rng.js":64,"./stringify.js":66}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21332,7 +21505,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v3 = (0, _v.default)('v3', 0x30, _md.default);
 var _default = v3;
 exports.default = _default;
-},{"./md5.js":58,"./v35.js":68}],68:[function(require,module,exports){
+},{"./md5.js":59,"./v35.js":69}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21413,7 +21586,7 @@ function v35(name, version, hashfunc) {
   generateUUID.URL = URL;
   return generateUUID;
 }
-},{"./parse.js":61,"./stringify.js":65}],69:[function(require,module,exports){
+},{"./parse.js":62,"./stringify.js":66}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21457,7 +21630,7 @@ function v4(options, buf, offset) {
 
 var _default = v4;
 exports.default = _default;
-},{"./native.js":59,"./rng.js":63,"./stringify.js":65}],70:[function(require,module,exports){
+},{"./native.js":60,"./rng.js":64,"./stringify.js":66}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21474,7 +21647,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v5 = (0, _v.default)('v5', 0x50, _sha.default);
 var _default = v5;
 exports.default = _default;
-},{"./sha1.js":64,"./v35.js":68}],71:[function(require,module,exports){
+},{"./sha1.js":65,"./v35.js":69}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21492,7 +21665,7 @@ function validate(uuid) {
 
 var _default = validate;
 exports.default = _default;
-},{"./regex.js":62}],72:[function(require,module,exports){
+},{"./regex.js":63}],73:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21514,7 +21687,7 @@ function version(uuid) {
 
 var _default = version;
 exports.default = _default;
-},{"./validate.js":71}],73:[function(require,module,exports){
+},{"./validate.js":72}],74:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -21657,7 +21830,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(AveragePriceCalculator.calculate(instrument, -800000, 2).toFloat()).toEqual(400000);
 	});
 });
-},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":30}],74:[function(require,module,exports){
+},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":31}],75:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -21912,7 +22085,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(ValuationCalculator.calculate(instrument, null, 4)).toBe(null);
 	});
 });
-},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":30}],75:[function(require,module,exports){
+},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":3,"@barchart/common-js/lang/Decimal":31}],76:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -22561,7 +22734,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30}],76:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/data/TransactionType":7,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":31}],77:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -22848,7 +23021,196 @@ describe('When checking for a transaction that would switch position direction (
 		});
 	});
 });
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30}],77:[function(require,module,exports){
+
+describe('When checking for position rule violations (without a position)', () => {
+    'use strict';
+
+    describe('Where the transaction list starts with a SELL (no open position)', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.BUY, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list starts with a BUY_SHORT (no short position)', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list starts correctly with a BUY', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(2) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('No invalid transaction should be identified', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(-1);
+        });
+    });
+});
+
+describe('When checking for position rule violations (with a LONG position)', () => {
+    'use strict';
+
+    describe('Where the transaction list tries to open a short while already long', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(10)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(5) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list tries to close with BUY_SHORT while long', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(10)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list properly sells part of the position', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(10)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.SELL, quantity: new Decimal(5) },
+                { type: TransactionType.SELL, quantity: new Decimal(5) }
+            ];
+        });
+
+        it('No invalid transaction should be identified', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
+        });
+    });
+});
+
+describe('When checking for position rule violations (with a SHORT position)', () => {
+    'use strict';
+
+    describe('Where the transaction list starts with a BUY (invalid opening while short)', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(-5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(2) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list tries to open a new short while already short', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(-5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('No invalid transaction should be identified', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
+        });
+    });
+
+    describe('Where the transaction list correctly buys to cover part of the short position', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(-5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(3) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
+            ];
+        });
+
+        it('No invalid transaction should be identified', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
+        });
+    });
+});
+
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/data/TransactionValidator":8,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":31}],78:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -23035,7 +23397,7 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/processing/PositionContainer":10,"./../../../lib/processing/definitions/PositionLevelDefinition":13,"./../../../lib/processing/definitions/PositionLevelType":14,"./../../../lib/processing/definitions/PositionTreeDefinition":15,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Decimal":30}],78:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":3,"./../../../lib/data/PositionSummaryFrame":6,"./../../../lib/processing/PositionContainer":10,"./../../../lib/processing/definitions/PositionLevelDefinition":13,"./../../../lib/processing/definitions/PositionLevelType":14,"./../../../lib/processing/definitions/PositionTreeDefinition":15,"@barchart/common-js/lang/Currency":27,"@barchart/common-js/lang/Decimal":31}],79:[function(require,module,exports){
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -23105,7 +23467,7 @@ describe('When positions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/serialization/PositionSchema":16}],79:[function(require,module,exports){
+},{"./../../../lib/serialization/PositionSchema":16}],80:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -23172,4 +23534,4 @@ describe('When transactions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/data/TransactionType":7,"./../../../lib/serialization/TransactionSchema":17,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":30}]},{},[73,74,75,76,77,78,79]);
+},{"./../../../lib/data/TransactionType":7,"./../../../lib/serialization/TransactionSchema":17,"@barchart/common-js/lang/Day":29,"@barchart/common-js/lang/Decimal":31}]},{},[74,75,76,77,78,79,80]);

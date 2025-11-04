@@ -151,7 +151,53 @@ module.exports = (() => {
 			});
 		}
 
-		/**
+        static getPositionViolationIndex(transactions, position) {
+            assert.argumentIsArray(transactions, 'transactions');
+            assert.argumentIsOptional(position, 'position');
+
+            let open;
+
+            if (position) {
+                open = position.snapshot.open;
+            } else {
+                open = Decimal.ZERO;
+            }
+
+            return transactions.findIndex((t) => {
+                const type = t.type;
+                const quantity = t.quantity.absolute();
+
+                if (open.getIsZero()) {
+                    if ((type.sale && !type.opening) || (type.purchase && type.closing)) {
+                        return true;
+                    }
+                }
+
+                if (open.getIsGreaterThan(Decimal.ZERO)) {
+                    if ((type.sale && type.opening) || (type.purchase && type.closing)) {
+                        return true;
+                    }
+                }
+
+                if (open.getIsLessThan(Decimal.ZERO)) {
+                    if (type.purchase && type.opening) {
+                        return true;
+                    }
+                }
+
+                let delta = quantity;
+
+                if (type.sale) {
+                    delta = delta.opposite();
+                }
+
+                open = open.add(delta);
+
+                return false;
+            });
+        }
+
+        /**
 		 * Given an instrument type, returns all valid transaction types.
 		 *
 		 * @static

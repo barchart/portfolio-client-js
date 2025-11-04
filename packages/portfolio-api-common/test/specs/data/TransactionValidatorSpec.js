@@ -284,3 +284,191 @@ describe('When checking for a transaction that would switch position direction (
 		});
 	});
 });
+
+describe('When checking for position rule violations (without a position)', () => {
+    'use strict';
+
+    describe('Where the transaction list starts with a SELL (no open position)', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.BUY, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list starts with a BUY_SHORT (no short position)', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list starts correctly with a BUY', () => {
+        let transactions;
+
+        beforeEach(() => {
+            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(2) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) },
+                { type: TransactionType.SELL, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('No invalid transaction should be identified', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions)).toEqual(-1);
+        });
+    });
+});
+
+describe('When checking for position rule violations (with a LONG position)', () => {
+    'use strict';
+
+    describe('Where the transaction list tries to open a short while already long', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(10)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(5) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list tries to close with BUY_SHORT while long', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(10)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list properly sells part of the position', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(10)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.SELL, quantity: new Decimal(5) },
+                { type: TransactionType.SELL, quantity: new Decimal(5) }
+            ];
+        });
+
+        it('No invalid transaction should be identified', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
+        });
+    });
+});
+
+describe('When checking for position rule violations (with a SHORT position)', () => {
+    'use strict';
+
+    describe('Where the transaction list starts with a BUY (invalid opening while short)', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(-5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.BUY, quantity: new Decimal(2) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
+            ];
+        });
+
+        it('The first transaction should be identified as invalid', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(0);
+        });
+    });
+
+    describe('Where the transaction list tries to open a new short while already short', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(-5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) },
+                { type: TransactionType.SELL_SHORT, quantity: new Decimal(1) }
+            ];
+        });
+
+        it('No invalid transaction should be identified', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
+        });
+    });
+
+    describe('Where the transaction list correctly buys to cover part of the short position', () => {
+        let position;
+        let transactions;
+
+        beforeEach(() => {
+            position = {
+                snapshot: {
+                    open: new Decimal(-5)
+                }
+            };
+
+            transactions = [
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(3) },
+                { type: TransactionType.BUY_SHORT, quantity: new Decimal(2) }
+            ];
+        });
+
+        it('No invalid transaction should be identified', () => {
+            expect(TransactionValidator.getPositionViolationIndex(transactions, position)).toEqual(-1);
+        });
+    });
+});
