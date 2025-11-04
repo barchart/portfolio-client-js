@@ -115,7 +115,7 @@ module.exports = (() => {
          * @static
          * @param {Object[]} transactions
          * @param {InstrumentType} instrumentType
-         * @param {Object} position
+         * @param {Object=} position
          * @return {Number}
          */
         static getSwitchIndex(transactions, instrumentType, position) {
@@ -156,7 +156,7 @@ module.exports = (() => {
          * @static
          * @param {Object[]} transactions
          * @param {InstrumentType} instrumentType
-         * @param {Object} position
+         * @param {Object=} position
          * @return {Number}
          */
         static getPositionViolationIndex(transactions, instrumentType, position) {
