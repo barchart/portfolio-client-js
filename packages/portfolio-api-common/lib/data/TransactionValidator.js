@@ -152,6 +152,8 @@ module.exports = (() => {
         /**
          * Given an array of transactions, returns the index of the first transaction that would violate position rules.
          *
+         * @public
+         * @static
          * @param {Object[]} transactions
          * @param {InstrumentType} instrumentType
          * @param {Object} position
