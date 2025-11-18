@@ -8938,7 +8938,10 @@ module.exports = (() => {
      * Returns true if the current instance is less than or equal to the value.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to compare.
+     * **New Features**
+           *
+           * * Added the `TransactionValidator.getPositionViolationIndex` function.
+           * * Updated the `TransactionValidator.getSwitchIndex` function to use the `TransactionValidator.validateDirectionSwitch` function internally. @param {Decimal|Number|String} other - The value to compare.
      * @returns {Boolean}
      */
     getIsLessThanOrEqual(other) {
