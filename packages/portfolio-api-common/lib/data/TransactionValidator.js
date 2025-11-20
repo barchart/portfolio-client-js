@@ -351,6 +351,7 @@ module.exports = (() => {
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_CASH, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_REINVEST, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DISTRIBUTION_FUND, false);
+	associateTypes(InstrumentType.FUND, TransactionType.SPLIT, false);
 	associateTypes(InstrumentType.FUND, TransactionType.DELIST, false);
 	associateTypes(InstrumentType.FUND, TransactionType.MERGER_OPEN, false);
 	associateTypes(InstrumentType.FUND, TransactionType.MERGER_CLOSE, false);
