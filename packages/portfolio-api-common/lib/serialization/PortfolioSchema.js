@@ -110,7 +110,6 @@ module.exports = (() => {
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
 		.withField('email', DataType.AD_HOC, true)
-        .withField('linked', DataType.BOOLEAN)
 		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.withField('system.sequence', DataType.NUMBER)
 		.withField('system.version', DataType.STRING)
@@ -136,7 +135,6 @@ module.exports = (() => {
 		.withField('legacy.drops', DataType.NUMBER, true)
 		.withField('miscellany', DataType.AD_HOC, true)
 		.withField('email', DataType.AD_HOC, true)
-        .withField('linked', DataType.BOOLEAN)
 		.withField('system.calculate.processors', DataType.NUMBER, true)
 		.schema
 	);
@@ -157,8 +155,7 @@ module.exports = (() => {
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'), true)
 		.withField('miscellany', DataType.AD_HOC, true)
 		.withField('email', DataType.AD_HOC, true)
-        .withField('linked', DataType.BOOLEAN)
-        .schema
+		.schema
 	);
 
 	const update = new PortfolioSchema(SchemaBuilder.withName('update')
@@ -170,7 +167,7 @@ module.exports = (() => {
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('miscellany', DataType.AD_HOC, true)
 		.withField('email', DataType.AD_HOC, true)
-        .schema
+		.schema
 	);
 
 	return PortfolioSchema;
