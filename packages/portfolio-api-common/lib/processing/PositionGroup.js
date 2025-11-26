@@ -671,12 +671,14 @@ module.exports = (() => {
 		let lockedBinding = Disposable.getEmpty();
 		let calculatingBinding = Disposable.getEmpty();
 
-		if (this._single) {
+		if (this._single || this._homogeneous) {
 			newsBinding = item.registerNewsExistsChangeHandler((exists) => {
 				this._dataActual.newsExists = exists;
 				this._dataFormat.newsExists = exists;
 			});
+		}
 
+		if (this._single) {
 			lockedBinding = item.registerLockChangeHandler((locked) => {
 				this._dataFormat.locked = locked;
 			});
@@ -983,6 +985,12 @@ module.exports = (() => {
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
 			format.calculating = definition.type === PositionLevelType.POSITION && item.data.calculating;
 			format.expired = definition.type === PositionLevelType.POSITION && item.data.expired;
+		}
+
+		if (group.homogeneous && groupItems.length !== 1) {
+			const item = group._items[0];
+
+			format.expired = item.data.expired;
 		}
 
 		let portfolioType = null;
