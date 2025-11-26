@@ -317,7 +317,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates if the group will only contain one {@link PositionItem} instances
+		 * Indicates if the group will only contain {@link PositionItem} instances
 		 * that share the same instrument.
 		 *
 		 * @public
