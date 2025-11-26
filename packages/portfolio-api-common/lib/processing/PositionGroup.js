@@ -545,24 +545,26 @@ module.exports = (() => {
 		setBarchartPriceFormattingRules(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
-			if (this._useBarchartPriceFormattingRules !== value) {
-				this._useBarchartPriceFormattingRules = value;
+			if (this._useBarchartPriceFormattingRules === value) {
+				return;
+			}
 
-				if (this._single && this._dataActual.currentPrice) {
-					const item = this._items[0];
+			this._useBarchartPriceFormattingRules = value;
 
-					const instrument = item.position.instrument;
-					const currency = instrument.currency;
+			if (this._single && this._dataActual.currentPrice) {
+				const item = this._items[0];
 
-					this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument, this._useBarchartPriceFormattingRules);
+				const instrument = item.position.instrument;
+				const currency = instrument.currency;
 
-					this._dataFormat.quoteLast = formatFraction(this._dataActual.quoteLast, currency, instrument, this._useBarchartPriceFormattingRules);
-					this._dataFormat.quoteOpen = formatFraction(this._dataActual.quoteOpen, currency, instrument, this._useBarchartPriceFormattingRules);
-					this._dataFormat.quoteHigh = formatFraction(this._dataActual.quoteHigh, currency, instrument, this._useBarchartPriceFormattingRules);
-					this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument, this._useBarchartPriceFormattingRules);
 
-					this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
-				}
+				this._dataFormat.quoteLast = formatFraction(this._dataActual.quoteLast, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteOpen = formatFraction(this._dataActual.quoteOpen, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteHigh = formatFraction(this._dataActual.quoteHigh, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
+
+				this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
 			}
 		}
 
