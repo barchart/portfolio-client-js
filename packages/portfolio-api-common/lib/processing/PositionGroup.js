@@ -618,7 +618,7 @@ module.exports = (() => {
 		});
 
 		const fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
-			if (this._single) {
+			if (this._single || this._homogeneous) {
 				this._dataFormat.fundamental = data;
 
 				return;
