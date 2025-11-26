@@ -960,7 +960,7 @@ module.exports = (() => {
 		const groupItems = group._items;
 
 		if (group.single && groupItems.length === 1) {
-			const item = group._items[0];
+			const item = groupItems[0];
 			const instrument = item.position.instrument;
 
 			actual.quantity = item.data.quantity;
@@ -988,7 +988,7 @@ module.exports = (() => {
 		}
 
 		if (group.homogeneous && groupItems.length !== 1) {
-			const item = group._items[0];
+			const item = groupItems[0];
 
 			format.expired = item.data.expired;
 		}
