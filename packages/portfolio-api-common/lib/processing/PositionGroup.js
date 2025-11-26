@@ -106,6 +106,13 @@ module.exports = (() => {
 				this._dataFormat.fundamental = { };
 			}
 
+            if (this._homogeneous && items.length !== 0) {
+                const item = items[0];
+
+                this._dataFormat.instrument = item.position.instrument;
+                this._dataFormat.fundamental = item.fundamental || { };
+            }
+
 			this._dataActual.quoteLast = null;
 			this._dataActual.quoteOpen = null;
 			this._dataActual.quoteHigh = null;
