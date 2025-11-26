@@ -551,7 +551,7 @@ module.exports = (() => {
 
 			this._useBarchartPriceFormattingRules = value;
 
-			if (this._single && this._dataActual.currentPrice) {
+			if ((this._single || this._homogeneous) && this._dataActual.currentPrice) {
 				const item = this._items[0];
 
 				const instrument = item.position.instrument;
