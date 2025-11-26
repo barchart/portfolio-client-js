@@ -16,6 +16,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * A level of grouping for positions which share the same instrument.
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionLevelType}
+		 */
+		static get INSTRUMENT() {
+			return instrument;
+		}
+
+		/**
 		 * A level of grouping that represents an entire portfolio's contents.
 		 *
 		 * @public
@@ -39,8 +50,9 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A level of grouping that is neither a portfolio or a position. This could be an
-		 * intermediate level of grouping (e.g. an asset class within a portfolio).
+		 * A level of grouping that doesn't fit into any other explicitly defined
+		 * category. This could be an intermediate level of grouping (e.g. an asset
+		 * class within a portfolio).
 		 *
 		 * @public
 		 * @static
@@ -51,6 +63,7 @@ module.exports = (() => {
 		}
 	}
 
+	const instrument = new PositionLevelType('INSTRUMENT');
 	const portfolio = new PositionLevelType('PORTFOLIO');
 	const position = new PositionLevelType('POSITION');
 	const other = new PositionLevelType('OTHER');

@@ -54,6 +54,8 @@ module.exports = (() => {
 			this._description = description;
 
 			this._single = this._definition.single;
+			this._homogeneous = this._definition.homogeneous;
+
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
@@ -308,6 +310,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if the group will only contain one {@link PositionItem} instances
+		 * that share the same instrument.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get homogeneous() {
+			return this._homogeneous;
+		}
+
+		/**
 		 * Indicates if the group should be excluded from higher-level aggregations.
 		 *
 		 * @public
@@ -553,7 +566,7 @@ module.exports = (() => {
 
 	function bindItem(item) {
 		const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
-			if (this._single) {
+			if (this._single || (this._homogeneous && item === this._items[0])) {
 				const instrument = sender.position.instrument;
 				const currency = instrument.currency;
 
@@ -847,6 +860,10 @@ module.exports = (() => {
 			updates.periodDivisorPrevious = updates.periodDivisorPrevious.add(translate(item, item.data.periodDivisorPrevious));
 			updates.periodDivisorPrevious2 = updates.periodDivisorPrevious2.add(translate(item, item.data.periodDivisorPrevious2));
 
+			if (group.homogeneous) {
+				updates.quantity = updates.quantity.add(item.data.quantity);
+			}
+
 			return updates;
 		}, {
 			basis: Decimal.ZERO,
@@ -867,7 +884,8 @@ module.exports = (() => {
 			totalDivisor: Decimal.ZERO,
 			periodDivisorCurrent: Decimal.ZERO,
 			periodDivisorPrevious: Decimal.ZERO,
-			periodDivisorPrevious2: Decimal.ZERO
+			periodDivisorPrevious2: Decimal.ZERO,
+			quantity: Decimal.ZERO
 		});
 
 		actual.basis = updates.basis;
@@ -890,6 +908,10 @@ module.exports = (() => {
 		actual.periodDivisorPrevious = updates.periodDivisorPrevious;
 		actual.periodDivisorPrevious2 = updates.periodDivisorPrevious2;
 
+		if (group.homogeneous) {
+			actual.quantity = updates.quantity;
+		}
+
 		format.basis = formatCurrency(actual.basis, currency);
 		format.basis2 = formatCurrency(actual.basis2, currency);
 		format.realized = formatCurrency(actual.realized, currency);
@@ -908,6 +930,10 @@ module.exports = (() => {
 		format.periodRealized = formatCurrency(updates.periodRealized, currency);
 		format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
+
+		if (group.homogeneous) {
+			format.quantity = formatDecimal(actual.quantity, 2);
+		}
 
 		calculateRealizedPercent(group);
 		calculateUnrealizedPercent(group);

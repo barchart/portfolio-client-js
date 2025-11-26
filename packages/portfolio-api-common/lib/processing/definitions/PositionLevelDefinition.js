@@ -49,6 +49,8 @@ module.exports = (() => {
 			this._requiredGroups = requiredGroups || [ ];
 
 			this._single = type === PositionLevelType.POSITION;
+			this._homogeneous = type === PositionLevelType.INSTRUMENT;
+
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._requiredGroupGenerator = requiredGroupGenerator || (input => null);
@@ -126,6 +128,16 @@ module.exports = (() => {
 		 */
 		get single() {
 			return this._single;
+		}
+
+		/**
+		 * Indicates if the grouping level only contains items for the same instrument.
+		 *
+		 * @public
+		 * @return {Boolean}
+		 */
+		get homogeneous() {
+			return this._homogeneous;
 		}
 
 		/**
