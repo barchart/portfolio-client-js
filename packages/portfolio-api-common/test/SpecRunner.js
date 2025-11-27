@@ -3553,6 +3553,8 @@ module.exports = (() => {
 			this._description = description;
 
 			this._single = this._definition.single;
+			this._homogeneous = this._definition.homogeneous;
+
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
@@ -3602,6 +3604,13 @@ module.exports = (() => {
 				this._dataFormat.instrument = null;
 				this._dataFormat.fundamental = { };
 			}
+
+            if (this._homogeneous && items.length !== 0) {
+                const item = items[0];
+
+                this._dataFormat.instrument = item.position.instrument;
+                this._dataFormat.fundamental = item.fundamental || { };
+            }
 
 			this._dataActual.quoteLast = null;
 			this._dataActual.quoteOpen = null;
@@ -3804,6 +3813,17 @@ module.exports = (() => {
 		 */
 		get single() {
 			return this._single;
+		}
+
+		/**
+		 * Indicates if the group will only contain {@link PositionItem} instances
+		 * that share the same instrument.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get homogeneous() {
+			return this._homogeneous;
 		}
 
 		/**
@@ -4024,24 +4044,26 @@ module.exports = (() => {
 		setBarchartPriceFormattingRules(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
-			if (this._useBarchartPriceFormattingRules !== value) {
-				this._useBarchartPriceFormattingRules = value;
+			if (this._useBarchartPriceFormattingRules === value) {
+				return;
+			}
 
-				if (this._single && this._dataActual.currentPrice) {
-					const item = this._items[0];
+			this._useBarchartPriceFormattingRules = value;
 
-					const instrument = item.position.instrument;
-					const currency = instrument.currency;
+			if ((this._single || this._homogeneous) && this._dataActual.currentPrice) {
+				const item = this._items[0];
 
-					this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument, this._useBarchartPriceFormattingRules);
+				const instrument = item.position.instrument;
+				const currency = instrument.currency;
 
-					this._dataFormat.quoteLast = formatFraction(this._dataActual.quoteLast, currency, instrument, this._useBarchartPriceFormattingRules);
-					this._dataFormat.quoteOpen = formatFraction(this._dataActual.quoteOpen, currency, instrument, this._useBarchartPriceFormattingRules);
-					this._dataFormat.quoteHigh = formatFraction(this._dataActual.quoteHigh, currency, instrument, this._useBarchartPriceFormattingRules);
-					this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.currentPrice = formatFraction(this._dataActual.currentPrice, currency, instrument, this._useBarchartPriceFormattingRules);
 
-					this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
-				}
+				this._dataFormat.quoteLast = formatFraction(this._dataActual.quoteLast, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteOpen = formatFraction(this._dataActual.quoteOpen, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteHigh = formatFraction(this._dataActual.quoteHigh, currency, instrument, this._useBarchartPriceFormattingRules);
+				this._dataFormat.quoteLow = formatFraction(this._dataActual.quoteLow, currency, instrument, this._useBarchartPriceFormattingRules);
+
+				this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
 			}
 		}
 
@@ -4052,7 +4074,7 @@ module.exports = (() => {
 
 	function bindItem(item) {
 		const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
-			if (this._single) {
+			if (this._single || (this._homogeneous && item === this._items[0])) {
 				const instrument = sender.position.instrument;
 				const currency = instrument.currency;
 
@@ -4095,7 +4117,7 @@ module.exports = (() => {
 		});
 
 		const fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
-			if (this._single) {
+			if (this._single || this._homogeneous) {
 				this._dataFormat.fundamental = data;
 
 				return;
@@ -4148,12 +4170,14 @@ module.exports = (() => {
 		let lockedBinding = Disposable.getEmpty();
 		let calculatingBinding = Disposable.getEmpty();
 
-		if (this._single) {
+		if (this._single || this._homogeneous) {
 			newsBinding = item.registerNewsExistsChangeHandler((exists) => {
 				this._dataActual.newsExists = exists;
 				this._dataFormat.newsExists = exists;
 			});
+		}
 
+		if (this._single) {
 			lockedBinding = item.registerLockChangeHandler((locked) => {
 				this._dataFormat.locked = locked;
 			});
@@ -4346,6 +4370,10 @@ module.exports = (() => {
 			updates.periodDivisorPrevious = updates.periodDivisorPrevious.add(translate(item, item.data.periodDivisorPrevious));
 			updates.periodDivisorPrevious2 = updates.periodDivisorPrevious2.add(translate(item, item.data.periodDivisorPrevious2));
 
+			if (group.homogeneous) {
+				updates.quantity = updates.quantity.add(item.data.quantity);
+			}
+
 			return updates;
 		}, {
 			basis: Decimal.ZERO,
@@ -4366,7 +4394,8 @@ module.exports = (() => {
 			totalDivisor: Decimal.ZERO,
 			periodDivisorCurrent: Decimal.ZERO,
 			periodDivisorPrevious: Decimal.ZERO,
-			periodDivisorPrevious2: Decimal.ZERO
+			periodDivisorPrevious2: Decimal.ZERO,
+			quantity: Decimal.ZERO
 		});
 
 		actual.basis = updates.basis;
@@ -4389,6 +4418,10 @@ module.exports = (() => {
 		actual.periodDivisorPrevious = updates.periodDivisorPrevious;
 		actual.periodDivisorPrevious2 = updates.periodDivisorPrevious2;
 
+		if (group.homogeneous) {
+			actual.quantity = updates.quantity;
+		}
+
 		format.basis = formatCurrency(actual.basis, currency);
 		format.basis2 = formatCurrency(actual.basis2, currency);
 		format.realized = formatCurrency(actual.realized, currency);
@@ -4408,6 +4441,10 @@ module.exports = (() => {
 		format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
 
+		if (group.homogeneous) {
+			format.quantity = formatDecimal(actual.quantity, 2);
+		}
+
 		calculateRealizedPercent(group);
 		calculateUnrealizedPercent(group);
 
@@ -4422,7 +4459,7 @@ module.exports = (() => {
 		const groupItems = group._items;
 
 		if (group.single && groupItems.length === 1) {
-			const item = group._items[0];
+			const item = groupItems[0];
 			const instrument = item.position.instrument;
 
 			actual.quantity = item.data.quantity;
@@ -4447,6 +4484,12 @@ module.exports = (() => {
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
 			format.calculating = definition.type === PositionLevelType.POSITION && item.data.calculating;
 			format.expired = definition.type === PositionLevelType.POSITION && item.data.expired;
+		}
+
+		if (group.homogeneous && groupItems.length !== 1) {
+			const item = groupItems[0];
+
+			format.expired = item.data.expired;
 		}
 
 		let portfolioType = null;
@@ -5680,6 +5723,8 @@ module.exports = (() => {
 			this._requiredGroups = requiredGroups || [ ];
 
 			this._single = type === PositionLevelType.POSITION;
+			this._homogeneous = type === PositionLevelType.INSTRUMENT;
+
 			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._requiredGroupGenerator = requiredGroupGenerator || (input => null);
@@ -5757,6 +5802,16 @@ module.exports = (() => {
 		 */
 		get single() {
 			return this._single;
+		}
+
+		/**
+		 * Indicates if the grouping level only contains items for the same instrument.
+		 *
+		 * @public
+		 * @return {Boolean}
+		 */
+		get homogeneous() {
+			return this._homogeneous;
 		}
 
 		/**
@@ -5951,6 +6006,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * A level of grouping for positions which share the same instrument.
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionLevelType}
+		 */
+		static get INSTRUMENT() {
+			return instrument;
+		}
+
+		/**
 		 * A level of grouping that represents an entire portfolio's contents.
 		 *
 		 * @public
@@ -5974,8 +6040,9 @@ module.exports = (() => {
 		}
 
 		/**
-		 * A level of grouping that is neither a portfolio or a position. This could be an
-		 * intermediate level of grouping (e.g. an asset class within a portfolio).
+		 * A level of grouping that doesn't fit into any other explicitly defined
+		 * category. This could be an intermediate level of grouping (e.g. an asset
+		 * class within a portfolio).
 		 *
 		 * @public
 		 * @static
@@ -5986,6 +6053,7 @@ module.exports = (() => {
 		}
 	}
 
+	const instrument = new PositionLevelType('INSTRUMENT');
 	const portfolio = new PositionLevelType('PORTFOLIO');
 	const position = new PositionLevelType('POSITION');
 	const other = new PositionLevelType('OTHER');
@@ -7527,7 +7595,7 @@ module.exports = (() => {
      */
     push(disposable) {
       assert.argumentIsRequired(disposable, 'disposable', Disposable, 'Disposable');
-      if (this.disposed) {
+      if (this.getIsDisposed()) {
         throw new Error('Unable to push item onto DisposableStack because it has been disposed.');
       }
       this._stack.push(disposable);
@@ -8728,9 +8796,9 @@ module.exports = (() => {
     const today = new Date();
     return Math.floor(today.getFullYear() / 100) * 100;
   }
-  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4})[-/.]?([0-9]{1,2})[-/.]?([0-9]{1,2})$/, 1, 2, 3, 0);
-  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{4})$/, 3, 1, 2, 0);
-  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
+  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/, 1, 2, 3, 0);
+  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{4})$/, 3, 1, 2, 0);
+  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
   return DayFormatType;
 })();
 
@@ -8939,7 +9007,10 @@ module.exports = (() => {
      * Returns true if the current instance is less than or equal to the value.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to compare.
+     * **New Features**
+           *
+           * * Added the `TransactionValidator.getPositionViolationIndex` function.
+           * * Updated the `TransactionValidator.getSwitchIndex` function to use the `TransactionValidator.validateDirectionSwitch` function internally. @param {Decimal|Number|String} other - The value to compare.
      * @returns {Boolean}
      */
     getIsLessThanOrEqual(other) {
@@ -9339,16 +9410,6 @@ module.exports = (() => {
     }
 
     /**
-     * Indicates if the dispose action has been executed.
-     *
-     * @public
-     * @returns {boolean}
-     */
-    get disposed() {
-      return this._disposed;
-    }
-
-    /**
      * Invokes end-of-life logic. Once this function has been
      * invoked, further interaction with the object is not
      * recommended.
@@ -9368,17 +9429,18 @@ module.exports = (() => {
      * @abstract
      * @ignore
      */
-    _onDispose() {}
+    _onDispose() {
+      return;
+    }
 
     /**
      * Returns true if the {@link Disposable#dispose} function has been invoked.
      *
      * @public
-     * @deprecated
      * @returns {boolean}
      */
     getIsDisposed() {
-      return this._disposed;
+      return this._disposed || false;
     }
     toString() {
       return '[Disposable]';
@@ -9407,7 +9469,9 @@ module.exports = (() => {
      * @returns {Disposable}
      */
     static getEmpty() {
-      return Disposable.fromAction(() => {});
+      return Disposable.fromAction(() => {
+        return;
+      });
     }
   }
   class DisposableAction extends Disposable {
@@ -11186,7 +11250,7 @@ module.exports = (() => {
       assert.argumentIsRequired(handler, 'handler', Function);
       addRegistration.call(this, handler);
       return Disposable.fromAction(() => {
-        if (this.disposed) {
+        if (this.getIsDisposed()) {
           return;
         }
         removeRegistration.call(this, handler);
@@ -11218,7 +11282,7 @@ module.exports = (() => {
      * Triggers the event, calling all previously registered handlers.
      *
      * @public
-     * @param {*} data - The data to pass each handler.
+     * @param {*) data - The data to pass each handler.
      */
     fire(data) {
       let observers = this._observers;
@@ -11229,7 +11293,7 @@ module.exports = (() => {
     }
 
     /**
-     * Returns true if no handlers are currently registered.
+     * Returns true, if no handlers are currently registered.
      *
      * @public
      * @returns {boolean}
