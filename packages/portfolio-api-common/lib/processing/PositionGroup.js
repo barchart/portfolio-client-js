@@ -987,11 +987,15 @@ module.exports = (() => {
 			format.expired = definition.type === PositionLevelType.POSITION && item.data.expired;
 		}
 
-		if (group.homogeneous && groupItems.length !== 1) {
-			const item = groupItems[0];
+        if (group.homogeneous && groupItems.length !== 1) {
+            const item = groupItems[0];
 
-			format.expired = item.data.expired;
-		}
+            if (item && item.data) {
+                format.expired = item.data.expired;
+            } else {
+                format.expired = false;
+            }
+        }
 
 		let portfolioType = null;
 
