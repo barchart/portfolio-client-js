@@ -1,6 +1,6 @@
 {
   "name": "@barchart/portfolio-api-common",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "description": "Common JavaScript code used by Barchart's Portfolio Service",
   "author": {
     "name": "Bryan Ingle",
