@@ -987,7 +987,7 @@ module.exports = (() => {
 			format.expired = definition.type === PositionLevelType.POSITION && item.data.expired;
 		}
 
-		if (group.homogeneous && groupItems.length > 1) {
+		if (group.homogeneous && groupItems.length !== 0) {
 			const item = groupItems[0];
 
 			format.expired = item.data.expired;
