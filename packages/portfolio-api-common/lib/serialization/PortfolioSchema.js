@@ -4,7 +4,8 @@ const Currency = require('@barchart/common-js/lang/Currency'),
 	SchemaBuilder = require('@barchart/common-js/serialization/json/builders/SchemaBuilder'),
 	Timezones = require('@barchart/common-js/lang/Timezones');
 
-const ValuationType = require('./../data/ValuationType');
+const SnapTradeLinkStatus = require('./../data/SnapTradeLinkStatus'),
+	ValuationType = require('./../data/ValuationType');
 
 module.exports = (() => {
 	'use strict';
@@ -103,6 +104,8 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('snaptrade.status', DataType.forEnum(SnapTradeLinkStatus, 'SnapTradeLinkStatus'), true)
+		.withField('snaptrade.progress', DataType.NUMBER, true)
 		.withField('legacy.system', DataType.STRING, true)
 		.withField('legacy.user', DataType.STRING, true)
 		.withField('legacy.portfolio', DataType.STRING, true)
@@ -128,6 +131,8 @@ module.exports = (() => {
 		.withField('defaults.currency', DataType.forEnum(Currency, 'Currency'))
 		.withField('defaults.reinvest', DataType.BOOLEAN, true)
 		.withField('defaults.valuation', DataType.forEnum(ValuationType, 'ValuationType'))
+		.withField('snaptrade.status', DataType.forEnum(SnapTradeLinkStatus, 'SnapTradeLinkStatus'), true)
+		.withField('snaptrade.progress', DataType.NUMBER, true)
 		.withField('legacy.system', DataType.STRING, true)
 		.withField('legacy.user', DataType.STRING, true)
 		.withField('legacy.portfolio', DataType.STRING, true)
