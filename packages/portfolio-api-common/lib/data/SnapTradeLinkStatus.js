@@ -24,12 +24,12 @@ module.exports = (() => {
 			return linked;
 		}
 
-		static get UNLINKING() {
-			return unlinking;
+		static get REFRESHING() {
+			return refreshing;
 		}
 
-		static get UNLINKED() {
-			return unlinked;
+		static get FAILED() {
+			return failed;
 		}
 
 		/**
@@ -50,9 +50,8 @@ module.exports = (() => {
 
 	const linking = new SnapTradeLinkStatus('LINKING');
 	const linked = new SnapTradeLinkStatus('LINKED');
-
-	const unlinking = new SnapTradeLinkStatus('UNLINKING');
-	const unlinked = new SnapTradeLinkStatus('UNLINKED');
+	const refreshing = new SnapTradeLinkStatus('REFRESHING');
+	const failed = new SnapTradeLinkStatus('FAILED');
 
 	return SnapTradeLinkStatus;
 })();
