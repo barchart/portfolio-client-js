@@ -8,8 +8,8 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @extends {Enum}
-	 * @param {String} description
 	 * @param {String} code
+	 * @param {String} description
 	 */
 	class ValuationType extends Enum {
 		constructor(code, description) {

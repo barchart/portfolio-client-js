@@ -1,4 +1,5 @@
-const Enum = require('@barchart/common-js/lang/Enum');
+const assert = require('@barchart/common-js/lang/assert'),
+	Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
 	'use strict';
@@ -8,12 +9,20 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @extends {Enum}
-	 * @param {String} description
 	 * @param {String} code
+	 * @param {Boolean} processing
 	 */
 	class SnapTradeLinkStatus extends Enum {
-		constructor(code) {
+		constructor(code, processing) {
 			super(code, code);
+
+			assert.argumentIsRequired(processing, 'processing', Boolean);
+
+			this._processing = processing;
+		}
+
+		get processing() {
+			return this._processing;
 		}
 
 		static get LINKING() {
@@ -48,10 +57,10 @@ module.exports = (() => {
 		}
 	}
 
-	const linking = new SnapTradeLinkStatus('LINKING');
-	const linked = new SnapTradeLinkStatus('LINKED');
-	const refreshing = new SnapTradeLinkStatus('REFRESHING');
-	const failed = new SnapTradeLinkStatus('FAILED');
+	const linking = new SnapTradeLinkStatus('LINKING', true);
+	const linked = new SnapTradeLinkStatus('LINKED', false);
+	const refreshing = new SnapTradeLinkStatus('REFRESHING', true);
+	const failed = new SnapTradeLinkStatus('FAILED', false);
 
 	return SnapTradeLinkStatus;
 })();
