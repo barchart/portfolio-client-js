@@ -10,11 +10,12 @@ module.exports = (() => {
 	 * @public
 	 * @extends {Enum}
 	 * @param {String} code
+	 * @param {String} description
 	 * @param {Boolean} processing
 	 */
 	class SnapTradeLinkStatus extends Enum {
-		constructor(code, processing) {
-			super(code, code);
+		constructor(code, description, processing) {
+			super(code, description);
 
 			assert.argumentIsRequired(processing, 'processing', Boolean);
 
@@ -57,10 +58,10 @@ module.exports = (() => {
 		}
 	}
 
-	const linking = new SnapTradeLinkStatus('LINKING', true);
-	const linked = new SnapTradeLinkStatus('LINKED', false);
-	const refreshing = new SnapTradeLinkStatus('REFRESHING', true);
-	const failed = new SnapTradeLinkStatus('FAILED', false);
+	const linking = new SnapTradeLinkStatus('LINKING', 'Linking', true);
+	const linked = new SnapTradeLinkStatus('LINKED', 'Linked', false);
+	const refreshing = new SnapTradeLinkStatus('REFRESHING', 'Refreshing', true);
+	const failed = new SnapTradeLinkStatus('FAILED', 'Failed', false);
 
 	return SnapTradeLinkStatus;
 })();
