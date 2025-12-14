@@ -249,6 +249,22 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if a portfolio has been added to the container.
+		 *
+		 * @public
+		 * @param {Object} portfolio
+		 * @returns {boolean}
+		 */
+		hasPortfolio(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
+
+			const key = portfolio.portfolio;
+
+			return this._portfolios.hasOwnProperty(key);
+		}
+
+		/**
 		 * Adds a new portfolio to the container, injecting it into aggregation
 		 * trees, as necessary.
 		 *
@@ -260,56 +276,58 @@ module.exports = (() => {
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
 			assert.argumentIsRequired(portfolio.name, 'portfolio.name', String);
 
+			if (this.hasPortfolio(portfolio)) {
+				return;
+			}
+
 			const key = portfolio.portfolio;
 
-			if (!this._portfolios.hasOwnProperty(key)) {
-				this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio });
+			this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio });
 
-				this._definitions.forEach((treeDefinition) => {
-					const tree = this._trees[treeDefinition.name];
-					const levelDefinitions = treeDefinition.definitions;
+			this._definitions.forEach((treeDefinition) => {
+				const tree = this._trees[treeDefinition.name];
+				const levelDefinitions = treeDefinition.definitions;
 
-					let portfolioRequiredGroup = null;
+				let portfolioRequiredGroup = null;
 
-					let portfolioLevelDefinition = null;
-					let portfolioLevelDefinitionIndex = null;
+				let portfolioLevelDefinition = null;
+				let portfolioLevelDefinitionIndex = null;
 
-					levelDefinitions.forEach((levelDefinition, i) => {
-						if (portfolioRequiredGroup === null) {
-							portfolioRequiredGroup = levelDefinition.generateRequiredGroup(portfolio);
+				levelDefinitions.forEach((levelDefinition, i) => {
+					if (portfolioRequiredGroup === null) {
+						portfolioRequiredGroup = levelDefinition.generateRequiredGroup(portfolio);
 
-							if (portfolioRequiredGroup !== null) {
-								portfolioLevelDefinition = levelDefinition;
-								portfolioLevelDefinitionIndex = i;
-							}
+						if (portfolioRequiredGroup !== null) {
+							portfolioLevelDefinition = levelDefinition;
+							portfolioLevelDefinitionIndex = i;
 						}
-					});
-
-					if (portfolioRequiredGroup !== null) {
-						let parentTrees = [ ];
-
-						if (portfolioLevelDefinitionIndex === 0) {
-							parentTrees.push(tree);
-						} else {
-							const parentLevelDefinition = levelDefinitions[ portfolioLevelDefinitionIndex - 1 ];
-
-							tree.walk((group, groupTree) => {
-								if (group.definition === parentLevelDefinition) {
-									parentTrees.push(groupTree);
-								}
-							}, false, false);
-						}
-
-						const overrideRequiredGroups = [ portfolioRequiredGroup ];
-
-						parentTrees.forEach((t) => {
-							createGroups.call(this, t, [ ], treeDefinition, levelDefinitions.slice(portfolioLevelDefinitionIndex), overrideRequiredGroups);
-						});
 					}
 				});
 
-				updateEmptyPortfolioGroups.call(this, portfolio);
-			}
+				if (portfolioRequiredGroup !== null) {
+					let parentTrees = [ ];
+
+					if (portfolioLevelDefinitionIndex === 0) {
+						parentTrees.push(tree);
+					} else {
+						const parentLevelDefinition = levelDefinitions[ portfolioLevelDefinitionIndex - 1 ];
+
+						tree.walk((group, groupTree) => {
+							if (group.definition === parentLevelDefinition) {
+								parentTrees.push(groupTree);
+							}
+						}, false, false);
+					}
+
+					const overrideRequiredGroups = [ portfolioRequiredGroup ];
+
+					parentTrees.forEach((t) => {
+						createGroups.call(this, t, [ ], treeDefinition, levelDefinitions.slice(portfolioLevelDefinitionIndex), overrideRequiredGroups);
+					});
+				}
+			});
+
+			updateEmptyPortfolioGroups.call(this, portfolio);
 		}
 
 		/**
@@ -321,6 +339,10 @@ module.exports = (() => {
 		updatePortfolio(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
+
+			if (!this.hasPortfolio(portfolio)) {
+				return;
+			}
 
 			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
 
@@ -338,6 +360,10 @@ module.exports = (() => {
 		removePortfolio(portfolio) {
 			assert.argumentIsRequired(portfolio, 'portfolio', Object);
 			assert.argumentIsRequired(portfolio.portfolio, 'portfolio.portfolio', String);
+
+			if (!this.hasPortfolio(portfolio)) {
+				return;
+			}
 
 			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => removePositionItem.call(this, item));
 
