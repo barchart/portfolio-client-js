@@ -344,6 +344,8 @@ module.exports = (() => {
 				return;
 			}
 
+			this._portfolios[portfolio.portfolio] = portfolio;
+
 			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
 
 			updateEmptyPortfolioGroups.call(this, portfolio);
