@@ -54,8 +54,8 @@ module.exports = (() => {
         }
     }
 
-    const MIDPOINT = new OptionsValuationType('midpoint', 'Bid/Ask Midpoint');
-    const LAST_TRADE = new OptionsValuationType('last', 'Last Trade');
+    const MIDPOINT = new OptionsValuationType('MIDPOINT', 'Bid/Ask Midpoint');
+    const LAST_TRADE = new OptionsValuationType('LAST_TRADE', 'Last Trade');
 
     return OptionsValuationType;
 })();
