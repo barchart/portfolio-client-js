@@ -1281,6 +1281,8 @@ module.exports = (() => {
 	 * @property {number} highPrice
 	 * @property {number} lowPrice
 	 * @property {number} volume
+	 * @property {string} askPrice
+	 * @property {string} bidPrice
 	 * @property {string} timeDisplay
 	 * @property {Day|null} lastDay
 	 */

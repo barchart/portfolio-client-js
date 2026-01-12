@@ -7,7 +7,8 @@ const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is');
 
 const InstrumentType = require('./../data/InstrumentType'),
-	PositionDirection = require('./../data/PositionDirection');
+	PositionDirection = require('./../data/PositionDirection'),
+	OptionsValuationType = require('./../data/OptionsValuationType');
 
 const AveragePriceCalculator = require('./../calculators/AveragePriceCalculator'),
 	ValuationCalculator = require('./../calculators/ValuationCalculator');
@@ -242,6 +243,10 @@ module.exports = (() => {
 			if (this._portfolio !== portfolio) {
 				this._portfolioChangedEvent.fire(this._portfolio = portfolio);
 			}
+
+			if (this._currentQuote) {
+				this.setQuote(this._currentQuote, true);
+			}
 		}
 
 		/**
@@ -260,14 +265,22 @@ module.exports = (() => {
 				return;
 			}
 
-			if (this._currentPrice !== quote.lastPrice || force) {
+			let priceToUse;
+
+			if (this.portfolio.miscellany && this.portfolio.miscellany.data && this.portfolio.miscellany.data.optionsValuation === OptionsValuationType.MIDPOINT.code && quote.askPrice && quote.bidPrice) {
+				priceToUse = (quote.askPrice + quote.bidPrice) / 2;
+			} else {
+				priceToUse = quote.lastPrice;
+			}
+
+			if (this._currentPrice !== priceToUse || force) {
 				if (quote.previousPrice) {
 					this._data.previousPrice = quote.previousPrice;
 				}
 
-				calculatePriceData(this, quote.lastPrice, calculateQuoteDay(quote), this._today);
+				calculatePriceData(this, priceToUse, calculateQuoteDay(quote), this._today);
 
-				this._currentPrice = quote.lastPrice;
+				this._currentPrice = priceToUse;
 
 				this._previousQuote = this._currentQuote;
 				this._currentQuote = quote;
