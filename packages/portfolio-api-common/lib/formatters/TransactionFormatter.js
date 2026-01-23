@@ -44,9 +44,7 @@ module.exports = (() => {
 			assert.argumentIsOptional(fractions, 'fractions', Boolean);
 
 			const instruments = positions.reduce((map, p) => {
-				const instrument = Object.assign({ }, p.instrument || { });
-
-				map[p.position] = instrument;
+				map[p.position] = Object.assign({ }, p.instrument || { });;
 
 				return map;
 			}, { });
@@ -177,6 +175,11 @@ module.exports = (() => {
 		f.price = t.trade.price;
 		f.fee = t.fee;
 		f.total = t.amount;
+
+		if (t.description) {
+			f.description = t.description;
+		}
+
 		f.raw.total = getRawForDecimal(f.total);
 		f.raw.price = getRawForDecimal(f.price);
 		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
@@ -184,7 +187,14 @@ module.exports = (() => {
 
 	const dividendFormatter = (t, f) => {
 		f.total = t.dividend.amount;
+		f.raw.total = getRawForDecimal(f.total);
+
+		if (!t.dividend.rate) {
+			return;
+		}
+
 		f.rate = t.dividend.rate;
+		f.raw.rate = getRawForDecimal(f.rate);
 
 		let shares;
 		
@@ -213,6 +223,7 @@ module.exports = (() => {
 		}
 
 		f.shares = shares;
+		f.raw.shares = getRawForDecimal(f.shares);
 
 		if (t.dividend.currency) {
 			f.currency = t.dividend.currency;
@@ -222,15 +233,18 @@ module.exports = (() => {
 			f.native = t.dividend.native;
 			f.raw.native = getRawForDecimal(f.native);
 		}
-
-		f.raw.rate = getRawForDecimal(f.rate);
-		f.raw.shares = getRawForDecimal(f.shares);
-		f.raw.total = getRawForDecimal(f.total);
 	};
 
 	const distributionCashFormatter = (t, f) => {
 		f.total = t.dividend.amount;
+		f.raw.total = getRawForDecimal(f.total);
+
+		if (!t.dividend.rate) {
+			return;
+		}
+
 		f.rate = t.dividend.rate;
+		f.raw.rate = getRawForDecimal(f.rate);
 
 		let shares;
 
@@ -259,6 +273,7 @@ module.exports = (() => {
 		}
 
 		f.shares = shares;
+		f.raw.shares = getRawForDecimal(f.shares);
 
 		if (t.dividend.currency) {
 			f.currency = t.dividend.currency;
@@ -268,10 +283,6 @@ module.exports = (() => {
 			f.native = t.dividend.native;
 			f.raw.native = getRawForDecimal(f.native);
 		}
-
-		f.raw.rate = getRawForDecimal(f.rate);
-		f.raw.shares = getRawForDecimal(f.shares);
-		f.raw.total = getRawForDecimal(f.total);
 	};
 
 	const dividendReinvestFormatter = (t, f) => {
