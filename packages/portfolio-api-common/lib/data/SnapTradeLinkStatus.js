@@ -26,6 +26,10 @@ module.exports = (() => {
 			return this._processing;
 		}
 
+		static get WAITING() {
+			return waiting;
+		}
+
 		static get LINKING() {
 			return linking;
 		}
@@ -58,6 +62,7 @@ module.exports = (() => {
 		}
 	}
 
+	const waiting = new SnapTradeLinkStatus('WAITING', 'Waiting', false);
 	const linking = new SnapTradeLinkStatus('LINKING', 'Linking', true);
 	const linked = new SnapTradeLinkStatus('LINKED', 'Linked', false);
 	const refreshing = new SnapTradeLinkStatus('REFRESHING', 'Refreshing', true);
