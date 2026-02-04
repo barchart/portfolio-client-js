@@ -419,6 +419,11 @@ module.exports = (() => {
 
 	const splitFormatter = (t, f) => {
 		f.boughtSold = t.quantity;
+		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
+
+		if (!t.split || !t.split.numerator) {
+			return;
+		}
 
 		let rate;
 
@@ -429,12 +434,10 @@ module.exports = (() => {
 		}
 
 		f.rate = rate;
+		f.raw.rate = getRawForDecimal(f.rate);
 
 		f.shares = t.snapshot.open.subtract(t.quantity);
-
-		f.raw.rate = getRawForDecimal(f.rate);
 		f.raw.shares = getRawForDecimal(f.shares);
-		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
 	};
 
 	const valuationFormatter = (t, f) => {
