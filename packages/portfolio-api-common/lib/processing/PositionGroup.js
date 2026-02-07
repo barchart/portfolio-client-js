@@ -60,9 +60,11 @@ module.exports = (() => {
 
 			this._excluded = false;
 			this._showClosedPositions = false;
+			this._showOpenedPositions = false;
 
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
+			this._showOpenedPositionsChangeEvent = new Event(this);
 
 			this._excludedItems = [ ];
 			this._excludedItemMap = { };
@@ -449,6 +451,24 @@ module.exports = (() => {
 			if (this._showClosedPositions !== value) {
 				this._showClosedPositionsChangeEvent.fire(this._showClosedPositions = value);
 			}
+		}
+
+		setShowOpenedPositions(value) {
+			assert.argumentIsRequired(value, 'value', Boolean);
+
+			if (this._showOpenedPositions !== value) {
+				this._showOpenedPositionsChangeEvent.fire(this._showOpenedPositions = value);
+			}
+		}
+
+		setFilterMode(mode) {
+			assert.argumentIsRequired(mode, 'mode', FilterMode);
+
+			const showClosed = mode !== FilterMode.OPEN;
+			const showOpen = mode !== FilterMode.CLOSED;
+
+			this.setShowClosedPositions(showClosed);
+			this.setShowOpenedPositions(showOpen);
 		}
 
 		/**
