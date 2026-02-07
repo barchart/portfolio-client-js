@@ -10,7 +10,8 @@ const array = require('@barchart/common-js/lang/array'),
 
 const fractionFormatter = require('@barchart/marketdata-api-js/lib/utilities/format/fraction');
 
-const InstrumentType = require('./../data/InstrumentType');
+const InstrumentType = require('./../data/InstrumentType'),
+	FilterMode = require('./../data/FilterMode');
 
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType');
