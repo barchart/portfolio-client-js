@@ -67,6 +67,8 @@ module.exports = (() => {
 			this._showClosedPositionsChangeEvent = new Event(this);
 			this._showOpenedPositionsChangeEvent = new Event(this);
 
+			this._filterMode = FilterMode.OPEN;
+
 			this._excludedItems = [ ];
 			this._excludedItemMap = { };
 			this._consideredItems = this._items.slice(0);
@@ -109,12 +111,12 @@ module.exports = (() => {
 				this._dataFormat.fundamental = { };
 			}
 
-            if (this._homogeneous && items.length !== 0) {
-                const item = items[0];
+			if (this._homogeneous && items.length !== 0) {
+				const item = items[0];
 
-                this._dataFormat.instrument = item.position.instrument;
-                this._dataFormat.fundamental = item.fundamental || { };
-            }
+				this._dataFormat.instrument = item.position.instrument;
+				this._dataFormat.fundamental = item.fundamental || { };
+			}
 
 			this._dataActual.quoteLast = null;
 			this._dataActual.quoteOpen = null;
@@ -467,6 +469,8 @@ module.exports = (() => {
 
 			const showClosed = mode !== FilterMode.OPEN;
 			const showOpen = mode !== FilterMode.CLOSED;
+
+			this._filterMode = mode;
 
 			this.setShowClosedPositions(showClosed);
 			this.setShowOpenedPositions(showOpen);
