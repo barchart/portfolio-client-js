@@ -44,7 +44,7 @@ module.exports = (() => {
 			assert.argumentIsOptional(fractions, 'fractions', Boolean);
 
 			const instruments = positions.reduce((map, p) => {
-				map[p.position] = Object.assign({ }, p.instrument || { });;
+				map[p.position] = Object.assign({ }, p.instrument || { });
 
 				return map;
 			}, { });
