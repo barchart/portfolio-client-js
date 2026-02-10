@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "@barchart/common-js": "^4.70.0",
-    "@barchart/portfolio-api-common": "^6.3.1"
+    "@barchart/portfolio-api-common": "^7.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.11.1",
