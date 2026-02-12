@@ -7794,7 +7794,7 @@ module.exports = (() => {
      */
     push(disposable) {
       assert.argumentIsRequired(disposable, 'disposable', Disposable, 'Disposable');
-      if (this.disposed) {
+      if (this.getIsDisposed()) {
         throw new Error('Unable to push item onto DisposableStack because it has been disposed.');
       }
       this._stack.push(disposable);
@@ -8995,9 +8995,9 @@ module.exports = (() => {
     const today = new Date();
     return Math.floor(today.getFullYear() / 100) * 100;
   }
-  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4})[-/.]?([0-9]{1,2})[-/.]?([0-9]{1,2})$/, 1, 2, 3, 0);
-  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{4})$/, 3, 1, 2, 0);
-  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
+  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/, 1, 2, 3, 0);
+  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{4})$/, 3, 1, 2, 0);
+  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
   return DayFormatType;
 })();
 
@@ -9206,7 +9206,10 @@ module.exports = (() => {
      * Returns true if the current instance is less than or equal to the value.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to compare.
+     * **New Features**
+           *
+           * * Added the `TransactionValidator.getPositionViolationIndex` function.
+           * * Updated the `TransactionValidator.getSwitchIndex` function to use the `TransactionValidator.validateDirectionSwitch` function internally. @param {Decimal|Number|String} other - The value to compare.
      * @returns {Boolean}
      */
     getIsLessThanOrEqual(other) {
@@ -9606,16 +9609,6 @@ module.exports = (() => {
     }
 
     /**
-     * Indicates if the dispose action has been executed.
-     *
-     * @public
-     * @returns {boolean}
-     */
-    get disposed() {
-      return this._disposed;
-    }
-
-    /**
      * Invokes end-of-life logic. Once this function has been
      * invoked, further interaction with the object is not
      * recommended.
@@ -9635,17 +9628,18 @@ module.exports = (() => {
      * @abstract
      * @ignore
      */
-    _onDispose() {}
+    _onDispose() {
+      return;
+    }
 
     /**
      * Returns true if the {@link Disposable#dispose} function has been invoked.
      *
      * @public
-     * @deprecated
      * @returns {boolean}
      */
     getIsDisposed() {
-      return this._disposed;
+      return this._disposed || false;
     }
     toString() {
       return '[Disposable]';
@@ -9674,7 +9668,9 @@ module.exports = (() => {
      * @returns {Disposable}
      */
     static getEmpty() {
-      return Disposable.fromAction(() => {});
+      return Disposable.fromAction(() => {
+        return;
+      });
     }
   }
   class DisposableAction extends Disposable {
@@ -11453,7 +11449,7 @@ module.exports = (() => {
       assert.argumentIsRequired(handler, 'handler', Function);
       addRegistration.call(this, handler);
       return Disposable.fromAction(() => {
-        if (this.disposed) {
+        if (this.getIsDisposed()) {
           return;
         }
         removeRegistration.call(this, handler);
@@ -11485,7 +11481,7 @@ module.exports = (() => {
      * Triggers the event, calling all previously registered handlers.
      *
      * @public
-     * @param {*} data - The data to pass each handler.
+     * @param {*) data - The data to pass each handler.
      */
     fire(data) {
       let observers = this._observers;
@@ -11496,7 +11492,7 @@ module.exports = (() => {
     }
 
     /**
-     * Returns true if no handlers are currently registered.
+     * Returns true, if no handlers are currently registered.
      *
      * @public
      * @returns {boolean}
