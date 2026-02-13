@@ -59,9 +59,6 @@ module.exports = (() => {
 
 			this._data.basis = null;
 
-			this._data.currentPrice = null;
-			this._data.currentPricePrevious = null;
-
 			this._data.market = null;
 			this._data.marketChange = null;
 
