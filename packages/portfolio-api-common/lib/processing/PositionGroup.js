@@ -634,9 +634,6 @@ module.exports = (() => {
 				setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
 
 				this._dataFormat.quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
-			} else {
-				this._dataActual.currentPrice = null;
-				this._dataFormat.currentPrice = null;
 			}
 
 			calculatePriceData(this, sender, false);
