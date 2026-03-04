@@ -136,7 +136,7 @@ module.exports = (() => {
 	return AveragePriceCalculator;
 })();
 
-},{"./../data/InstrumentType":4,"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/is":44}],2:[function(require,module,exports){
+},{"./../data/InstrumentType":4,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/is":64}],2:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -242,7 +242,7 @@ module.exports = (() => {
 	return ValuationCalculator;
 })();
 
-},{"./../data/InstrumentType":4,"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/is":44}],3:[function(require,module,exports){
+},{"./../data/InstrumentType":4,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/is":64}],3:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -311,7 +311,7 @@ module.exports = (() => {
     return FilterMode;
 })();
 
-},{"@barchart/common-js/lang/Enum":35}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":55}],4:[function(require,module,exports){
 const uuid = require('uuid');
 
 const assert = require('@barchart/common-js/lang/assert'),
@@ -680,7 +680,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":35,"@barchart/common-js/lang/assert":40,"uuid":60}],5:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":55,"@barchart/common-js/lang/assert":60,"uuid":111}],5:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -743,7 +743,7 @@ module.exports = (() => {
 	return OptionSide;
 })();
 
-},{"@barchart/common-js/lang/Enum":35}],6:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":55}],6:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -805,7 +805,7 @@ module.exports = (() => {
 
     return OptionsValuationType;
 })();
-},{"@barchart/common-js/lang/Enum":35}],7:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":55}],7:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum');
@@ -960,7 +960,7 @@ module.exports = (() => {
 	return PositionDirection;
 })();
 
-},{"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/Enum":35,"@barchart/common-js/lang/assert":40}],8:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Enum":55,"@barchart/common-js/lang/assert":60}],8:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -1324,7 +1324,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":31,"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/Enum":35,"@barchart/common-js/lang/array":39,"@barchart/common-js/lang/assert":40}],9:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Enum":55,"@barchart/common-js/lang/array":59,"@barchart/common-js/lang/assert":60}],9:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -1868,7 +1868,7 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":35,"@barchart/common-js/lang/assert":40}],10:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":55,"@barchart/common-js/lang/assert":60}],10:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -2295,7 +2295,7 @@ module.exports = (() => {
 	return TransactionValidator;
 })();
 
-},{"./InstrumentType":4,"./PositionDirection":7,"./TransactionType":9,"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/array":39,"@barchart/common-js/lang/assert":40,"@barchart/common-js/lang/is":44}],11:[function(require,module,exports){
+},{"./InstrumentType":4,"./PositionDirection":7,"./TransactionType":9,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/array":59,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64}],11:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -2356,7 +2356,7 @@ module.exports = (() => {
 	return ValuationType;
 })();
 
-},{"@barchart/common-js/lang/Enum":35}],12:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":55}],12:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
@@ -3657,7 +3657,7 @@ module.exports = (() => {
 
 	return PositionContainer;
 })();
-},{"./../data/PositionSummaryFrame":8,"./PositionGroup":13,"./PositionItem":14,"./definitions/PositionLevelDefinition":15,"./definitions/PositionLevelType":16,"./definitions/PositionTreeDefinition":17,"@barchart/common-js/collections/Tree":22,"@barchart/common-js/collections/sorting/ComparatorBuilder":25,"@barchart/common-js/collections/sorting/comparators":26,"@barchart/common-js/collections/specialized/DisposableStack":27,"@barchart/common-js/lang/Currency":29,"@barchart/common-js/lang/CurrencyTranslator":30,"@barchart/common-js/lang/Day":31,"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/Rate":37,"@barchart/common-js/lang/array":39,"@barchart/common-js/lang/assert":40,"@barchart/common-js/lang/is":44,"@barchart/common-js/messaging/Event":46}],13:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":8,"./PositionGroup":13,"./PositionItem":14,"./definitions/PositionLevelDefinition":15,"./definitions/PositionLevelType":16,"./definitions/PositionTreeDefinition":17,"@barchart/common-js/collections/Tree":42,"@barchart/common-js/collections/sorting/ComparatorBuilder":45,"@barchart/common-js/collections/sorting/comparators":46,"@barchart/common-js/collections/specialized/DisposableStack":47,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/CurrencyTranslator":50,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Rate":57,"@barchart/common-js/lang/array":59,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64,"@barchart/common-js/messaging/Event":67}],13:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -4927,7 +4927,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/FilterMode":3,"./../data/InstrumentType":4,"./definitions/PositionLevelDefinition":15,"./definitions/PositionLevelType":16,"@barchart/common-js/lang/Currency":29,"@barchart/common-js/lang/CurrencyTranslator":30,"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/Disposable":34,"@barchart/common-js/lang/array":39,"@barchart/common-js/lang/assert":40,"@barchart/common-js/lang/formatter":42,"@barchart/common-js/lang/is":44,"@barchart/common-js/messaging/Event":46,"@barchart/marketdata-api-js/lib/utilities/format/fraction":54}],14:[function(require,module,exports){
+},{"./../data/FilterMode":3,"./../data/InstrumentType":4,"./definitions/PositionLevelDefinition":15,"./definitions/PositionLevelType":16,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/CurrencyTranslator":50,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Disposable":54,"@barchart/common-js/lang/array":59,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/formatter":62,"@barchart/common-js/lang/is":64,"@barchart/common-js/messaging/Event":67,"@barchart/marketdata-api-js/lib/utilities/format/fraction":75}],14:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -5864,7 +5864,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":4,"./../data/OptionsValuationType":6,"./../data/PositionDirection":7,"@barchart/common-js/lang/Currency":29,"@barchart/common-js/lang/Day":31,"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/Disposable":34,"@barchart/common-js/lang/assert":40,"@barchart/common-js/lang/is":44,"@barchart/common-js/messaging/Event":46}],15:[function(require,module,exports){
+},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":4,"./../data/OptionsValuationType":6,"./../data/PositionDirection":7,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Disposable":54,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64,"@barchart/common-js/messaging/Event":67}],15:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
@@ -6180,7 +6180,7 @@ module.exports = (() => {
 	return PositionLevelDefinition;
 })();
 
-},{"./../../data/InstrumentType":4,"./PositionLevelType":16,"@barchart/common-js/lang/Currency":29,"@barchart/common-js/lang/assert":40,"@barchart/common-js/lang/is":44}],16:[function(require,module,exports){
+},{"./../../data/InstrumentType":4,"./PositionLevelType":16,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64}],16:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -6254,7 +6254,7 @@ module.exports = (() => {
 	return PositionLevelType;
 })();
 
-},{"@barchart/common-js/lang/Enum":35}],17:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":55}],17:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert');
 
 const PositionLevelDefinition = require('./PositionLevelDefinition');
@@ -6326,7 +6326,162 @@ module.exports = (() => {
 	return PositionTreeDefinitions;
 })();
 
-},{"./PositionLevelDefinition":15,"@barchart/common-js/lang/assert":40}],18:[function(require,module,exports){
+},{"./PositionLevelDefinition":15,"@barchart/common-js/lang/assert":60}],18:[function(require,module,exports){
+const assert = require('@barchart/common-js/lang/assert'),
+	is = require('@barchart/common-js/lang/is'),
+	promise = require('@barchart/common-js/lang/promise');
+
+const EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBuilder'),
+	ErrorInterceptor = require('@barchart/common-js/api/http/interceptors/ErrorInterceptor'),
+	Gateway = require('@barchart/common-js/api/http/Gateway'),
+	ProtocolType = require('@barchart/common-js/api/http/definitions/ProtocolType'),
+	ResponseInterceptor = require('@barchart/common-js/api/http/interceptors/ResponseInterceptor'),
+	VerbType = require('@barchart/common-js/api/http/definitions/VerbType');
+
+module.exports = (() => {
+	'use strict';
+
+	const DEFAULT_MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS = 3 * 1000;
+
+	const regex = { };
+
+	regex.crypto = { };
+	regex.crypto.token = /^(.*) - (USD)$/i;
+
+	/**
+	 * A utility that downloads instrument metadata (i.e. instrument "profile" data).
+	 *
+	 * @public
+	 * @param {Number=} waitInMilliseconds - The maximum amount of time to wait for the response from server.
+	 */
+	class InstrumentProvider {
+		constructor(waitInMilliseconds) {
+			assert.argumentIsOptional(waitInMilliseconds, 'waitInMillis', Number);
+
+			this._waitInMilliseconds = waitInMilliseconds || DEFAULT_MAXIMUM_WAIT_BEFORE_TIMEOUT_IN_MILLISECONDS;
+		}
+
+		/**
+		 * Returns a promise for instrument metadata (i.e. "profile" data). If no instrument
+		 * can be found with a matching symbol, the promise is rejected.
+		 *
+		 * @public
+		 * @async
+		 * @param {String} symbol
+		 * @returns {Promise<Object>}
+		 */
+		async getInstrument(symbol) {
+			assert.argumentIsRequired(symbol, 'symbol', String);
+
+			return promise.timeout(Gateway.invoke(instrumentLookupEndpoint, { symbol }), this._waitInMilliseconds, 'instrument lookup')
+				.catch((e) => {
+					let message;
+
+					if (is.string(e) && e === 'timeout') {
+						message = `Instrument lookup for [ ${symbol} ] failed due to timed out`;
+					} else {
+						message = `Instrument lookup for [ ${symbol} ] failed due to an unspecified error`;
+					}
+
+					return Promise.reject(message);
+				}).then((result) => {
+					if (result.instrument === null) {
+						return Promise.reject(`Instrument lookup for [ ${symbol} ] failed, the instrument does not exist`);
+					}
+
+					normalizeInstrument(result.instrument);
+
+					return result;
+				});
+		}
+
+		/**
+		 * Returns a promise for metadata for multiple instruments.
+		 *
+		 * @public
+		 * @async
+		 * @param {String[]} symbols
+		 * @returns {Promise<Object>}
+		 */
+		async getInstruments(symbols) {
+			assert.argumentIsArray(symbols, 'symbols', String);
+			assert.argumentIsValid(symbols.length, 'symbols.length', x => x > 0, 'is greater than zero');
+
+			const symbolList = symbols.join(',');
+
+			return promise.timeout(Gateway.invoke(instrumentsLookupEndpoint, { symbols: symbolList }), this._waitInMilliseconds, 'instrument lookup')
+				.catch((e) => {
+					let message;
+
+					if (is.string(e) && e === 'timeout') {
+						message = `Instrument lookup for [ ${symbolList} ] failed due to timed out`;
+					} else {
+						message = `Instrument lookup for [ ${symbolList} ] failed due to an unspecified error`;
+					}
+
+					return Promise.reject(message);
+				}).then((result) => {
+					if (result.instruments === null) {
+						return Promise.reject(`Instrument lookup for [ ${symbolList} ] failed, no instruments were returned`);
+					}
+
+					if (is.array(result.instruments)) {
+						result.instruments.forEach(normalizeInstrument);
+					}
+
+					return result;
+				});
+		}
+
+		toString() {
+			return '[InstrumentProvider]';
+		}
+	}
+
+	const instrumentLookupEndpoint = EndpointBuilder.for('query-instrument', 'query instrument')
+		.withVerb(VerbType.GET)
+		.withProtocol(ProtocolType.HTTPS)
+		.withHost('instruments-prod.aws.barchart.com')
+		.withPort(443)
+		.withPathBuilder((pb) => {
+			pb.withLiteralParameter('instruments', 'instruments')
+				.withVariableParameter('symbol', 'symbol', 'symbol');
+		})
+		.withResponseInterceptor(ResponseInterceptor.DATA)
+		.withErrorInterceptor(ErrorInterceptor.GENERAL)
+		.endpoint;
+
+	const instrumentsLookupEndpoint = EndpointBuilder.for('query-instruments', 'query instruments')
+		.withVerb(VerbType.GET)
+		.withProtocol(ProtocolType.HTTPS)
+		.withHost('instruments-prod.aws.barchart.com')
+		.withPort(443)
+		.withPathBuilder((pb) => {
+			pb.withLiteralParameter('instruments', 'instruments');
+		})
+		.withQueryBuilder((qb) => {
+			qb.withVariableParameter('symbols', 'symbols', 'symbols');
+		})
+		.withResponseInterceptor(ResponseInterceptor.DATA)
+		.withErrorInterceptor(ErrorInterceptor.GENERAL)
+		.endpoint;
+
+	function normalizeInstrument(instrument) {
+		if (instrument && instrument.symbolType === 18) {
+			const match = instrument.name.match(regex.crypto.token) || null;
+
+			if (match !== null) {
+				instrument.name = match[1];
+				instrument.currency = 'USD';
+				instrument.symbolType = 999;
+			}
+		}
+	}
+
+	return InstrumentProvider;
+})();
+
+},{"@barchart/common-js/api/http/Gateway":24,"@barchart/common-js/api/http/builders/EndpointBuilder":26,"@barchart/common-js/api/http/definitions/ProtocolType":32,"@barchart/common-js/api/http/definitions/VerbType":33,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":37,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":39,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64,"@barchart/common-js/lang/promise":66}],19:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
@@ -6537,7 +6692,7 @@ module.exports = (() => {
 	return PositionSchema;
 })();
 
-},{"./../data/InstrumentType":4,"./../data/OptionSide":5,"./../data/PositionDirection":7,"./../data/ValuationType":11,"@barchart/common-js/lang/Currency":29,"@barchart/common-js/lang/Enum":35,"@barchart/common-js/serialization/json/DataType":48,"@barchart/common-js/serialization/json/builders/SchemaBuilder":52,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":53}],19:[function(require,module,exports){
+},{"./../data/InstrumentType":4,"./../data/OptionSide":5,"./../data/PositionDirection":7,"./../data/ValuationType":11,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/Enum":55,"@barchart/common-js/serialization/json/DataType":69,"@barchart/common-js/serialization/json/builders/SchemaBuilder":73,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":74}],20:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -6907,7 +7062,2179 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":4,"./../data/PositionDirection":7,"./../data/TransactionType":9,"@barchart/common-js/lang/Currency":29,"@barchart/common-js/lang/Enum":35,"@barchart/common-js/lang/is":44,"@barchart/common-js/serialization/json/DataType":48,"@barchart/common-js/serialization/json/builders/SchemaBuilder":52}],20:[function(require,module,exports){
+},{"./../data/InstrumentType":4,"./../data/PositionDirection":7,"./../data/TransactionType":9,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/Enum":55,"@barchart/common-js/lang/is":64,"@barchart/common-js/serialization/json/DataType":69,"@barchart/common-js/serialization/json/builders/SchemaBuilder":73}],21:[function(require,module,exports){
+const assert = require('./../../lang/assert'),
+  is = require('./../../lang/is');
+const FailureReasonItem = require('./FailureReasonItem'),
+  FailureType = require('./FailureType'),
+  Schema = require('./../../serialization/json/Schema'),
+  Tree = require('./../../collections/Tree');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Describes all of the reasons for API failure. Since there can be multiple
+   * reasons, the reasons are stored in a tree structure.
+   *
+   * @public
+   * @param {Object=} data - Data regarding the API request itself, likely independent of the failure data (which is maintained in the tree structure).
+   */
+  class FailureReason {
+    constructor(data) {
+      this._data = data || null;
+      this._root = new Tree();
+      this._current = this._root;
+    }
+
+    /**
+     * Adds a {@link FailureReasonItem} to the tree of reason(s) at the current node.
+     *
+     * @public
+     * @param {FailureType} type - The failure type.
+     * @param {Object=} data - The data associated with the failure type.
+     * @param {Boolean=} group - The reason is expected to have children; therefore, the current tree node is shifted to the newly added {@link FailureReasonItem}.
+     * @returns {FailureReason} - The current instance, allowing for method chaining.
+     */
+    addItem(type, data, group) {
+      assert.argumentIsRequired(type, 'type', FailureType, 'FailureType');
+      assert.argumentIsOptional(group, 'group', Boolean);
+      const node = this._current.addChild(new FailureReasonItem(type, data));
+      if (is.boolean(group) && group) {
+        this._current = node;
+      }
+      return this;
+    }
+
+    /**
+     * Resets the current node to the head of the tree.
+     *
+     * @public
+     * @param {Boolean=} previous
+     * @returns {FailureReason} - The current instance, allowing for method chaining.
+     */
+    reset(previous) {
+      assert.argumentIsOptional(previous, 'previous', Boolean);
+      let node;
+      if (previous && this._current.getIsInner()) {
+        node = this._current.getParent();
+      } else {
+        node = this._root;
+      }
+      this._current = node;
+      return this;
+    }
+
+    /**
+     * Returns a tree of strings, describing the reason(s) for API failure.
+     *
+     * @public
+     * @returns {Array}
+     */
+    format() {
+      const reasons = this._root.toJSObj(item => {
+        const formatted = {};
+        formatted.code = item ? item.type.code : null;
+        formatted.message = item ? item.format(this._data) : null;
+        if (item && item.type.verbose) {
+          formatted.data = item.data;
+        }
+        return formatted;
+      }, true);
+      return reasons.children;
+    }
+
+    /**
+     * Indicates if the tree of {@link FailureReasonItem} instances contains
+     * at least one item with a matching {@link FailureType}.
+     *
+     * @public
+     * @param {FailureType} type
+     * @returns {Boolean}
+     */
+    hasFailureType(type) {
+      assert.argumentIsRequired(type, 'type', FailureType, 'FailureType');
+      return this._root.search(item => item.type === type, false, false) !== null;
+    }
+
+    /**
+     * Indicates if the tree of {@link FailureReasonItem} instances contains
+     * at least one item that is considered to be severe.
+     *
+     * @public
+     * @returns {Boolean}
+     */
+    getIsSevere() {
+      return this._root.search(item => item.type.severe, false, false) !== null;
+    }
+
+    /**
+     * Searches the tree of {@link FailureReasonItem} instances for a non-standard
+     * http error code.
+     *
+     * @public
+     * @returns {Number|null}
+     */
+    getErrorCode() {
+      const node = this._root.search(item => item.type.error !== null, true, false);
+      if (node !== null) {
+        return node.getValue().type.error;
+      } else {
+        return null;
+      }
+    }
+    toJSON() {
+      return this.format();
+    }
+
+    /**
+     * A convenience function for creating a new {@link FailureReason} with a
+     * single {@link FailureType}.
+     *
+     * @public
+     * @static
+     * @param {FailureType} type
+     * @param {Object=} data
+     * @returns {FailureReason}
+     */
+    static from(type, data) {
+      const reason = new FailureReason();
+      return reason.addItem(type, data);
+    }
+
+    /**
+     * Factory function for creating instances of {@link FailureReason}.
+     *
+     * @public
+     * @static
+     * @param data
+     * @returns {FailureReason}
+     */
+    static forRequest(data) {
+      return new FailureReason(data);
+    }
+
+    /**
+     * Returns an HTTP status code that would be suitable for use with the
+     * failure reason.
+     *
+     * @public
+     * @static
+     * @param {FailureReason} reason
+     * @returns {Number}
+     */
+    static getHttpStatusCode(reason) {
+      assert.argumentIsRequired(reason, 'reason', FailureReason, 'FailureReason');
+      let returnVal = null;
+      reason._root.walk(item => {
+        let code = FailureType.getHttpStatusCode(item.type);
+        if (returnVal === null || returnVal !== 400) {
+          returnVal = code;
+        }
+      }, false, false);
+      return returnVal;
+    }
+
+    /**
+     * Validates that a candidate conforms to a schema, returning a rejected
+     * promise (with a serialized FailureReason) if a problem exists.
+     *
+     * @public
+     * @static
+     * @param {Schema|Enum} schema
+     * @param {Object} candidate
+     * @param {String=} description
+     * @returns {Promise}
+     */
+    static validateSchema(schema, candidate, description) {
+      return Promise.resolve().then(() => {
+        let schemaToUse;
+        if (schema instanceof Schema) {
+          schemaToUse = schema;
+        } else if (schema.schema && schema.schema instanceof Schema) {
+          schemaToUse = schema.schema;
+        } else {
+          schemaToUse = null;
+        }
+        const fields = schemaToUse.getInvalidFields(candidate);
+        let failure;
+        if (fields.length !== 0) {
+          failure = FailureReason.forRequest({
+            endpoint: {
+              description: description || `serialize data into ${schema.name}`
+            }
+          }).addItem(FailureType.REQUEST_INPUT_MALFORMED, {}, true);
+          failure = fields.reduce((accumulator, field) => {
+            accumulator.addItem(FailureType.REQUEST_PARAMETER_MALFORMED, {
+              name: field.name
+            });
+            return accumulator;
+          }, failure);
+        } else {
+          failure = null;
+        }
+        if (failure !== null) {
+          return Promise.reject(failure.format());
+        } else {
+          return Promise.resolve(null);
+        }
+      });
+    }
+    toString() {
+      return '[FailureReason]';
+    }
+  }
+  return FailureReason;
+})();
+
+},{"./../../collections/Tree":42,"./../../lang/assert":60,"./../../lang/is":64,"./../../serialization/json/Schema":71,"./FailureReasonItem":22,"./FailureType":23}],22:[function(require,module,exports){
+const assert = require('./../../lang/assert'),
+  attributes = require('./../../lang/attributes');
+const FailureType = require('./FailureType');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * One of the reason(s) for API failure, including any specific data that
+   * allows a human-readable message to be generated.
+   *
+   * @public
+   * @param {FailureType} type
+   * @param {Object=} data
+   */
+  class FailureReasonItem {
+    constructor(type, data) {
+      assert.argumentIsRequired(type, 'type', FailureType, 'FailureType');
+      this._type = type;
+      this._data = data || null;
+    }
+
+    /**
+     * The {@link FailureType} of the item.
+     *
+     * @public
+     * @returns {FailureType}
+     */
+    get type() {
+      return this._type;
+    }
+
+    /**
+     * The data.
+     *
+     * @public
+     * @return {Object}
+     */
+    get data() {
+      return this._data;
+    }
+
+    /**
+     * Formats a human-readable message, describing the failure.
+     *
+     * @public
+     * @param {Object=} root - Root data from the {@link FailureReason}.
+     * @returns {String}
+     */
+    format(root) {
+      return this._type.template.replace(tokenRegex, (full, ignored, casing, token) => {
+        let tokenToUse;
+        let dataToRead;
+        if (token.startsWith(rootPrefix)) {
+          tokenToUse = token.slice(rootLength);
+          dataToRead = root;
+        } else {
+          tokenToUse = token;
+          dataToRead = this._data;
+        }
+        let replacement = attributes.read(dataToRead, tokenToUse);
+        if (replacement) {
+          if (casing === 'l') {
+            replacement = `${replacement.slice(0, 1).toLowerCase()}${replacement.slice(1)}`;
+          } else if (casing === 'u') {
+            replacement = `${replacement.slice(0, 1).toUpperCase()}${replacement.slice(1)}`;
+          } else if (casing === 'U') {
+            replacement = `${replacement.toUpperCase()}`;
+          } else if (casing === 'L') {
+            replacement = `${replacement.toLowerCase()}`;
+          }
+        }
+        return replacement;
+      });
+    }
+    toString() {
+      return '[FailureReasonItem]';
+    }
+  }
+  const tokenRegex = /{(([U|L|l|u])\|)?([a-zA-Z.]*)}/g;
+  const rootPrefix = 'root.';
+  const rootLength = rootPrefix.length;
+  return FailureReasonItem;
+})();
+
+},{"./../../lang/assert":60,"./../../lang/attributes":61,"./FailureType":23}],23:[function(require,module,exports){
+const assert = require('./../../lang/assert'),
+  Enum = require('./../../lang/Enum'),
+  is = require('./../../lang/is');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * An enumeration that describes potential reasons for API failure.
+   *
+   * @public
+   * @extends {Enum}
+   * @param {String} code - The enumeration code (and description).
+   * @param {String} template - The template string for formatting human-readable messages.
+   * @param {Boolean=} severe - Indicates if the failure is severe (default is true).
+   * @param {Number=} error - The HTTP error code which should be used as part of an HTTP response.
+   * @param {Boolean=} verbose - Indicates if data object should be included when serialized.
+   */
+  class FailureType extends Enum {
+    constructor(code, template, severe, error, verbose) {
+      super(code, code);
+      assert.argumentIsRequired(template, 'template', String);
+      assert.argumentIsOptional(severe, 'severe', Boolean);
+      assert.argumentIsOptional(error, 'error', Number);
+      assert.argumentIsOptional(verbose, 'verbose', Boolean);
+      this._template = template;
+      if (is.boolean(severe)) {
+        this._severe = severe;
+      } else {
+        this._severe = true;
+      }
+      this._error = error || null;
+      this._verbose = verbose || false;
+    }
+
+    /**
+     * The template string for formatting human-readable messages.
+     *
+     * @public
+     * @returns {String}
+     */
+    get template() {
+      return this._template;
+    }
+
+    /**
+     * Indicates if the failure is serious.
+     *
+     * @public
+     * @return {Boolean}
+     */
+    get severe() {
+      return this._severe;
+    }
+
+    /**
+     * The HTTP error code which should be used as part of an HTTP response.
+     *
+     * @public
+     * @return {Number|null}
+     */
+    get error() {
+      return this._error;
+    }
+
+    /**
+     * Indicates if data object should be included when serialized.
+     *
+     * @public
+     * @return {boolean}
+     */
+    get verbose() {
+      return this._verbose;
+    }
+
+    /**
+     * One or more data points is missing.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get REQUEST_CONSTRUCTION_FAILURE() {
+      return requestConstructionFailure;
+    }
+
+    /**
+     * A data point is missing.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get REQUEST_PARAMETER_MISSING() {
+      return requestParameterMissing;
+    }
+
+    /**
+     * A data point is malformed.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get REQUEST_PARAMETER_MALFORMED() {
+      return requestParameterMalformed;
+    }
+
+    /**
+     * User identity could not be determined.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get REQUEST_IDENTITY_FAILURE() {
+      return requestIdentifyFailure;
+    }
+
+    /**
+     * User authorization failed.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get REQUEST_AUTHORIZATION_FAILURE() {
+      return requestAuthorizationFailure;
+    }
+
+    /**
+     * The request data cannot be parsed or interpreted.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get REQUEST_INPUT_MALFORMED() {
+      return requestInputMalformed;
+    }
+
+    /**
+     * The request failed for unspecified reasons.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get SCHEMA_VALIDATION_FAILURE() {
+      return schemaValidationFailure;
+    }
+
+    /**
+     * The request failed for unspecified reasons.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get REQUEST_GENERAL_FAILURE() {
+      return requestGeneralFailure;
+    }
+
+    /**
+     * Insufficient permission level to access the resource.
+     *
+     * @public
+     * @static
+     * @returns {FailureType}
+     */
+    static get ENTITLEMENTS_FAILED() {
+      return entitlementsFailed;
+    }
+
+    /**
+     * Returns an HTTP status code that would be suitable for use with the
+     * failure type.
+     *
+     * @public
+     * @static
+     * @param {FailureType} type
+     * @returns {Number}
+     */
+    static getHttpStatusCode(type) {
+      assert.argumentIsRequired(type, 'type', FailureType, 'FailureType');
+      let returnVal;
+      if (type === FailureType.REQUEST_IDENTITY_FAILURE) {
+        returnVal = 401;
+      } else if (type === FailureType.REQUEST_AUTHORIZATION_FAILURE) {
+        returnVal = 403;
+      } else {
+        returnVal = 400;
+      }
+      return returnVal;
+    }
+    toString() {
+      return `[FailureType (code=${this.code})]`;
+    }
+  }
+  const requestConstructionFailure = new FailureType('REQUEST_CONSTRUCTION_FAILURE', 'An attempt to {L|root.endpoint.description} failed because some required information is missing.');
+  const requestParameterMissing = new FailureType('REQUEST_PARAMETER_MISSING', 'The "{L|name}" field is required.');
+  const requestParameterMalformed = new FailureType('REQUEST_PARAMETER_MALFORMED', 'The "{L|name}" field cannot be interpreted.');
+  const requestIdentifyFailure = new FailureType('REQUEST_IDENTITY_FAILURE', 'An attempt to {L|root.endpoint.description} failed because your identity could not be determined.');
+  const requestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed. You are not authorized to perform this action.');
+  const requestInputMalformed = new FailureType('REQUEST_INPUT_MALFORMED', 'An attempt to {L|root.endpoint.description} failed, the data structure is invalid.');
+  const schemaValidationFailure = new FailureType('SCHEMA_VALIDATION_FAILURE', 'An attempt to read {U|schema} data failed (found "{L|key}" when expecting "{L|name}")');
+  const requestGeneralFailure = new FailureType('REQUEST_GENERAL_FAILURE', 'An attempt to {L|root.endpoint.description} failed for unspecified reason(s).');
+  const entitlementsFailed = new FailureType('ENTITLEMENTS_FAILED', 'Action blocked. The current user requires elevated permissions or the current user has exceeded a quota.', false, 403, true);
+  return FailureType;
+})();
+
+},{"./../../lang/Enum":55,"./../../lang/assert":60,"./../../lang/is":64}],24:[function(require,module,exports){
+const axios = require('axios');
+const array = require('./../../lang/array'),
+  assert = require('./../../lang/assert'),
+  attributes = require('./../../lang/attributes'),
+  is = require('./../../lang/is'),
+  promise = require('./../../lang/promise');
+const Endpoint = require('./definitions/Endpoint'),
+  VerbType = require('./definitions/VerbType');
+const FailureReason = require('./../failures/FailureReason'),
+  FailureType = require('./../failures/FailureType');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Invokes web service calls using an {@link Endpoint} definition.
+   *
+   * @public
+   */
+  class Gateway {
+    constructor() {}
+
+    /**
+     * Invokes a web service endpoint, given the payload supplied.
+     *
+     * @public
+     * @static
+     * @async
+     * @param {Endpoint} endpoint
+     * @param {*=} payload
+     * @returns {Promise<Object>}
+     */
+    static async invoke(endpoint, payload) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsRequired(endpoint, 'endpoint', Endpoint, 'Endpoint');
+        const pathParameters = endpoint.path.parameters;
+        const headerParameters = endpoint.headers.parameters;
+        const queryParameters = endpoint.query.parameters;
+        const bodyParameters = endpoint.body.parameters;
+        const extractParameter = parameter => {
+          return parameter.extractor(payload).catch(e => {
+            return null;
+          });
+        };
+        return Promise.all([promise.map(pathParameters, extractParameter), promise.map(headerParameters, extractParameter), promise.map(queryParameters, extractParameter), promise.map(bodyParameters, extractParameter)]).then(groups => {
+          const pathValues = groups[0];
+          const headerValues = groups[1];
+          const queryValues = groups[2];
+          const bodyValues = groups[3];
+          const parameters = array.flatten([pathParameters, headerParameters, queryParameters, bodyParameters]);
+          const values = array.flatten([pathValues, headerValues, queryValues, bodyValues]);
+          const failure = values.reduce((accumulator, value, i) => {
+            let failure = accumulator;
+            const parameter = parameters[i];
+            if (value === null && !parameter.optional) {
+              if (accumulator === null) {
+                failure = FailureReason.forRequest({
+                  endpoint: endpoint
+                }).addItem(FailureType.REQUEST_CONSTRUCTION_FAILURE, null, true);
+              }
+              failure.addItem(FailureType.REQUEST_PARAMETER_MISSING, {
+                name: parameter.description
+              });
+            }
+            return failure;
+          }, null);
+          if (failure !== null) {
+            throw failure.format();
+          }
+          return Promise.resolve({}).then(options => {
+            const url = [];
+            url.push(endpoint.protocol.prefix);
+            url.push(endpoint.host);
+            if (endpoint.port !== endpoint.protocol.defaultPort) {
+              url.push(':');
+              url.push(endpoint.port);
+            }
+            url.push('/');
+            return promise.pipeline(pathValues.map(value => previous => {
+              let encodedValue;
+              if (is.null(value) || is.undefined(value)) {
+                encodedValue = value;
+              } else {
+                encodedValue = value.toString().replace(/\//g, '%2F');
+              }
+              previous.push(encodedValue);
+              return previous;
+            }), []).then(paths => {
+              url.push(paths.join('/'));
+              return url.join('');
+            }).then(url => {
+              options.method = verbs.get(endpoint.verb);
+              options.url = url;
+              return options;
+            });
+          }).then(options => {
+            if (headerParameters.length === 0) {
+              return options;
+            }
+            return promise.pipeline(headerValues.map((value, i) => accumulator => {
+              const parameter = headerParameters[i];
+              accumulator[parameter.key] = value;
+              return accumulator;
+            }), {}).then(headers => {
+              if (headers.length !== 0) {
+                options.headers = headers;
+              }
+              return options;
+            });
+          }).then(options => {
+            if (queryParameters.length === 0) {
+              return options;
+            }
+            return promise.pipeline(queryValues.map((value, i) => accumulator => {
+              const parameter = queryParameters[i];
+              accumulator[parameter.key] = value;
+              return accumulator;
+            }), {}).then(query => {
+              if (query.length !== 0) {
+                options.params = query;
+              }
+              return options;
+            });
+          }).then(options => {
+            if (bodyParameters.length === 0) {
+              return options;
+            }
+            return promise.pipeline(bodyValues.map((value, i) => accumulator => {
+              const parameter = bodyParameters[i];
+              attributes.write(accumulator, parameter.key, value);
+              return accumulator;
+            }), {}).then(body => {
+              options.data = body.body;
+              return options;
+            });
+          }).then(options => {
+            if (endpoint.credentials) {
+              return Promise.all([Promise.resolve(endpoint.credentials.usernameExtractor(payload)), Promise.resolve(endpoint.credentials.passwordExtractor(payload))]).then(credentials => {
+                options.auth = {};
+                options.auth.username = credentials[0];
+                options.auth.password = credentials[1];
+                return options;
+              });
+            } else {
+              return options;
+            }
+          }).then(options => {
+            if (endpoint.requestInterceptor) {
+              return endpoint.requestInterceptor.process(options, endpoint);
+            } else {
+              return options;
+            }
+          }).then(options => {
+            return axios.request(options).then(response => {
+              let responsePromise;
+              if (endpoint.responseInterceptor) {
+                responsePromise = endpoint.responseInterceptor.process(response, endpoint);
+              } else {
+                responsePromise = Promise.resolve(response);
+              }
+              return Promise.resolve(responsePromise);
+            }).catch(e => {
+              if (endpoint.errorInterceptor) {
+                return endpoint.errorInterceptor.process(e, endpoint);
+              } else {
+                throw e;
+              }
+            });
+          });
+        });
+      });
+    }
+    toString() {
+      return `[Gateway]`;
+    }
+  }
+  const verbs = new Map();
+  verbs.set(VerbType.GET, 'get');
+  verbs.set(VerbType.DELETE, 'delete');
+  verbs.set(VerbType.POST, 'post');
+  verbs.set(VerbType.PUT, 'put');
+  return Gateway;
+})();
+
+},{"./../../lang/array":59,"./../../lang/assert":60,"./../../lang/attributes":61,"./../../lang/is":64,"./../../lang/promise":66,"./../failures/FailureReason":21,"./../failures/FailureType":23,"./definitions/Endpoint":29,"./definitions/VerbType":33,"axios":76}],25:[function(require,module,exports){
+const assert = require('./../../../lang/assert');
+const Credentials = require('./../definitions/Credentials');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Fluent interface for building a {@link Credentials} object.
+   *
+   * @public
+   */
+  class CredentialsBuilder {
+    constructor() {
+      this._credentials = new Credentials();
+    }
+
+    /**
+     * The {@link Credentials} object, given all the information provided thus far.
+     *
+     * @public
+     * @returns {Credentials}
+     */
+    get credentials() {
+      return this._credentials;
+    }
+
+    /**
+     * Sets a literal username.
+     *
+     * @public
+     * @param {String} username
+     * @returns {CredentialsBuilder}
+     */
+    withLiteralUsername(username) {
+      assert.argumentIsOptional(username, 'username', String);
+      return this.withDelegateUsername(ignored => username);
+    }
+
+    /**
+     * Sets a function which returns a username.
+     *
+     * @public
+     * @param {Function} delegate
+     * @returns {CredentialsBuilder}
+     */
+    withDelegateUsername(delegate) {
+      this._credentials = new Credentials(delegate, this._credentials.passwordExtractor);
+      return this;
+    }
+
+    /**
+     * Sets a literal password.
+     *
+     * @public
+     * @param {String} password
+     * @returns {CredentialsBuilder}
+     */
+    withLiteralPassword(password) {
+      assert.argumentIsOptional(password, 'password', String);
+      return this.withDelegatePassword(ignored => password);
+    }
+
+    /**
+     * Sets a function which returns a password.
+     *
+     * @public
+     * @param {Function} delegate
+     * @returns {CredentialsBuilder}
+     */
+    withDelegatePassword(delegate) {
+      this._credentials = new Credentials(this._credentials.usernameExtractor, delegate);
+      return this;
+    }
+    toString() {
+      return '[CredentialsBuilder]';
+    }
+  }
+  return CredentialsBuilder;
+})();
+
+},{"./../../../lang/assert":60,"./../definitions/Credentials":28}],26:[function(require,module,exports){
+const assert = require('./../../../lang/assert');
+const CredentialsBuilder = require('./CredentialsBuilder'),
+  ParametersBuilder = require('./ParametersBuilder');
+const Endpoint = require('./../definitions/Endpoint'),
+  Parameters = require('./../definitions/Parameters'),
+  ProtocolType = require('./../definitions/ProtocolType'),
+  VerbType = require('./../definitions/VerbType');
+const CompositeErrorInterceptor = require('./../interceptors/CompositeErrorInterceptor'),
+  CompositeResponseInterceptor = require('./../interceptors/CompositeResponseInterceptor'),
+  CompositeRequestInterceptor = require('./../interceptors/CompositeRequestInterceptor'),
+  ErrorInterceptor = require('./../interceptors/ErrorInterceptor'),
+  ResponseInterceptor = require('./../interceptors/ResponseInterceptor'),
+  RequestInterceptor = require('./../interceptors/RequestInterceptor');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Fluent interface for building a {@link Endpoint}.
+   *
+   * @public
+   * @param {string} name
+   */
+  class EndpointBuilder {
+    constructor(name, description) {
+      assert.argumentIsRequired(name, 'name', String);
+      assert.argumentIsOptional(description, 'description', String);
+      this._endpoint = new Endpoint(name, description);
+    }
+
+    /**
+     * The {@link Endpoint}, given all the information provided thus far.
+     *
+     * @public
+     * @returns {Endpoint}
+     */
+    get endpoint() {
+      return this._endpoint;
+    }
+
+    /**
+     * Sets the verb.
+     *
+     * @public
+     * @param {VerbType} verb
+     * @returns {EndpointBuilder}
+     */
+    withVerb(verb) {
+      assert.argumentIsRequired(verb, 'verb', VerbType, 'VerbType');
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Sets the host.
+     *
+     * @public
+     * @param {ProtocolType} protocol
+     * @returns {EndpointBuilder}
+     */
+    withProtocol(protocol) {
+      assert.argumentIsRequired(protocol, 'protocol', ProtocolType, 'ProtocolType');
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Sets the host.
+     *
+     * @public
+     * @param {String} host
+     * @returns {EndpointBuilder}
+     */
+    withHost(host) {
+      assert.argumentIsRequired(host, 'host', String);
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Sets the port.
+     *
+     * @public
+     * @param {Number} port
+     * @returns {EndpointBuilder}
+     */
+    withPort(port) {
+      assert.argumentIsRequired(port, 'port', Number);
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Adds a {@link Parameters} collection, describing the request headers, using a callback.
+     *
+     * @public
+     * @param {EndpointBuilder~parametersBuilderCallback} callback
+     * @returns {EndpointBuilder}
+     */
+    withHeadersBuilder(callback) {
+      assert.argumentIsRequired(callback, 'callback', Function);
+      const builder = new ParametersBuilder();
+      callback(builder);
+      const headers = builder.parameters;
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Adds a {@link Parameters} collection, describing the request path, using a callback.
+     *
+     * @public
+     * @param {EndpointBuilder~parametersBuilderCallback} callback
+     * @returns {EndpointBuilder}
+     */
+    withPathBuilder(callback) {
+      assert.argumentIsRequired(callback, 'callback', Function);
+      const builder = new ParametersBuilder(true);
+      callback(builder);
+      const path = builder.parameters;
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Adds a {@link Parameters} collection, describing the request querystring, using a callback.
+     *
+     * @public
+     * @param {EndpointBuilder~parametersBuilderCallback} callback
+     * @returns {EndpointBuilder}
+     */
+    withQueryBuilder(callback) {
+      assert.argumentIsRequired(callback, 'callback', Function);
+      const builder = new ParametersBuilder();
+      callback(builder);
+      const query = builder.parameters;
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Adds a {@link Parameters} collection, describing the request body, using a callback.
+     *
+     * @public
+     * @param {EndpointBuilder~parametersBuilderCallback} callback
+     * @returns {EndpointBuilder}
+     */
+    withBodyBuilder(callback) {
+      assert.argumentIsRequired(callback, 'callback', Function);
+      const builder = new ParametersBuilder();
+      callback(builder);
+      const body = builder.parameters;
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Adds a body to the request.
+     *
+     * @public
+     * @param {String=} description - The human-readable description of the request body.
+     * @returns {EndpointBuilder}
+     */
+    withBody(description) {
+      assert.argumentIsOptional(description, 'description', String);
+      return this.withBodyBuilder(bodyBuilder => {
+        bodyBuilder.withDelegateParameter(description || 'request payload', 'body', x => x);
+      });
+    }
+    withBasicAuthentication(username, password) {
+      assert.argumentIsRequired(username, 'username', String);
+      assert.argumentIsRequired(password, 'password', String);
+      return this.withBasicAuthenticationBuilder(credentialsBuilder => {
+        credentialsBuilder.withLiteralUsername(username);
+        credentialsBuilder.withLiteralPassword(password);
+      });
+    }
+    withBasicAuthenticationBuilder(callback) {
+      assert.argumentIsRequired(callback, 'callback', Function);
+      const builder = new CredentialsBuilder();
+      callback(builder);
+      const credentials = builder.credentials;
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Adds a {@link RequestInterceptor}.
+     *
+     * @public
+     * @param {RequestInterceptor} requestInterceptor
+     * @returns {EndpointBuilder}
+     */
+    withRequestInterceptor(requestInterceptor) {
+      assert.argumentIsRequired(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
+      let existingRequestInterceptor = this.endpoint.requestInterceptor;
+      let updatedRequestInterceptor;
+      if (existingRequestInterceptor && existingRequestInterceptor !== RequestInterceptor.EMPTY) {
+        updatedRequestInterceptor = new CompositeRequestInterceptor(existingRequestInterceptor, requestInterceptor);
+      } else {
+        updatedRequestInterceptor = requestInterceptor;
+      }
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, updatedRequestInterceptor, this.endpoint.responseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Adds a {@link ResponseInterceptor} for successful web service responses.
+     *
+     * @public
+     * @param {ResponseInterceptor} responseInterceptor
+     * @returns {EndpointBuilder}
+     */
+    withResponseInterceptor(responseInterceptor) {
+      assert.argumentIsRequired(responseInterceptor, 'responseInterceptor', ResponseInterceptor, 'ResponseInterceptor');
+      let existingResponseInterceptor = this.endpoint.responseInterceptor;
+      let updatedResponseInterceptor;
+      if (existingResponseInterceptor && existingResponseInterceptor !== ResponseInterceptor.EMPTY) {
+        updatedResponseInterceptor = new CompositeResponseInterceptor(existingResponseInterceptor, responseInterceptor);
+      } else {
+        updatedResponseInterceptor = responseInterceptor;
+      }
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, updatedResponseInterceptor, this.endpoint.errorInterceptor);
+      return this;
+    }
+
+    /**
+     * Adds a {@link ErrorInterceptor} for handling remote web service errors.
+     *
+     * @public
+     * @param {ErrorInterceptor} responseInterceptor
+     * @returns {EndpointBuilder}
+     */
+    withErrorInterceptor(errorInterceptor) {
+      assert.argumentIsRequired(errorInterceptor, 'errorInterceptor', ErrorInterceptor, 'ErrorInterceptor');
+      let existingErrorInterceptor = this.endpoint.errorInterceptor;
+      let updatedErrorInterceptor;
+      if (existingErrorInterceptor && existingErrorInterceptor !== ErrorInterceptor.EMPTY) {
+        updatedErrorInterceptor = new CompositeErrorInterceptor(existingErrorInterceptor, errorInterceptor);
+      } else {
+        updatedErrorInterceptor = errorInterceptor;
+      }
+      this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.description, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.credentials, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor, updatedErrorInterceptor);
+      return this;
+    }
+
+    /**
+     * Factory function for creating an {@link EndpointBuilder} instance.
+     *
+     * @static
+     * @public
+     * @param {String} name
+     * @param {String=} description
+     * @returns {EndpointBuilder}
+     */
+    static for(name, description) {
+      return new EndpointBuilder(name, description);
+    }
+    toString() {
+      return '[EndpointBuilder]';
+    }
+  }
+
+  /**
+   * A function that returns a {@link ParametersBuilder}.
+   *
+   * @callback EndpointBuilder~parametersBuilderCallback
+   * @param {ParametersBuilder} parameterBuilder
+   */
+
+  return EndpointBuilder;
+})();
+
+},{"./../../../lang/assert":60,"./../definitions/Endpoint":29,"./../definitions/Parameters":31,"./../definitions/ProtocolType":32,"./../definitions/VerbType":33,"./../interceptors/CompositeErrorInterceptor":34,"./../interceptors/CompositeRequestInterceptor":35,"./../interceptors/CompositeResponseInterceptor":36,"./../interceptors/ErrorInterceptor":37,"./../interceptors/RequestInterceptor":38,"./../interceptors/ResponseInterceptor":39,"./CredentialsBuilder":25,"./ParametersBuilder":27}],27:[function(require,module,exports){
+const assert = require('./../../../lang/assert'),
+  attributes = require('./../../../lang/attributes'),
+  is = require('./../../../lang/is');
+const Parameter = require('./../definitions/Parameter'),
+  Parameters = require('./../definitions/Parameters');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Fluent interface for building a {@link Parameters} collection.
+   *
+   * @public
+   * @param {Boolean} required - If true, all parameters will be marked as required.
+   */
+  class ParametersBuilder {
+    constructor(required) {
+      this._parameters = new Parameters();
+      this._required = is.boolean(required) && required;
+    }
+
+    /**
+     * The {@link Parameters} collection, given all the information provided thus far.
+     *
+     * @public
+     * @returns {Parameters}
+     */
+    get parameters() {
+      return this._parameters;
+    }
+
+    /**
+     * Adds a new parameter that extracts its value from a delegate.
+     *
+     * @param {String} description
+     * @param {String} key
+     * @param {Function} delegate
+     * @param {Boolean=} optional
+     * @param {Function=} serializer
+     * @returns {ParametersBuilder}
+     */
+    withDelegateParameter(description, key, delegate, optional, serializer) {
+      addParameter.call(this, new Parameter(description, key, buildDelegateExtractor(delegate, buildSerializer(serializer)), optional || this._required));
+      return this;
+    }
+
+    /**
+     * Adds a new parameter with a literal value.
+     *
+     * @param {String} description
+     * @param {String} key
+     * @param {*=} value
+     * @param {Boolean=} optional
+     * @returns {ParametersBuilder}
+     */
+    withLiteralParameter(description, key, value, optional) {
+      addParameter.call(this, new Parameter(description, key, buildLiteralExtractor(value || key), optional || this._required));
+      return this;
+    }
+
+    /**
+     * Adds a new parameter that reads its value from the a variable
+     * on the request payload.
+     *
+     * @param {String} description
+     * @param {String} key
+     * @param {String} variable
+     * @param {Boolean=} optional
+     * @param {Function=} serializer
+     * @returns {ParametersBuilder}
+     */
+    withVariableParameter(description, key, variable, optional, serializer) {
+      addParameter.call(this, new Parameter(description, key, buildVariableExtractor(variable, buildSerializer(serializer)), optional || this._required));
+      return this;
+    }
+    toString() {
+      return '[ParametersBuilder]';
+    }
+  }
+  function addParameter(parameter) {
+    const items = this._parameters.parameters.slice(0);
+    items.push(parameter);
+    this._parameters = new Parameters(items);
+  }
+  function buildSerializer(serializer) {
+    let returnRef;
+    if (is.fn(serializer)) {
+      returnRef = serializer;
+    } else {
+      returnRef = x => x;
+    }
+    return returnRef;
+  }
+  function buildDelegateExtractor(fn, serializer) {
+    assert.argumentIsRequired(fn, 'fn', Function);
+    return payload => {
+      return Promise.resolve().then(() => {
+        return serializer(fn(payload));
+      });
+    };
+  }
+  function buildLiteralExtractor(value) {
+    assert.argumentIsRequired(value, 'value', String);
+    return payload => Promise.resolve(value);
+  }
+  function buildVariableExtractor(variable, serializer) {
+    assert.argumentIsRequired(variable, 'variable', String);
+    return buildDelegateExtractor(payload => {
+      if (is.object(payload) && attributes.has(payload, variable)) {
+        return attributes.read(payload, variable);
+      } else {
+        return null;
+      }
+    }, serializer);
+  }
+  return ParametersBuilder;
+})();
+
+},{"./../../../lang/assert":60,"./../../../lang/attributes":61,"./../../../lang/is":64,"./../definitions/Parameter":30,"./../definitions/Parameters":31}],28:[function(require,module,exports){
+const is = require('./../../../lang/is');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Encapsulates credential detection logic.
+   *
+   * @public
+   * @param {Function} usernameExtractor
+   * @param {Function=} passwordExtractor
+   */
+  class Credentials {
+    constructor(usernameExtractor, passwordExtractor) {
+      this._usernameExtractor = usernameExtractor;
+      this._passwordExtractor = passwordExtractor;
+    }
+
+    /**
+     * The password extractor.
+     *
+     * @public
+     * @returns {Function}
+     */
+    get usernameExtractor() {
+      return this._usernameExtractor;
+    }
+
+    /**
+     * The password extractor.
+     *
+     * @public
+     * @returns {Function}
+     */
+    get passwordExtractor() {
+      return this._passwordExtractor;
+    }
+
+    /**
+     * Throws an {@link Error} if the instance is invalid.
+     *
+     * @public
+     */
+    validate() {
+      if (!is.fn(this.usernameExtractor)) {
+        throw new Error('Credentials username extractor must be a function.');
+      }
+      if (!is.fn(this.passwordExtractor)) {
+        throw new Error('Credentials password extractor must be a function.');
+      }
+    }
+    toString() {
+      return `[Credentials]`;
+    }
+  }
+  return Credentials;
+})();
+
+},{"./../../../lang/is":64}],29:[function(require,module,exports){
+const is = require('./../../../lang/is');
+const Parameters = require('./Parameters'),
+  ProtocolType = require('./ProtocolType'),
+  VerbType = require('./VerbType');
+const ErrorInterceptor = require('./../interceptors/ErrorInterceptor'),
+  RequestInterceptor = require('./../interceptors/RequestInterceptor'),
+  ResponseInterceptor = require('./../interceptors/ResponseInterceptor');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * The definition of a web service endpoint.
+   *
+   * @public
+   * @param {String=} name
+   * @param {String=} description
+   * @param {VerbType=} verb
+   * @param {ProtocolType=} protocol
+   * @param {String=} host
+   * @param {Number=} port
+   * @param {Parameters=} path
+   * @param {Parameters=} query
+   * @param {Parameters=} headers
+   * @param {Parameters=} body
+   * @param {Credentials=} credentials
+   * @param {RequestInterceptor=} requestInterceptor
+   * @param {ResponseInterceptor=} responseInterceptor
+   * @param {ErrorInterceptor=} errorInterceptor
+   */
+  class Endpoint {
+    constructor(name, description, verb, protocol, host, port, path, query, headers, body, credentials, requestInterceptor, responseInterceptor, errorInterceptor) {
+      this._name = name || null;
+      this._description = description || null;
+      this._verb = verb || VerbType.GET;
+      this._protocol = protocol || ProtocolType.HTTPS;
+      this._host = host || null;
+      this._port = port || this._protocol.defaultPort;
+      this._path = path || new Parameters();
+      this._query = query || new Parameters();
+      this._headers = headers || new Parameters();
+      this._body = body || new Parameters();
+      this._credentials = credentials || null;
+      this._requestInterceptor = requestInterceptor || RequestInterceptor.EMPTY;
+      this._responseInterceptor = responseInterceptor || ResponseInterceptor.EMPTY;
+      this._errorInterceptor = errorInterceptor || ErrorInterceptor.EMPTY;
+    }
+
+    /**
+     * The name of the endpoint (used for internal purposes only).
+     *
+     * @public
+     * @returns {String}
+     */
+    get name() {
+      return this._name;
+    }
+
+    /**
+     * A description of the action performed by the endpoint, suitable for display to users.
+     *
+     * @public
+     * @returns {String}
+     */
+    get description() {
+      return this._description;
+    }
+
+    /**
+     * The verb to use when making the request.
+     *
+     * @public
+     * @returns {VerbType}
+     */
+    get verb() {
+      return this._verb;
+    }
+
+    /**
+     * The protocol to use with the endpoint.
+     *
+     * @public
+     * @returns {ProtocolType}
+     */
+    get protocol() {
+      return this._protocol;
+    }
+
+    /**
+     * The host of the endpoint.
+     *
+     * @public
+     * @returns {String}
+     */
+    get host() {
+      return this._host;
+    }
+
+    /**
+     * The host of the endpoint.
+     *
+     * @public
+     * @returns {Number}
+     */
+    get port() {
+      return this._port;
+    }
+
+    /**
+     * The path definition of the endpoint.
+     *
+     * @public
+     * @returns {Parameters}
+     */
+    get path() {
+      return this._path;
+    }
+
+    /**
+     * The query definition of the endpoint.
+     *
+     * @public
+     * @returns {Parameters}
+     */
+    get query() {
+      return this._query;
+    }
+
+    /**
+     * The header definition of the endpoint.
+     *
+     * @public
+     * @returns {Parameters}
+     */
+    get headers() {
+      return this._headers;
+    }
+
+    /**
+     * The body definition of the endpoint.
+     *
+     * @public
+     * @returns {Parameters}
+     */
+    get body() {
+      return this._body;
+    }
+
+    /**
+     * Credentials for the request.
+     *
+     * public
+     * @return {Credentials}
+     */
+    get credentials() {
+      return this._credentials;
+    }
+
+    /**
+     * The request interceptor of the endpoint.
+     *
+     * @public
+     * @returns {RequestInterceptor|null}
+     */
+    get requestInterceptor() {
+      return this._requestInterceptor;
+    }
+
+    /**
+     * The response interceptor of the endpoint.
+     *
+     * @public
+     * @returns {ResponseInterceptor|null}
+     */
+    get responseInterceptor() {
+      return this._responseInterceptor;
+    }
+
+    /**
+     * The error interceptor of the endpoint.
+     *
+     * @public
+     * @returns {ErrorInterceptor|null}
+     */
+    get errorInterceptor() {
+      return this._errorInterceptor;
+    }
+
+    /**
+     * Throws an {@link Error} if the instance is invalid.
+     *
+     * @public
+     */
+    validate() {
+      if (!(this.protocol instanceof ProtocolType)) {
+        throw new Error('Endpoint protocol must be an instance of ProtocolType.');
+      }
+      if (!is.string(this._host) || this._host.length === 0) {
+        throw new Error('Endpoint host is invalid.');
+      }
+      if (!is.integer(this._port) || this._port < 0 || this._port > 65535) {
+        throw new Error('Endpoint port range is invalid.');
+      }
+      if (!(this.path instanceof Parameters)) {
+        throw new Error('The path must be a Parameters collection.');
+      }
+      this.path.validate();
+      if (!(this.query instanceof Parameters)) {
+        throw new Error('The query must be a Parameters collection.');
+      }
+      this.query.validate();
+      if (!(this.headers instanceof Parameters)) {
+        throw new Error('The headers must be a Parameters collection.');
+      }
+      this.headers.validate();
+      if (!(this.body instanceof Parameters)) {
+        throw new Error('The body must be a Parameters collection.');
+      }
+      this.body.validate();
+      if (this.credentials) {
+        this.credentials.validate();
+      }
+      if (this.requestInterceptor && !(this.requestInterceptor instanceof RequestInterceptor)) {
+        throw new Error('Endpoint request interceptor must be an instance of RequestInterceptor.');
+      }
+      if (this.responseInterceptor && !(this.responseInterceptor instanceof ResponseInterceptor)) {
+        throw new Error('Endpoint response interceptor must be an instance of ResponseInterceptor.');
+      }
+      if (this.errorInterceptor && !(this.errorInterceptor instanceof ErrorInterceptor)) {
+        throw new Error('Endpoint error interceptor must be an instance of ErrorInterceptor.');
+      }
+    }
+    toString() {
+      return `[Endpoint (name=${this._name})]`;
+    }
+  }
+  return Endpoint;
+})();
+
+},{"./../../../lang/is":64,"./../interceptors/ErrorInterceptor":37,"./../interceptors/RequestInterceptor":38,"./../interceptors/ResponseInterceptor":39,"./Parameters":31,"./ProtocolType":32,"./VerbType":33}],30:[function(require,module,exports){
+const is = require('./../../../lang/is');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Encapsulates definition of a parameter -- that is, its name and
+   * its value. Parameters are used in request paths, request bodies,
+   * querystrings, and as request headers.
+   *
+   * @public
+   * @param {String=} description
+   * @param {String=} key
+   * @param {Parameter~parameterValueCallback} extractor
+   * @param {Boolean=} optional
+   */
+  class Parameter {
+    constructor(description, key, extractor, optional) {
+      this._description = description || null;
+      this._key = key || null;
+      this._extractor = extractor || null;
+      this._optional = is.boolean(optional) && optional;
+    }
+
+    /**
+     * The human-readable description of the parameter.
+     *
+     * @public
+     * @returns {String}
+     */
+    get description() {
+      return this._description;
+    }
+
+    /**
+     * The name of the parameter.
+     *
+     * @public
+     * @returns {String}
+     */
+    get key() {
+      return this._key;
+    }
+
+    /**
+     * A function for extracting the parameter's value.
+     *
+     * @public
+     * @returns {Parameter~parameterValueCallback}
+     */
+    get extractor() {
+      return this._extractor;
+    }
+
+    /**
+     * Indicates if the parameter is required.
+     *
+     * @public
+     * @returns {Boolean}
+     */
+    get optional() {
+      return this._optional;
+    }
+
+    /**
+     * Throws an {@link Error} if the instance is invalid.
+     *
+     * @public
+     */
+    validate() {
+      if (!is.string(this.key) || this.key.length === 0) {
+        throw new Error('Parameter key must be a non-zero length string');
+      }
+      if (!is.fn(this._extractor)) {
+        throw new Error('Parameter extractor must be a function.');
+      }
+    }
+    toString() {
+      return `[Parameter]`;
+    }
+  }
+
+  /**
+   * A function that, when passed the request's payload, returns a parameter's value.
+   *
+   * @callback Parameter~parameterValueCallback
+   * @param {Object} payload
+   * @returns {Promise<String>}
+   */
+
+  return Parameter;
+})();
+
+},{"./../../../lang/is":64}],31:[function(require,module,exports){
+const is = require('./../../../lang/is');
+const Parameter = require('./Parameter');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * An ordered collection of {@link Parameter} items.
+   *
+   * @public
+   * @param {Parameter[]|undefined} parameters
+   */
+  class Parameters {
+    constructor(parameters) {
+      this._parameters = parameters || [];
+    }
+
+    /**
+     * The list of {@link Parameter} items.
+     *
+     * @public
+     * @returns {Parameter[]}
+     */
+    get parameters() {
+      return this._parameters;
+    }
+
+    /**
+     * Throws an {@link Error} if the instance is invalid.
+     *
+     * @public
+     */
+    validate() {
+      if (!is.array(this._parameters)) {
+        throw new Error('Parameters must be an array.');
+      }
+      if (this._parameters.some(p => !(p instanceof Parameter))) {
+        throw new Error('All parameter items must be instances of Parameters.');
+      }
+      this._parameters.forEach(p => p.validate());
+    }
+    static merge(a, b) {
+      return new Parameters(a.parameters.slice(0).concat(b.parameters.filter(candidate => !a.parameters.some(existing => existing.key === candidate.key))));
+    }
+    toString() {
+      return `[Parameters]`;
+    }
+  }
+  return Parameters;
+})();
+
+},{"./../../../lang/is":64,"./Parameter":30}],32:[function(require,module,exports){
+const assert = require('./../../../lang/assert'),
+  Enum = require('./../../../lang/Enum'),
+  is = require('./../../../lang/is');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Defines the protocol for a web request.
+   *
+   * @public
+   * @extends {Enum}
+   * @param {String} code
+   * @param {Number} defaultPort
+   * @param {String} prefix
+   */
+  class ProtocolType extends Enum {
+    constructor(code, defaultPort, prefix) {
+      super(code, code);
+      assert.argumentIsRequired(prefix, 'prefix', String);
+      assert.argumentIsValid(defaultPort, 'defaultPort', p => is.integer(p) && !(p < 0 || p > 65535));
+      this._defaultPort = defaultPort;
+      this._prefix = prefix;
+    }
+
+    /**
+     * Returns the default TCP port used by the protocol.
+     *
+     * @public
+     * @returns {Number}
+     */
+    get defaultPort() {
+      return this._defaultPort;
+    }
+
+    /**
+     * Returns the prefix used to compose a URL.
+     *
+     * @public
+     * @returns {String}
+     */
+    get prefix() {
+      return this._prefix;
+    }
+
+    /**
+     * Returns the {@link ProtocolType} associated with a specific code.
+     *
+     * @public
+     * @static
+     * @param {String} code
+     * @returns {ProtocolType|null}
+     */
+    static parse(code) {
+      return Enum.fromCode(ProtocolType, code);
+    }
+
+    /**
+     * HTTP.
+     *
+     * @static
+     * @returns {ProtocolType}
+     */
+    static get HTTP() {
+      return protocolTypeHttp;
+    }
+
+    /**
+     * HTTPS.
+     *
+     * @static
+     * @returns {ProtocolType}
+     */
+    static get HTTPS() {
+      return protocolTypeHttps;
+    }
+    toString() {
+      return `[ProtocolType (description=${this.description})]`;
+    }
+  }
+  const protocolTypeHttp = new ProtocolType('HTTP', 80, 'http://');
+  const protocolTypeHttps = new ProtocolType('HTTPS', 443, 'https://');
+  return ProtocolType;
+})();
+
+},{"./../../../lang/Enum":55,"./../../../lang/assert":60,"./../../../lang/is":64}],33:[function(require,module,exports){
+const Enum = require('./../../../lang/Enum');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * An HTTP verb.
+   *
+   * @public
+   * @extends {Enum}
+   * @param {String} description
+   */
+  class VerbType extends Enum {
+    constructor(description) {
+      super(description, description);
+    }
+
+    /**
+     * DELETE.
+     *
+     * @static
+     * @returns {VerbType}
+     */
+    static get DELETE() {
+      return verbTypeDelete;
+    }
+
+    /**
+     * GET.
+     *
+     * @static
+     * @returns {VerbType}
+     */
+    static get GET() {
+      return verbTypeGet;
+    }
+
+    /**
+     * POST.
+     *
+     * @static
+     * @returns {VerbType}
+     */
+    static get POST() {
+      return verbTypePost;
+    }
+
+    /**
+     * PUT.
+     *
+     * @static
+     * @returns {VerbType}
+     */
+    static get PUT() {
+      return verbTypePut;
+    }
+    toString() {
+      return `[VerbType (description=${this.description})]`;
+    }
+  }
+  const verbTypeDelete = new VerbType('DELETE');
+  const verbTypeGet = new VerbType('GET');
+  const verbTypePost = new VerbType('POST');
+  const verbTypePut = new VerbType('PUT');
+  return VerbType;
+})();
+
+},{"./../../../lang/Enum":55}],34:[function(require,module,exports){
+const assert = require('./../../../lang/assert');
+const ErrorInterceptor = require('./ErrorInterceptor');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * A {@link ErrorInterceptor} that delegates work to two other instances.
+   *
+   * @public
+   * @extends {ErrorInterceptor}
+   * @param {ErrorInterceptor} a - The first interceptor to process.
+   * @param {ErrorInterceptor} b - The second interceptor to process.
+   */
+  class CompositeErrorInterceptor extends ErrorInterceptor {
+    constructor(a, b) {
+      super();
+      assert.argumentIsRequired(a, 'a', ErrorInterceptor, 'ErrorInterceptor');
+      assert.argumentIsRequired(b, 'b', ErrorInterceptor, 'ErrorInterceptor');
+      this._a = a;
+      this._b = b;
+    }
+    _onProcess(error, endpoint) {
+      return this._a.process(error, endpoint).catch(adjusted => {
+        return this._b.process(adjusted, endpoint);
+      });
+    }
+    toString() {
+      return '[CompositeErrorInterceptor]';
+    }
+  }
+  return CompositeErrorInterceptor;
+})();
+
+},{"./../../../lang/assert":60,"./ErrorInterceptor":37}],35:[function(require,module,exports){
+const assert = require('./../../../lang/assert');
+const RequestInterceptor = require('./RequestInterceptor');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * A {@link ResponseInterceptor} that delegates work to two other instances.
+   *
+   * @public
+   * @extends {RequestInterceptor}
+   * @param {RequestInterceptor} a - The first interceptor to process.
+   * @param {RequestInterceptor} b - The second interceptor to process.
+   */
+  class CompositeRequestInterceptor extends RequestInterceptor {
+    constructor(a, b) {
+      super();
+      assert.argumentIsRequired(a, 'a', RequestInterceptor, 'RequestInterceptor');
+      assert.argumentIsRequired(b, 'b', RequestInterceptor, 'RequestInterceptor');
+      this._a = a;
+      this._b = b;
+    }
+    _onProcess(request, endpoint) {
+      return this._a.process(request, endpoint).then(adjusted => {
+        return this._b.process(adjusted, endpoint);
+      });
+    }
+    toString() {
+      return '[CompositeRequestInterceptor]';
+    }
+  }
+  return CompositeRequestInterceptor;
+})();
+
+},{"./../../../lang/assert":60,"./RequestInterceptor":38}],36:[function(require,module,exports){
+const assert = require('./../../../lang/assert');
+const ResponseInterceptor = require('./ResponseInterceptor');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * A {@link ResponseInterceptor} that delegates work to two other instances.
+   *
+   * @public
+   * @extends {ResponseInterceptor}
+   * @param {ResponseInterceptor} a - The first interceptor to process.
+   * @param {ResponseInterceptor} b - The second interceptor to process.
+   */
+  class CompositeResponseInterceptor extends ResponseInterceptor {
+    constructor(a, b) {
+      super();
+      assert.argumentIsRequired(a, 'a', ResponseInterceptor, 'ResponseInterceptor');
+      assert.argumentIsRequired(b, 'b', ResponseInterceptor, 'ResponseInterceptor');
+      this._a = a;
+      this._b = b;
+    }
+    _onProcess(response, endpoint) {
+      return this._a.process(response, endpoint).then(adjusted => {
+        return this._b.process(adjusted, endpoint);
+      });
+    }
+    toString() {
+      return '[CompositeResponseInterceptor]';
+    }
+  }
+  return CompositeResponseInterceptor;
+})();
+
+},{"./../../../lang/assert":60,"./ResponseInterceptor":39}],37:[function(require,module,exports){
+const assert = require('./../../../lang/assert'),
+  is = require('./../../../lang/is');
+const FailureReason = require('./../../failures/FailureReason'),
+  FailureType = require('./../../failures/FailureType');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * A processor that transforms web service error before passing
+   * it on to the original requestor.
+   *
+   * @public
+   * @interface
+   */
+  class ErrorInterceptor {
+    constructor() {}
+
+    /**
+     * Adjusts incoming error before the response is forwarded
+     * back to the original caller.
+     *
+     * @public
+     * @param {Object} error
+     * @param {Endpoint} endpoint - The endpoint which is originating the request.
+     * @returns {Promise<TResult>}
+     */
+    process(error, endpoint) {
+      return Promise.resolve().then(() => {
+        return this._onProcess(error, endpoint);
+      });
+    }
+    _onProcess(error, endpoint) {
+      return Promise.reject(error);
+    }
+
+    /**
+     * A no-op error interceptor which rejects using raw response data.
+     *
+     * @public
+     * @static
+     * @returns {ErrorInterceptor}
+     */
+    static get EMPTY() {
+      return errorInterceptorEmpty;
+    }
+
+    /**
+     * An error interceptor that handles most server-side issues and rejects
+     * using formatted {@link FailureReasons} when an error is detected.
+     *
+     * @public
+     * @static
+     * @returns {ErrorInterceptor}
+     */
+    static get GENERAL() {
+      return errorInterceptorGeneral;
+    }
+
+    /**
+     * Returns a new {@link ErrorInterceptor} which delegates its work to another function.
+     *
+     * @public
+     * @static
+     * @param {Function} delegate
+     * @returns {ErrorInterceptor}
+     */
+    static fromDelegate(delegate) {
+      return new DelegateErrorInterceptor(delegate);
+    }
+    toString() {
+      return '[ErrorInterceptor]';
+    }
+  }
+  class DelegateErrorInterceptor extends ErrorInterceptor {
+    constructor(delegate) {
+      super();
+      assert.argumentIsRequired(delegate, 'delegate', Function);
+      this._delegate = delegate;
+    }
+    _onProcess(error, endpoint) {
+      return this._delegate(error, endpoint);
+    }
+    toString() {
+      return '[DelegateErrorInterceptor]';
+    }
+  }
+  const errorInterceptorEmpty = new ErrorInterceptor();
+  const errorInterceptorGeneral = new DelegateErrorInterceptor((error, endpoint) => {
+    const response = error.response;
+    let rejectPromise = null;
+    if (rejectPromise === null && is.object(response) && is.object(response.headers) && response.headers['content-type'] === 'application/json') {
+      let deserialized = null;
+      if (is.object(response.data)) {
+        deserialized = response.data;
+      } else {
+        try {
+          deserialized = JSON.parse(response.data);
+        } catch (e) {
+          deserialized = null;
+        }
+      }
+      if (deserialized !== null) {
+        rejectPromise = Promise.reject(deserialized);
+      }
+    }
+    if (rejectPromise === null && is.undefined(response) && error.message === 'Network Error') {
+      rejectPromise = Promise.reject(FailureReason.forRequest({
+        endpoint: endpoint
+      }).addItem(FailureType.REQUEST_AUTHORIZATION_FAILURE).format());
+    }
+    if (rejectPromise === null) {
+      rejectPromise = Promise.reject(FailureReason.forRequest({
+        endpoint: endpoint
+      }).addItem(FailureType.REQUEST_GENERAL_FAILURE).format());
+    }
+    return rejectPromise;
+  });
+  return ErrorInterceptor;
+})();
+
+},{"./../../../lang/assert":60,"./../../../lang/is":64,"./../../failures/FailureReason":21,"./../../failures/FailureType":23}],38:[function(require,module,exports){
+const assert = require('./../../../lang/assert');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * A processor that transforms a web service request before it is transmitted.
+   *
+   * @public
+   * @interface
+   */
+  class RequestInterceptor {
+    constructor() {}
+
+    /**
+     * Adjusts outgoing requests data before the request is transmitted.
+     *
+     * @public
+     * @param {Object} request
+     * @param {Endpoint} endpoint - The endpoint which is originating the request.
+     * @returns {Promise<TResult>}
+     */
+    process(request, endpoint) {
+      return Promise.resolve().then(() => {
+        return this._onProcess(request, endpoint);
+      });
+    }
+    _onProcess(request, endpoint) {
+      return request;
+    }
+
+    /**
+     * A no-op request interceptor.
+     *
+     * @public
+     * @static
+     * @returns {RequestInterceptor}
+     */
+    static get EMPTY() {
+      return requestInterceptorEmpty;
+    }
+
+    /**
+     * Returns a new {@link RequestInterceptor} which delegates its work to another function.
+     *
+     * @public
+     * @static
+     * @param {Function} delegate
+     * @returns {RequestInterceptor}
+     */
+    static fromDelegate(delegate) {
+      return new DelegateRequestInterceptor(delegate);
+    }
+
+    /**
+     * A request interceptor that instructs the framework to skip parsing
+     * of the response's data.
+     *
+     * @public
+     * @static
+     * @returns {DelegateRequestInterceptor}
+     */
+    static get PLAIN_TEXT_RESPONSE() {
+      return requestInterceptorPlain;
+    }
+    toString() {
+      return '[RequestInterceptor]';
+    }
+  }
+  class DelegateRequestInterceptor extends RequestInterceptor {
+    constructor(delegate) {
+      super();
+      assert.argumentIsRequired(delegate, 'delegate', Function);
+      this._delegate = delegate;
+    }
+    _onProcess(request, endpoint) {
+      return this._delegate(request, endpoint);
+    }
+    toString() {
+      return '[DelegateRequestInterceptor]';
+    }
+  }
+  const requestInterceptorEmpty = new RequestInterceptor();
+  const requestInterceptorPlain = new DelegateRequestInterceptor(request => {
+    request.transformResponse = data => data;
+    return request;
+  });
+  return RequestInterceptor;
+})();
+
+},{"./../../../lang/assert":60}],39:[function(require,module,exports){
+const assert = require('./../../../lang/assert');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * A processor that transforms web service response before passing
+   * it on to the original requestor.
+   *
+   * @public
+   * @interface
+   */
+  class ResponseInterceptor {
+    constructor() {}
+
+    /**
+     * Adjusts incoming response data before the response is forwarded
+     * back to the original caller.
+     *
+     * @public
+     * @param {Object} request
+     * @param {Endpoint} endpoint - The endpoint which is originating the request.
+     * @returns {Promise<TResult>}
+     */
+    process(response, endpoint) {
+      return Promise.resolve().then(() => {
+        return this._onProcess(response, endpoint);
+      });
+    }
+    _onProcess(response, endpoint) {
+      return response;
+    }
+
+    /**
+     * A no-op request interceptor (which will return the raw response).
+     *
+     * @public
+     * @static
+     * @returns {ResponseInterceptor}
+     */
+    static get EMPTY() {
+      return responseInterceptorEmpty;
+    }
+
+    /**
+     * A response interceptor returns only the data payload in the format
+     * specified by the response's "content-type" header.
+     *
+     * @public
+     * @static
+     * @returns {ResponseInterceptor}
+     */
+    static get DATA() {
+      return responseInterceptorData;
+    }
+
+    /**
+     * Returns a new {@link ResponseInterceptor} which delegates its work to another function.
+     *
+     * @public
+     * @static
+     * @param {Function} delegate
+     * @returns {ResponseInterceptor}
+     */
+    static fromDelegate(delegate) {
+      return new DelegateResponseInterceptor(delegate);
+    }
+    toString() {
+      return '[ResponseInterceptor]';
+    }
+  }
+  class DelegateResponseInterceptor extends ResponseInterceptor {
+    constructor(delegate) {
+      super();
+      assert.argumentIsRequired(delegate, 'delegate', Function);
+      this._delegate = delegate;
+    }
+    _onProcess(response, endpoint) {
+      return this._delegate(response, endpoint);
+    }
+    toString() {
+      return '[DelegateResponseInterceptor]';
+    }
+  }
+  const responseInterceptorEmpty = new ResponseInterceptor();
+  const responseInterceptorData = new DelegateResponseInterceptor((response, ignored) => {
+    return response.data;
+  });
+  return ResponseInterceptor;
+})();
+
+},{"./../../../lang/assert":60}],40:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -6977,7 +9304,7 @@ module.exports = (() => {
   return LinkedList;
 })();
 
-},{}],21:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 const assert = require('./../lang/assert');
 module.exports = (() => {
   'use strict';
@@ -7070,7 +9397,7 @@ module.exports = (() => {
   return Stack;
 })();
 
-},{"./../lang/assert":40}],22:[function(require,module,exports){
+},{"./../lang/assert":60}],42:[function(require,module,exports){
 const is = require('./../lang/is');
 module.exports = (() => {
   'use strict';
@@ -7374,7 +9701,7 @@ module.exports = (() => {
   return Tree;
 })();
 
-},{"./../lang/is":44}],23:[function(require,module,exports){
+},{"./../lang/is":64}],43:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -7431,7 +9758,7 @@ module.exports = (() => {
   return Edge;
 })();
 
-},{}],24:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 const assert = require('./../../lang/assert');
 const Edge = require('./Edge');
 module.exports = (() => {
@@ -7548,7 +9875,7 @@ module.exports = (() => {
   return Vertex;
 })();
 
-},{"./../../lang/assert":40,"./Edge":23}],25:[function(require,module,exports){
+},{"./../../lang/assert":60,"./Edge":43}],45:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   comparators = require('./comparators');
 module.exports = (() => {
@@ -7651,7 +9978,7 @@ module.exports = (() => {
   return ComparatorBuilder;
 })();
 
-},{"./../../lang/assert":40,"./comparators":26}],26:[function(require,module,exports){
+},{"./../../lang/assert":60,"./comparators":46}],46:[function(require,module,exports){
 const assert = require('./../../lang/assert');
 module.exports = (() => {
   'use strict';
@@ -7758,7 +10085,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./../../lang/assert":40}],27:[function(require,module,exports){
+},{"./../../lang/assert":60}],47:[function(require,module,exports){
 const Stack = require('./../Stack');
 const assert = require('./../../lang/assert'),
   Disposable = require('./../../lang/Disposable'),
@@ -7788,7 +10115,7 @@ module.exports = (() => {
      */
     push(disposable) {
       assert.argumentIsRequired(disposable, 'disposable', Disposable, 'Disposable');
-      if (this.disposed) {
+      if (this.getIsDisposed()) {
         throw new Error('Unable to push item onto DisposableStack because it has been disposed.');
       }
       this._stack.push(disposable);
@@ -7823,7 +10150,7 @@ module.exports = (() => {
   return DisposableStack;
 })();
 
-},{"./../../lang/Disposable":34,"./../../lang/assert":40,"./../../lang/is":44,"./../Stack":21}],28:[function(require,module,exports){
+},{"./../../lang/Disposable":54,"./../../lang/assert":60,"./../../lang/is":64,"./../Stack":41}],48:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -7882,7 +10209,7 @@ module.exports = (() => {
   return AdHoc;
 })();
 
-},{"./assert":40}],29:[function(require,module,exports){
+},{"./assert":60}],49:[function(require,module,exports){
 const assert = require('./assert'),
   Enum = require('./Enum'),
   is = require('./is');
@@ -8078,7 +10405,7 @@ module.exports = (() => {
   return Currency;
 })();
 
-},{"./Enum":35,"./assert":40,"./is":44}],30:[function(require,module,exports){
+},{"./Enum":55,"./assert":60,"./is":64}],50:[function(require,module,exports){
 const assert = require('./assert'),
   array = require('./array'),
   Currency = require('./Currency'),
@@ -8347,7 +10674,7 @@ module.exports = (() => {
   return CurrencyTranslator;
 })();
 
-},{"./../collections/graph/Edge":23,"./../collections/graph/Vertex":24,"./../collections/sorting/ComparatorBuilder":25,"./../collections/sorting/comparators":26,"./Currency":29,"./Decimal":33,"./Rate":37,"./array":39,"./assert":40,"./memoize":45}],31:[function(require,module,exports){
+},{"./../collections/graph/Edge":43,"./../collections/graph/Vertex":44,"./../collections/sorting/ComparatorBuilder":45,"./../collections/sorting/comparators":46,"./Currency":49,"./Decimal":53,"./Rate":57,"./array":59,"./assert":60,"./memoize":65}],51:[function(require,module,exports){
 const assert = require('./assert'),
   ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder'),
   comparators = require('./../collections/sorting/comparators'),
@@ -8876,7 +11203,7 @@ module.exports = (() => {
   return Day;
 })();
 
-},{"./../collections/sorting/ComparatorBuilder":25,"./../collections/sorting/comparators":26,".//DayFormatType":32,"./assert":40,"./is":44}],32:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":45,"./../collections/sorting/comparators":46,".//DayFormatType":52,"./assert":60,"./is":64}],52:[function(require,module,exports){
 const Enum = require('./Enum');
 module.exports = (() => {
   'use strict';
@@ -8989,13 +11316,13 @@ module.exports = (() => {
     const today = new Date();
     return Math.floor(today.getFullYear() / 100) * 100;
   }
-  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4})[-/.]?([0-9]{1,2})[-/.]?([0-9]{1,2})$/, 1, 2, 3, 0);
-  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{4})$/, 3, 1, 2, 0);
-  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
+  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/, 1, 2, 3, 0);
+  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{4})$/, 3, 1, 2, 0);
+  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
   return DayFormatType;
 })();
 
-},{"./Enum":35}],33:[function(require,module,exports){
+},{"./Enum":55}],53:[function(require,module,exports){
 const assert = require('./assert'),
   Enum = require('./Enum'),
   is = require('./is');
@@ -9200,7 +11527,10 @@ module.exports = (() => {
      * Returns true if the current instance is less than or equal to the value.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to compare.
+     * **New Features**
+           *
+           * * Added the `TransactionValidator.getPositionViolationIndex` function.
+           * * Updated the `TransactionValidator.getSwitchIndex` function to use the `TransactionValidator.validateDirectionSwitch` function internally. @param {Decimal|Number|String} other - The value to compare.
      * @returns {Boolean}
      */
     getIsLessThanOrEqual(other) {
@@ -9584,7 +11914,7 @@ module.exports = (() => {
   return Decimal;
 })();
 
-},{"./Enum":35,"./assert":40,"./is":44,"big.js":55}],34:[function(require,module,exports){
+},{"./Enum":55,"./assert":60,"./is":64,"big.js":105}],54:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -9597,16 +11927,6 @@ module.exports = (() => {
   class Disposable {
     constructor() {
       this._disposed = false;
-    }
-
-    /**
-     * Indicates if the dispose action has been executed.
-     *
-     * @public
-     * @returns {boolean}
-     */
-    get disposed() {
-      return this._disposed;
     }
 
     /**
@@ -9629,17 +11949,18 @@ module.exports = (() => {
      * @abstract
      * @ignore
      */
-    _onDispose() {}
+    _onDispose() {
+      return;
+    }
 
     /**
      * Returns true if the {@link Disposable#dispose} function has been invoked.
      *
      * @public
-     * @deprecated
      * @returns {boolean}
      */
     getIsDisposed() {
-      return this._disposed;
+      return this._disposed || false;
     }
     toString() {
       return '[Disposable]';
@@ -9668,7 +11989,9 @@ module.exports = (() => {
      * @returns {Disposable}
      */
     static getEmpty() {
-      return Disposable.fromAction(() => {});
+      return Disposable.fromAction(() => {
+        return;
+      });
     }
   }
   class DisposableAction extends Disposable {
@@ -9687,7 +12010,7 @@ module.exports = (() => {
   return Disposable;
 })();
 
-},{"./assert":40}],35:[function(require,module,exports){
+},{"./assert":60}],55:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -9833,7 +12156,7 @@ module.exports = (() => {
   return Enum;
 })();
 
-},{"./assert":40,"./is":44}],36:[function(require,module,exports){
+},{"./assert":60,"./is":64}],56:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 const Decimal = require('./Decimal'),
@@ -9922,7 +12245,7 @@ module.exports = (() => {
   return Money;
 })();
 
-},{"./Currency":29,"./Decimal":33,"./assert":40,"./is":44}],37:[function(require,module,exports){
+},{"./Currency":49,"./Decimal":53,"./assert":60,"./is":64}],57:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is'),
   memoize = require('./memoize');
@@ -10164,7 +12487,7 @@ module.exports = (() => {
   return Rate;
 })();
 
-},{"./Currency":29,"./Decimal":33,"./assert":40,"./is":44,"./memoize":45}],38:[function(require,module,exports){
+},{"./Currency":49,"./Decimal":53,"./assert":60,"./is":64,"./memoize":65}],58:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 const moment = require('moment-timezone');
@@ -10342,7 +12665,7 @@ module.exports = (() => {
   return Timestamp;
 })();
 
-},{"./assert":40,"./is":44,"moment-timezone":57}],39:[function(require,module,exports){
+},{"./assert":60,"./is":64,"moment-timezone":107}],59:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -10791,7 +13114,7 @@ module.exports = (() => {
   }
 })();
 
-},{"./assert":40,"./is":44}],40:[function(require,module,exports){
+},{"./assert":60,"./is":64}],60:[function(require,module,exports){
 const is = require('./is');
 module.exports = (() => {
   'use strict';
@@ -10919,7 +13242,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./is":44}],41:[function(require,module,exports){
+},{"./is":64}],61:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -11060,7 +13383,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":40,"./is":44}],42:[function(require,module,exports){
+},{"./assert":60,"./is":64}],62:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -11116,7 +13439,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],43:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -11155,7 +13478,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],44:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -11357,7 +13680,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],45:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -11415,7 +13738,197 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":40}],46:[function(require,module,exports){
+},{"./assert":60}],66:[function(require,module,exports){
+const assert = require('./assert');
+module.exports = (() => {
+  'use strict';
+
+  /**
+   * Utilities for working with promises.
+   *
+   * @public
+   * @module lang/promise
+   */
+  return {
+    /**
+     * Creates a composite promise which resolves normally or rejects is a specified
+     * amount of time elapses.
+     *
+     * @public
+     * @static
+     * @async
+     * @param {Promise} promise
+     * @param {Number} milliseconds
+     * @param {String=} description
+     * @returns {Promise<*>}
+     */
+    async timeout(promise, milliseconds, description) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsRequired(promise, 'promise', Promise, 'Promise');
+        assert.argumentIsRequired(milliseconds, 'milliseconds', Number);
+        assert.argumentIsOptional(description, 'description', String);
+        if (!(milliseconds > 0)) {
+          return Promise.reject('Unable to configure promise timeout, the "milliseconds" argument must be positive');
+        }
+        let timeoutToken = null;
+        const timeoutPromise = this.build((resolveCallback, rejectCallback) => {
+          timeoutToken = setTimeout(() => {
+            rejectCallback(description || `Promise timed out after ${milliseconds} milliseconds`);
+          }, milliseconds);
+        });
+        const userPromise = Promise.resolve().then(() => {
+          return promise;
+        }).then(result => {
+          if (timeoutToken !== null) {
+            clearTimeout(timeoutToken);
+          }
+          return result;
+        }).catch(e => {
+          if (timeoutToken !== null) {
+            clearTimeout(timeoutToken);
+          }
+          return Promise.reject(e);
+        });
+        return Promise.race([userPromise, timeoutPromise]);
+      });
+    },
+    /**
+     * A mapping function that works asynchronously. Given an array of items, each item through
+     * a mapping function, which can return a promise. Then, this function returns a single promise
+     * which is the result of each mapped promise.
+     *
+     * @public
+     * @static
+     * @async
+     * @param {Array} items - The items to map
+     * @param {Function} mapper - The mapping function (e.g. given an item, return a promise).
+     * @param {Number=} concurrency - The maximum number of promises that are allowed to run at once.
+     * @returns {Promise<Array>}
+     */
+    async map(items, mapper, concurrency) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsArray(items, 'items');
+        assert.argumentIsRequired(mapper, 'mapper', Function);
+        assert.argumentIsOptional(concurrency, 'concurrency', Number);
+        const c = Math.max(0, concurrency || 0);
+        let mapPromise;
+        if (c === 0 || items.length === 0) {
+          mapPromise = Promise.all(items.map(item => Promise.resolve(mapper(item))));
+        } else {
+          let total = items.length;
+          let active = 0;
+          let complete = 0;
+          let failure = false;
+          const results = Array.of(total);
+          const executors = items.map((item, index) => {
+            return () => {
+              return Promise.resolve().then(() => {
+                return mapper(item);
+              }).then(result => {
+                results[index] = result;
+              });
+            };
+          });
+          mapPromise = this.build((resolveCallback, rejectCallback) => {
+            const execute = () => {
+              if (!(executors.length > 0 && c > active && !failure)) {
+                return;
+              }
+              active = active + 1;
+              const executor = executors.shift();
+              executor().then(() => {
+                if (failure) {
+                  return;
+                }
+                active = active - 1;
+                complete = complete + 1;
+                if (complete < total) {
+                  execute();
+                } else {
+                  resolveCallback(results);
+                }
+              }).catch(error => {
+                failure = false;
+                rejectCallback(error);
+              });
+              execute();
+            };
+            execute();
+          });
+        }
+        return mapPromise;
+      });
+    },
+    /**
+     * Runs a series of functions sequentially (where each function can be
+     * synchronous or asynchronous). The result of each function is passed
+     * to the successive function and the result of the final function is
+     * returned to the consumer.
+     *
+     * @static
+     * @public
+     * @async
+     * @param {Function[]} functions - An array of functions, each expecting a single argument.
+     * @param {*=} input - The argument to pass the first function.
+     * @returns {Promise<*>}
+     */
+    async pipeline(functions, input) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsArray(functions, 'functions', Function);
+        return functions.reduce((previous, fn) => previous.then(result => fn(result)), Promise.resolve(input));
+      });
+    },
+    /**
+     * Given an array of functions, where each returns a promise, runs
+     * the functions in sequential order, until one of the function
+     * returns a successful promise with a non-null result. Any
+     * rejected promise is ignored.
+     *
+     * @public
+     * @async
+     * @param {Function[]} executors
+     * @returns {Promise}
+     */
+    async first(executors) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsArray(executors, 'executors', Function);
+        return executors.reduce((previous, executor) => {
+          return previous.then(result => {
+            if (result === null) {
+              return executor().catch(() => Promise.resolve(null));
+            } else {
+              return previous;
+            }
+          });
+        }, Promise.resolve(null));
+      });
+    },
+    /**
+     * Creates a new promise, given an executor.
+     *
+     * This is a wrapper for the {@link Promise} constructor; however, any error
+     * is caught and the resulting promise is rejected (instead of letting the
+     * error bubble up to the top-level handler).
+     *
+     * @public
+     * @static
+     * @async
+     * @param {Function} executor - A function which has two callback parameters. The first is used to resolve the promise, the second rejects it.
+     * @returns {Promise}
+     */
+    async build(executor) {
+      return new Promise((resolve, reject) => {
+        try {
+          executor(resolve, reject);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+  };
+})();
+
+},{"./assert":60}],67:[function(require,module,exports){
 const assert = require('./../lang/assert'),
   Disposable = require('./../lang/Disposable');
 module.exports = (() => {
@@ -11447,7 +13960,7 @@ module.exports = (() => {
       assert.argumentIsRequired(handler, 'handler', Function);
       addRegistration.call(this, handler);
       return Disposable.fromAction(() => {
-        if (this.disposed) {
+        if (this.getIsDisposed()) {
           return;
         }
         removeRegistration.call(this, handler);
@@ -11479,7 +13992,7 @@ module.exports = (() => {
      * Triggers the event, calling all previously registered handlers.
      *
      * @public
-     * @param {*} data - The data to pass each handler.
+     * @param {*) data - The data to pass each handler.
      */
     fire(data) {
       let observers = this._observers;
@@ -11490,7 +14003,7 @@ module.exports = (() => {
     }
 
     /**
-     * Returns true if no handlers are currently registered.
+     * Returns true, if no handlers are currently registered.
      *
      * @public
      * @returns {boolean}
@@ -11529,7 +14042,7 @@ module.exports = (() => {
   return Event;
 })();
 
-},{"./../lang/Disposable":34,"./../lang/assert":40}],47:[function(require,module,exports){
+},{"./../lang/Disposable":54,"./../lang/assert":60}],68:[function(require,module,exports){
 const Currency = require('./../../lang/Currency'),
   Money = require('./../../lang/Money');
 const DataType = require('./DataType'),
@@ -11596,7 +14109,7 @@ module.exports = (() => {
   return Component;
 })();
 
-},{"./../../lang/Currency":29,"./../../lang/Money":36,"./DataType":48,"./Field":49}],48:[function(require,module,exports){
+},{"./../../lang/Currency":49,"./../../lang/Money":56,"./DataType":69,"./Field":70}],69:[function(require,module,exports){
 const moment = require('moment');
 const AdHoc = require('./../../lang/AdHoc'),
   assert = require('./../../lang/assert'),
@@ -11880,7 +14393,7 @@ module.exports = (() => {
   return DataType;
 })();
 
-},{"./../../lang/AdHoc":28,"./../../lang/Day":31,"./../../lang/Decimal":33,"./../../lang/Enum":35,"./../../lang/Timestamp":38,"./../../lang/assert":40,"./../../lang/is":44,"moment":59}],49:[function(require,module,exports){
+},{"./../../lang/AdHoc":48,"./../../lang/Day":51,"./../../lang/Decimal":53,"./../../lang/Enum":55,"./../../lang/Timestamp":58,"./../../lang/assert":60,"./../../lang/is":64,"moment":109}],70:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   is = require('./../../lang/is');
 const DataType = require('./DataType');
@@ -11954,7 +14467,7 @@ module.exports = (() => {
   return Field;
 })();
 
-},{"./../../lang/assert":40,"./../../lang/is":44,"./DataType":48}],50:[function(require,module,exports){
+},{"./../../lang/assert":60,"./../../lang/is":64,"./DataType":69}],71:[function(require,module,exports){
 const attributes = require('./../../lang/attributes'),
   functions = require('./../../lang/functions'),
   is = require('./../../lang/is');
@@ -12238,7 +14751,7 @@ module.exports = (() => {
   return Schema;
 })();
 
-},{"./../../collections/LinkedList":20,"./../../collections/Tree":22,"./../../lang/attributes":41,"./../../lang/functions":43,"./../../lang/is":44,"./Component":47,"./Field":49}],51:[function(require,module,exports){
+},{"./../../collections/LinkedList":40,"./../../collections/Tree":42,"./../../lang/attributes":61,"./../../lang/functions":63,"./../../lang/is":64,"./Component":68,"./Field":70}],72:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const Component = require('./../Component'),
   DataType = require('./../DataType'),
@@ -12303,7 +14816,7 @@ module.exports = (() => {
   return ComponentBuilder;
 })();
 
-},{"./../../../lang/assert":40,"./../Component":47,"./../DataType":48,"./../Field":49}],52:[function(require,module,exports){
+},{"./../../../lang/assert":60,"./../Component":68,"./../DataType":69,"./../Field":70}],73:[function(require,module,exports){
 const assert = require('./../../../lang/assert'),
   is = require('./../../../lang/is');
 const Component = require('./../Component'),
@@ -12419,7 +14932,7 @@ module.exports = (() => {
   return SchemaBuilder;
 })();
 
-},{"./../../../lang/assert":40,"./../../../lang/is":44,"./../Component":47,"./../DataType":48,"./../Field":49,"./../Schema":50,"./ComponentBuilder":51}],53:[function(require,module,exports){
+},{"./../../../lang/assert":60,"./../../../lang/is":64,"./../Component":68,"./../DataType":69,"./../Field":70,"./../Schema":71,"./ComponentBuilder":72}],74:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
   Decimal = require('@barchart/common-js/lang/Decimal'),
   is = require('@barchart/common-js/lang/is');
@@ -12690,7 +15203,7 @@ module.exports = (() => {
   return UnitCode;
 })();
 
-},{"@barchart/common-js/lang/Decimal":33,"@barchart/common-js/lang/Enum":35,"@barchart/common-js/lang/assert":40,"@barchart/common-js/lang/is":44}],54:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Enum":55,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64}],75:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is');
 module.exports = (() => {
   'use strict';
@@ -12763,7 +15276,1896 @@ module.exports = (() => {
   return formatFraction;
 })();
 
-},{"@barchart/common-js/lang/is":44}],55:[function(require,module,exports){
+},{"@barchart/common-js/lang/is":64}],76:[function(require,module,exports){
+module.exports = require('./lib/axios');
+},{"./lib/axios":78}],77:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+var settle = require('./../core/settle');
+var cookies = require('./../helpers/cookies');
+var buildURL = require('./../helpers/buildURL');
+var buildFullPath = require('../core/buildFullPath');
+var parseHeaders = require('./../helpers/parseHeaders');
+var isURLSameOrigin = require('./../helpers/isURLSameOrigin');
+var createError = require('../core/createError');
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+    var responseType = config.responseType;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    var fullPath = buildFullPath(config.baseURL, config.url);
+    request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    function onloadend() {
+      if (!request) {
+        return;
+      }
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !responseType || responseType === 'text' ||  responseType === 'json' ?
+        request.responseText : request.response;
+      var response = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    }
+
+    if ('onloadend' in request) {
+      // Use onloadend if available
+      request.onloadend = onloadend;
+    } else {
+      // Listen for ready state to emulate onloadend
+      request.onreadystatechange = function handleLoad() {
+        if (!request || request.readyState !== 4) {
+          return;
+        }
+
+        // The request errored out and we didn't get a response, this will be
+        // handled by onerror instead
+        // With one exception: request that using file: protocol, most browsers
+        // will return status as 0 even though it's a successful request
+        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+          return;
+        }
+        // readystate handler is calling before onerror or ontimeout handlers,
+        // so we should call onloadend on the next 'tick'
+        setTimeout(onloadend);
+      };
+    }
+
+    // Handle browser request cancellation (as opposed to a manual cancellation)
+    request.onabort = function handleAbort() {
+      if (!request) {
+        return;
+      }
+
+      reject(createError('Request aborted', config, 'ECONNABORTED', request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config, null, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      var timeoutErrorMessage = 'timeout of ' + config.timeout + 'ms exceeded';
+      if (config.timeoutErrorMessage) {
+        timeoutErrorMessage = config.timeoutErrorMessage;
+      }
+      reject(createError(
+        timeoutErrorMessage,
+        config,
+        config.transitional && config.transitional.clarifyTimeoutError ? 'ETIMEDOUT' : 'ECONNABORTED',
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
+        cookies.read(config.xsrfCookieName) :
+        undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (!utils.isUndefined(config.withCredentials)) {
+      request.withCredentials = !!config.withCredentials;
+    }
+
+    // Add responseType to request if needed
+    if (responseType && responseType !== 'json') {
+      request.responseType = config.responseType;
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (!requestData) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+},{"../core/buildFullPath":84,"../core/createError":85,"./../core/settle":89,"./../helpers/buildURL":93,"./../helpers/cookies":95,"./../helpers/isURLSameOrigin":98,"./../helpers/parseHeaders":100,"./../utils":103}],78:[function(require,module,exports){
+'use strict';
+
+var utils = require('./utils');
+var bind = require('./helpers/bind');
+var Axios = require('./core/Axios');
+var mergeConfig = require('./core/mergeConfig');
+var defaults = require('./defaults');
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios.prototype, context);
+
+  // Copy context to instance
+  utils.extend(instance, context);
+
+  return instance;
+}
+
+// Create the default instance to be exported
+var axios = createInstance(defaults);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios;
+
+// Factory for creating new instances
+axios.create = function create(instanceConfig) {
+  return createInstance(mergeConfig(axios.defaults, instanceConfig));
+};
+
+// Expose Cancel & CancelToken
+axios.Cancel = require('./cancel/Cancel');
+axios.CancelToken = require('./cancel/CancelToken');
+axios.isCancel = require('./cancel/isCancel');
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+axios.spread = require('./helpers/spread');
+
+// Expose isAxiosError
+axios.isAxiosError = require('./helpers/isAxiosError');
+
+module.exports = axios;
+
+// Allow use of default import syntax in TypeScript
+module.exports.default = axios;
+
+},{"./cancel/Cancel":79,"./cancel/CancelToken":80,"./cancel/isCancel":81,"./core/Axios":82,"./core/mergeConfig":88,"./defaults":91,"./helpers/bind":92,"./helpers/isAxiosError":97,"./helpers/spread":101,"./utils":103}],79:[function(require,module,exports){
+'use strict';
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+
+module.exports = Cancel;
+
+},{}],80:[function(require,module,exports){
+'use strict';
+
+var Cancel = require('./Cancel');
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @class
+ * @param {Function} executor The executor function.
+ */
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.');
+  }
+
+  var resolvePromise;
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve;
+  });
+
+  var token = this;
+  executor(function cancel(message) {
+    if (token.reason) {
+      // Cancellation has already been requested
+      return;
+    }
+
+    token.reason = new Cancel(message);
+    resolvePromise(token.reason);
+  });
+}
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason;
+  }
+};
+
+/**
+ * Returns an object that contains a new `CancelToken` and a function that, when called,
+ * cancels the `CancelToken`.
+ */
+CancelToken.source = function source() {
+  var cancel;
+  var token = new CancelToken(function executor(c) {
+    cancel = c;
+  });
+  return {
+    token: token,
+    cancel: cancel
+  };
+};
+
+module.exports = CancelToken;
+
+},{"./Cancel":79}],81:[function(require,module,exports){
+'use strict';
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+},{}],82:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+var buildURL = require('../helpers/buildURL');
+var InterceptorManager = require('./InterceptorManager');
+var dispatchRequest = require('./dispatchRequest');
+var mergeConfig = require('./mergeConfig');
+var validator = require('../helpers/validator');
+
+var validators = validator.validators;
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ */
+function Axios(instanceConfig) {
+  this.defaults = instanceConfig;
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+Axios.prototype.request = function request(config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof config === 'string') {
+    config = arguments[1] || {};
+    config.url = arguments[0];
+  } else {
+    config = config || {};
+  }
+
+  config = mergeConfig(this.defaults, config);
+
+  // Set config.method
+  if (config.method) {
+    config.method = config.method.toLowerCase();
+  } else if (this.defaults.method) {
+    config.method = this.defaults.method.toLowerCase();
+  } else {
+    config.method = 'get';
+  }
+
+  var transitional = config.transitional;
+
+  if (transitional !== undefined) {
+    validator.assertOptions(transitional, {
+      silentJSONParsing: validators.transitional(validators.boolean, '1.0.0'),
+      forcedJSONParsing: validators.transitional(validators.boolean, '1.0.0'),
+      clarifyTimeoutError: validators.transitional(validators.boolean, '1.0.0')
+    }, false);
+  }
+
+  // filter out skipped interceptors
+  var requestInterceptorChain = [];
+  var synchronousRequestInterceptors = true;
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
+      return;
+    }
+
+    synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+
+    requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  var responseInterceptorChain = [];
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  var promise;
+
+  if (!synchronousRequestInterceptors) {
+    var chain = [dispatchRequest, undefined];
+
+    Array.prototype.unshift.apply(chain, requestInterceptorChain);
+    chain = chain.concat(responseInterceptorChain);
+
+    promise = Promise.resolve(config);
+    while (chain.length) {
+      promise = promise.then(chain.shift(), chain.shift());
+    }
+
+    return promise;
+  }
+
+
+  var newConfig = config;
+  while (requestInterceptorChain.length) {
+    var onFulfilled = requestInterceptorChain.shift();
+    var onRejected = requestInterceptorChain.shift();
+    try {
+      newConfig = onFulfilled(newConfig);
+    } catch (error) {
+      onRejected(error);
+      break;
+    }
+  }
+
+  try {
+    promise = dispatchRequest(newConfig);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  while (responseInterceptorChain.length) {
+    promise = promise.then(responseInterceptorChain.shift(), responseInterceptorChain.shift());
+  }
+
+  return promise;
+};
+
+Axios.prototype.getUri = function getUri(config) {
+  config = mergeConfig(this.defaults, config);
+  return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
+};
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(mergeConfig(config || {}, {
+      method: method,
+      url: url,
+      data: (config || {}).data
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, data, config) {
+    return this.request(mergeConfig(config || {}, {
+      method: method,
+      url: url,
+      data: data
+    }));
+  };
+});
+
+module.exports = Axios;
+
+},{"../helpers/buildURL":93,"../helpers/validator":102,"./../utils":103,"./InterceptorManager":83,"./dispatchRequest":86,"./mergeConfig":88}],83:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+InterceptorManager.prototype.use = function use(fulfilled, rejected, options) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected,
+    synchronous: options ? options.synchronous : false,
+    runWhen: options ? options.runWhen : null
+  });
+  return this.handlers.length - 1;
+};
+
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+},{"./../utils":103}],84:[function(require,module,exports){
+'use strict';
+
+var isAbsoluteURL = require('../helpers/isAbsoluteURL');
+var combineURLs = require('../helpers/combineURLs');
+
+/**
+ * Creates a new URL by combining the baseURL with the requestedURL,
+ * only when the requestedURL is not already an absolute URL.
+ * If the requestURL is absolute, this function returns the requestedURL untouched.
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} requestedURL Absolute or relative URL to combine
+ * @returns {string} The combined full path
+ */
+module.exports = function buildFullPath(baseURL, requestedURL) {
+  if (baseURL && !isAbsoluteURL(requestedURL)) {
+    return combineURLs(baseURL, requestedURL);
+  }
+  return requestedURL;
+};
+
+},{"../helpers/combineURLs":94,"../helpers/isAbsoluteURL":96}],85:[function(require,module,exports){
+'use strict';
+
+var enhanceError = require('./enhanceError');
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, request, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, request, response);
+};
+
+},{"./enhanceError":87}],86:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+var transformData = require('./transformData');
+var isCancel = require('../cancel/isCancel');
+var defaults = require('../defaults');
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+module.exports = function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Transform request data
+  config.data = transformData.call(
+    config,
+    config.data,
+    config.headers,
+    config.transformRequest
+  );
+
+  // Flatten headers
+  config.headers = utils.merge(
+    config.headers.common || {},
+    config.headers[config.method] || {},
+    config.headers
+  );
+
+  utils.forEach(
+    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+    function cleanHeaderConfig(method) {
+      delete config.headers[method];
+    }
+  );
+
+  var adapter = config.adapter || defaults.adapter;
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = transformData.call(
+      config,
+      response.data,
+      response.headers,
+      config.transformResponse
+    );
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = transformData.call(
+          config,
+          reason.response.data,
+          reason.response.headers,
+          config.transformResponse
+        );
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+};
+
+},{"../cancel/isCancel":81,"../defaults":91,"./../utils":103,"./transformData":90}],87:[function(require,module,exports){
+'use strict';
+
+/**
+ * Update an Error with the specified config, error code, and response.
+ *
+ * @param {Error} error The error to update.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+module.exports = function enhanceError(error, config, code, request, response) {
+  error.config = config;
+  if (code) {
+    error.code = code;
+  }
+
+  error.request = request;
+  error.response = response;
+  error.isAxiosError = true;
+
+  error.toJSON = function toJSON() {
+    return {
+      // Standard
+      message: this.message,
+      name: this.name,
+      // Microsoft
+      description: this.description,
+      number: this.number,
+      // Mozilla
+      fileName: this.fileName,
+      lineNumber: this.lineNumber,
+      columnNumber: this.columnNumber,
+      stack: this.stack,
+      // Axios
+      config: this.config,
+      code: this.code
+    };
+  };
+  return error;
+};
+
+},{}],88:[function(require,module,exports){
+'use strict';
+
+var utils = require('../utils');
+
+/**
+ * Config-specific merge-function which creates a new config-object
+ * by merging two configuration objects together.
+ *
+ * @param {Object} config1
+ * @param {Object} config2
+ * @returns {Object} New object resulting from merging config2 to config1
+ */
+module.exports = function mergeConfig(config1, config2) {
+  // eslint-disable-next-line no-param-reassign
+  config2 = config2 || {};
+  var config = {};
+
+  var valueFromConfig2Keys = ['url', 'method', 'data'];
+  var mergeDeepPropertiesKeys = ['headers', 'auth', 'proxy', 'params'];
+  var defaultToConfig2Keys = [
+    'baseURL', 'transformRequest', 'transformResponse', 'paramsSerializer',
+    'timeout', 'timeoutMessage', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName',
+    'xsrfHeaderName', 'onUploadProgress', 'onDownloadProgress', 'decompress',
+    'maxContentLength', 'maxBodyLength', 'maxRedirects', 'transport', 'httpAgent',
+    'httpsAgent', 'cancelToken', 'socketPath', 'responseEncoding'
+  ];
+  var directMergeKeys = ['validateStatus'];
+
+  function getMergedValue(target, source) {
+    if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
+      return utils.merge(target, source);
+    } else if (utils.isPlainObject(source)) {
+      return utils.merge({}, source);
+    } else if (utils.isArray(source)) {
+      return source.slice();
+    }
+    return source;
+  }
+
+  function mergeDeepProperties(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(config1[prop], config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  }
+
+  utils.forEach(valueFromConfig2Keys, function valueFromConfig2(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(undefined, config2[prop]);
+    }
+  });
+
+  utils.forEach(mergeDeepPropertiesKeys, mergeDeepProperties);
+
+  utils.forEach(defaultToConfig2Keys, function defaultToConfig2(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(undefined, config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  });
+
+  utils.forEach(directMergeKeys, function merge(prop) {
+    if (prop in config2) {
+      config[prop] = getMergedValue(config1[prop], config2[prop]);
+    } else if (prop in config1) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  });
+
+  var axiosKeys = valueFromConfig2Keys
+    .concat(mergeDeepPropertiesKeys)
+    .concat(defaultToConfig2Keys)
+    .concat(directMergeKeys);
+
+  var otherKeys = Object
+    .keys(config1)
+    .concat(Object.keys(config2))
+    .filter(function filterAxiosKeys(key) {
+      return axiosKeys.indexOf(key) === -1;
+    });
+
+  utils.forEach(otherKeys, mergeDeepProperties);
+
+  return config;
+};
+
+},{"../utils":103}],89:[function(require,module,exports){
+'use strict';
+
+var createError = require('./createError');
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ */
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(createError(
+      'Request failed with status code ' + response.status,
+      response.config,
+      null,
+      response.request,
+      response
+    ));
+  }
+};
+
+},{"./createError":85}],90:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+var defaults = require('./../defaults');
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+module.exports = function transformData(data, headers, fns) {
+  var context = this || defaults;
+  /*eslint no-param-reassign:0*/
+  utils.forEach(fns, function transform(fn) {
+    data = fn.call(context, data, headers);
+  });
+
+  return data;
+};
+
+},{"./../defaults":91,"./../utils":103}],91:[function(require,module,exports){
+(function (process){(function (){
+'use strict';
+
+var utils = require('./utils');
+var normalizeHeaderName = require('./helpers/normalizeHeaderName');
+var enhanceError = require('./core/enhanceError');
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = require('./adapters/xhr');
+  } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    // For node use HTTP adapter
+    adapter = require('./adapters/http');
+  }
+  return adapter;
+}
+
+function stringifySafely(rawValue, parser, encoder) {
+  if (utils.isString(rawValue)) {
+    try {
+      (parser || JSON.parse)(rawValue);
+      return utils.trim(rawValue);
+    } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
+    }
+  }
+
+  return (encoder || JSON.stringify)(rawValue);
+}
+
+var defaults = {
+
+  transitional: {
+    silentJSONParsing: true,
+    forcedJSONParsing: true,
+    clarifyTimeoutError: false
+  },
+
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Accept');
+    normalizeHeaderName(headers, 'Content-Type');
+
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data) || (headers && headers['Content-Type'] === 'application/json')) {
+      setContentTypeIfUnset(headers, 'application/json');
+      return stringifySafely(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    var transitional = this.transitional;
+    var silentJSONParsing = transitional && transitional.silentJSONParsing;
+    var forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+    var strictJSONParsing = !silentJSONParsing && this.responseType === 'json';
+
+    if (strictJSONParsing || (forcedJSONParsing && utils.isString(data) && data.length)) {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        if (strictJSONParsing) {
+          if (e.name === 'SyntaxError') {
+            throw enhanceError(e, this, 'E_JSON_PARSE');
+          }
+          throw e;
+        }
+      }
+    }
+
+    return data;
+  }],
+
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+  maxBodyLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+}).call(this)}).call(this,require('_process'))
+},{"./adapters/http":77,"./adapters/xhr":77,"./core/enhanceError":87,"./helpers/normalizeHeaderName":99,"./utils":103,"_process":110}],92:[function(require,module,exports){
+'use strict';
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+},{}],93:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      } else {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    var hashmarkIndex = url.indexOf('#');
+    if (hashmarkIndex !== -1) {
+      url = url.slice(0, hashmarkIndex);
+    }
+
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+},{"./../utils":103}],94:[function(require,module,exports){
+'use strict';
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+};
+
+},{}],95:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+    (function standardBrowserEnv() {
+      return {
+        write: function write(name, value, expires, path, domain, secure) {
+          var cookie = [];
+          cookie.push(name + '=' + encodeURIComponent(value));
+
+          if (utils.isNumber(expires)) {
+            cookie.push('expires=' + new Date(expires).toGMTString());
+          }
+
+          if (utils.isString(path)) {
+            cookie.push('path=' + path);
+          }
+
+          if (utils.isString(domain)) {
+            cookie.push('domain=' + domain);
+          }
+
+          if (secure === true) {
+            cookie.push('secure');
+          }
+
+          document.cookie = cookie.join('; ');
+        },
+
+        read: function read(name) {
+          var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+          return (match ? decodeURIComponent(match[3]) : null);
+        },
+
+        remove: function remove(name) {
+          this.write(name, '', Date.now() - 86400000);
+        }
+      };
+    })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+    (function nonStandardBrowserEnv() {
+      return {
+        write: function write() {},
+        read: function read() { return null; },
+        remove: function remove() {}
+      };
+    })()
+);
+
+},{"./../utils":103}],96:[function(require,module,exports){
+'use strict';
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+},{}],97:[function(require,module,exports){
+'use strict';
+
+/**
+ * Determines whether the payload is an error thrown by Axios
+ *
+ * @param {*} payload The value to test
+ * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
+ */
+module.exports = function isAxiosError(payload) {
+  return (typeof payload === 'object') && (payload.isAxiosError === true);
+};
+
+},{}],98:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+    (function standardBrowserEnv() {
+      var msie = /(msie|trident)/i.test(navigator.userAgent);
+      var urlParsingNode = document.createElement('a');
+      var originURL;
+
+      /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+      function resolveURL(url) {
+        var href = url;
+
+        if (msie) {
+        // IE needs attribute set twice to normalize properties
+          urlParsingNode.setAttribute('href', href);
+          href = urlParsingNode.href;
+        }
+
+        urlParsingNode.setAttribute('href', href);
+
+        // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+        return {
+          href: urlParsingNode.href,
+          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+          host: urlParsingNode.host,
+          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+          hostname: urlParsingNode.hostname,
+          port: urlParsingNode.port,
+          pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+            urlParsingNode.pathname :
+            '/' + urlParsingNode.pathname
+        };
+      }
+
+      originURL = resolveURL(window.location.href);
+
+      /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+      return function isURLSameOrigin(requestURL) {
+        var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+        return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+      };
+    })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+    (function nonStandardBrowserEnv() {
+      return function isURLSameOrigin() {
+        return true;
+      };
+    })()
+);
+
+},{"./../utils":103}],99:[function(require,module,exports){
+'use strict';
+
+var utils = require('../utils');
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+},{"../utils":103}],100:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+// Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+var ignoreDuplicateOf = [
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+];
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    }
+  });
+
+  return parsed;
+};
+
+},{"./../utils":103}],101:[function(require,module,exports){
+'use strict';
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+},{}],102:[function(require,module,exports){
+'use strict';
+
+var pkg = require('./../../package.json');
+
+var validators = {};
+
+// eslint-disable-next-line func-names
+['object', 'boolean', 'number', 'function', 'string', 'symbol'].forEach(function(type, i) {
+  validators[type] = function validator(thing) {
+    return typeof thing === type || 'a' + (i < 1 ? 'n ' : ' ') + type;
+  };
+});
+
+var deprecatedWarnings = {};
+var currentVerArr = pkg.version.split('.');
+
+/**
+ * Compare package versions
+ * @param {string} version
+ * @param {string?} thanVersion
+ * @returns {boolean}
+ */
+function isOlderVersion(version, thanVersion) {
+  var pkgVersionArr = thanVersion ? thanVersion.split('.') : currentVerArr;
+  var destVer = version.split('.');
+  for (var i = 0; i < 3; i++) {
+    if (pkgVersionArr[i] > destVer[i]) {
+      return true;
+    } else if (pkgVersionArr[i] < destVer[i]) {
+      return false;
+    }
+  }
+  return false;
+}
+
+/**
+ * Transitional option validator
+ * @param {function|boolean?} validator
+ * @param {string?} version
+ * @param {string} message
+ * @returns {function}
+ */
+validators.transitional = function transitional(validator, version, message) {
+  var isDeprecated = version && isOlderVersion(version);
+
+  function formatMessage(opt, desc) {
+    return '[Axios v' + pkg.version + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+  }
+
+  // eslint-disable-next-line func-names
+  return function(value, opt, opts) {
+    if (validator === false) {
+      throw new Error(formatMessage(opt, ' has been removed in ' + version));
+    }
+
+    if (isDeprecated && !deprecatedWarnings[opt]) {
+      deprecatedWarnings[opt] = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        formatMessage(
+          opt,
+          ' has been deprecated since v' + version + ' and will be removed in the near future'
+        )
+      );
+    }
+
+    return validator ? validator(value, opt, opts) : true;
+  };
+};
+
+/**
+ * Assert object's properties type
+ * @param {object} options
+ * @param {object} schema
+ * @param {boolean?} allowUnknown
+ */
+
+function assertOptions(options, schema, allowUnknown) {
+  if (typeof options !== 'object') {
+    throw new TypeError('options must be an object');
+  }
+  var keys = Object.keys(options);
+  var i = keys.length;
+  while (i-- > 0) {
+    var opt = keys[i];
+    var validator = schema[opt];
+    if (validator) {
+      var value = options[opt];
+      var result = value === undefined || validator(value, opt, options);
+      if (result !== true) {
+        throw new TypeError('option ' + opt + ' must be ' + result);
+      }
+      continue;
+    }
+    if (allowUnknown !== true) {
+      throw Error('Unknown option ' + opt);
+    }
+  }
+}
+
+module.exports = {
+  isOlderVersion: isOlderVersion,
+  assertOptions: assertOptions,
+  validators: validators
+};
+
+},{"./../../package.json":104}],103:[function(require,module,exports){
+'use strict';
+
+var bind = require('./helpers/bind');
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is a Buffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Buffer, otherwise false
+ */
+function isBuffer(val) {
+  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
+    && typeof val.constructor.isBuffer === 'function' && val.constructor.isBuffer(val);
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a plain Object
+ *
+ * @param {Object} val The value to test
+ * @return {boolean} True if value is a plain Object, otherwise false
+ */
+function isPlainObject(val) {
+  if (toString.call(val) !== '[object Object]') {
+    return false;
+  }
+
+  var prototype = Object.getPrototypeOf(val);
+  return prototype === null || prototype === Object.prototype;
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ * nativescript
+ *  navigator.product -> 'NativeScript' or 'NS'
+ */
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && (navigator.product === 'ReactNative' ||
+                                           navigator.product === 'NativeScript' ||
+                                           navigator.product === 'NS')) {
+    return false;
+  }
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object') {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (isPlainObject(result[key]) && isPlainObject(val)) {
+      result[key] = merge(result[key], val);
+    } else if (isPlainObject(val)) {
+      result[key] = merge({}, val);
+    } else if (isArray(val)) {
+      result[key] = val.slice();
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+/**
+ * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
+ *
+ * @param {string} content with BOM
+ * @return {string} content value without BOM
+ */
+function stripBOM(content) {
+  if (content.charCodeAt(0) === 0xFEFF) {
+    content = content.slice(1);
+  }
+  return content;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isPlainObject: isPlainObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim,
+  stripBOM: stripBOM
+};
+
+},{"./helpers/bind":92}],104:[function(require,module,exports){
+module.exports={
+  "name": "axios",
+  "version": "0.21.4",
+  "description": "Promise based HTTP client for the browser and node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test",
+    "start": "node ./sandbox/server.js",
+    "build": "NODE_ENV=production grunt build",
+    "preversion": "npm test",
+    "version": "npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json",
+    "postversion": "git push && git push --tags",
+    "examples": "node ./examples/server.js",
+    "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "fix": "eslint --fix lib/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axios/axios.git"
+  },
+  "keywords": [
+    "xhr",
+    "http",
+    "ajax",
+    "promise",
+    "node"
+  ],
+  "author": "Matt Zabriskie",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axios/axios/issues"
+  },
+  "homepage": "https://axios-http.com",
+  "devDependencies": {
+    "coveralls": "^3.0.0",
+    "es6-promise": "^4.2.4",
+    "grunt": "^1.3.0",
+    "grunt-banner": "^0.6.0",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-eslint": "^23.0.0",
+    "grunt-karma": "^4.0.0",
+    "grunt-mocha-test": "^0.13.3",
+    "grunt-ts": "^6.0.0-beta.19",
+    "grunt-webpack": "^4.0.2",
+    "istanbul-instrumenter-loader": "^1.0.0",
+    "jasmine-core": "^2.4.1",
+    "karma": "^6.3.2",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-firefox-launcher": "^2.1.0",
+    "karma-jasmine": "^1.1.1",
+    "karma-jasmine-ajax": "^0.1.13",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-sauce-launcher": "^4.3.6",
+    "karma-sinon": "^1.0.5",
+    "karma-sourcemap-loader": "^0.3.8",
+    "karma-webpack": "^4.0.2",
+    "load-grunt-tasks": "^3.5.2",
+    "minimist": "^1.2.0",
+    "mocha": "^8.2.1",
+    "sinon": "^4.5.0",
+    "terser-webpack-plugin": "^4.2.3",
+    "typescript": "^4.0.5",
+    "url-search-params": "^0.10.0",
+    "webpack": "^4.44.2",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "browser": {
+    "./lib/adapters/http.js": "./lib/adapters/xhr.js"
+  },
+  "jsdelivr": "dist/axios.min.js",
+  "unpkg": "dist/axios.min.js",
+  "typings": "./index.d.ts",
+  "dependencies": {
+    "follow-redirects": "^1.14.0"
+  },
+  "bundlesize": [
+    {
+      "path": "./dist/axios.min.js",
+      "threshold": "5kB"
+    }
+  ]
+}
+
+},{}],105:[function(require,module,exports){
 /*
  *  big.js v6.2.2
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -13808,7 +18210,7 @@ module.exports = (() => {
   }
 })(this);
 
-},{}],56:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 module.exports={
 	"version": "2025b",
 	"zones": [
@@ -14662,11 +19064,11 @@ module.exports={
 		"ZW|Africa/Maputo Africa/Harare"
 	]
 }
-},{}],57:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":56,"./moment-timezone":58}],58:[function(require,module,exports){
+},{"./data/packed/latest.json":106,"./moment-timezone":108}],108:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.48
 //! Copyright (c) JS Foundation and other contributors
@@ -15397,7 +19799,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":59}],59:[function(require,module,exports){
+},{"moment":109}],109:[function(require,module,exports){
 //! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -21087,7 +25489,193 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],60:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],111:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21167,7 +25755,7 @@ var _stringify = _interopRequireDefault(require("./stringify.js"));
 var _parse = _interopRequireDefault(require("./parse.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./nil.js":63,"./parse.js":64,"./stringify.js":68,"./v1.js":69,"./v3.js":70,"./v4.js":72,"./v5.js":73,"./validate.js":74,"./version.js":75}],61:[function(require,module,exports){
+},{"./nil.js":114,"./parse.js":115,"./stringify.js":119,"./v1.js":120,"./v3.js":121,"./v4.js":123,"./v5.js":124,"./validate.js":125,"./version.js":126}],112:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21391,7 +25979,7 @@ function md5ii(a, b, c, d, x, s, t) {
 
 var _default = md5;
 exports.default = _default;
-},{}],62:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21403,7 +25991,7 @@ var _default = {
   randomUUID
 };
 exports.default = _default;
-},{}],63:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21412,7 +26000,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = '00000000-0000-0000-0000-000000000000';
 exports.default = _default;
-},{}],64:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21458,7 +26046,7 @@ function parse(uuid) {
 
 var _default = parse;
 exports.default = _default;
-},{"./validate.js":74}],65:[function(require,module,exports){
+},{"./validate.js":125}],116:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21467,7 +26055,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
 exports.default = _default;
-},{}],66:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21493,7 +26081,7 @@ function rng() {
 
   return getRandomValues(rnds8);
 }
-},{}],67:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21598,7 +26186,7 @@ function sha1(bytes) {
 
 var _default = sha1;
 exports.default = _default;
-},{}],68:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21643,7 +26231,7 @@ function stringify(arr, offset = 0) {
 
 var _default = stringify;
 exports.default = _default;
-},{"./validate.js":74}],69:[function(require,module,exports){
+},{"./validate.js":125}],120:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21751,7 +26339,7 @@ function v1(options, buf, offset) {
 
 var _default = v1;
 exports.default = _default;
-},{"./rng.js":66,"./stringify.js":68}],70:[function(require,module,exports){
+},{"./rng.js":117,"./stringify.js":119}],121:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21768,7 +26356,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v3 = (0, _v.default)('v3', 0x30, _md.default);
 var _default = v3;
 exports.default = _default;
-},{"./md5.js":61,"./v35.js":71}],71:[function(require,module,exports){
+},{"./md5.js":112,"./v35.js":122}],122:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21849,7 +26437,7 @@ function v35(name, version, hashfunc) {
   generateUUID.URL = URL;
   return generateUUID;
 }
-},{"./parse.js":64,"./stringify.js":68}],72:[function(require,module,exports){
+},{"./parse.js":115,"./stringify.js":119}],123:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21893,7 +26481,7 @@ function v4(options, buf, offset) {
 
 var _default = v4;
 exports.default = _default;
-},{"./native.js":62,"./rng.js":66,"./stringify.js":68}],73:[function(require,module,exports){
+},{"./native.js":113,"./rng.js":117,"./stringify.js":119}],124:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21910,7 +26498,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v5 = (0, _v.default)('v5', 0x50, _sha.default);
 var _default = v5;
 exports.default = _default;
-},{"./sha1.js":67,"./v35.js":71}],74:[function(require,module,exports){
+},{"./sha1.js":118,"./v35.js":122}],125:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21928,7 +26516,7 @@ function validate(uuid) {
 
 var _default = validate;
 exports.default = _default;
-},{"./regex.js":65}],75:[function(require,module,exports){
+},{"./regex.js":116}],126:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21950,7 +26538,7 @@ function version(uuid) {
 
 var _default = version;
 exports.default = _default;
-},{"./validate.js":74}],76:[function(require,module,exports){
+},{"./validate.js":125}],127:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -22093,7 +26681,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(AveragePriceCalculator.calculate(instrument, -800000, 2).toFloat()).toEqual(400000);
 	});
 });
-},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":4,"@barchart/common-js/lang/Decimal":33}],77:[function(require,module,exports){
+},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":4,"@barchart/common-js/lang/Decimal":53}],128:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -22348,7 +26936,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(ValuationCalculator.calculate(instrument, null, 4)).toBe(null);
 	});
 });
-},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":4,"@barchart/common-js/lang/Decimal":33}],78:[function(require,module,exports){
+},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":4,"@barchart/common-js/lang/Decimal":53}],129:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -22997,7 +27585,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/data/TransactionType":9,"@barchart/common-js/lang/Day":31,"@barchart/common-js/lang/Decimal":33}],79:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/data/TransactionType":9,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53}],130:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -23388,7 +27976,7 @@ describe('When validating position violations', () => {
     });
 });
 
-},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/TransactionType":9,"./../../../lib/data/TransactionValidator":10,"@barchart/common-js/lang/Day":31,"@barchart/common-js/lang/Decimal":33}],80:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/TransactionType":9,"./../../../lib/data/TransactionValidator":10,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53}],131:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -23575,7 +28163,94 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":12,"./../../../lib/processing/definitions/PositionLevelDefinition":15,"./../../../lib/processing/definitions/PositionLevelType":16,"./../../../lib/processing/definitions/PositionTreeDefinition":17,"@barchart/common-js/lang/Currency":29,"@barchart/common-js/lang/Decimal":33}],81:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":12,"./../../../lib/processing/definitions/PositionLevelDefinition":15,"./../../../lib/processing/definitions/PositionLevelType":16,"./../../../lib/processing/definitions/PositionTreeDefinition":17,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/Decimal":53}],132:[function(require,module,exports){
+const Gateway = require('@barchart/common-js/api/http/Gateway');
+
+const InstrumentProvider = require('./../../../lib/providers/InstrumentProvider');
+
+describe('After the InstrumentProvider utility is initialized', () => {
+	'use strict';
+
+	describe('and a single instrument is requested', () => {
+		let provider;
+		let result;
+
+		beforeEach(async () => {
+			provider = new InstrumentProvider();
+
+			spyOn(Gateway, 'invoke').and.returnValue(Promise.resolve({
+				instrument: {
+					name: 'Bitcoin - USD',
+					symbolType: 18
+				}
+			}));
+
+			result = await provider.getInstrument('XDTE');
+		});
+
+		it('should call the single-instrument endpoint with a path symbol parameter', () => {
+			const endpoint = Gateway.invoke.calls.argsFor(0)[0];
+			const payload = Gateway.invoke.calls.argsFor(0)[1];
+
+			expect(endpoint.path.parameters.length).toEqual(2);
+			expect(endpoint.path.parameters[0].key).toEqual('instruments');
+			expect(endpoint.path.parameters[1].key).toEqual('symbol');
+			expect(endpoint.query.parameters.length).toEqual(0);
+			expect(payload.symbol).toEqual('XDTE');
+		});
+
+		it('should normalize crypto instrument metadata in single-instrument responses', () => {
+			expect(result.instrument.name).toEqual('Bitcoin');
+			expect(result.instrument.currency).toEqual('USD');
+			expect(result.instrument.symbolType).toEqual(999);
+		});
+	});
+
+	describe('and multiple instruments are requested', () => {
+		let provider;
+		let result;
+
+		beforeEach(async () => {
+			provider = new InstrumentProvider();
+
+			spyOn(Gateway, 'invoke').and.returnValue(Promise.resolve({
+				instruments: [
+					{
+						name: 'Bitcoin - USD',
+						symbolType: 18
+					},
+					{
+						name: 'Tesla Inc.',
+						symbolType: 1
+					}
+				]
+			}));
+
+			result = await provider.getInstruments([ 'XDTE', 'TSLA', 'OIY00' ]);
+		});
+
+		it('should call the instruments endpoint with a comma-separated symbols query parameter', () => {
+			const endpoint = Gateway.invoke.calls.argsFor(0)[0];
+			const payload = Gateway.invoke.calls.argsFor(0)[1];
+
+			expect(endpoint.path.parameters.length).toEqual(1);
+			expect(endpoint.path.parameters[0].key).toEqual('instruments');
+			expect(endpoint.query.parameters.length).toEqual(1);
+			expect(endpoint.query.parameters[0].key).toEqual('symbols');
+			expect(payload.symbols).toEqual('XDTE,TSLA,OIY00');
+		});
+
+		it('should normalize crypto instrument metadata in batch responses', () => {
+			expect(result.instruments[0].name).toEqual('Bitcoin');
+			expect(result.instruments[0].currency).toEqual('USD');
+			expect(result.instruments[0].symbolType).toEqual(999);
+			expect(result.instruments[1].name).toEqual('Tesla Inc.');
+			expect(result.instruments[1].symbolType).toEqual(1);
+		});
+	});
+});
+
+},{"./../../../lib/providers/InstrumentProvider":18,"@barchart/common-js/api/http/Gateway":24}],133:[function(require,module,exports){
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -23645,7 +28320,7 @@ describe('When positions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/serialization/PositionSchema":18}],82:[function(require,module,exports){
+},{"./../../../lib/serialization/PositionSchema":19}],134:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -23712,4 +28387,4 @@ describe('When transactions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/data/TransactionType":9,"./../../../lib/serialization/TransactionSchema":19,"@barchart/common-js/lang/Day":31,"@barchart/common-js/lang/Decimal":33}]},{},[76,77,78,79,80,81,82]);
+},{"./../../../lib/data/TransactionType":9,"./../../../lib/serialization/TransactionSchema":20,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53}]},{},[127,128,129,130,131,132,133,134]);

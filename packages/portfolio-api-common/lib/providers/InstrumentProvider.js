@@ -60,16 +60,44 @@ module.exports = (() => {
 						return Promise.reject(`Instrument lookup for [ ${symbol} ] failed, the instrument does not exist`);
 					}
 
-					const instrument = result.instrument;
+					normalizeInstrument(result.instrument);
 
-					if (instrument.symbolType === 18) {
-						const match = instrument.name.match(regex.crypto.token) || null;
+					return result;
+				});
+		}
 
-						if (match !== null) {
-							instrument.name = match[1];
-							instrument.currency = 'USD';
-							instrument.symbolType = 999;
-						}
+		/**
+		 * Returns a promise for metadata for multiple instruments.
+		 *
+		 * @public
+		 * @async
+		 * @param {String[]} symbols
+		 * @returns {Promise<Object>}
+		 */
+		async getInstruments(symbols) {
+			assert.argumentIsArray(symbols, 'symbols', String);
+			assert.argumentIsValid(symbols.length, 'symbols.length', x => x > 0, 'is greater than zero');
+
+			const symbolList = symbols.join(',');
+
+			return promise.timeout(Gateway.invoke(instrumentsLookupEndpoint, { symbols: symbolList }), this._waitInMilliseconds, 'instrument lookup')
+				.catch((e) => {
+					let message;
+
+					if (is.string(e) && e === 'timeout') {
+						message = `Instrument lookup for [ ${symbolList} ] failed due to timed out`;
+					} else {
+						message = `Instrument lookup for [ ${symbolList} ] failed due to an unspecified error`;
+					}
+
+					return Promise.reject(message);
+				}).then((result) => {
+					if (result.instruments === null) {
+						return Promise.reject(`Instrument lookup for [ ${symbolList} ] failed, no instruments were returned`);
+					}
+
+					if (is.array(result.instruments)) {
+						result.instruments.forEach(normalizeInstrument);
 					}
 
 					return result;
@@ -93,6 +121,33 @@ module.exports = (() => {
 		.withResponseInterceptor(ResponseInterceptor.DATA)
 		.withErrorInterceptor(ErrorInterceptor.GENERAL)
 		.endpoint;
+
+	const instrumentsLookupEndpoint = EndpointBuilder.for('query-instruments', 'query instruments')
+		.withVerb(VerbType.GET)
+		.withProtocol(ProtocolType.HTTPS)
+		.withHost('instruments-prod.aws.barchart.com')
+		.withPort(443)
+		.withPathBuilder((pb) => {
+			pb.withLiteralParameter('instruments', 'instruments');
+		})
+		.withQueryBuilder((qb) => {
+			qb.withVariableParameter('symbols', 'symbols', 'symbols');
+		})
+		.withResponseInterceptor(ResponseInterceptor.DATA)
+		.withErrorInterceptor(ErrorInterceptor.GENERAL)
+		.endpoint;
+
+	function normalizeInstrument(instrument) {
+		if (instrument && instrument.symbolType === 18) {
+			const match = instrument.name.match(regex.crypto.token) || null;
+
+			if (match !== null) {
+				instrument.name = match[1];
+				instrument.currency = 'USD';
+				instrument.symbolType = 999;
+			}
+		}
+	}
 
 	return InstrumentProvider;
 })();
