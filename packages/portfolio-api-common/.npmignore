@@ -1,12 +1,6 @@
-.DS_Store
-.gitignore
-.jshintrc
-buildspec.yml
-gulpfile.js
-npm-debug.log
+*
 
-.idea
-.releases
-example
-node_modules
-test
+!lib/**
+!LICENSE
+!package.json
+!README.md
