@@ -1,13 +1,6 @@
-.awspublish*
-.gitignore
-.jshintrc
-buildspec.yml
-gulpfile.js
-npm-debug.log
-openapi.yaml
+*
 
-.idea
-docs
-example
-node_modules
-test
+!lib/**
+!LICENSE
+!package.json
+!README.md
