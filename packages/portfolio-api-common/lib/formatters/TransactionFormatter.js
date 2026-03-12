@@ -171,10 +171,13 @@ module.exports = (() => {
 	};
 
 	const buySellFormatter = (t, f) => {
+		const ambiguous = is.object(t.snaptrade) && is.boolean(t.snaptrade.ambiguous) && t.snaptrade.ambiguous;
+
 		f.boughtSold = t.quantity;
 		f.price = t.trade.price;
 		f.fee = t.fee;
 		f.total = t.amount;
+		f.ambiguous = ambiguous;
 
 		if (t.description) {
 			f.description = t.description;
@@ -183,6 +186,7 @@ module.exports = (() => {
 		f.raw.total = getRawForDecimal(f.total);
 		f.raw.price = getRawForDecimal(f.price);
 		f.raw.boughtSold = getRawForDecimal(f.boughtSold);
+		f.raw.ambiguous = ambiguous;
 	};
 
 	const dividendFormatter = (t, f) => {
