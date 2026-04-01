@@ -8,6 +8,13 @@
     "email": "bryan.ingle@barchart.com",
     "url": "https://www.barchart.com"
   },
+  "contributors": [
+    {
+      "name": "Luka Sotra",
+      "email": "luka.sotra@barchart.com",
+      "url": "https://www.barchart.com"
+    }
+  ],
   "scripts": {
     "test": "echo \"Error: Please use gulp to run tests\" && exit 1"
   },
