@@ -258,7 +258,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(quote, 'quote', Object);
 			assert.argumentIsOptional(force, 'force', Boolean);
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
@@ -320,7 +320,7 @@ module.exports = (() => {
 		setNewsArticleExists(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
@@ -338,7 +338,7 @@ module.exports = (() => {
 		setPositionFundamentalData(data) {
 			assert.argumentIsRequired(data, 'data', Object);
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
@@ -354,7 +354,7 @@ module.exports = (() => {
 		setPositionLock(position) {
 			assert.argumentIsRequired(position, 'position');
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
@@ -374,7 +374,7 @@ module.exports = (() => {
 		setPositionCalculating(position) {
 			assert.argumentIsRequired(position, 'position', Object);
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
