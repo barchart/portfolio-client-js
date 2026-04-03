@@ -36,6 +36,8 @@ module.exports = (() => {
 			this._portfolio = portfolio;
 			this._position = position;
 
+			this._priceSelctor = getPriceSelector(this._portfolio, this._position);
+
 			const instrument = position.instrument;
 
 			this._currency = instrument.currency || Currency.CAD;
@@ -241,6 +243,8 @@ module.exports = (() => {
 				this._portfolioChangedEvent.fire(this._portfolio = portfolio);
 			}
 
+			this._priceSelctor = getPriceSelector(this._portfolio, this._position);
+
 			if (this._currentQuote) {
 				this.setQuote(this._currentQuote, true);
 			}
@@ -262,28 +266,24 @@ module.exports = (() => {
 				return;
 			}
 
-			let priceToUse;
+			const priceToUse = this._priceSelctor(quote);
 
-			if (this.portfolio.miscellany && this.portfolio.miscellany.data && this.portfolio.miscellany.data.optionsValuation === OptionsValuationType.MIDPOINT.code && quote.askPrice && quote.bidPrice) {
-				priceToUse = (quote.askPrice + quote.bidPrice) / 2;
-			} else {
-				priceToUse = quote.lastPrice;
+			if (!(this._currentPrice !== priceToUse || force)) {
+				return;
 			}
 
-			if (this._currentPrice !== priceToUse || force) {
-				if (quote.previousPrice) {
-					this._data.previousPrice = quote.previousPrice;
-				}
-
-				calculatePriceData(this, priceToUse, calculateQuoteDay(quote), this._today);
-
-				this._currentPrice = priceToUse;
-
-				this._previousQuote = this._currentQuote;
-				this._currentQuote = quote;
-
-				this._quoteChangedEvent.fire(this._currentQuote);
+			if (quote.previousPrice) {
+				this._data.previousPrice = quote.previousPrice;
 			}
+
+			calculatePriceData(this, priceToUse, calculateQuoteDay(quote), this._today);
+
+			this._currentPrice = priceToUse;
+
+			this._previousQuote = this._currentQuote;
+			this._currentQuote = quote;
+
+			this._quoteChangedEvent.fire(this._currentQuote);
 		}
 
 		/**
@@ -928,6 +928,42 @@ module.exports = (() => {
 		}
 
 		return null;
+	}
+
+	function selectPriceFromLastPrice(quote) {
+		return quote.lastPrice;
+	}
+
+	function selectPriceFromMidpoint(quote) {
+		let price = null;
+
+		if (is.number(quote.askPrice) && is.number(quote.bidPrice)) {
+			price = (quote.askPrice + quote.bidPrice) / 2;
+		}
+
+		if (price === null || price === 0) {
+			price = quote.lastPrice;
+		}
+
+		return price;
+	}
+
+	function getPriceSelector(portfolio, position) {
+		let type = null;
+
+		if (portfolio.miscellany && portfolio.miscellany.data && portfolio.miscellany.data.optionsValuation) {
+			type = OptionsValuationType.parse(portfolio.miscellany.data.optionsValuation);
+		}
+
+		if (type === null) {
+			type = OptionsValuationType.LAST_TRADE;
+		}
+
+		if (position.instrument.type.option && type === OptionsValuationType.MIDPOINT) {
+			return selectPriceFromMidpoint;
+		}
+
+		return selectPriceFromLastPrice;
 	}
 
 	return PositionItem;
