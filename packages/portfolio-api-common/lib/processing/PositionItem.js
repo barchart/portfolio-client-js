@@ -125,7 +125,7 @@ module.exports = (() => {
 			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
-			calculateStaticData(this, this._today);
+			calculateStaticData(this);
 			calculatePriceData(this, null, null, this._today);
 		}
 
@@ -483,9 +483,8 @@ module.exports = (() => {
 	/**
 	 * @private
 	 * @param {PositionItem} item
-	 * @param {Day|null} day
 	 */
-	function calculateStaticData(item, day) {
+	function calculateStaticData(item) {
 		const position = item.position;
 
 		const currentSummary = item.currentSummary;
