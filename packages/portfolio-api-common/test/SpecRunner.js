@@ -4966,6 +4966,8 @@ module.exports = (() => {
 			this._portfolio = portfolio;
 			this._position = position;
 
+			this._priceSelctor = getPriceSelector(this._portfolio, this._position);
+
 			const instrument = position.instrument;
 
 			this._currency = instrument.currency || Currency.CAD;
@@ -5055,7 +5057,7 @@ module.exports = (() => {
 			this._portfolioChangedEvent = new Event(this);
 			this._positionItemDisposeEvent = new Event(this);
 
-			calculateStaticData(this, this._today);
+			calculateStaticData(this);
 			calculatePriceData(this, null, null, this._today);
 		}
 
@@ -5171,6 +5173,8 @@ module.exports = (() => {
 				this._portfolioChangedEvent.fire(this._portfolio = portfolio);
 			}
 
+			this._priceSelctor = getPriceSelector(this._portfolio, this._position);
+
 			if (this._currentQuote) {
 				this.setQuote(this._currentQuote, true);
 			}
@@ -5188,32 +5192,28 @@ module.exports = (() => {
 			assert.argumentIsRequired(quote, 'quote', Object);
 			assert.argumentIsOptional(force, 'force', Boolean);
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
-			let priceToUse;
+			const priceToUse = this._priceSelctor(quote);
 
-			if (this.portfolio.miscellany && this.portfolio.miscellany.data && this.portfolio.miscellany.data.optionsValuation === OptionsValuationType.MIDPOINT.code && quote.askPrice && quote.bidPrice) {
-				priceToUse = (quote.askPrice + quote.bidPrice) / 2;
-			} else {
-				priceToUse = quote.lastPrice;
+			if (!(this._currentPrice !== priceToUse || force)) {
+				return;
 			}
 
-			if (this._currentPrice !== priceToUse || force) {
-				if (quote.previousPrice) {
-					this._data.previousPrice = quote.previousPrice;
-				}
-
-				calculatePriceData(this, priceToUse, calculateQuoteDay(quote), this._today);
-
-				this._currentPrice = priceToUse;
-
-				this._previousQuote = this._currentQuote;
-				this._currentQuote = quote;
-
-				this._quoteChangedEvent.fire(this._currentQuote);
+			if (quote.previousPrice) {
+				this._data.previousPrice = quote.previousPrice;
 			}
+
+			calculatePriceData(this, priceToUse, calculateQuoteDay(quote), this._today);
+
+			this._currentPrice = priceToUse;
+
+			this._previousQuote = this._currentQuote;
+			this._currentQuote = quote;
+
+			this._quoteChangedEvent.fire(this._currentQuote);
 		}
 
 		/**
@@ -5250,7 +5250,7 @@ module.exports = (() => {
 		setNewsArticleExists(value) {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
@@ -5268,7 +5268,7 @@ module.exports = (() => {
 		setPositionFundamentalData(data) {
 			assert.argumentIsRequired(data, 'data', Object);
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
@@ -5284,7 +5284,7 @@ module.exports = (() => {
 		setPositionLock(position) {
 			assert.argumentIsRequired(position, 'position');
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
@@ -5304,7 +5304,7 @@ module.exports = (() => {
 		setPositionCalculating(position) {
 			assert.argumentIsRequired(position, 'position', Object);
 
-			if (this.getIsDisposed()) {
+			if (this.disposed) {
 				return;
 			}
 
@@ -5413,9 +5413,8 @@ module.exports = (() => {
 	/**
 	 * @private
 	 * @param {PositionItem} item
-	 * @param {Day|null} day
 	 */
-	function calculateStaticData(item, day) {
+	function calculateStaticData(item) {
 		const position = item.position;
 
 		const currentSummary = item.currentSummary;
@@ -5859,6 +5858,42 @@ module.exports = (() => {
 		}
 
 		return null;
+	}
+
+	function selectPriceFromLastPrice(quote) {
+		return quote.lastPrice;
+	}
+
+	function selectPriceFromMidpoint(quote) {
+		let price = null;
+
+		if (is.number(quote.askPrice) && is.number(quote.bidPrice)) {
+			price = (quote.askPrice + quote.bidPrice) / 2;
+		}
+
+		if (price === null || price === 0) {
+			price = quote.lastPrice;
+		}
+
+		return price;
+	}
+
+	function getPriceSelector(portfolio, position) {
+		let type = null;
+
+		if (portfolio.miscellany && portfolio.miscellany.data && portfolio.miscellany.data.optionsValuation) {
+			type = OptionsValuationType.parse(portfolio.miscellany.data.optionsValuation);
+		}
+
+		if (type === null) {
+			type = OptionsValuationType.LAST_TRADE;
+		}
+
+		if (position.instrument.type.option && type === OptionsValuationType.MIDPOINT) {
+			return selectPriceFromMidpoint;
+		}
+
+		return selectPriceFromLastPrice;
 	}
 
 	return PositionItem;
@@ -7765,6 +7800,7 @@ module.exports = (() => {
   verbs.set(VerbType.DELETE, 'delete');
   verbs.set(VerbType.POST, 'post');
   verbs.set(VerbType.PUT, 'put');
+  verbs.set(VerbType.PATCH, 'patch');
   return Gateway;
 })();
 
@@ -8821,6 +8857,16 @@ module.exports = (() => {
     static get PUT() {
       return verbTypePut;
     }
+
+    /**
+     * PATCH.
+     *
+     * @static
+     * @returns {VerbType}
+     */
+    static get PATCH() {
+      return verbTypePatch;
+    }
     toString() {
       return `[VerbType (description=${this.description})]`;
     }
@@ -8829,6 +8875,7 @@ module.exports = (() => {
   const verbTypeGet = new VerbType('GET');
   const verbTypePost = new VerbType('POST');
   const verbTypePut = new VerbType('PUT');
+  const verbTypePatch = new VerbType('PATCH');
   return VerbType;
 })();
 
@@ -11373,7 +11420,7 @@ module.exports = (() => {
      * current instance's value and the value supplied.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to add.
+     * @param {Decimal|Number|String} other - The value to multiply the current instance by.
      * @returns {Decimal}
      */
     multiply(other) {
@@ -11386,7 +11433,7 @@ module.exports = (() => {
      * supplied.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to subtract.
+     * @param {Decimal|Number|String} other - The value to divide the current instance by.
      * @returns {Decimal}
      */
     divide(other) {
