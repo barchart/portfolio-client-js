@@ -125,7 +125,7 @@ module.exports = (() => {
 		.withField('snaptrade.brokerage.display', DataType.STRING, true)
 		.withField('snaptrade.brokerage.logo', DataType.STRING, true)
 
-		.withField('snaptrade.link,mode', DataType.forEnum(SnapTradeLinkMode, 'SnapTradeLinkMode'), true)
+		.withField('snaptrade.link.mode', DataType.forEnum(SnapTradeLinkMode, 'SnapTradeLinkMode'), true)
 		.withField('snaptrade.link.status', DataType.forEnum(SnapTradeLinkStatus, 'SnapTradeLinkStatus'), true)
 		.withField('snaptrade.link.progress', DataType.NUMBER, true)
 		.withField('snaptrade.link.timestamp', DataType.TIMESTAMP, true)
@@ -169,7 +169,7 @@ module.exports = (() => {
 		.withField('snaptrade.brokerage.display', DataType.STRING, true)
 		.withField('snaptrade.brokerage.logo', DataType.STRING, true)
 
-		.withField('snaptrade.link,mode', DataType.forEnum(SnapTradeLinkMode, 'SnapTradeLinkMode'), true)
+		.withField('snaptrade.link.mode', DataType.forEnum(SnapTradeLinkMode, 'SnapTradeLinkMode'), true)
 		.withField('snaptrade.link.status', DataType.forEnum(SnapTradeLinkStatus, 'SnapTradeLinkStatus'), true)
 		.withField('snaptrade.link.progress', DataType.NUMBER, true)
 		.withField('snaptrade.link.timestamp', DataType.TIMESTAMP, true)
