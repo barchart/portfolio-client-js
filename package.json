@@ -16,6 +16,7 @@
     }
   ],
   "scripts": {
+    "clean": "rm -rf node_modules",
     "test": "echo \"Error: Please use gulp to run tests\" && exit 1"
   },
   "repository": {
