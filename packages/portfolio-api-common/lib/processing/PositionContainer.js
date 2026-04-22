@@ -86,6 +86,9 @@ module.exports = (() => {
 
 			this._groupBindings = { };
 
+			this._calculationsSuspended = 0;
+			this._calculationsDirty = false;
+
 			this._reporting = reportFrame instanceof PositionSummaryFrame;
 			this._useBarchartPriceFormattingRules = false;
 
@@ -199,6 +202,48 @@ module.exports = (() => {
 			Object.keys(this._portfolios).forEach(key => updateEmptyPortfolioGroups.call(this, this._portfolios[key]));
 
 			recalculatePercentages.call(this);
+		}
+
+		/**
+		 * Suspends recalculation of aggregated position data.
+		 *
+		 * @public
+		 */
+		suspendCalculations() {
+			if (this._calculationsSuspended === 0) {
+				Object.keys(this._trees).forEach((key) => {
+					this._trees[key].walk(group => group.suspendCalculations(), false, false);
+				});
+			}
+
+			this._calculationsSuspended = this._calculationsSuspended + 1;
+		}
+
+		/**
+		 * Resumes recalculation of aggregated position data.
+		 *
+		 * @public
+		 */
+		resumeCalculations() {
+			if (this._calculationsSuspended === 0) {
+				return;
+			}
+
+			this._calculationsSuspended = this._calculationsSuspended - 1;
+
+			if (this._calculationsSuspended > 0) {
+				return;
+			}
+
+			Object.keys(this._trees).forEach((key) => {
+				this._trees[key].walk(group => group.resumeCalculations(), false, false);
+			});
+
+			if (this._calculationsDirty) {
+				this._calculationsDirty = false;
+
+				recalculatePercentages.call(this);
+			}
 		}
 
 		/**
@@ -1060,6 +1105,8 @@ module.exports = (() => {
 
 			group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
 
+			suspendGroupCalculations.call(this, group);
+
 			list.push(group);
 
 			return list;
@@ -1076,6 +1123,7 @@ module.exports = (() => {
 			const eg = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
 
 			eg.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
+			suspendGroupCalculations.call(this, eg);
 
 			return eg;
 		});
@@ -1257,7 +1305,19 @@ module.exports = (() => {
 		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
 	}
 
+	function suspendGroupCalculations(group) {
+		if (this._calculationsSuspended > 0) {
+			group.suspendCalculations();
+		}
+	}
+
 	function recalculatePercentages() {
+		if (this._calculationsSuspended > 0) {
+			this._calculationsDirty = true;
+
+			return;
+		}
+
 		Object.keys(this._trees).forEach((key) => {
 			this._trees[key].walk(group => group.refreshMarketPercent(), false, false);
 		});

@@ -63,6 +63,9 @@ module.exports = (() => {
 			this._showClosedPositions = false;
 			this._showOpenedPositions = false;
 
+			this._calculationsSuspended = 0;
+			this._calculationsDirty = false;
+
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
 			this._showOpenedPositionsChangeEvent = new Event(this);
@@ -343,6 +346,34 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Suspends recalculation of aggregated group data.
+		 *
+		 * @public
+		 */
+		suspendCalculations() {
+			this._calculationsSuspended = this._calculationsSuspended + 1;
+		}
+
+		/**
+		 * Resumes recalculation of aggregated group data.
+		 *
+		 * @public
+		 */
+		resumeCalculations() {
+			if (this._calculationsSuspended === 0) {
+				return;
+			}
+
+			this._calculationsSuspended = this._calculationsSuspended - 1;
+
+			if (this._calculationsSuspended === 0 && this._calculationsDirty) {
+				this._calculationsDirty = false;
+
+				this.refresh();
+			}
+		}
+
+		/**
 		 * Changes the group currency.
 		 *
 		 * @public
@@ -512,6 +543,12 @@ module.exports = (() => {
 		 * @public
 		 */
 		refresh() {
+			if (this._calculationsSuspended > 0) {
+				this._calculationsDirty = true;
+
+				return;
+			}
+
 			calculateStaticData(this, this._definition);
 			calculatePriceData(this,null, true);
 		}
@@ -634,6 +671,12 @@ module.exports = (() => {
 				setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
 
 				this._dataFormat.quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
+			}
+
+			if (this._calculationsSuspended > 0) {
+				this._calculationsDirty = true;
+
+				return;
 			}
 
 			calculatePriceData(this, sender, false);
