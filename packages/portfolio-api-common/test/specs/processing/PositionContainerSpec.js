@@ -5,6 +5,7 @@ const InstrumentType = require('./../../../lib/data/InstrumentType'),
 	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
+	PositionGroup = require('./../../../lib/processing/PositionGroup'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./../../../lib/processing/definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./../../../lib/processing/definitions/PositionTreeDefinition');
@@ -178,6 +179,50 @@ describe('When a position container data is gathered', () => {
 
 				it('the previous (x3) summary should be a YEARLY summary for last year', () => {
 					expect(item.previousSummaries[2]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 2)}-12-31` && s.end.date.format() === `${(todayYear - 1)}-12-31`));
+				});
+			});
+
+			describe('and calculations are suspended', () => {
+				let totalGroup;
+				let refreshMarketPercentSpy;
+
+				beforeEach(() => {
+					totalGroup = container.getGroup(name, [ 'totals' ]);
+					refreshMarketPercentSpy = spyOn(PositionGroup.prototype, 'refreshMarketPercent').and.callThrough();
+
+					container.suspendCalculations();
+				});
+
+				it('should defer recalculating groups when adding a position', () => {
+					const originalMarket = totalGroup.actual.market.toFloat();
+					const newPosition = getPosition('My First Portfolio', 'MSFT');
+					const newSummaries = getSummaries(newPosition, PositionSummaryFrame.YTD, 1).concat(getSummaries(newPosition, PositionSummaryFrame.YEARLY, 3));
+
+					container.updatePosition(newPosition, newSummaries);
+
+					expect(totalGroup.items.length).toEqual(4);
+					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket);
+					expect(refreshMarketPercentSpy).not.toHaveBeenCalled();
+
+					container.resumeCalculations();
+
+					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket + 456);
+					expect(refreshMarketPercentSpy).toHaveBeenCalled();
+				});
+
+				it('should defer recalculating groups when removing a position', () => {
+					const originalMarket = totalGroup.actual.market.toFloat();
+
+					container.removePosition(positions[0]);
+
+					expect(totalGroup.items.length).toEqual(2);
+					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket);
+					expect(refreshMarketPercentSpy).not.toHaveBeenCalled();
+
+					container.resumeCalculations();
+
+					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket - 456);
+					expect(refreshMarketPercentSpy).toHaveBeenCalled();
 				});
 			});
 		});

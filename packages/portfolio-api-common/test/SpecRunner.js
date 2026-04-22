@@ -2445,6 +2445,9 @@ module.exports = (() => {
 
 			this._groupBindings = { };
 
+			this._calculationsSuspended = false;
+			this._calculationsDirty = false;
+
 			this._reporting = reportFrame instanceof PositionSummaryFrame;
 			this._useBarchartPriceFormattingRules = false;
 
@@ -2558,6 +2561,46 @@ module.exports = (() => {
 			Object.keys(this._portfolios).forEach(key => updateEmptyPortfolioGroups.call(this, this._portfolios[key]));
 
 			recalculatePercentages.call(this);
+		}
+
+		/**
+		 * Suspends recalculation of aggregated position data.
+		 *
+		 * @public
+		 */
+		suspendCalculations() {
+			if (this._calculationsSuspended) {
+				return;
+			}
+
+			this._calculationsSuspended = true;
+
+			Object.keys(this._trees).forEach((key) => {
+				this._trees[key].walk(group => group.suspendCalculations(), false, false);
+			});
+		}
+
+		/**
+		 * Resumes recalculation of aggregated position data.
+		 *
+		 * @public
+		 */
+		resumeCalculations() {
+			if (!this._calculationsSuspended) {
+				return;
+			}
+
+			this._calculationsSuspended = false;
+
+			Object.keys(this._trees).forEach((key) => {
+				this._trees[key].walk(group => group.resumeCalculations(), false, false);
+			});
+
+			if (this._calculationsDirty) {
+				this._calculationsDirty = false;
+
+				recalculatePercentages.call(this);
+			}
 		}
 
 		/**
@@ -3418,6 +3461,7 @@ module.exports = (() => {
 			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash);
 
 			group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
+			suspendGroupCalculations.call(this, group);
 
 			list.push(group);
 
@@ -3435,6 +3479,7 @@ module.exports = (() => {
 			const eg = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
 
 			eg.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
+			suspendGroupCalculations.call(this, eg);
 
 			return eg;
 		});
@@ -3616,7 +3661,19 @@ module.exports = (() => {
 		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
 	}
 
+	function suspendGroupCalculations(group) {
+		if (this._calculationsSuspended) {
+			group.suspendCalculations();
+		}
+	}
+
 	function recalculatePercentages() {
+		if (this._calculationsSuspended) {
+			this._calculationsDirty = true;
+
+			return;
+		}
+
 		Object.keys(this._trees).forEach((key) => {
 			this._trees[key].walk(group => group.refreshMarketPercent(), false, false);
 		});
@@ -3657,6 +3714,7 @@ module.exports = (() => {
 
 	return PositionContainer;
 })();
+
 },{"./../data/PositionSummaryFrame":8,"./PositionGroup":13,"./PositionItem":14,"./definitions/PositionLevelDefinition":15,"./definitions/PositionLevelType":16,"./definitions/PositionTreeDefinition":17,"@barchart/common-js/collections/Tree":42,"@barchart/common-js/collections/sorting/ComparatorBuilder":45,"@barchart/common-js/collections/sorting/comparators":46,"@barchart/common-js/collections/specialized/DisposableStack":47,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/CurrencyTranslator":50,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Rate":57,"@barchart/common-js/lang/array":59,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64,"@barchart/common-js/messaging/Event":67}],13:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
@@ -3722,6 +3780,9 @@ module.exports = (() => {
 			this._excluded = false;
 			this._showClosedPositions = false;
 			this._showOpenedPositions = false;
+
+			this._calculationsSuspended = false;
+			this._calculationsDirty = false;
 
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
@@ -4003,6 +4064,34 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Suspends recalculation of aggregated group data.
+		 *
+		 * @public
+		 */
+		suspendCalculations() {
+			this._calculationsSuspended = true;
+		}
+
+		/**
+		 * Resumes recalculation of aggregated group data.
+		 *
+		 * @public
+		 */
+		resumeCalculations() {
+			if (!this._calculationsSuspended) {
+				return;
+			}
+
+			this._calculationsSuspended = false;
+
+			if (this._calculationsDirty) {
+				this._calculationsDirty = false;
+
+				this.refresh();
+			}
+		}
+
+		/**
 		 * Changes the group currency.
 		 *
 		 * @public
@@ -4172,6 +4261,12 @@ module.exports = (() => {
 		 * @public
 		 */
 		refresh() {
+			if (this._calculationsSuspended) {
+				this._calculationsDirty = true;
+
+				return;
+			}
+
 			calculateStaticData(this, this._definition);
 			calculatePriceData(this,null, true);
 		}
@@ -4294,6 +4389,12 @@ module.exports = (() => {
 				setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
 
 				this._dataFormat.quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
+			}
+
+			if (this._calculationsSuspended) {
+				this._calculationsDirty = true;
+
+				return;
 			}
 
 			calculatePriceData(this, sender, false);
@@ -7800,7 +7901,6 @@ module.exports = (() => {
   verbs.set(VerbType.DELETE, 'delete');
   verbs.set(VerbType.POST, 'post');
   verbs.set(VerbType.PUT, 'put');
-  verbs.set(VerbType.PATCH, 'patch');
   return Gateway;
 })();
 
@@ -8857,16 +8957,6 @@ module.exports = (() => {
     static get PUT() {
       return verbTypePut;
     }
-
-    /**
-     * PATCH.
-     *
-     * @static
-     * @returns {VerbType}
-     */
-    static get PATCH() {
-      return verbTypePatch;
-    }
     toString() {
       return `[VerbType (description=${this.description})]`;
     }
@@ -8875,7 +8965,6 @@ module.exports = (() => {
   const verbTypeGet = new VerbType('GET');
   const verbTypePost = new VerbType('POST');
   const verbTypePut = new VerbType('PUT');
-  const verbTypePatch = new VerbType('PATCH');
   return VerbType;
 })();
 
@@ -10164,7 +10253,7 @@ module.exports = (() => {
      */
     push(disposable) {
       assert.argumentIsRequired(disposable, 'disposable', Disposable, 'Disposable');
-      if (this.disposed) {
+      if (this.getIsDisposed()) {
         throw new Error('Unable to push item onto DisposableStack because it has been disposed.');
       }
       this._stack.push(disposable);
@@ -11365,9 +11454,9 @@ module.exports = (() => {
     const today = new Date();
     return Math.floor(today.getFullYear() / 100) * 100;
   }
-  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4})[-/.]?([0-9]{1,2})[-/.]?([0-9]{1,2})$/, 1, 2, 3, 0);
-  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{4})$/, 3, 1, 2, 0);
-  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
+  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/, 1, 2, 3, 0);
+  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{4})$/, 3, 1, 2, 0);
+  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
   return DayFormatType;
 })();
 
@@ -11420,7 +11509,7 @@ module.exports = (() => {
      * current instance's value and the value supplied.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to multiply the current instance by.
+     * @param {Decimal|Number|String} other - The value to add.
      * @returns {Decimal}
      */
     multiply(other) {
@@ -11433,7 +11522,7 @@ module.exports = (() => {
      * supplied.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to divide the current instance by.
+     * @param {Decimal|Number|String} other - The value to subtract.
      * @returns {Decimal}
      */
     divide(other) {
@@ -11576,7 +11665,10 @@ module.exports = (() => {
      * Returns true if the current instance is less than or equal to the value.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to compare.
+     * **New Features**
+           *
+           * * Added the `TransactionValidator.getPositionViolationIndex` function.
+           * * Updated the `TransactionValidator.getSwitchIndex` function to use the `TransactionValidator.validateDirectionSwitch` function internally. @param {Decimal|Number|String} other - The value to compare.
      * @returns {Boolean}
      */
     getIsLessThanOrEqual(other) {
@@ -11976,16 +12068,6 @@ module.exports = (() => {
     }
 
     /**
-     * Indicates if the dispose action has been executed.
-     *
-     * @public
-     * @returns {boolean}
-     */
-    get disposed() {
-      return this._disposed;
-    }
-
-    /**
      * Invokes end-of-life logic. Once this function has been
      * invoked, further interaction with the object is not
      * recommended.
@@ -12005,17 +12087,18 @@ module.exports = (() => {
      * @abstract
      * @ignore
      */
-    _onDispose() {}
+    _onDispose() {
+      return;
+    }
 
     /**
      * Returns true if the {@link Disposable#dispose} function has been invoked.
      *
      * @public
-     * @deprecated
      * @returns {boolean}
      */
     getIsDisposed() {
-      return this._disposed;
+      return this._disposed || false;
     }
     toString() {
       return '[Disposable]';
@@ -12044,7 +12127,9 @@ module.exports = (() => {
      * @returns {Disposable}
      */
     static getEmpty() {
-      return Disposable.fromAction(() => {});
+      return Disposable.fromAction(() => {
+        return;
+      });
     }
   }
   class DisposableAction extends Disposable {
@@ -14013,7 +14098,7 @@ module.exports = (() => {
       assert.argumentIsRequired(handler, 'handler', Function);
       addRegistration.call(this, handler);
       return Disposable.fromAction(() => {
-        if (this.disposed) {
+        if (this.getIsDisposed()) {
           return;
         }
         removeRegistration.call(this, handler);
@@ -14045,7 +14130,7 @@ module.exports = (() => {
      * Triggers the event, calling all previously registered handlers.
      *
      * @public
-     * @param {*} data - The data to pass each handler.
+     * @param {*) data - The data to pass each handler.
      */
     fire(data) {
       let observers = this._observers;
@@ -14056,7 +14141,7 @@ module.exports = (() => {
     }
 
     /**
-     * Returns true if no handlers are currently registered.
+     * Returns true, if no handlers are currently registered.
      *
      * @public
      * @returns {boolean}
@@ -28037,6 +28122,7 @@ const InstrumentType = require('./../../../lib/data/InstrumentType'),
 	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
+	PositionGroup = require('./../../../lib/processing/PositionGroup'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./../../../lib/processing/definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./../../../lib/processing/definitions/PositionTreeDefinition');
@@ -28212,11 +28298,55 @@ describe('When a position container data is gathered', () => {
 					expect(item.previousSummaries[2]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 2)}-12-31` && s.end.date.format() === `${(todayYear - 1)}-12-31`));
 				});
 			});
+
+			describe('and calculations are suspended', () => {
+				let totalGroup;
+				let refreshMarketPercentSpy;
+
+				beforeEach(() => {
+					totalGroup = container.getGroup(name, [ 'totals' ]);
+					refreshMarketPercentSpy = spyOn(PositionGroup.prototype, 'refreshMarketPercent').and.callThrough();
+
+					container.suspendCalculations();
+				});
+
+				it('should defer recalculating groups when adding a position', () => {
+					const originalMarket = totalGroup.actual.market.toFloat();
+					const newPosition = getPosition('My First Portfolio', 'MSFT');
+					const newSummaries = getSummaries(newPosition, PositionSummaryFrame.YTD, 1).concat(getSummaries(newPosition, PositionSummaryFrame.YEARLY, 3));
+
+					container.updatePosition(newPosition, newSummaries);
+
+					expect(totalGroup.items.length).toEqual(4);
+					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket);
+					expect(refreshMarketPercentSpy).not.toHaveBeenCalled();
+
+					container.resumeCalculations();
+
+					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket + 456);
+					expect(refreshMarketPercentSpy).toHaveBeenCalled();
+				});
+
+				it('should defer recalculating groups when removing a position', () => {
+					const originalMarket = totalGroup.actual.market.toFloat();
+
+					container.removePosition(positions[0]);
+
+					expect(totalGroup.items.length).toEqual(2);
+					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket);
+					expect(refreshMarketPercentSpy).not.toHaveBeenCalled();
+
+					container.resumeCalculations();
+
+					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket - 456);
+					expect(refreshMarketPercentSpy).toHaveBeenCalled();
+				});
+			});
 		});
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":12,"./../../../lib/processing/definitions/PositionLevelDefinition":15,"./../../../lib/processing/definitions/PositionLevelType":16,"./../../../lib/processing/definitions/PositionTreeDefinition":17,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/Decimal":53}],132:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":12,"./../../../lib/processing/PositionGroup":13,"./../../../lib/processing/definitions/PositionLevelDefinition":15,"./../../../lib/processing/definitions/PositionLevelType":16,"./../../../lib/processing/definitions/PositionTreeDefinition":17,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/Decimal":53}],132:[function(require,module,exports){
 const Gateway = require('@barchart/common-js/api/http/Gateway');
 
 const InstrumentProvider = require('./../../../lib/providers/InstrumentProvider');
