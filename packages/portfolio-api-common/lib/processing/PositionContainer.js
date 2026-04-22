@@ -1119,7 +1119,7 @@ module.exports = (() => {
 				return requiredGroupsToUse.find(g => g.key === key);
 			});
 
-		const empty = missingGroups.map((group) => {
+		const emptyGroups = missingGroups.map((group) => {
 			const eg = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
 
 			eg.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
@@ -1128,7 +1128,7 @@ module.exports = (() => {
 			return eg;
 		});
 
-		const compositeGroups = populatedGroups.concat(empty);
+		const compositeGroups = populatedGroups.concat(emptyGroups);
 
 		let builder;
 
