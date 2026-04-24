@@ -1095,7 +1095,7 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash);
+			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first));
 
 			group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
 

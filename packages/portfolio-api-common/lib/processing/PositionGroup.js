@@ -32,10 +32,9 @@ module.exports = (() => {
 	 * @param {CurrencyTranslator} currencyTranslator
 	 * @param {String} key
 	 * @param {String} description
-	 * @param {Boolean=} aggregateCash
 	 */
 	class PositionGroup {
-		constructor(definition, items, currency, currencyTranslator, key, description, aggregateCash) {
+		constructor(definition, items, currency, currencyTranslator, key, description) {
 			this._id = counter++;
 
 			this._definition = definition;
@@ -56,8 +55,6 @@ module.exports = (() => {
 
 			this._single = this._definition.single;
 			this._homogeneous = this._definition.homogeneous;
-
-			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._excluded = false;
 			this._showClosedPositions = false;
