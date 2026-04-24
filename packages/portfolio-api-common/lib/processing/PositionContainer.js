@@ -275,8 +275,6 @@ module.exports = (() => {
 		 * @returns {String|null}
 		 */
 		getCustomerUserId() {
-			let returnRef = null;
-
 			const keys = Object.keys(this._portfolios);
 
 			if (keys.length > 0) {
@@ -284,11 +282,11 @@ module.exports = (() => {
 				const firstPortfolio = this._portfolios[firstKey];
 
 				if (firstPortfolio.legacy && firstPortfolio.legacy.user) {
-					returnRef = firstPortfolio.legacy.user;
+					return firstPortfolio.legacy.user;
 				}
 			}
 
-			return returnRef;
+			return null;
 		}
 
 		/**
