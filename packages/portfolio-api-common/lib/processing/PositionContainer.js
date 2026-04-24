@@ -988,17 +988,15 @@ module.exports = (() => {
 	function findParentGroup(group, predicate) {
 		const groupNode = this._nodes[group.id];
 
-		let returnRef = null;
-
 		if (groupNode) {
 			const resultNode = groupNode.findParent((candidateGroup, candidateNode) => !candidateNode.getIsRoot() && predicate(candidateGroup));
 
 			if (resultNode) {
-				returnRef = resultNode.getValue();
+				return resultNode.getValue();
 			}
 		}
 
-		return returnRef;
+		return return null;
 	}
 
 	function extractSymbolForBarchart(position) {
