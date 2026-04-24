@@ -560,7 +560,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Boolean} display - If true, all "display" symbols are returned; otherwise Barchart symbols are returned.
-		 * @param {Boolean} excludeExpired - If true, only non-expired symbols are filtered.
+		 * @param {Boolean} excludeExpired - If true, only symbols for non-expired positions will be returned.
 		 * @returns {String[]}
 		 */
 		getPositionSymbols(display, excludeExpired) {
