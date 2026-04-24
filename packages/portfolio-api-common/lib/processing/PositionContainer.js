@@ -443,7 +443,7 @@ module.exports = (() => {
 				return;
 			}
 
-			const existingBarchartSymbols = this.getPositionSymbols(false);
+			const existingBarchartSymbols = this.getPositionSymbols(false, false);
 
 			let exchange;
 
