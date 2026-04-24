@@ -1002,25 +1002,25 @@ module.exports = (() => {
 	function extractSymbolForBarchart(position) {
 		if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
 			return position.instrument.symbol.barchart;
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	function extractSymbolForDisplay(position) {
 		if (position.instrument && position.instrument.symbol && position.instrument.symbol.display) {
 			return position.instrument.symbol.display;
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	function extractExchangeCode(position) {
 		if (position.instrument && position.instrument.exchange) {
 			return position.instrument.exchange;
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	function addGroupBinding(group, dispoable) {
