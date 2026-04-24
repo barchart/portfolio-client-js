@@ -445,12 +445,11 @@ module.exports = (() => {
 
 			const existingBarchartSymbols = this.getPositionSymbols(false, false);
 
-			let exchange;
+			let exchangeCode = extractExchangeCode(position);
+			let exchange = null;
 
-			if (extractExchangeCode(position)) {
-				const code = extractExchangeCode(position);
-
-				exchange = this._exchanges[code] || null;
+			if (exchangeCode !== null) {
+				exchange = this._exchanges[exchangeCode] || null;
 			}
 
 			let currentQuote = null;
@@ -512,7 +511,7 @@ module.exports = (() => {
 				this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
 			}
 
-			if (exchange) {
+			if (exchange !== null) {
 				item.setExchangeStatus(exchange);
 			}
 
