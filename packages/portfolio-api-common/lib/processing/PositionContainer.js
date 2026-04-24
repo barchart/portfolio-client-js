@@ -254,18 +254,16 @@ module.exports = (() => {
 		 * @returns {String|null}
 		 */
 		getBarchartUserId() {
-			let returnRef = null;
-
 			const keys = Object.keys(this._portfolios);
 
 			if (keys.length > 0) {
 				const firstKey = keys[0];
 				const firstPortfolio = this._portfolios[firstKey];
 
-				returnRef = firstPortfolio.user;
+				return firstPortfolio.user;
 			}
 
-			return returnRef;
+			return null;
 		}
 
 		/**
