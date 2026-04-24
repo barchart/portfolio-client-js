@@ -1243,22 +1243,16 @@ module.exports = (() => {
 	function createPositionItem(position, requireCurrentSummary) {
 		const portfolio = this._portfolios[position.portfolio];
 
-		let returnRef;
-
 		if (portfolio) {
 			const currentSummary = this._summariesCurrent[ position.position ] || null;
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
 			if (!requireCurrentSummary || currentSummary !== null) {
-				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate);
-			} else {
-				returnRef = null;
+				return new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate);
 			}
-		} else {
-			returnRef = null;
 		}
 
-		return returnRef;
+		return null;
 	}
 
 	function removePositionItem(positionItem) {
