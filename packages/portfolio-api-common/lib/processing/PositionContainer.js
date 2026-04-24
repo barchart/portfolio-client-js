@@ -996,7 +996,7 @@ module.exports = (() => {
 			}
 		}
 
-		return return null;
+		return null;
 	}
 
 	function extractSymbolForBarchart(position) {
