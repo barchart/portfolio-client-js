@@ -32,9 +32,10 @@ module.exports = (() => {
 	 * @param {CurrencyTranslator} currencyTranslator
 	 * @param {String} key
 	 * @param {String} description
+	 * @param {Boolean} calculationsSuspended
 	 */
 	class PositionGroup {
-		constructor(definition, items, currency, currencyTranslator, key, description) {
+		constructor(definition, items, currency, currencyTranslator, key, description, calculationsSuspended) {
 			this._id = counter++;
 
 			this._definition = definition;
@@ -56,12 +57,11 @@ module.exports = (() => {
 			this._single = this._definition.single;
 			this._homogeneous = this._definition.homogeneous;
 
+			this._calculationsSuspended = calculationsSuspended;
+
 			this._excluded = false;
 			this._showClosedPositions = false;
 			this._showOpenedPositions = false;
-
-			this._calculationsSuspended = 0;
-			this._calculationsDirty = false;
 
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
@@ -348,7 +348,7 @@ module.exports = (() => {
 		 * @public
 		 */
 		suspendCalculations() {
-			this._calculationsSuspended = this._calculationsSuspended + 1;
+			this._calculationsSuspended = true;
 		}
 
 		/**
@@ -357,14 +357,8 @@ module.exports = (() => {
 		 * @public
 		 */
 		resumeCalculations() {
-			if (this._calculationsSuspended === 0) {
-				return;
-			}
-
-			this._calculationsSuspended = this._calculationsSuspended - 1;
-
-			if (this._calculationsSuspended === 0 && this._calculationsDirty) {
-				this._calculationsDirty = false;
+			if (this._calculationsSuspended) {
+				this._calculationsSuspended = false;
 
 				this.refresh();
 			}
@@ -540,9 +534,7 @@ module.exports = (() => {
 		 * @public
 		 */
 		refresh() {
-			if (this._calculationsSuspended > 0) {
-				this._calculationsDirty = true;
-
+			if (this._calculationsSuspended) {
 				return;
 			}
 
@@ -551,12 +543,16 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Causes the percent of the position, with respect to the parent container's
+		 * Causes the percent of the group, with respect to the parent group's
 		 * total, to be recalculated.
 		 *
 		 * @public
 		 */
 		refreshMarketPercent() {
+			if (this._calculationsSuspended) {
+				return;
+			}
+
 			calculateMarketPercent(this, this._parentGroup, this._portfolioGroup);
 		}
 
@@ -634,6 +630,10 @@ module.exports = (() => {
 
 	function bindItem(item) {
 		const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
+			if (this._calculationsSuspended) {
+				return;
+			}
+
 			if (this._single || (this._homogeneous && item === this._items[0])) {
 				const instrument = sender.position.instrument;
 				const currency = instrument.currency;
@@ -668,12 +668,6 @@ module.exports = (() => {
 				setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
 
 				this._dataFormat.quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
-			}
-
-			if (this._calculationsSuspended > 0) {
-				this._calculationsDirty = true;
-
-				return;
 			}
 
 			calculatePriceData(this, sender, false);
@@ -1184,6 +1178,7 @@ module.exports = (() => {
 
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
+
 			setTimeout(() => format.marketDirection = updates.marketDirection, 0);
 		}
 

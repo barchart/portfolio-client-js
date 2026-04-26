@@ -6,6 +6,7 @@ const array = require('@barchart/common-js/lang/array'),
 	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Disposable = require('@barchart/common-js/lang/Disposable'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is'),
@@ -86,8 +87,10 @@ module.exports = (() => {
 
 			this._groupBindings = { };
 
-			this._calculationsSuspended = 0;
-			this._calculationsDirty = false;
+			this._calculationSuspensions = new Set();
+
+			this._suspendedForexQuotes = new Map();
+			this._suspendedPositionQuotes = new Map();
 
 			this._reporting = reportFrame instanceof PositionSummaryFrame;
 			this._useBarchartPriceFormattingRules = false;
@@ -208,42 +211,42 @@ module.exports = (() => {
 		 * Suspends recalculation of aggregated position data.
 		 *
 		 * @public
+		 * @returns {Disposable}
 		 */
 		suspendCalculations() {
-			if (this._calculationsSuspended === 0) {
+			const token = { };
+
+			const disposable = Disposable.fromAction(() => {
+				if (this._calculationSuspensions.delete(token) && this._calculationSuspensions.size === 0) {
+					const positionQuotes = [ ...this._suspendedPositionQuotes.entries() ];
+					const forexQuotes = [ ...this._suspendedForexQuotes.entries() ];
+
+					this._suspendedPositionQuotes = new Map();
+					this._suspendedForexQuotes = new Map();
+
+					this.setQuotes(positionQuotes, forexQuotes);
+
+					Object.keys(this._trees).forEach((key) => {
+						this._trees[key].walk(group => group.resumeCalculations(), false, false);
+					});
+				}
+			});
+
+			this._calculationSuspensions.add(token);
+
+			if (this._calculationSuspensions.size === 1) {
 				Object.keys(this._trees).forEach((key) => {
 					this._trees[key].walk(group => group.suspendCalculations(), false, false);
 				});
-			}
-
-			this._calculationsSuspended = this._calculationsSuspended + 1;
-		}
-
-		/**
-		 * Resumes recalculation of aggregated position data.
-		 *
-		 * @public
-		 */
-		resumeCalculations() {
-			if (this._calculationsSuspended === 0) {
-				return;
-			}
-
-			this._calculationsSuspended = this._calculationsSuspended - 1;
-
-			if (this._calculationsSuspended > 0) {
-				return;
-			}
-
-			Object.keys(this._trees).forEach((key) => {
-				this._trees[key].walk(group => group.resumeCalculations(), false, false);
-			});
-
-			if (this._calculationsDirty) {
-				this._calculationsDirty = false;
 
 				recalculatePercentages.call(this);
 			}
+
+			return disposable;
+		}
+
+		getCalculationsSuspended() {
+			return this._calculationSuspensions.size !== 0;
 		}
 
 		/**
@@ -674,6 +677,22 @@ module.exports = (() => {
 			assert.argumentIsArray(forexQuotes, 'forexQuotes');
 			assert.argumentIsOptional(force, 'force', Boolean);
 
+			if (this.getCalculationsSuspended()) {
+				forexQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					this._suspendedForexQuotes.set(symbol, quote);
+				});
+
+				positionQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					this._suspendedPositionQuotes.set(symbol, quote);
+				});
+
+				return;
+			}
+
 			if (forexQuotes.length !== 0) {
 				forexQuotes.forEach((quote) => {
 					const symbol = quote.symbol;
@@ -1094,11 +1113,9 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first));
+			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), this.getCalculationsSuspended());
 
 			group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
-
-			suspendGroupCalculations.call(this, group);
 
 			list.push(group);
 
@@ -1113,12 +1130,11 @@ module.exports = (() => {
 			});
 
 		const emptyGroups = missingGroups.map((group) => {
-			const eg = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
+			const empty = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description, this.getCalculationsSuspended());
 
-			eg.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
-			suspendGroupCalculations.call(this, eg);
+			empty.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
 
-			return eg;
+			return empty;
 		});
 
 		const compositeGroups = populatedGroups.concat(emptyGroups);
@@ -1292,16 +1308,8 @@ module.exports = (() => {
 		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
 	}
 
-	function suspendGroupCalculations(group) {
-		if (this._calculationsSuspended > 0) {
-			group.suspendCalculations();
-		}
-	}
-
 	function recalculatePercentages() {
-		if (this._calculationsSuspended > 0) {
-			this._calculationsDirty = true;
-
+		if (this.getCalculationsSuspended()) {
 			return;
 		}
 
