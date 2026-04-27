@@ -2365,6 +2365,7 @@ const array = require('@barchart/common-js/lang/array'),
 	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
+	Disposable = require('@barchart/common-js/lang/Disposable'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is'),
@@ -2445,8 +2446,10 @@ module.exports = (() => {
 
 			this._groupBindings = { };
 
-			this._calculationsSuspended = false;
-			this._calculationsDirty = false;
+			this._calculationSuspensions = new Set();
+
+			this._suspendedForexQuotes = new Map();
+			this._suspendedPositionQuotes = new Map();
 
 			this._reporting = reportFrame instanceof PositionSummaryFrame;
 			this._useBarchartPriceFormattingRules = false;
@@ -2567,40 +2570,42 @@ module.exports = (() => {
 		 * Suspends recalculation of aggregated position data.
 		 *
 		 * @public
+		 * @returns {Disposable}
 		 */
 		suspendCalculations() {
-			if (this._calculationsSuspended) {
-				return;
-			}
+			const token = { };
 
-			this._calculationsSuspended = true;
+			const disposable = Disposable.fromAction(() => {
+				if (this._calculationSuspensions.delete(token) && this._calculationSuspensions.size === 0) {
+					const positionQuotes = [ ...this._suspendedPositionQuotes.entries() ];
+					const forexQuotes = [ ...this._suspendedForexQuotes.entries() ];
 
-			Object.keys(this._trees).forEach((key) => {
-				this._trees[key].walk(group => group.suspendCalculations(), false, false);
-			});
-		}
+					this._suspendedPositionQuotes = new Map();
+					this._suspendedForexQuotes = new Map();
 
-		/**
-		 * Resumes recalculation of aggregated position data.
-		 *
-		 * @public
-		 */
-		resumeCalculations() {
-			if (!this._calculationsSuspended) {
-				return;
-			}
+					this.setQuotes(positionQuotes, forexQuotes);
 
-			this._calculationsSuspended = false;
-
-			Object.keys(this._trees).forEach((key) => {
-				this._trees[key].walk(group => group.resumeCalculations(), false, false);
+					Object.keys(this._trees).forEach((key) => {
+						this._trees[key].walk(group => group.resumeCalculations(), false, false);
+					});
+				}
 			});
 
-			if (this._calculationsDirty) {
-				this._calculationsDirty = false;
+			this._calculationSuspensions.add(token);
+
+			if (this._calculationSuspensions.size === 1) {
+				Object.keys(this._trees).forEach((key) => {
+					this._trees[key].walk(group => group.suspendCalculations(), false, false);
+				});
 
 				recalculatePercentages.call(this);
 			}
+
+			return disposable;
+		}
+
+		getCalculationsSuspended() {
+			return this._calculationSuspensions.size !== 0;
 		}
 
 		/**
@@ -2611,18 +2616,16 @@ module.exports = (() => {
 		 * @returns {String|null}
 		 */
 		getBarchartUserId() {
-			let returnRef = null;
-
 			const keys = Object.keys(this._portfolios);
 
 			if (keys.length > 0) {
 				const firstKey = keys[0];
 				const firstPortfolio = this._portfolios[firstKey];
 
-				returnRef = firstPortfolio.user;
+				return firstPortfolio.user;
 			}
 
-			return returnRef;
+			return null;
 		}
 
 		/**
@@ -2634,8 +2637,6 @@ module.exports = (() => {
 		 * @returns {String|null}
 		 */
 		getCustomerUserId() {
-			let returnRef = null;
-
 			const keys = Object.keys(this._portfolios);
 
 			if (keys.length > 0) {
@@ -2643,11 +2644,11 @@ module.exports = (() => {
 				const firstPortfolio = this._portfolios[firstKey];
 
 				if (firstPortfolio.legacy && firstPortfolio.legacy.user) {
-					returnRef = firstPortfolio.legacy.user;
+					return firstPortfolio.legacy.user;
 				}
 			}
 
-			return returnRef;
+			return null;
 		}
 
 		/**
@@ -2804,14 +2805,13 @@ module.exports = (() => {
 				return;
 			}
 
-			const existingBarchartSymbols = this.getPositionSymbols(false);
+			const existingBarchartSymbols = this.getPositionSymbols(false, false);
 
-			let exchange;
+			let exchangeCode = extractExchangeCode(position);
+			let exchange = null;
 
-			if (extractExchangeCode(position)) {
-				const code = extractExchangeCode(position);
-
-				exchange = this._exchanges[code] || null;
+			if (exchangeCode !== null) {
+				exchange = this._exchanges[exchangeCode] || null;
 			}
 
 			let currentQuote = null;
@@ -2873,7 +2873,7 @@ module.exports = (() => {
 				this._positionSymbolAddedEvent.fire(addedBarchartSymbol);
 			}
 
-			if (exchange) {
+			if (exchange !== null) {
 				item.setExchangeStatus(exchange);
 			}
 
@@ -2921,7 +2921,7 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {Boolean} display - If true, all "display" symbols are returned; otherwise Barchart symbols are returned.
-		 * @param {Boolean} excludeExpired - If true, only non-expired symbols are filtered.
+		 * @param {Boolean} excludeExpired - If true, only symbols for non-expired positions will be returned.
 		 * @returns {String[]}
 		 */
 		getPositionSymbols(display, excludeExpired) {
@@ -3035,6 +3035,22 @@ module.exports = (() => {
 			assert.argumentIsArray(positionQuotes, 'positionQuotes');
 			assert.argumentIsArray(forexQuotes, 'forexQuotes');
 			assert.argumentIsOptional(force, 'force', Boolean);
+
+			if (this.getCalculationsSuspended()) {
+				forexQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					this._suspendedForexQuotes.set(symbol, quote);
+				});
+
+				positionQuotes.forEach((quote) => {
+					const symbol = quote.symbol;
+
+					this._suspendedPositionQuotes.set(symbol, quote);
+				});
+
+				return;
+			}
 
 			if (forexQuotes.length !== 0) {
 				forexQuotes.forEach((quote) => {
@@ -3349,41 +3365,39 @@ module.exports = (() => {
 	function findParentGroup(group, predicate) {
 		const groupNode = this._nodes[group.id];
 
-		let returnRef = null;
-
 		if (groupNode) {
 			const resultNode = groupNode.findParent((candidateGroup, candidateNode) => !candidateNode.getIsRoot() && predicate(candidateGroup));
 
 			if (resultNode) {
-				returnRef = resultNode.getValue();
+				return resultNode.getValue();
 			}
 		}
 
-		return returnRef;
+		return null;
 	}
 
 	function extractSymbolForBarchart(position) {
 		if (position.instrument && position.instrument.symbol && position.instrument.symbol.barchart) {
 			return position.instrument.symbol.barchart;
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	function extractSymbolForDisplay(position) {
 		if (position.instrument && position.instrument.symbol && position.instrument.symbol.display) {
 			return position.instrument.symbol.display;
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	function extractExchangeCode(position) {
 		if (position.instrument && position.instrument.exchange) {
 			return position.instrument.exchange;
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	function addGroupBinding(group, dispoable) {
@@ -3458,10 +3472,9 @@ module.exports = (() => {
 			const items = populatedObjects[key];
 			const first = items[0];
 
-			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), levelDefinition.aggregateCash);
+			const group = new PositionGroup(levelDefinition, items, levelDefinition.currencySelector(first), currencyTranslator, key, levelDefinition.descriptionSelector(first), this.getCalculationsSuspended());
 
 			group.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
-			suspendGroupCalculations.call(this, group);
 
 			list.push(group);
 
@@ -3475,16 +3488,15 @@ module.exports = (() => {
 				return requiredGroupsToUse.find(g => g.key === key);
 			});
 
-		const empty = missingGroups.map((group) => {
-			const eg = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description);
+		const emptyGroups = missingGroups.map((group) => {
+			const empty = new PositionGroup(levelDefinition, [ ], group.currency, currencyTranslator, group.key, group.description, this.getCalculationsSuspended());
 
-			eg.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
-			suspendGroupCalculations.call(this, eg);
+			empty.setBarchartPriceFormattingRules(this._useBarchartPriceFormattingRules);
 
-			return eg;
+			return empty;
 		});
 
-		const compositeGroups = populatedGroups.concat(empty);
+		const compositeGroups = populatedGroups.concat(emptyGroups);
 
 		let builder;
 
@@ -3605,22 +3617,16 @@ module.exports = (() => {
 	function createPositionItem(position, requireCurrentSummary) {
 		const portfolio = this._portfolios[position.portfolio];
 
-		let returnRef;
-
 		if (portfolio) {
 			const currentSummary = this._summariesCurrent[ position.position ] || null;
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
 			if (!requireCurrentSummary || currentSummary !== null) {
-				returnRef = new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate);
-			} else {
-				returnRef = null;
+				return new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate);
 			}
-		} else {
-			returnRef = null;
 		}
 
-		return returnRef;
+		return null;
 	}
 
 	function removePositionItem(positionItem) {
@@ -3661,16 +3667,8 @@ module.exports = (() => {
 		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
 	}
 
-	function suspendGroupCalculations(group) {
-		if (this._calculationsSuspended) {
-			group.suspendCalculations();
-		}
-	}
-
 	function recalculatePercentages() {
-		if (this._calculationsSuspended) {
-			this._calculationsDirty = true;
-
+		if (this.getCalculationsSuspended()) {
 			return;
 		}
 
@@ -3715,7 +3713,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":8,"./PositionGroup":13,"./PositionItem":14,"./definitions/PositionLevelDefinition":15,"./definitions/PositionLevelType":16,"./definitions/PositionTreeDefinition":17,"@barchart/common-js/collections/Tree":42,"@barchart/common-js/collections/sorting/ComparatorBuilder":45,"@barchart/common-js/collections/sorting/comparators":46,"@barchart/common-js/collections/specialized/DisposableStack":47,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/CurrencyTranslator":50,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Rate":57,"@barchart/common-js/lang/array":59,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64,"@barchart/common-js/messaging/Event":67}],13:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":8,"./PositionGroup":13,"./PositionItem":14,"./definitions/PositionLevelDefinition":15,"./definitions/PositionLevelType":16,"./definitions/PositionTreeDefinition":17,"@barchart/common-js/collections/Tree":42,"@barchart/common-js/collections/sorting/ComparatorBuilder":45,"@barchart/common-js/collections/sorting/comparators":46,"@barchart/common-js/collections/specialized/DisposableStack":47,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/CurrencyTranslator":50,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53,"@barchart/common-js/lang/Disposable":54,"@barchart/common-js/lang/Rate":57,"@barchart/common-js/lang/array":59,"@barchart/common-js/lang/assert":60,"@barchart/common-js/lang/is":64,"@barchart/common-js/messaging/Event":67}],13:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -3750,10 +3748,10 @@ module.exports = (() => {
 	 * @param {CurrencyTranslator} currencyTranslator
 	 * @param {String} key
 	 * @param {String} description
-	 * @param {Boolean=} aggregateCash
+	 * @param {Boolean} calculationsSuspended
 	 */
 	class PositionGroup {
-		constructor(definition, items, currency, currencyTranslator, key, description, aggregateCash) {
+		constructor(definition, items, currency, currencyTranslator, key, description, calculationsSuspended) {
 			this._id = counter++;
 
 			this._definition = definition;
@@ -3775,14 +3773,11 @@ module.exports = (() => {
 			this._single = this._definition.single;
 			this._homogeneous = this._definition.homogeneous;
 
-			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
+			this._calculationsSuspended = calculationsSuspended;
 
 			this._excluded = false;
 			this._showClosedPositions = false;
 			this._showOpenedPositions = false;
-
-			this._calculationsSuspended = false;
-			this._calculationsDirty = false;
 
 			this._groupExcludedChangeEvent = new Event(this);
 			this._showClosedPositionsChangeEvent = new Event(this);
@@ -4078,14 +4073,8 @@ module.exports = (() => {
 		 * @public
 		 */
 		resumeCalculations() {
-			if (!this._calculationsSuspended) {
-				return;
-			}
-
-			this._calculationsSuspended = false;
-
-			if (this._calculationsDirty) {
-				this._calculationsDirty = false;
+			if (this._calculationsSuspended) {
+				this._calculationsSuspended = false;
 
 				this.refresh();
 			}
@@ -4262,8 +4251,6 @@ module.exports = (() => {
 		 */
 		refresh() {
 			if (this._calculationsSuspended) {
-				this._calculationsDirty = true;
-
 				return;
 			}
 
@@ -4272,12 +4259,16 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Causes the percent of the position, with respect to the parent container's
+		 * Causes the percent of the group, with respect to the parent group's
 		 * total, to be recalculated.
 		 *
 		 * @public
 		 */
 		refreshMarketPercent() {
+			if (this._calculationsSuspended) {
+				return;
+			}
+
 			calculateMarketPercent(this, this._parentGroup, this._portfolioGroup);
 		}
 
@@ -4355,6 +4346,10 @@ module.exports = (() => {
 
 	function bindItem(item) {
 		const quoteBinding = item.registerQuoteChangeHandler((quote, sender) => {
+			if (this._calculationsSuspended) {
+				return;
+			}
+
 			if (this._single || (this._homogeneous && item === this._items[0])) {
 				const instrument = sender.position.instrument;
 				const currency = instrument.currency;
@@ -4389,12 +4384,6 @@ module.exports = (() => {
 				setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
 
 				this._dataFormat.quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
-			}
-
-			if (this._calculationsSuspended) {
-				this._calculationsDirty = true;
-
-				return;
 			}
 
 			calculatePriceData(this, sender, false);
@@ -4905,6 +4894,7 @@ module.exports = (() => {
 
 		if (updates.marketDirection.up || updates.marketDirection.down) {
 			format.marketDirection = unchanged;
+
 			setTimeout(() => format.marketDirection = updates.marketDirection, 0);
 		}
 
@@ -6024,11 +6014,10 @@ module.exports = (() => {
 	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
 	 * @param {PositionLevelDefinition~currencySelector} currencySelector
 	 * @param {PositionLevelDefinition~RequiredGroup[]=} requiredGroups
-	 * @param {Boolean=} aggregateCash
 	 * @param {Function=} requiredGroupGenerator
 	 */
 	class PositionLevelDefinition {
-		constructor(name, type, keySelector, descriptionSelector, currencySelector, requiredGroups, aggregateCash, requiredGroupGenerator) {
+		constructor(name, type, keySelector, descriptionSelector, currencySelector, requiredGroups, requiredGroupGenerator) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsRequired(type, 'type', PositionLevelType, 'PositionLevelType');
 			assert.argumentIsRequired(keySelector, 'keySelector', Function);
@@ -6039,7 +6028,6 @@ module.exports = (() => {
 				assert.argumentIsArray(requiredGroups, 'requiredGroups', String);
 			}
 
-			assert.argumentIsOptional(aggregateCash, 'aggregateCash', Boolean);
 			assert.argumentIsOptional(requiredGroupGenerator, 'requiredGroupGenerator', Function);
 
 			this._name = name;
@@ -6053,8 +6041,6 @@ module.exports = (() => {
 
 			this._single = type === PositionLevelType.POSITION;
 			this._homogeneous = type === PositionLevelType.INSTRUMENT;
-
-			this._aggregateCash = is.boolean(aggregateCash) && aggregateCash;
 
 			this._requiredGroupGenerator = requiredGroupGenerator || (input => null);
 		}
@@ -6141,16 +6127,6 @@ module.exports = (() => {
 		 */
 		get homogeneous() {
 			return this._homogeneous;
-		}
-
-		/**
-		 * Indicates if the grouping level should aggregate cash positions.
-		 *
-		 * @public
-		 * @returns {Boolean}
-		 */
-		get aggregateCash() {
-			return this._aggregateCash;
 		}
 
 		/**
@@ -7901,6 +7877,7 @@ module.exports = (() => {
   verbs.set(VerbType.DELETE, 'delete');
   verbs.set(VerbType.POST, 'post');
   verbs.set(VerbType.PUT, 'put');
+  verbs.set(VerbType.PATCH, 'patch');
   return Gateway;
 })();
 
@@ -8957,6 +8934,16 @@ module.exports = (() => {
     static get PUT() {
       return verbTypePut;
     }
+
+    /**
+     * PATCH.
+     *
+     * @static
+     * @returns {VerbType}
+     */
+    static get PATCH() {
+      return verbTypePatch;
+    }
     toString() {
       return `[VerbType (description=${this.description})]`;
     }
@@ -8965,6 +8952,7 @@ module.exports = (() => {
   const verbTypeGet = new VerbType('GET');
   const verbTypePost = new VerbType('POST');
   const verbTypePut = new VerbType('PUT');
+  const verbTypePatch = new VerbType('PATCH');
   return VerbType;
 })();
 
@@ -10253,7 +10241,7 @@ module.exports = (() => {
      */
     push(disposable) {
       assert.argumentIsRequired(disposable, 'disposable', Disposable, 'Disposable');
-      if (this.getIsDisposed()) {
+      if (this.disposed) {
         throw new Error('Unable to push item onto DisposableStack because it has been disposed.');
       }
       this._stack.push(disposable);
@@ -11454,9 +11442,9 @@ module.exports = (() => {
     const today = new Date();
     return Math.floor(today.getFullYear() / 100) * 100;
   }
-  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/, 1, 2, 3, 0);
-  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{4})$/, 3, 1, 2, 0);
-  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{2}).?([0-9]{2}).?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
+  const yyyymmdd = new DayFormatType('YYYY_MM_DD', /^([0-9]{4})[-/.]?([0-9]{1,2})[-/.]?([0-9]{1,2})$/, 1, 2, 3, 0);
+  const mmddyyyy = new DayFormatType('MM_DD_YYYY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{4})$/, 3, 1, 2, 0);
+  const mmddyy = new DayFormatType('MM_DD_YY', /^([0-9]{1,2})[-/.]?([0-9]{1,2})[-/.]?([0-9]{2})$/, 3, 1, 2, getMillenniumShift());
   return DayFormatType;
 })();
 
@@ -11509,7 +11497,7 @@ module.exports = (() => {
      * current instance's value and the value supplied.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to add.
+     * @param {Decimal|Number|String} other - The value to multiply the current instance by.
      * @returns {Decimal}
      */
     multiply(other) {
@@ -11522,7 +11510,7 @@ module.exports = (() => {
      * supplied.
      *
      * @public
-     * @param {Decimal|Number|String} other - The value to subtract.
+     * @param {Decimal|Number|String} other - The value to divide the current instance by.
      * @returns {Decimal}
      */
     divide(other) {
@@ -11665,10 +11653,7 @@ module.exports = (() => {
      * Returns true if the current instance is less than or equal to the value.
      *
      * @public
-     * **New Features**
-           *
-           * * Added the `TransactionValidator.getPositionViolationIndex` function.
-           * * Updated the `TransactionValidator.getSwitchIndex` function to use the `TransactionValidator.validateDirectionSwitch` function internally. @param {Decimal|Number|String} other - The value to compare.
+     * @param {Decimal|Number|String} other - The value to compare.
      * @returns {Boolean}
      */
     getIsLessThanOrEqual(other) {
@@ -12068,6 +12053,16 @@ module.exports = (() => {
     }
 
     /**
+     * Indicates if the dispose action has been executed.
+     *
+     * @public
+     * @returns {boolean}
+     */
+    get disposed() {
+      return this._disposed;
+    }
+
+    /**
      * Invokes end-of-life logic. Once this function has been
      * invoked, further interaction with the object is not
      * recommended.
@@ -12087,18 +12082,17 @@ module.exports = (() => {
      * @abstract
      * @ignore
      */
-    _onDispose() {
-      return;
-    }
+    _onDispose() {}
 
     /**
      * Returns true if the {@link Disposable#dispose} function has been invoked.
      *
      * @public
+     * @deprecated
      * @returns {boolean}
      */
     getIsDisposed() {
-      return this._disposed || false;
+      return this._disposed;
     }
     toString() {
       return '[Disposable]';
@@ -12127,9 +12121,7 @@ module.exports = (() => {
      * @returns {Disposable}
      */
     static getEmpty() {
-      return Disposable.fromAction(() => {
-        return;
-      });
+      return Disposable.fromAction(() => {});
     }
   }
   class DisposableAction extends Disposable {
@@ -14098,7 +14090,7 @@ module.exports = (() => {
       assert.argumentIsRequired(handler, 'handler', Function);
       addRegistration.call(this, handler);
       return Disposable.fromAction(() => {
-        if (this.getIsDisposed()) {
+        if (this.disposed) {
           return;
         }
         removeRegistration.call(this, handler);
@@ -14130,7 +14122,7 @@ module.exports = (() => {
      * Triggers the event, calling all previously registered handlers.
      *
      * @public
-     * @param {*) data - The data to pass each handler.
+     * @param {*} data - The data to pass each handler.
      */
     fire(data) {
       let observers = this._observers;
@@ -14141,7 +14133,7 @@ module.exports = (() => {
     }
 
     /**
-     * Returns true, if no handlers are currently registered.
+     * Returns true if no handlers are currently registered.
      *
      * @public
      * @returns {boolean}
@@ -28296,50 +28288,6 @@ describe('When a position container data is gathered', () => {
 
 				it('the previous (x3) summary should be a YEARLY summary for last year', () => {
 					expect(item.previousSummaries[2]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 2)}-12-31` && s.end.date.format() === `${(todayYear - 1)}-12-31`));
-				});
-			});
-
-			describe('and calculations are suspended', () => {
-				let totalGroup;
-				let refreshMarketPercentSpy;
-
-				beforeEach(() => {
-					totalGroup = container.getGroup(name, [ 'totals' ]);
-					refreshMarketPercentSpy = spyOn(PositionGroup.prototype, 'refreshMarketPercent').and.callThrough();
-
-					container.suspendCalculations();
-				});
-
-				it('should defer recalculating groups when adding a position', () => {
-					const originalMarket = totalGroup.actual.market.toFloat();
-					const newPosition = getPosition('My First Portfolio', 'MSFT');
-					const newSummaries = getSummaries(newPosition, PositionSummaryFrame.YTD, 1).concat(getSummaries(newPosition, PositionSummaryFrame.YEARLY, 3));
-
-					container.updatePosition(newPosition, newSummaries);
-
-					expect(totalGroup.items.length).toEqual(4);
-					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket);
-					expect(refreshMarketPercentSpy).not.toHaveBeenCalled();
-
-					container.resumeCalculations();
-
-					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket + 456);
-					expect(refreshMarketPercentSpy).toHaveBeenCalled();
-				});
-
-				it('should defer recalculating groups when removing a position', () => {
-					const originalMarket = totalGroup.actual.market.toFloat();
-
-					container.removePosition(positions[0]);
-
-					expect(totalGroup.items.length).toEqual(2);
-					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket);
-					expect(refreshMarketPercentSpy).not.toHaveBeenCalled();
-
-					container.resumeCalculations();
-
-					expect(totalGroup.actual.market.toFloat()).toEqual(originalMarket - 456);
-					expect(refreshMarketPercentSpy).toHaveBeenCalled();
 				});
 			});
 		});
