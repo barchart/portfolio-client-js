@@ -107,7 +107,6 @@ module.exports = (() => {
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('position', DataType.STRING)
-		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
 		.withField('cash', DataType.BOOLEAN, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
@@ -157,7 +156,6 @@ module.exports = (() => {
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('position', DataType.STRING)
-		.withField('open', DataType.BOOLEAN, true)
 		.withField('transaction', DataType.NUMBER)
 		.withField('cash', DataType.BOOLEAN, true)
 		.withField('reinvest', DataType.BOOLEAN, true)
@@ -201,7 +199,6 @@ module.exports = (() => {
 		.withField('instrument.symbol.barchart', DataType.STRING, true)
 		.withField('instrument.symbol.display', DataType.STRING, true)
 		.withField('position', DataType.STRING)
-		.withField('open', DataType.BOOLEAN, true)
 		.schema
 	);
 
