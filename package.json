@@ -1,7 +1,7 @@
 {
   "name": "@barchart/portfolio-client-js",
   "version": "11.0.0",
-  "description": "JavaScript SDK for Barchart's Portfolio Service",
+  "description": "JavaScript SDK for the Barchart Portfolio Service",
   "homepage": "https://docs.barchart.com/portfolio/#/",
   "author": {
     "name": "Bryan Ingle",
@@ -36,8 +36,8 @@
     "SDK"
   ],
   "dependencies": {
-    "@barchart/common-js": "^4.70.0",
-    "@barchart/portfolio-api-common": "^8.0.0"
+    "@barchart/common-js": "^4.73.0",
+    "@barchart/portfolio-api-common": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.1",
