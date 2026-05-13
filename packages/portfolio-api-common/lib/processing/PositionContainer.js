@@ -31,6 +31,7 @@ module.exports = (() => {
 		Currency.AUD,
 		Currency.CAD,
 		Currency.CHF,
+		Currency.DKK,
 		Currency.GBP,
 		Currency.GBX,
 		Currency.EUR,
