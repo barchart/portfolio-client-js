@@ -2578,8 +2578,8 @@ module.exports = (() => {
 
 			const disposable = Disposable.fromAction(() => {
 				if (this._calculationSuspensions.delete(token) && this._calculationSuspensions.size === 0) {
-					const positionQuotes = [ ...this._suspendedPositionQuotes.entries() ];
-					const forexQuotes = [ ...this._suspendedForexQuotes.entries() ];
+					const positionQuotes = [ ...this._suspendedPositionQuotes.values() ];
+					const forexQuotes = [ ...this._suspendedForexQuotes.values() ];
 
 					this._suspendedPositionQuotes = new Map();
 					this._suspendedForexQuotes = new Map();
