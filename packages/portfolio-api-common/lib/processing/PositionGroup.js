@@ -695,7 +695,7 @@ module.exports = (() => {
 							summary.count = sums[fieldName].count + 1;
 						}
 
-						if ((i + 1) == this.items.length) {
+						if ((i + 1) === this.items.length) {
 							let averageFormat;
 
 							if (summary.count > 0) {
