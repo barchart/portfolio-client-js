@@ -893,7 +893,7 @@ module.exports = (() => {
 			return currencyTranslator.translate(value, item.currency, currency);
 		};
 
-		let updates = items.reduce((updates, item) => {
+		const updates = items.reduce((updates, item) => {
 			updates.basis = updates.basis.add(translate(item, item.data.basis));
 
 			if (item.position.instrument.type === InstrumentType.FUTURE) {
