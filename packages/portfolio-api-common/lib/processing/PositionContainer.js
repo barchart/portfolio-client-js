@@ -225,11 +225,11 @@ module.exports = (() => {
 					this._suspendedPositionQuotes = new Map();
 					this._suspendedForexQuotes = new Map();
 
-					this.setQuotes(positionQuotes, forexQuotes);
-
 					Object.keys(this._trees).forEach((key) => {
 						this._trees[key].walk(group => group.resumeCalculations(), false, false);
 					});
+
+					this.setQuotes(positionQuotes, forexQuotes);
 				}
 			});
 
