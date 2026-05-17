@@ -643,7 +643,7 @@ module.exports = (() => {
 		let realizedToday;
 		let realizedTodayChange;
 
-		if (position.latest && position.latest.gain && position.latest.date && day && position.latest.date.getIsEqual(day)) {
+		if (position.latest && position.latest.gain && position.latest.date && today && position.latest.date.getIsEqual(today)) {
 			realizedToday = position.latest.gain;
 		} else {
 			realizedToday = Decimal.ZERO;
