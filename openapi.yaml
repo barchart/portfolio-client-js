@@ -636,13 +636,6 @@ components:
         - S
         - BS
         - SS
-        - F
-        - D
-        - W
-        - DR
-        - CR
-        - V
-        - I
         - DV
         - DX
         - DS
@@ -650,8 +643,8 @@ components:
         - F
         - FU
         - DL
-        - MO
         - MC
+        - MO
         - SPF
         - SPFO
         - DC
@@ -661,6 +654,8 @@ components:
         - W
         - DR
         - CR
+        - V
+        - I
 
     enum-transaction-create-type:
       type: string
@@ -717,9 +712,9 @@ components:
           example: me
 
 servers:
-  - url: https://portfolio-test.aws.barchart.com/v1
+  - url: https://portfolio-dev.aws.barchart.com/v1
     description: Hostname for test environment.
-  - url: https://portfolio.aws.barchart.com/v1
+  - url: https://portfolio-www.aws.barchart.com/v1
     description: Hostname for production environment.
 
 tags:
