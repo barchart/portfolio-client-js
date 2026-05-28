@@ -74,6 +74,57 @@ components:
                   example: []
                   items: {}
 
+  parameters:
+    portfolio:
+      name: portfolio
+      in: path
+      required: true
+      description: The identifier of the portfolio.
+      schema:
+        type: string
+        format: uuid
+
+    portfolio-or-wildcard:
+      name: portfolio
+      in: path
+      required: true
+      description: The identifier of the portfolio. Use an asterisk (*) to retrieve data across all portfolios.
+      schema:
+        type: string
+
+    position:
+      name: position
+      in: path
+      required: true
+      description: The identifier of the position.
+      schema:
+        type: string
+        format: uuid
+
+    position-or-wildcard:
+      name: position
+      in: path
+      required: true
+      description: The identifier of the position. Use an asterisk (*) to retrieve data across all positions.
+      schema:
+        type: string
+
+    sequence:
+      name: sequence
+      in: path
+      required: true
+      description: The sequence number of the transaction.
+      schema:
+        type: number
+
+    sequence-or-wildcard:
+      name: sequence
+      in: path
+      required: true
+      description: The sequence number of the transaction. Use an asterisk (*) to retrieve all transactions for the position.
+      schema:
+        type: string
+
   schemas:
     portfolio:
       type: object
@@ -711,34 +762,220 @@ components:
           type: string
           example: me
 
+    instrument:
+      type: object
+      description: Instrument resolution result.
+      additionalProperties: true
+
+    position-summary:
+      type: object
+      properties:
+        user:
+          type: string
+          format: uuid
+        portfolio:
+          type: string
+          format: uuid
+        position:
+          type: string
+          format: uuid
+        frame:
+          $ref: '#/components/schemas/enum-position-summary-frame'
+        start:
+          $ref: '#/components/schemas/position-summary-point'
+        end:
+          $ref: '#/components/schemas/position-summary-point'
+        period:
+          $ref: '#/components/schemas/position-summary-period'
+      required:
+        - user
+        - portfolio
+        - position
+        - frame
+        - start
+        - end
+        - period
+
+    position-summary-point:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        sequence:
+          type: number
+        open:
+          type: string
+        direction:
+          $ref: '#/components/schemas/enum-position-direction'
+        basis:
+          type: string
+        value:
+          type: string
+
+    position-summary-period:
+      type: object
+      properties:
+        buys:
+          type: string
+        sells:
+          type: string
+        income:
+          type: string
+        realized:
+          type: string
+        unrealized:
+          type: string
+
+    valuations-availability-result:
+      type: object
+      description: Availability of valuation data for a portfolio and its positions.
+      additionalProperties: true
+
+    update-values-currency-result:
+      type: object
+      description: Result of a values currency recalculation request.
+      additionalProperties: true
+
+    transaction-formatted:
+      type: object
+      description: Transaction values formatted for display.
+      additionalProperties: true
+
+    brokerage-report-availability:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+        frame:
+          $ref: '#/components/schemas/enum-position-summary-frame'
+      required:
+        - start
+        - end
+        - frame
+
+    snaptrade-brokerage:
+      type: object
+      description: SnapTrade brokerage and linked account metadata.
+      additionalProperties: true
+
+    snaptrade-connect-instructions:
+      type: object
+      description: Instructions used to connect or reconnect a SnapTrade brokerage.
+      additionalProperties: true
+
+    snaptrade-account-link-snapshot:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/enum-snaptrade-link-mode'
+        status:
+          $ref: '#/components/schemas/enum-snaptrade-link-status'
+        progress:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    snaptrade-linking-report:
+      type: object
+      properties:
+        brokerages:
+          type: array
+          items:
+            $ref: '#/components/schemas/snaptrade-brokerage'
+        portfolios:
+          type: object
+          properties:
+            saved:
+              type: array
+              items:
+                $ref: '#/components/schemas/portfolio'
+            deleted:
+              type: array
+              items:
+                $ref: '#/components/schemas/portfolio'
+
+    enum-position-summary-frame:
+      type: string
+      enum:
+        - YEARLY
+        - QUARTERLY
+        - MONTHLY
+        - YTD
+
+    enum-snaptrade-link-mode:
+      type: string
+      enum:
+        - STANDARD
+        - LIMITED
+
+    enum-snaptrade-link-status:
+      type: string
+      enum:
+        - WAITING
+        - LINKING
+        - LINKED
+        - REFRESHING
+        - FAILED
+
 servers:
-  - url: https://portfolio-dev.aws.barchart.com/v1
+  - url: https://portfolio-test.aws.barchart.com/v1
     description: Hostname for test environment.
-  - url: https://portfolio-www.aws.barchart.com/v1
+  - url: https://portfolio.aws.barchart.com/v1
     description: Hostname for production environment.
 
 tags:
+  - name: Instrument
   - name: Portfolio
+  - name: SnapTrade
   - name: Service
+  - name: Values
 
 paths:
-  /service:
+  /instruments/{symbol}:
     get:
-      summary: Returns the version and the authorized user
-      description: Returns the version number of the Barchart Portfolio Service along with the user identifier and context of the authorized user (of the JWT).
+      summary: Resolves an instrument.
+      description: Resolves an instrument, optionally for a specific day or closing price.
       tags:
-        - Service
+        - Instrument
       security:
         - JWT: []
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          description: The symbol used to resolve the instrument.
+          schema:
+            type: string
+        - name: day
+          in: query
+          required: false
+          description: The day used for symbol resolution.
+          schema:
+            type: string
+            format: date
+        - name: closing
+          in: query
+          required: false
+          description: If true, resolves the closing price for the requested day.
+          schema:
+            type: boolean
       responses:
         '200':
-          description: An object describing the remote service and the authorized user.
+          description: Instrument resolution result.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/service-metadata'
+                $ref: '#/components/schemas/instrument'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
   /portfolios:
     post:
@@ -776,13 +1013,7 @@ paths:
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio to retrieve. Use an asterisk (*) to retrieve all portfolios for the current user.
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/portfolio-or-wildcard'
       responses:
         '200':
           description: An array of portfolios (with zero, one, or many items).
@@ -804,13 +1035,7 @@ paths:
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio to update.
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/portfolio'
       requestBody:
         content:
           application/json:
@@ -828,20 +1053,14 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
-      summary: Deletes a portfolio and everything associated with the portoolio — including all positions, transactions, and summaries, etc.
-      description: Deletes a portfolio and everything associated with the portoolio — including all positions, transactions, and summaries, etc.
+      summary: Deletes a portfolio and everything associated with the portfolio, including all positions, transactions, and summaries.
+      description: Deletes a portfolio and everything associated with the portfolio, including all positions, transactions, and summaries.
       tags:
         - Portfolio
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio to delete.
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/portfolio'
       responses:
         '200':
           description: Deletion of portfolio successful. No data is returned.
@@ -859,20 +1078,26 @@ paths:
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio which contains the positions to query. Use an asterisk (*) to retrieve all positions, regardless of portfolio.
+        - $ref: '#/components/parameters/portfolio-or-wildcard'
+        - $ref: '#/components/parameters/position-or-wildcard'
+        - name: open
+          in: query
+          required: false
+          description: If true, only open positions are returned.
+          schema:
+            type: boolean
+        - name: symbol
+          in: query
+          required: false
+          description: Filters positions by instrument symbol.
           schema:
             type: string
-            format: uuid
-        - name: position
-          in: path
-          required: true
-          description: The identifier the specific position to retrieve. Use an asterisk (*) to retrieve all positions.
+        - name: includePreviousPrice
+          in: query
+          required: false
+          description: If true, includes the previous price in returned position data.
           schema:
-            type: string
-            format: uuid
+            type: boolean
       responses:
         '200':
           description: An array of positions (with zero, one, or many items).
@@ -894,20 +1119,8 @@ paths:
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio to containing the position to update.
-          schema:
-            type: string
-            format: uuid
-        - name: position
-          in: path
-          required: true
-          description: The identifier of the position to update.
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/portfolio'
+        - $ref: '#/components/parameters/position'
       requestBody:
         content:
           application/json:
@@ -932,23 +1145,113 @@ paths:
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
+        - $ref: '#/components/parameters/portfolio'
+        - $ref: '#/components/parameters/position'
+      responses:
+        '200':
+          description: Positions affected by the delete operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction-mutate-result'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Moves a position to another portfolio.
+      description: Moves a position from the current portfolio to a target portfolio.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/portfolio'
+        - $ref: '#/components/parameters/position'
+        - name: target
+          in: query
           required: true
-          description: The identifier of the portfolio to containing the position to delete.
-          schema:
-            type: string
-            format: uuid
-        - name: position
-          in: path
-          required: true
-          description: The identifier of the position to delete.
+          description: The identifier of the destination portfolio.
           schema:
             type: string
             format: uuid
       responses:
         '200':
-          description: Deletion of position successful. No data is returned.
+          description: Positions affected by the move operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction-mutate-result'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}/summaries/{position}:
+    get:
+      summary: Returns position summaries.
+      description: Returns summaries for a portfolio or a single position.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/portfolio-or-wildcard'
+        - $ref: '#/components/parameters/position-or-wildcard'
+        - name: frames
+          in: query
+          required: false
+          description: Comma-separated summary frame codes.
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/enum-position-summary-frame'
+        - name: periods
+          in: query
+          required: false
+          description: Number of periods to retrieve.
+          schema:
+            type: number
+        - name: start
+          in: query
+          required: false
+          description: First summary start date to retrieve.
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: An array of position summaries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/position-summary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}/values/availability:
+    get:
+      summary: Returns valuation availability.
+      description: Returns valuation availability for a portfolio and its positions.
+      tags:
+        - Values
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/portfolio'
+      responses:
+        '200':
+          description: Valuation availability result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/valuations-availability-result'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -956,27 +1259,44 @@ paths:
 
   /portfolios/{portfolio}/positions/{position}/transactions:
     post:
-      summary: Creates a new new transaction
+      summary: Creates a new transaction.
       description: Creates a new transaction for the current user.
       tags:
         - Portfolio
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio.
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/portfolio'
         - name: position
           in: path
           required: true
-          description: The identifier of the position to which the transaction will be added, use \"new\" to create a new position.
+          description: The identifier of the position to which the transaction will be added. Use "new" to create a new position.
           schema:
             type: string
-            format: uuid
+        - name: type
+          in: query
+          required: true
+          description: The type of transaction to create.
+          schema:
+            $ref: '#/components/schemas/enum-transaction-create-type'
+        - name: suppressCorporateActions
+          in: query
+          required: false
+          description: If true, suppresses generated corporate action transactions.
+          schema:
+            type: boolean
+        - name: strictInstrumentResolution
+          in: query
+          required: false
+          description: If true, requires strict instrument resolution.
+          schema:
+            type: boolean
+        - name: correctInvalidTicks
+          in: query
+          required: false
+          description: If true, corrects invalid tick data during transaction processing.
+          schema:
+            type: boolean
       requestBody:
         content:
           application/json:
@@ -996,35 +1316,18 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /portfolios/{portfolio}/positions/{position}/transactions/{seqeunce}:
+  /portfolios/{portfolio}/positions/{position}/transactions/{sequence}:
     get:
-      summary: Returns transactions.
-      description: Returns transactions.
+      summary: Returns one or more transactions.
+      description: Returns one transaction by sequence number, or all transactions when sequence is an asterisk (*).
       tags:
         - Portfolio
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio containing the transactions to retrieve.
-          schema:
-            type: string
-            format: uuid
-        - name: position
-          in: path
-          required: true
-          description: The identifier of the position containing the transactions to retrieve.
-          schema:
-            type: string
-            format: uuid
-        - name: seqeunce
-          in: path
-          required: true
-          description: The sequence number of the transaction to retrieve (e.g. 1). Use an asterisk (*) to retrieve all transactions for the position.
-          schema:
-            type: number
+        - $ref: '#/components/parameters/portfolio'
+        - $ref: '#/components/parameters/position-or-wildcard'
+        - $ref: '#/components/parameters/sequence-or-wildcard'
       responses:
         '200':
           description: An array of transactions (with zero, one, or many items).
@@ -1040,34 +1343,29 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/ServerError'
-    put:
-      summary: Edits a transaction.
-      description: Edits a transaction (e.g. change dates, prices, quantities).
+    post:
+      summary: Edits or switches a transaction.
+      description: Edits a transaction, or switches the reinvestment strategy when the switch query parameter is supplied.
       tags:
         - Portfolio
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio containing the transaction to edit.
+        - $ref: '#/components/parameters/portfolio'
+        - $ref: '#/components/parameters/position'
+        - $ref: '#/components/parameters/sequence'
+        - name: type
+          in: query
+          required: false
+          description: The transaction type to use when editing the transaction.
           schema:
-            type: string
-            format: uuid
-        - name: position
-          in: path
-          required: true
-          description: The identifier of the position containing the transaction to edit.
+            $ref: '#/components/schemas/enum-transaction-type'
+        - name: switch
+          in: query
+          required: false
+          description: The target transaction type when switching reinvestment strategy.
           schema:
-            type: string
-            format: uuid
-        - name: seqeunce
-          in: path
-          required: true
-          description: The sequence number of the transaction to edit (e.g. 1).
-          schema:
-            type: number
+            $ref: '#/components/schemas/enum-transaction-type'
       requestBody:
         content:
           application/json:
@@ -1075,7 +1373,7 @@ paths:
               $ref: '#/components/schemas/transaction'
       responses:
         '200':
-          description: An object listing the positions affected by the transaction deletion.
+          description: An object listing the positions affected by the transaction mutation.
           content:
             application/json:
               schema:
@@ -1092,26 +1390,29 @@ paths:
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
+        - $ref: '#/components/parameters/portfolio'
+        - $ref: '#/components/parameters/position'
+        - $ref: '#/components/parameters/sequence'
+        - name: force
+          in: query
           required: true
-          description: The identifier of the portfolio containing the transaction to delete.
+          description: If true, forces deletion of the transaction.
+          schema:
+            type: boolean
+        - name: echoStart
+          in: query
+          required: false
+          description: First date to echo in mutation results.
           schema:
             type: string
-            format: uuid
-        - name: position
-          in: path
-          required: true
-          description: The identifier of the position containing the transaction to delete.
+            format: date
+        - name: echoEnd
+          in: query
+          required: false
+          description: Last date to echo in mutation results.
           schema:
             type: string
-            format: uuid
-        - name: seqeunce
-          in: path
-          required: true
-          description: The sequence number of the transaction to delete (e.g. 1).
-          schema:
-            type: number
+            format: date
       responses:
         '200':
           description: An object listing the positions affected by the transaction deletion.
@@ -1119,6 +1420,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/transaction-mutate-result'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}/positions/{position}/transactions-formatted:
+    get:
+      summary: Returns formatted transactions.
+      description: Returns transactions whose values are suitable for display.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/portfolio'
+        - $ref: '#/components/parameters/position-or-wildcard'
+        - name: start
+          in: query
+          required: false
+          description: Start date for the formatted transaction query.
+          schema:
+            type: string
+            format: date
+        - name: end
+          in: query
+          required: false
+          description: End date for the formatted transaction query.
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          required: false
+          description: If true, reads a single page of formatted transactions.
+          schema:
+            type: boolean
+        - name: sequence
+          in: query
+          required: false
+          description: The starting sequence number for a formatted transaction page.
+          schema:
+            type: number
+        - name: count
+          in: query
+          required: false
+          description: The maximum number of formatted transactions to return.
+          schema:
+            type: number
+        - name: descending
+          in: query
+          required: false
+          description: If true, results are returned in descending sequence order.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: An array of formatted transactions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/transaction-formatted'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -1133,20 +1497,8 @@ paths:
       security:
         - JWT: []
       parameters:
-        - name: portfolio
-          in: path
-          required: true
-          description: The identifier of the portfolio.
-          schema:
-            type: string
-            format: uuid
-        - name: position
-          in: path
-          required: true
-          description: The identifier a specific position. Use an asterisk (*) to retrieve all positions, resulting in the valuation of the entire portfolio.
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/portfolio-or-wildcard'
+        - $ref: '#/components/parameters/position-or-wildcard'
       responses:
         '200':
           description: An array of valuations (with zero, one, or many items).
@@ -1154,6 +1506,369 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/misc-valuation-container'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /values:
+    get:
+      summary: Queries position valuations.
+      description: Queries end-of-day position valuations across all user portfolios.
+      tags:
+        - Values
+      security:
+        - JWT: []
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          description: The instrument symbol.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An array of valuation results.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /values/currency:
+    put:
+      summary: Updates values currency.
+      description: Recalculates aggregate values for the authorized user in the requested currency.
+      tags:
+        - Values
+      security:
+        - JWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/enum-currency'
+      responses:
+        '200':
+          description: Values currency update result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/update-values-currency-result'
+        '400':
+          $ref: '#/components/responses/SchemaError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /portfolios/{portfolio}/reports/brokerage/availability:
+    get:
+      summary: Returns brokerage report availability.
+      description: Returns available brokerage report frames for a portfolio.
+      tags:
+        - Portfolio
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/portfolio'
+        - name: frames
+          in: query
+          required: false
+          description: Comma-separated brokerage report frame codes.
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/enum-position-summary-frame'
+      responses:
+        '200':
+          description: An array of brokerage report availability definitions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/brokerage-report-availability'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /snaptrade/brokerages:
+    get:
+      summary: Returns SnapTrade brokerages.
+      description: Returns available SnapTrade brokerages and linked account metadata.
+      tags:
+        - SnapTrade
+      security:
+        - JWT: []
+      responses:
+        '200':
+          description: An array of SnapTrade brokerages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/snaptrade-brokerage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /snaptrade/connections:
+    post:
+      summary: Connects a SnapTrade brokerage.
+      description: Generates connection instructions for a SnapTrade brokerage.
+      tags:
+        - SnapTrade
+      security:
+        - JWT: []
+      parameters:
+        - name: brokerage
+          in: query
+          required: true
+          description: The SnapTrade identifier for the brokerage.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SnapTrade connection instructions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/snaptrade-connect-instructions'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /snaptrade/connections/{connection}:
+    put:
+      summary: Reconnects a SnapTrade brokerage.
+      description: Generates reconnect instructions for a SnapTrade brokerage.
+      tags:
+        - SnapTrade
+      security:
+        - JWT: []
+      parameters:
+        - name: connection
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage connection.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SnapTrade reconnect instructions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/snaptrade-connect-instructions'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Disconnects a SnapTrade brokerage.
+      description: Removes the connection to a SnapTrade brokerage.
+      tags:
+        - SnapTrade
+      security:
+        - JWT: []
+      parameters:
+        - name: connection
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage connection.
+          schema:
+            type: string
+        - name: remove
+          in: query
+          required: false
+          description: If true, linked portfolios are deleted.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: SnapTrade linking report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/snaptrade-linking-report'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /snaptrade/connections/{connection}/accounts/{account}:
+    get:
+      summary: Returns SnapTrade account link status.
+      description: Returns a snapshot of the SnapTrade account link status.
+      tags:
+        - SnapTrade
+      security:
+        - JWT: []
+      parameters:
+        - name: connection
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage connection.
+          schema:
+            type: string
+        - name: account
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage account.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SnapTrade account link status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/snaptrade-account-link-snapshot'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Links a SnapTrade account.
+      description: Imports positions from a SnapTrade account into a linked portfolio.
+      tags:
+        - SnapTrade
+      security:
+        - JWT: []
+      parameters:
+        - name: connection
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage connection.
+          schema:
+            type: string
+        - name: account
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage account.
+          schema:
+            type: string
+        - name: mode
+          in: query
+          required: false
+          description: The strategy used when importing positions into the linked portfolio.
+          schema:
+            $ref: '#/components/schemas/enum-snaptrade-link-mode'
+      responses:
+        '200':
+          description: SnapTrade linking report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/snaptrade-linking-report'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: Refreshes a SnapTrade account.
+      description: Refreshes imported positions from a SnapTrade account into a linked portfolio.
+      tags:
+        - SnapTrade
+      security:
+        - JWT: []
+      parameters:
+        - name: connection
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage connection.
+          schema:
+            type: string
+        - name: account
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage account.
+          schema:
+            type: string
+        - name: mode
+          in: query
+          required: false
+          description: The strategy used when importing positions into the linked portfolio.
+          schema:
+            $ref: '#/components/schemas/enum-snaptrade-link-mode'
+      responses:
+        '200':
+          description: SnapTrade linking report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/snaptrade-linking-report'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Unlinks a SnapTrade account.
+      description: Removes a SnapTrade account link from a portfolio.
+      tags:
+        - SnapTrade
+      security:
+        - JWT: []
+      parameters:
+        - name: connection
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage connection.
+          schema:
+            type: string
+        - name: account
+          in: path
+          required: true
+          description: The SnapTrade identifier for the brokerage account.
+          schema:
+            type: string
+        - name: remove
+          in: query
+          required: false
+          description: If true, the linked portfolio is deleted.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: SnapTrade linking report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/snaptrade-linking-report'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /system/version:
+    get:
+      summary: Returns the Portfolio Service version.
+      description: Returns the version number of the Barchart Portfolio Service along with the user identifier and context of the authorized user.
+      tags:
+        - Service
+      security:
+        - JWT: []
+      responses:
+        '200':
+          description: An object describing the remote service and the authorized user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/service-metadata'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
