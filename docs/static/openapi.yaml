@@ -397,8 +397,6 @@ components:
           example: b3bb28ee-a24c-4b8b-8b3b-8ad5b5b0b00a
         sequence:
           type: number
-          example: 42
-          example: 42
           description: The sequence number of the transaction (with respect to other transactions for the same position, starts with one).
           example: 1
         type:
@@ -415,15 +413,15 @@ components:
           example: Buy 100 AAPL
         amount:
           type: string
-          description: The total amount of money affected by the transaction (decimal-fomratted string). In cases where money was paid, the value is negative. In cases where money was received, the value is positive.
+          description: The total amount of money affected by the transaction (decimal-formatted string). In cases where money was paid, the value is negative. In cases where money was received, the value is positive.
           example: '-18256'
         quantity:
           type: string
-          description: The number of shares (or units) of the position's instrument affected by the transaction (decimal-fomratted string). The value will be positive when purchasing and negative when selling.
+          description: The number of shares (or units) of the position's instrument affected by the transaction (decimal-formatted string). The value will be positive when purchasing and negative when selling.
           example: '100'
         fee:
           type: string
-          description: A fee paid to execute the transaction (decimal-fomratted string).
+          description: A fee paid to execute the transaction (decimal-formatted string).
           example: '9.99'
         reference:
           $ref: '#/components/schemas/transaction-reference'
@@ -473,7 +471,7 @@ components:
       properties:
         price:
           type: string
-          description: The unit price the transaction was executed at (decimal-fomratted string).
+          description: The unit price the transaction was executed at (decimal-formatted string).
           example: '182.56'
       required:
         - price
@@ -483,7 +481,7 @@ components:
       properties:
         rate:
           type: string
-          description: The amount paid per unit (decimal-fomratted string).
+          description: The amount paid per unit (decimal-formatted string).
           example: '0.125'
         effective:
           type: string
@@ -492,11 +490,11 @@ components:
           example: '2020-08-30'
         price:
           type: string
-          description: The market value of the underlying at the time the dividend was paid, used to calculate reinvestment quantities (decimal-fomratted string).
+          description: The market value of the underlying at the time the dividend was paid, used to calculate reinvestment quantities (decimal-formatted string).
           example: '499.23'
         amount:
           type: string
-          description: The amount of the dividend (e.g the rate multiplied by the quantity eligible to receive the dividend, as a decimal-fomratted string).
+          description: The amount of the dividend (e.g the rate multiplied by the quantity eligible to receive the dividend, as a decimal-formatted string).
           example: '12.50'
       required:
         - rate
@@ -508,11 +506,11 @@ components:
       properties:
         numerator:
           type: string
-          description: The numerator in the following fraction [ shares owned after dividend ] / [ shares owned before dividend ] (decimal-fomratted string).
+          description: The numerator in the following fraction [ shares owned after dividend ] / [ shares owned before dividend ] (decimal-formatted string).
           example: '4'
         denominator:
           type: string
-          description: The denominator in the following fraction [ shares owned after dividend ] / [ shares owned before dividend ] (decimal-fomratted string).
+          description: The denominator in the following fraction [ shares owned after dividend ] / [ shares owned before dividend ] (decimal-formatted string).
           example: '1'
         effective:
           type: string
@@ -550,15 +548,15 @@ components:
           example: '2022-01-13'
         price:
           type: string
-          description: The unit price of the instrument at the time the transaction executes (decimal-fomratted string).
+          description: The unit price of the instrument at the time the transaction executes (decimal-formatted string).
           example: '123.45'
         quantity:
           type: string
-          description: The number of units affected by the transaction (decimal-fomratted string).
+          description: The number of units affected by the transaction (decimal-formatted string).
           example: '100'
         fee:
           type: string
-          description: A fee paid to execute the transaction (decimal-fomratted string).
+          description: A fee paid to execute the transaction (decimal-formatted string).
           example: '9.99'
       required:
         - portfolio
@@ -605,7 +603,7 @@ components:
     misc-symbols:
       type: object
       properties:
-        barhcart:
+        barchart:
           type: string
           description: The symbol used by Barchart (required to lookup quotes and determine prices).
           example: AAPL
@@ -614,7 +612,7 @@ components:
           description: The symbol used for display purposes (often the same as the Barchart symbol).
           example: AAPL
       required:
-        - barhcart
+        - barchart
 
     misc-valuation-container:
       type: object
@@ -694,7 +692,7 @@ components:
 
     enum-transaction-type:
       type: string
-      description: Single letter codes for transaction types (e.g. B for BUY, S for SELL; see \"Appendicies > Enumerations\" in SDK documentation for more info), including types which are managed by the backend (e.g. DV for dividend).
+      description: Single letter codes for transaction types (e.g. B for BUY, S for SELL; see \"Appendices > Enumerations\" in SDK documentation for more info), including types which are managed by the backend (e.g. DV for dividend).
       enum:
         - B
         - S
@@ -723,7 +721,7 @@ components:
 
     enum-transaction-create-type:
       type: string
-      description: Single letter codes for transaction types (e.g. B for BUY, S for SELL; see \"Appendicies > Enumerations\" in SDK documentation for more info) which can be created by a consumer (this is a subset of the  "enum-transaction-type" component).
+      description: Single letter codes for transaction types (e.g. B for BUY, S for SELL; see \"Appendices > Enumerations\" in SDK documentation for more info) which can be created by a consumer (this is a subset of the  "enum-transaction-type" component).
       enum:
         - B
         - S
