@@ -481,6 +481,18 @@ components:
         - position
         - transaction
 
+    transaction-switch:
+      allOf:
+        - $ref: '#/components/schemas/transaction'
+        - type: object
+          properties:
+            switch:
+              description: The target transaction type when switching reinvestment strategy. The transaction's `type` property remains the current transaction type being switched.
+              allOf:
+                - $ref: '#/components/schemas/enum-transaction-type'
+          required:
+            - switch
+
     transaction-extension-for-trade:
       type: object
       properties:
@@ -1868,7 +1880,7 @@ paths:
           $ref: '#/components/responses/ServerError'
     post:
       summary: Edits or switches a transaction.
-      description: Edits a transaction, or switches the reinvestment strategy when the switch query parameter is supplied.
+      description: Edits a transaction, or switches the reinvestment strategy when the `switch` query parameter is supplied. Use `type` when editing a transaction, or `switch` when changing reinvestment strategy. Do not send both query parameters in the same request. In switch mode, the body `type` is the current transaction type and `switch` is the target transaction type.
       tags:
         - Portfolio
       security:
@@ -1880,20 +1892,78 @@ paths:
         - name: type
           in: query
           required: false
-          description: The transaction type to use when editing the transaction.
+          description: The transaction type to use when editing the transaction. Use this for the edit transaction mode.
           schema:
             $ref: '#/components/schemas/enum-transaction-type'
+          examples:
+            editTransaction:
+              summary: Edit transaction type.
+              value: B
         - name: switch
           in: query
           required: false
-          description: The target transaction type when switching reinvestment strategy.
+          description: The target transaction type when switching reinvestment strategy. Use this for the switch reinvestment strategy mode.
           schema:
             $ref: '#/components/schemas/enum-transaction-type'
+          examples:
+            switchReinvestmentStrategy:
+              summary: Switch reinvestment strategy.
+              value: DX
       requestBody:
+        description: Transaction payload for the edit transaction or switch reinvestment strategy operation. In switch mode, include the current transaction payload and the target `switch` transaction type.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/transaction'
+              anyOf:
+                - $ref: '#/components/schemas/transaction'
+                - $ref: '#/components/schemas/transaction-switch'
+            examples:
+              editTransaction:
+                summary: Edit a buy transaction.
+                value:
+                  portfolio: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
+                  position: 96af2dc6-2236-4a82-84c2-bff969389e00
+                  transaction: b3bb28ee-a24c-4b8b-8b3b-8ad5b5b0b00a
+                  sequence: 1
+                  type: B
+                  date: '2026-05-28'
+                  amount: '-18256'
+                  quantity: '100'
+                  fee: '9.99'
+                  snapshot:
+                    date: '2026-05-28'
+                    open: '100'
+                    direction: LONG
+                    buys: '-18256'
+                    sells: '0'
+                    gain: '0'
+                    basis: '18256'
+                    income: '0'
+                    value: '18256'
+              switchReinvestmentStrategy:
+                summary: Switch dividend reinvestment strategy.
+                value:
+                  portfolio: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
+                  position: 96af2dc6-2236-4a82-84c2-bff969389e00
+                  transaction: b3bb28ee-a24c-4b8b-8b3b-8ad5b5b0b00a
+                  sequence: 12
+                  type: DV
+                  switch: DX
+                  date: '2026-05-28'
+                  description: Dividend AAPL
+                  amount: '12.50'
+                  quantity: '0'
+                  fee: '0'
+                  snapshot:
+                    date: '2026-05-28'
+                    open: '100'
+                    direction: LONG
+                    buys: '-18256'
+                    sells: '0'
+                    gain: '0'
+                    basis: '18256'
+                    income: '12.50'
+                    value: '19100'
       responses:
         '200':
           description: An object listing the positions affected by the transaction mutation.
