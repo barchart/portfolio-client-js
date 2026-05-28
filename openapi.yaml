@@ -666,9 +666,13 @@ components:
       type: string
       description: Codes which define asset classes for instruments.
       enum:
-        - EQUITY
-        - FUND
         - CASH
+        - CRYPTO
+        - EQUITY
+        - EQUITY_OPTION
+        - FUND
+        - FUTURE
+        - FUTURE_OPTION
         - OTHER
 
     enum-position-direction:
@@ -765,7 +769,85 @@ components:
     instrument:
       type: object
       description: Instrument resolution result.
-      additionalProperties: true
+      properties:
+        id:
+          type: string
+          description: The identifier for the instrument.
+          format: uuid
+        name:
+          type: string
+          description: The name of the instrument.
+        type:
+          $ref: '#/components/schemas/enum-instrument-type'
+          description: The asset class of the instrument.
+        code:
+          type: string
+          description: The unit code used for price formatting, if present.
+        currency:
+          $ref: '#/components/schemas/enum-currency'
+          description: The currency the instrument trades in.
+        exchange:
+          type: string
+          description: The code of the listing exchange, if present.
+        delist:
+          type: string
+          description: The delist date, if present.
+          format: date
+        future:
+          $ref: '#/components/schemas/instrument-future'
+          description: Futures contract metadata, if present.
+        option:
+          $ref: '#/components/schemas/instrument-option'
+          description: Option contract metadata, if present.
+        symbol:
+          $ref: '#/components/schemas/misc-symbols'
+          description: Symbols used to identify the instrument.
+      required:
+        - id
+        - name
+        - type
+        - currency
+        - symbol
+
+    instrument-future:
+      type: object
+      properties:
+        expiration:
+          type: string
+          description: The contract expiration date.
+          format: date
+        tick:
+          type: string
+          description: The minimum tick size.
+        value:
+          type: string
+          description: The value of the minimum tick.
+
+    instrument-option:
+      type: object
+      properties:
+        expiration:
+          type: string
+          description: The option expiration date.
+          format: date
+        side:
+          type: string
+          description: The option side.
+          enum:
+            - CALL
+            - PUT
+        strike:
+          type: string
+          description: The option strike price.
+        multiplier:
+          type: string
+          description: The option contract multiplier.
+        tick:
+          type: string
+          description: The minimum tick size.
+        value:
+          type: string
+          description: The value of the minimum tick.
 
     position-summary:
       type: object
@@ -830,17 +912,184 @@ components:
     valuations-availability-result:
       type: object
       description: Availability of valuation data for a portfolio and its positions.
-      additionalProperties: true
+      properties:
+        available:
+          type: boolean
+          description: If true, all position and portfolio valuations are up-to-date.
+        positions:
+          type: array
+          description: Position identifiers for valuations currently being calculated. An empty array indicates all position valuations are up-to-date.
+          items:
+            type: string
+            format: uuid
+      required:
+        - available
+        - positions
 
     update-values-currency-result:
       type: object
       description: Result of a values currency recalculation request.
-      additionalProperties: true
+      properties:
+        success:
+          type: boolean
+          description: Indicates the aggregate values were successfully recalculated.
+        userId:
+          type: string
+          description: The identifier of the authorized user whose values were recalculated.
+        currency:
+          $ref: '#/components/schemas/enum-currency'
+          description: The currency code used for the recalculation.
+      required:
+        - success
+        - userId
+        - currency
 
     transaction-formatted:
       type: object
       description: Transaction values formatted for display.
-      additionalProperties: true
+      properties:
+        instrument:
+          $ref: '#/components/schemas/transaction-formatted-instrument'
+          description: Instrument metadata used to format the transaction.
+        raw:
+          $ref: '#/components/schemas/transaction-formatted-raw'
+          description: Raw numeric values corresponding to formatted display values.
+        date:
+          type: string
+          description: The transaction date.
+          format: date
+        type:
+          type: string
+          description: The transaction type display name.
+        code:
+          $ref: '#/components/schemas/enum-transaction-type'
+          description: The transaction type code.
+        sequence:
+          type: number
+          description: The sequence number of the transaction.
+        position:
+          type: string
+          description: The identifier of the position containing the transaction.
+          format: uuid
+        open:
+          type: string
+          description: The formatted number of shares or units open after the transaction.
+        transaction:
+          type: string
+          description: The identifier of the transaction.
+          format: uuid
+        gain:
+          type: string
+          description: The formatted realized gain for the transaction, if present.
+        average:
+          type: string
+          description: The formatted average cost after the transaction, if present.
+        boughtSold:
+          type: string
+          description: The formatted quantity bought or sold by the transaction, if present.
+        price:
+          type: string
+          description: The formatted transaction price, rate, or valuation price, if present.
+        fee:
+          type: string
+          description: The formatted transaction fee, if present.
+        total:
+          type: string
+          description: The formatted total transaction amount, if present.
+        ambiguous:
+          type: boolean
+          description: Indicates if the transaction was flagged as ambiguous by SnapTrade.
+        description:
+          type: string
+          description: The transaction description, if present.
+        rate:
+          type: string
+          description: The formatted dividend, split, merger, or spinoff rate, if present.
+        shares:
+          type: string
+          description: The formatted share quantity used for dividend, split, merger, or spinoff display, if present.
+        currency:
+          $ref: '#/components/schemas/enum-currency'
+          description: The transaction currency, if present.
+        native:
+          type: string
+          description: The formatted native currency amount, if present.
+      required:
+        - instrument
+        - raw
+        - date
+        - type
+        - code
+        - sequence
+        - position
+        - open
+        - transaction
+
+    transaction-formatted-instrument:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The instrument name.
+        type:
+          $ref: '#/components/schemas/enum-instrument-type'
+          description: The asset class of the instrument.
+        code:
+          type: string
+          description: The unit code used for price formatting, if present.
+        currency:
+          $ref: '#/components/schemas/enum-currency'
+          description: The currency the instrument trades in.
+        exchange:
+          type: string
+          description: The code of the listing exchange, if present.
+        delist:
+          type: string
+          description: The delist date, if present.
+          format: date
+        future:
+          $ref: '#/components/schemas/instrument-future'
+          description: Futures contract metadata, if present.
+        option:
+          $ref: '#/components/schemas/instrument-option'
+          description: Option contract metadata, if present.
+        symbol:
+          $ref: '#/components/schemas/misc-symbols'
+          description: Symbols used to identify the instrument.
+
+    transaction-formatted-raw:
+      type: object
+      properties:
+        open:
+          type: number
+          description: Raw number of shares or units open after the transaction.
+        gain:
+          type: number
+          description: Raw realized gain for the transaction, if present.
+        average:
+          type: number
+          description: Raw average cost after the transaction, if present.
+        total:
+          type: number
+          description: Raw total transaction amount, if present.
+        price:
+          type: number
+          description: Raw transaction price, rate, or valuation price, if present.
+        boughtSold:
+          type: number
+          description: Raw quantity bought or sold by the transaction, if present.
+        ambiguous:
+          type: boolean
+          description: Indicates if the transaction was flagged as ambiguous by SnapTrade.
+        rate:
+          type: number
+          description: Raw dividend, split, merger, or spinoff rate, if present.
+        shares:
+          type: number
+          description: Raw share quantity used for dividend, split, merger, or spinoff display, if present.
+        native:
+          type: number
+          description: Raw native currency amount, if present.
 
     brokerage-report-availability:
       type: object
@@ -861,44 +1110,177 @@ components:
     snaptrade-brokerage:
       type: object
       description: SnapTrade brokerage and linked account metadata.
-      additionalProperties: true
+      properties:
+        id:
+          type: string
+          description: The SnapTrade identifier for the brokerage.
+        name:
+          type: string
+          description: The name of the brokerage.
+        display:
+          type: string
+          description: The name of the brokerage for display to a user.
+        logo:
+          type: string
+          description: The URI for the logo image for the brokerage.
+          format: uri
+        connection:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/snaptrade-connection'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/snaptrade-account'
+      required:
+        - id
+        - name
+        - display
+        - logo
+        - connection
+        - accounts
 
     snaptrade-connect-instructions:
       type: object
       description: Instructions used to connect or reconnect a SnapTrade brokerage.
-      additionalProperties: true
+      properties:
+        uri:
+          type: string
+          description: The URI for brokerage authentication.
+          format: uri
+      required:
+        - uri
 
-    snaptrade-account-link-snapshot:
+    snaptrade-connection:
       type: object
+      description: Data regarding a connection to a SnapTrade brokerage.
+      properties:
+        id:
+          type: string
+          description: The SnapTrade identifier for the brokerage connection.
+        broken:
+          type: boolean
+          description: Indicates if the user needs to authenticate again.
+      required:
+        - id
+        - broken
+
+    snaptrade-account:
+      type: object
+      description: Data regarding a SnapTrade brokerage account.
+      properties:
+        id:
+          type: string
+          description: The SnapTrade identifier for the brokerage account.
+        number:
+          type: string
+          description: The brokerage account number, masked for display.
+        name:
+          type: string
+          description: The brokerage account name.
+        type:
+          type: string
+          description: The brokerage account type.
+        link:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/snaptrade-link'
+      required:
+        - id
+        - number
+        - name
+        - type
+        - link
+
+    snaptrade-link:
+      type: object
+      description: Data regarding the linkage between a SnapTrade account and a portfolio.
       properties:
         mode:
           $ref: '#/components/schemas/enum-snaptrade-link-mode'
+          description: The strategy used when importing positions into the linked portfolio.
         status:
           $ref: '#/components/schemas/enum-snaptrade-link-status'
+          description: The status of the link.
         progress:
           type: number
+          description: If the status indicates work in progress, this is the percent complete as a whole number.
         timestamp:
           type: string
+          description: The timestamp of the most recent status update.
           format: date-time
+        advice:
+          type: string
+          description: Additional guidance for resolving the link status, if present.
+      required:
+        - status
+        - progress
+        - timestamp
+
+    snaptrade-account-link-snapshot:
+      type: object
+      description: Data regarding the status of a link between a SnapTrade account and a portfolio.
+      properties:
+        user:
+          type: string
+          description: The identifier of the authorized user.
+        portfolio:
+          type: string
+          description: The identifier of the linked portfolio.
+          format: uuid
+        connection:
+          type: string
+          description: The SnapTrade identifier for the brokerage connection.
+        account:
+          type: string
+          description: The SnapTrade identifier for the brokerage account.
+        status:
+          $ref: '#/components/schemas/enum-snaptrade-link-status'
+          description: The status of the link.
+        progress:
+          type: number
+          description: If the status indicates work in progress, this is the percent complete as a whole number.
+        timestamp:
+          type: string
+          description: The timestamp of the most recent status update, if present.
+          format: date-time
+      required:
+        - user
+        - portfolio
+        - connection
+        - account
+        - status
+        - progress
 
     snaptrade-linking-report:
       type: object
+      description: Data returned by a SnapTrade linking operation which could add or remove portfolios.
       properties:
         brokerages:
           type: array
+          description: SnapTrade brokerages and linked account metadata.
           items:
             $ref: '#/components/schemas/snaptrade-brokerage'
         portfolios:
           type: object
+          description: Portfolios saved or deleted by the linking operation.
           properties:
             saved:
               type: array
+              description: Portfolios created or updated by the linking operation.
               items:
                 $ref: '#/components/schemas/portfolio'
             deleted:
               type: array
+              description: Portfolios deleted by the linking operation.
               items:
                 $ref: '#/components/schemas/portfolio'
+          required:
+            - saved
+            - deleted
+      required:
+        - brokerages
+        - portfolios
 
     enum-position-summary-frame:
       type: string
@@ -1534,8 +1916,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  additionalProperties: true
+                  $ref: '#/components/schemas/misc-valuation-container'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
