@@ -2,7 +2,7 @@ openapi: 3.0.1
 
 info:
   title: Barchart Investor Portfolio API
-  version: 3.8.1
+  version: 8.0.3
 
 components:
   securitySchemes:
@@ -149,16 +149,25 @@ components:
           description: The timezone of the portfolio. Must conform to a tz database name.
           format: tz_database_name
           example: America/New_York
+        dates:
+          description: Important days and timestamps for the portfolio.
+          allOf:
+            - $ref: '#/components/schemas/portfolio-dates'
         defaults:
           description: Default settings for the portfolio.
           allOf:
             - $ref: '#/components/schemas/portfolio-defaults'
+        legacy:
+          description: Default settings for the portfolio.
+          allOf:
+            - $ref: '#/components/schemas/portfolio-legacy-data'
       required:
         - portfolio
         - user
         - name
         - timezone
         - defaults
+        - legacy
 
     portfolio-create:
       type: object
@@ -205,6 +214,23 @@ components:
       required:
         - portfolio
 
+    portfolio-dates:
+      type: object
+      properties:
+        create:
+          type: string
+          format: date
+          description: The day the portfolio was created.
+          example: 2026-06-04
+        access:
+          type: integer
+          format: int64
+          description: The timestamp (in milliseconds) when the portfolio was last accessed.
+          example: 1780591608985
+      required:
+        - create
+        - access
+
     portfolio-defaults:
       type: object
       properties:
@@ -213,17 +239,37 @@ components:
           description: Indicates if corresponding cash transactions should be automatically be created for investment transactions (e.g. a DEBIT transaction in a cash positions corresponding to a BUY transaction for a stock).
           example: true
         currency:
-          description: The default currency for the portfolio, used to determine the basis for reporting.
+          description: The currency used for top-level summarization and reporting.
           allOf:
             - $ref: '#/components/schemas/enum-currency'
         reinvest:
           type: boolean
           description: Indicates if dividends should be automatically reinvested.
           example: true
+        valuation:
+          description: The strategy for determining position cost basis and calculating gains and losses.
+          allOf:
+            - $ref: '#/components/schemas/enum-position-valuation-type'
       required:
         - cash
         - currency
         - reinvest
+        - valuation
+
+    portfolio-legacy-data:
+      type: object
+      properties:
+        system:
+          type: string
+          description: The name of the external system.
+          example: BARCHART
+        user:
+          type: string
+          description: The user identifier of the portfolio identifier in the external system.
+          example: 340620
+      required:
+        - system
+        - user
 
     position:
       type: object
@@ -717,6 +763,12 @@ components:
         - SHORT
         - EVEN
 
+    enum-position-valuation-type:
+      type: string
+      description: Codes used to define strategies for position valuation.
+      enum:
+        - AVG
+
     enum-transaction-type:
       type: string
       description: Single letter codes for transaction types (e.g. B for BUY, S for SELL; see \"Appendices > Enumerations\" in SDK documentation for more info), including types which are managed by the backend (e.g. DV for dividend).
@@ -763,42 +815,12 @@ components:
     service-metadata:
       type: object
       properties:
-        server:
-          $ref: '#/components/schemas/service-metadata-server'
-        user:
-          $ref: '#/components/schemas/service-metadata-user'
-        context:
-          $ref: '#/components/schemas/service-metadata-context'
-
-    service-metadata-context:
-      type: object
-      properties:
-        id:
+        version:
           type: string
-          example: BARCHART
-
-    service-metadata-server:
-      type: object
-      properties:
-        name:
-          type: string
-          example: barchart/portfolio-private-api-main
-        description:
-          type: string
-          example: API for Barchart Portfolio Service
+          example: 8.0.3
         environment:
           type: string
-          example: prod
-        semver:
-          type: string
-          example: 5.6.1
-
-    service-metadata-user:
-      type: object
-      properties:
-        id:
-          type: string
-          example: me
+          example: www-prod
 
     instrument-resolution:
       type: object
@@ -1225,24 +1247,6 @@ components:
           description: Raw native currency amount, if present.
           example: 12.5
 
-    brokerage-report-availability:
-      type: object
-      properties:
-        start:
-          type: string
-          format: date
-          example: '2026-01-01'
-        end:
-          type: string
-          format: date
-          example: '2026-03-31'
-        frame:
-          $ref: '#/components/schemas/enum-position-summary-frame'
-      required:
-        - start
-        - end
-        - frame
-
     snaptrade-brokerage:
       type: object
       description: SnapTrade brokerage and linked account metadata.
@@ -1470,19 +1474,18 @@ servers:
 
 tags:
   - name: Instruments
-  - name: Portfolio
-  - name: Position
-  - name: Position Summary
+  - name: Portfolios
+  - name: Positions
+  - name: Position Summaries
   - name: Position Values
   - name: SnapTrade
   - name: Service
-  - name: Values
 
 paths:
   /instruments/{symbol}:
     get:
-      summary: Resolves an instrument identifier.
-      description: Resolves a symbol to an instrument identifier on a given day.
+      summary: Retrieves an instrument identifier.
+      description: Retrieves the instrument identifier for a symbol on a given day.
       tags:
         - Instruments
       security:
@@ -1491,14 +1494,14 @@ paths:
         - name: symbol
           in: path
           required: true
-          description: The symbol used to resolve the instrument.
+          description: The symbol of the instrument.
           schema:
             type: string
             example: AAPL
         - name: day
           in: query
           required: false
-          description: The day used for symbol resolution (or today).
+          description: The day on which to resolve the instrument (today, if not provided).
           schema:
             type: string
             format: date
@@ -1518,9 +1521,9 @@ paths:
   /portfolios:
     post:
       summary: Creates a new portfolio.
-      description: Creates a new portfolio for the current user.
+      description: Creates a new portfolio.
       tags:
-        - Portfolio
+        - Portfolios
       security:
         - JWT: []
       requestBody:
@@ -1544,10 +1547,10 @@ paths:
 
   /portfolios/{portfolio}:
     get:
-      summary: Returns one (or more) portfolios, owned by the current user.
-      description: Returns one (or more) portfolios, owned by the current user. If the user has no portfolios, an empty array is returned.
+      summary: Retrieves portfolio(s).
+      description: Retrieves portfolio(s).
       tags:
-        - Portfolio
+        - Portfolios
       security:
         - JWT: []
       parameters:
@@ -1569,7 +1572,7 @@ paths:
       summary: Updates a portfolio.
       description: Updates a portfolio.
       tags:
-        - Portfolio
+        - Portfolios
       security:
         - JWT: []
       parameters:
@@ -1591,10 +1594,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
-      summary: Deletes a portfolio and everything associated with the portfolio, including all positions, transactions, and summaries.
-      description: Deletes a portfolio and everything associated with the portfolio, including all positions, transactions, and summaries.
+      summary: Deletes a portfolio.
+      description: Deletes a portfolio and all associated entities — including positions, transactions, summaries, and valuations.
       tags:
-        - Portfolio
+        - Portfolios
       security:
         - JWT: []
       parameters:
@@ -1609,10 +1612,10 @@ paths:
 
   /portfolios/{portfolio}/positions/{position}:
     get:
-      summary: Returns positions, optionally filtering for portfolio.
-      description: Returns positions, optionally filtering for portfolio.
+      summary: Retrieves position(s).
+      description: Retrieves position(s).
       tags:
-        - Portfolio
+        - Positions
       security:
         - JWT: []
       parameters:
@@ -1653,10 +1656,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     put:
-      summary: Updates a position.
-      description: Updates a position (e.g. defaults like automatic re-investment).
+      summary: Updates settings for a position.
+      description: Updates settings for a position (e.g. turn on automatic re-investment).
       tags:
-        - Portfolio
+        - Positions
       security:
         - JWT: []
       parameters:
@@ -1679,10 +1682,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
-      summary: Deletes a position and everything associated with the position — including all transactions, summaries, etc.
-      description: Deletes a position and everything associated with the position — including all transactions, summaries, etc.
+      summary: Deletes a position.
+      description: Deletes a position and all associated entities — including transactions, summaries, and valuations.
       tags:
-        - Portfolio
+        - Positions
       security:
         - JWT: []
       parameters:
@@ -1701,9 +1704,9 @@ paths:
           $ref: '#/components/responses/ServerError'
     patch:
       summary: Moves a position to another portfolio.
-      description: Moves a position from the current portfolio to a target portfolio.
+      description: Moves a position to another portfolio.
       tags:
-        - Portfolio
+        - Positions
       security:
         - JWT: []
       parameters:
@@ -1731,10 +1734,10 @@ paths:
 
   /portfolios/{portfolio}/summaries/{position}:
     get:
-      summary: Returns position summaries.
-      description: Returns summaries for a portfolio or a single position.
+      summary: Retrieves position summaries.
+      description: Retrieves position summaries (for an entire portfolio or a single position).
       tags:
-        - Portfolio
+        - Position Summaries
       security:
         - JWT: []
       parameters:
@@ -1781,10 +1784,10 @@ paths:
 
   /portfolios/{portfolio}/values/availability:
     get:
-      summary: Returns valuation availability.
-      description: Returns valuation availability for a portfolio and its positions.
+      summary: Returns portfolio valuation availability.
+      description: Returns portfolio valuation availability.
       tags:
-        - Values
+        - Position Values
       security:
         - JWT: []
       parameters:
@@ -1806,7 +1809,7 @@ paths:
       summary: Creates a new transaction.
       description: Creates a new transaction for the current user.
       tags:
-        - Portfolio
+        - Transactions
       security:
         - JWT: []
       parameters:
@@ -1869,7 +1872,7 @@ paths:
       summary: Returns one or more transactions.
       description: Returns one transaction by sequence number, or all transactions when sequence is an asterisk (*).
       tags:
-        - Portfolio
+        - Transactions
       security:
         - JWT: []
       parameters:
@@ -1895,7 +1898,7 @@ paths:
       summary: Edits or switches a transaction.
       description: Edits a transaction, or switches the reinvestment strategy when the `switch` query parameter is supplied. Use `type` when editing a transaction, or `switch` when changing reinvestment strategy. Do not send both query parameters in the same request. In switch mode, the body `type` is the current transaction type and `switch` is the target transaction type.
       tags:
-        - Portfolio
+        - Transactions
       security:
         - JWT: []
       parameters:
@@ -1989,10 +1992,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
-      summary: Deletes a transaction from a position.
-      description: Deletes a transaction from a position.
+      summary: Deletes a transaction.
+      description: Deletes a transaction.
       tags:
-        - Portfolio
+        - Transactions
       security:
         - JWT: []
       parameters:
@@ -2039,7 +2042,7 @@ paths:
       summary: Returns formatted transactions.
       description: Returns transactions whose values are suitable for display.
       tags:
-        - Portfolio
+        - Transactions
       security:
         - JWT: []
       parameters:
@@ -2108,7 +2111,7 @@ paths:
       summary: Returns a daily history of valuations for positions (or an entire portfolio).
       description: Returns a daily history of valuations for positions (or an entire portfolio).
       tags:
-        - Portfolio
+        - Position Values
       security:
         - JWT: []
       parameters:
@@ -2131,7 +2134,7 @@ paths:
       summary: Queries position valuations.
       description: Queries end-of-day position valuations across all user portfolios.
       tags:
-        - Values
+        - Position Values
       security:
         - JWT: []
       parameters:
@@ -2161,7 +2164,7 @@ paths:
       summary: Updates values currency.
       description: Recalculates aggregate values for the authorized user in the requested currency.
       tags:
-        - Values
+        - Position Values
       security:
         - JWT: []
       requestBody:
@@ -2184,39 +2187,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /portfolios/{portfolio}/reports/brokerage/availability:
-    get:
-      summary: Returns brokerage report availability.
-      description: Returns available brokerage report frames for a portfolio.
-      tags:
-        - Portfolio
-      security:
-        - JWT: []
-      parameters:
-        - $ref: '#/components/parameters/portfolio'
-        - name: frames
-          in: query
-          required: false
-          description: Comma-separated brokerage report frame codes.
-          style: form
-          explode: false
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/enum-position-summary-frame'
-      responses:
-        '200':
-          description: An array of brokerage report availability definitions.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/brokerage-report-availability'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
 
   /snaptrade/brokerages:
     get:
@@ -2484,15 +2454,15 @@ paths:
 
   /system/version:
     get:
-      summary: Returns the Portfolio Service version.
-      description: Returns the version number of the Barchart Portfolio Service along with the user identifier and context of the authorized user.
+      summary: Retrieves API version.
+      description: Retrieves the API version number. Can also be used to test user authentication (since JWT is required).
       tags:
         - Service
       security:
         - JWT: []
       responses:
         '200':
-          description: An object describing the remote service and the authorized user.
+          description: An object describing the remote service.
           content:
             application/json:
               schema:
