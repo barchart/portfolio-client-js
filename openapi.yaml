@@ -1,13 +1,8 @@
 openapi: 3.0.1
 
 info:
-  title: Barchart Portfolio API
-  description: Barchart Portfolio API
+  title: Barchart Investor Portfolio API
   version: 3.8.1
-  contact:
-    name: Barchart Support
-    url: https://help.barchart.com/support/home
-    email: support@barchart.com
 
 components:
   securitySchemes:
@@ -805,6 +800,30 @@ components:
           type: string
           example: me
 
+    instrument-resolution:
+      type: object
+      description: The instrument identifier for a symbol on a given day.
+      properties:
+        symbol:
+          type: string
+          description: The symbol that instrument resolution was attempted for.
+          example: AAPL
+        day:
+          type: string
+          description: The day on which instrument resolution was attempted.
+          format: date
+          example: '2026-05-28'
+        instrument:
+          type: string
+          description: The identifier of the instrument with the specified symbol on the specified day (or null).
+          nullable: true
+          format: uuid
+          example: c6471c5f-48d4-4979-8dd7-56c5ff1439c7
+      required:
+        - symbol
+        - day
+        - instrument
+
     instrument:
       type: object
       description: Instrument resolution result.
@@ -1446,14 +1465,15 @@ components:
         - FAILED
 
 servers:
-  - url: https://portfolio-test.aws.barchart.com/v1
-    description: Hostname for test environment.
-  - url: https://portfolio.aws.barchart.com/v1
-    description: Hostname for production environment.
+  - url: https://portfolio-www-stage.aws.barchart.com/v1
+  - url: https://portfolio-www-prod.aws.barchart.com/v1
 
 tags:
-  - name: Instrument
+  - name: Instruments
   - name: Portfolio
+  - name: Position
+  - name: Position Summary
+  - name: Position Values
   - name: SnapTrade
   - name: Service
   - name: Values
@@ -1461,10 +1481,10 @@ tags:
 paths:
   /instruments/{symbol}:
     get:
-      summary: Resolves an instrument.
-      description: Resolves an instrument, optionally for a specific day or closing price.
+      summary: Resolves an instrument identifier.
+      description: Resolves a symbol to an instrument identifier on a given day.
       tags:
-        - Instrument
+        - Instruments
       security:
         - JWT: []
       parameters:
@@ -1478,25 +1498,18 @@ paths:
         - name: day
           in: query
           required: false
-          description: The day used for symbol resolution.
+          description: The day used for symbol resolution (or today).
           schema:
             type: string
             format: date
             example: '2026-05-28'
-        - name: closing
-          in: query
-          required: false
-          description: If true, resolves the closing price for the requested day.
-          schema:
-            type: boolean
-            example: true
       responses:
         '200':
           description: Instrument resolution result.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/instrument'
+                $ref: '#/components/schemas/instrument-resolution'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
