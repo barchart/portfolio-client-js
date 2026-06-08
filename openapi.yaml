@@ -74,7 +74,7 @@ components:
       name: portfolio
       in: path
       required: true
-      description: The identifier of the portfolio.
+      description: The UUID of a portfolio.
       schema:
         type: string
         format: uuid
@@ -84,7 +84,7 @@ components:
       name: portfolio
       in: path
       required: true
-      description: The identifier of the portfolio. Use an asterisk (*) to retrieve data across all portfolios.
+      description: The UUID of a portfolio (or an asterisk for all portfolios).
       schema:
         type: string
         example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
@@ -93,7 +93,7 @@ components:
       name: position
       in: path
       required: true
-      description: The identifier of the position.
+      description: The UUID of a position.
       schema:
         type: string
         format: uuid
@@ -103,7 +103,7 @@ components:
       name: position
       in: path
       required: true
-      description: The identifier of the position. Use an asterisk (*) to retrieve data across all positions.
+      description: The UUID of a position (or an asterisk for all positions).
       schema:
         type: string
         example: 96af2dc6-2236-4a82-84c2-bff969389e00
@@ -121,7 +121,7 @@ components:
       name: sequence
       in: path
       required: true
-      description: The sequence number of the transaction. Use an asterisk (*) to retrieve all transactions for the position.
+      description: The sequence number of the transaction (or an asterisk for all transactions).
       schema:
         type: string
         example: '1'
@@ -149,6 +149,10 @@ components:
           description: The timezone of the portfolio. Must conform to a tz database name.
           format: tz_database_name
           example: America/New_York
+        miscellany:
+          type: string
+          description: Miscellaneous JSON data regarding the portfolio.
+          example: "{\"view\":\"portfolio\"}"
         dates:
           description: Important days and timestamps for the portfolio.
           allOf:
@@ -198,19 +202,19 @@ components:
           description: The identifier of the portfolio to update.
           format: uuid
           example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
-        name:
-          type: string
-          description: The updated name of the portfolio, if present.
-          example: My Other Portfolio
         timezone:
           type: string
-          description: The updated timezone for the portfolio, if present.
+          description: A new timezone for the portfolio.
           format: tz_database_name
           example: America/Chicago
+        name:
+          type: string
+          description: A new name for the portfolio.
+          example: My Other Portfolio
         defaults:
-          description: The updated default settings for the portfolio, if present.
+          description: New settings for the portfolio.
           allOf:
-            - $ref: '#/components/schemas/portfolio-defaults'
+            - $ref: '#/components/schemas/portfolio-defaults-update'
       required:
         - portfolio
 
@@ -236,7 +240,7 @@ components:
       properties:
         cash:
           type: boolean
-          description: Indicates if corresponding cash transactions should be automatically be created for investment transactions (e.g. a DEBIT transaction in a cash positions corresponding to a BUY transaction for a stock).
+          description: Controls whether cash transactions will be automatically be generated for investment transactions (e.g. will a cash DEBIT transaction be created when a stock BUY transaction is entered).
           example: true
         currency:
           description: The currency used for top-level summarization and reporting.
@@ -244,10 +248,10 @@ components:
             - $ref: '#/components/schemas/enum-currency'
         reinvest:
           type: boolean
-          description: Indicates if dividends should be automatically reinvested.
+          description: Controls whether dividends will be automatically reinvested.
           example: true
         valuation:
-          description: The strategy for determining position cost basis and calculating gains and losses.
+          description: Determines the strategy for determining cost bases and gains.
           allOf:
             - $ref: '#/components/schemas/enum-position-valuation-type'
       required:
@@ -255,6 +259,26 @@ components:
         - currency
         - reinvest
         - valuation
+
+    portfolio-defaults-update:
+      type: object
+      properties:
+        cash:
+          type: boolean
+          description: Controls whether cash transactions will be automatically be generated for investment transactions (e.g. will a cash DEBIT transaction be created when a stock BUY transaction is entered).
+          example: true
+        currency:
+          description: The currency used for top-level summarization and reporting.
+          allOf:
+            - $ref: '#/components/schemas/enum-currency'
+        reinvest:
+          type: boolean
+          description: Controls whether dividends will be automatically reinvested.
+          example: true
+      required:
+        - cash
+        - currency
+        - reinvest
 
     portfolio-legacy-data:
       type: object
@@ -286,8 +310,11 @@ components:
           example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
         instrument:
           description: The position's instrument.
-          allOf:
+          oneOf:
             - $ref: '#/components/schemas/position-instrument'
+            - $ref: '#/components/schemas/position-instrument-equity-option'
+            - $ref: '#/components/schemas/position-instrument-future'
+            - $ref: '#/components/schemas/position-instrument-futures-option'
         position:
           type: string
           description: The identifier for the position.
@@ -306,6 +333,10 @@ components:
           type: boolean
           description: Indicates if dividends should be automatically reinvested.
           example: true
+        valuation:
+          description: The strategy for determining position cost basis and calculating gains and losses.
+          allOf:
+            - $ref: '#/components/schemas/enum-position-valuation-type'
         snapshot:
           description: Summary and performance information for the position, as of the last transaction.
           allOf:
@@ -350,7 +381,7 @@ components:
       properties:
         id:
           type: string
-          description: The identifier for the instrument.
+          description: The UUID of the the instrument.
           format: uuid
           example: c6471c5f-48d4-4979-8dd7-56c5ff1439c7
         name:
@@ -361,12 +392,20 @@ components:
           description: The asset class of the instrument.
           allOf:
             - $ref: '#/components/schemas/enum-instrument-type'
+        code:
+          description: The unit code of the instrument (if available).
+          allOf:
+            - $ref: '#/components/schemas/enum-instrument-unit-code'
         currency:
           description: The currency the instrument trades in.
           allOf:
             - $ref: '#/components/schemas/enum-currency'
+        exchange:
+          type: string
+          description: The listing exchange of the instrument (if available)
+          example: NASDAQ
         symbol:
-          description: Symbols used to identify the instrument.
+          description: Symbol(s) used to identify the instrument.
           allOf:
             - $ref: '#/components/schemas/misc-symbols'
       required:
@@ -375,6 +414,119 @@ components:
         - type
         - currency
         - symbol
+
+    position-instrument-future:
+      allOf:
+        - $ref: '#/components/schemas/position-instrument'
+        - $ref: '#/components/schemas/position-instrument-future-extension'
+
+    position-instrument-future-extension:
+      type: object
+      properties:
+        future:
+          type: object
+          properties:
+            expiration:
+              type: string
+              format: date
+              description: The day the futures contract expires.
+              example: 2026-06-04
+            tick:
+              type: string
+              description: The minimum tick increment for the futures contract.
+              example: '0.25'
+            value:
+              type: string
+              description: The value of a single tick.
+              example: '12.5'
+          required:
+            - expiration
+            - tick
+            - value
+      required:
+        - future
+
+    position-instrument-equity-option:
+      allOf:
+        - $ref: '#/components/schemas/position-instrument'
+        - $ref: '#/components/schemas/position-instrument-equity-option-extension'
+
+    position-instrument-equity-option-extension:
+      type: object
+      properties:
+        option:
+          type: object
+          properties:
+            expiration:
+              type: string
+              format: date
+              description: The day the equity option contract expires.
+              example: 2026-06-04
+            side:
+              description: The equity option type.
+              allOf:
+                - $ref: '#/components/schemas/enum-instrument-option-side'
+            strike:
+              type: string
+              description: The strike price of the equity option contract.
+              example: '112.5'
+            multiplier:
+              type: string
+              description: The price multiplier of the equity option contract.
+              example: '100'
+          required:
+            - expiration
+            - side
+            - strike
+            - multiplier
+      required:
+        - option
+
+    position-instrument-futures-option:
+      allOf:
+        - $ref: '#/components/schemas/position-instrument'
+        - $ref: '#/components/schemas/position-instrument-futures-option-extension'
+
+    position-instrument-futures-option-extension:
+      type: object
+      properties:
+        option:
+          type: object
+          properties:
+            expiration:
+              type: string
+              format: date
+              description: The day the futures option contract expires.
+              example: 2026-06-04
+            side:
+              description: The futures option type.
+              allOf:
+                - $ref: '#/components/schemas/enum-instrument-option-side'
+            strike:
+              type: string
+              description: The strike price of the futures option contract.
+              example: '7000'
+            multiplier:
+              type: string
+              description: The price multiplier of the futures option contract.
+              example: '1'
+            tick:
+              type: string
+              description: The minimum tick increment for the underlying futures contract.
+              example: '0.25'
+            value:
+              type: string
+              description: The value of a single tick for the underlying futures contract.
+              example: '12.5'
+          required:
+            - expiration
+            - side
+            - strike
+            - multiplier
+            - tick
+            - value
+      required:
+        - option
 
     position-snapshot:
       type: object
@@ -416,6 +568,10 @@ components:
           type: string
           description: The current value of the position (a decimal-formatted string, value is never negative). Valuation is based on the last transaction price (not the current market price).
           example: '18256'
+        initial:
+          description: The direction of the position immediately after it was opened.
+          allOf:
+            - $ref: '#/components/schemas/enum-position-direction'
       required:
         - date
         - open
@@ -426,6 +582,7 @@ components:
         - basis
         - income
         - value
+        - initial
 
     transaction:
       type: object
@@ -652,6 +809,10 @@ components:
           description: Positions which were affected by a transaction (create, update, or delete) operation.
           allOf:
             - $ref: '#/components/schemas/transaction-mutate-result-positions'
+        summaries:
+          description: Positions summaries for any positions that were created or updated.
+          allOf:
+            - $ref: '#/components/schemas/position-summary'
       required:
         - positions
 
@@ -691,21 +852,21 @@ components:
       properties:
         user:
           type: string
-          description: The identifier of the portfolio's owner.
+          description: The UUID of a user.
           format: uuid
           example: ad4b0bd3-b5e1-4f7d-96b1-54d22d99960d
         portfolio:
           type: string
-          description: The portfolio identifier.
+          description: The UUID of a portfolio (asterisk for the all portfolios).
           format: uuid
           example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
         position:
           type: string
-          description: The position identifier (an asterisk (*) indicates the valuation are for the entire portfolio).
+          description: The UUID of a position (asterisk for the all positions).
           format: uuid
           example: 96af2dc6-2236-4a82-84c2-bff969389e00
         currency:
-          description: The currency of the valuations (absent if no valuations are available).
+          description: The currency of the valuations (absent when no valuations are available).
           allOf:
             - $ref: '#/components/schemas/enum-currency'
         valuations:
@@ -735,6 +896,48 @@ components:
         - date
         - market
 
+    misc-valuation-container-deprecated:
+      type: object
+      properties:
+        user:
+          type: string
+          format: uuid
+          example: 01748dd1-5d6d-4ae4-91b0-4e39e80c2b35
+      required:
+        - user
+
+    misc-valuation-currency-update:
+      type: object
+      description: Object used to request update of currency used for valuations.
+      properties:
+        currency:
+          description: The currency code used for the recalculation.
+          allOf:
+            - $ref: '#/components/schemas/enum-currency'
+      required:
+        - currency
+
+    misc-valuation-currency-update-result:
+      type: object
+      description: Result of a values currency recalculation request.
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the operation was successful.
+          example: true
+        userId:
+          type: string
+          description: The UUID of the user (deprecated, please remove).
+          example: 01748dd1-5d6d-4ae4-91b0-4e39e80c2b35
+        currency:
+          description: The currency code used for the recalculation.
+          allOf:
+            - $ref: '#/components/schemas/enum-currency'
+      required:
+        - success
+        - userId
+        - currency
+
     enum-currency:
       type: string
       description: Currencies used to trade and value instruments and positions.
@@ -754,6 +957,32 @@ components:
         - FUTURE
         - FUTURE_OPTION
         - OTHER
+
+    enum-instrument-unit-code:
+      type: string
+      description: Codes which define price formatting rules for instruments.
+      enum:
+        - '2'
+        - '3'
+        - '4'
+        - '5'
+        - '6'
+        - '7'
+        - '8'
+        - '9'
+        - A
+        - B
+        - C
+        - D
+        - E
+        - F
+
+    enum-instrument-option-side:
+      type: string
+      description: Indicates the option type
+      enum:
+        - CALL
+        - PUT
 
     enum-position-direction:
       type: string
@@ -846,107 +1075,6 @@ components:
         - day
         - instrument
 
-    instrument:
-      type: object
-      description: Instrument resolution result.
-      properties:
-        id:
-          type: string
-          description: The identifier for the instrument.
-          format: uuid
-          example: c6471c5f-48d4-4979-8dd7-56c5ff1439c7
-        name:
-          type: string
-          description: The name of the instrument.
-          example: Apple Inc
-        type:
-          description: The asset class of the instrument.
-          allOf:
-            - $ref: '#/components/schemas/enum-instrument-type'
-        code:
-          type: string
-          description: The unit code used for price formatting, if present.
-          example: equity
-        currency:
-          description: The currency the instrument trades in.
-          allOf:
-            - $ref: '#/components/schemas/enum-currency'
-        exchange:
-          type: string
-          description: The code of the listing exchange, if present.
-          example: NASDAQ
-        delist:
-          type: string
-          description: The delist date, if present.
-          format: date
-          example: '2026-05-28'
-        future:
-          description: Futures contract metadata, if present.
-          allOf:
-            - $ref: '#/components/schemas/instrument-future'
-        option:
-          description: Option contract metadata, if present.
-          allOf:
-            - $ref: '#/components/schemas/instrument-option'
-        symbol:
-          description: Symbols used to identify the instrument.
-          allOf:
-            - $ref: '#/components/schemas/misc-symbols'
-      required:
-        - id
-        - name
-        - type
-        - currency
-        - symbol
-
-    instrument-future:
-      type: object
-      properties:
-        expiration:
-          type: string
-          description: The contract expiration date.
-          format: date
-          example: '2026-12-18'
-        tick:
-          type: string
-          description: The minimum tick size.
-          example: '0.25'
-        value:
-          type: string
-          description: The value of the minimum tick.
-          example: '12.50'
-
-    instrument-option:
-      type: object
-      properties:
-        expiration:
-          type: string
-          description: The option expiration date.
-          format: date
-          example: '2026-12-18'
-        side:
-          type: string
-          description: The option side.
-          enum:
-            - CALL
-            - PUT
-        strike:
-          type: string
-          description: The option strike price.
-          example: '200'
-        multiplier:
-          type: string
-          description: The option contract multiplier.
-          example: '100'
-        tick:
-          type: string
-          description: The minimum tick size.
-          example: '0.01'
-        value:
-          type: string
-          description: The value of the minimum tick.
-          example: '1'
-
     position-summary:
       type: object
       properties:
@@ -1027,7 +1155,7 @@ components:
         available:
           type: boolean
           description: If true, all position and portfolio valuations are up-to-date.
-          example: true
+          example: false
         positions:
           type: array
           description: Position identifiers for valuations currently being calculated. An empty array indicates all position valuations are up-to-date.
@@ -1037,215 +1165,6 @@ components:
             example: 96af2dc6-2236-4a82-84c2-bff969389e00
       required:
         - available
-        - positions
-
-    update-values-currency-result:
-      type: object
-      description: Result of a values currency recalculation request.
-      properties:
-        success:
-          type: boolean
-          description: Indicates the aggregate values were successfully recalculated.
-          example: true
-        userId:
-          type: string
-          description: The identifier of the authorized user whose values were recalculated.
-          example: 01748dd1-5d6d-4ae4-91b0-4e39e80c2b35
-        currency:
-          description: The currency code used for the recalculation.
-          allOf:
-            - $ref: '#/components/schemas/enum-currency'
-      required:
-        - success
-        - userId
-        - currency
-
-    transaction-formatted:
-      type: object
-      description: Transaction values formatted for display.
-      properties:
-        instrument:
-          description: Instrument metadata used to format the transaction.
-          allOf:
-            - $ref: '#/components/schemas/transaction-formatted-instrument'
-        raw:
-          description: Raw numeric values corresponding to formatted display values.
-          allOf:
-            - $ref: '#/components/schemas/transaction-formatted-raw'
-        date:
-          type: string
-          description: The transaction date.
-          format: date
-          example: '2026-05-28'
-        type:
-          type: string
-          description: The transaction type display name.
-          example: Buy
-        code:
-          description: The transaction type code.
-          allOf:
-            - $ref: '#/components/schemas/enum-transaction-type'
-        sequence:
-          type: number
-          description: The sequence number of the transaction.
-          example: 1
-        position:
-          type: string
-          description: The identifier of the position containing the transaction.
-          format: uuid
-          example: 96af2dc6-2236-4a82-84c2-bff969389e00
-        open:
-          type: string
-          description: The formatted number of shares or units open after the transaction.
-          example: '100.00'
-        transaction:
-          type: string
-          description: The identifier of the transaction.
-          format: uuid
-          example: b3bb28ee-a24c-4b8b-8b3b-8ad5b5b0b00a
-        gain:
-          type: string
-          description: The formatted realized gain for the transaction, if present.
-          example: '0.00'
-        average:
-          type: string
-          description: The formatted average cost after the transaction, if present.
-          example: '182.56'
-        boughtSold:
-          type: string
-          description: The formatted quantity bought or sold by the transaction, if present.
-          example: '100.00'
-        price:
-          type: string
-          description: The formatted transaction price, rate, or valuation price, if present.
-          example: '182.56'
-        fee:
-          type: string
-          description: The formatted transaction fee, if present.
-          example: '9.99'
-        total:
-          type: string
-          description: The formatted total transaction amount, if present.
-          example: '-18,265.99'
-        ambiguous:
-          type: boolean
-          description: Indicates if the transaction was flagged as ambiguous by SnapTrade.
-          example: false
-        description:
-          type: string
-          description: The transaction description, if present.
-          example: Buy 100 AAPL
-        rate:
-          type: string
-          description: The formatted dividend, split, merger, or spinoff rate, if present.
-          example: '0.125'
-        shares:
-          type: string
-          description: The formatted share quantity used for dividend, split, merger, or spinoff display, if present.
-          example: '100.00'
-        currency:
-          description: The transaction currency, if present.
-          allOf:
-            - $ref: '#/components/schemas/enum-currency'
-        native:
-          type: string
-          description: The formatted native currency amount, if present.
-          example: '12.50'
-      required:
-        - instrument
-        - raw
-        - date
-        - type
-        - code
-        - sequence
-        - position
-        - open
-        - transaction
-
-    transaction-formatted-instrument:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The instrument name.
-          example: Apple Inc
-        type:
-          description: The asset class of the instrument.
-          allOf:
-            - $ref: '#/components/schemas/enum-instrument-type'
-        code:
-          type: string
-          description: The unit code used for price formatting, if present.
-          example: equity
-        currency:
-          description: The currency the instrument trades in.
-          allOf:
-            - $ref: '#/components/schemas/enum-currency'
-        exchange:
-          type: string
-          description: The code of the listing exchange, if present.
-          example: NASDAQ
-        delist:
-          type: string
-          description: The delist date, if present.
-          format: date
-          example: '2026-05-28'
-        future:
-          description: Futures contract metadata, if present.
-          allOf:
-            - $ref: '#/components/schemas/instrument-future'
-        option:
-          description: Option contract metadata, if present.
-          allOf:
-            - $ref: '#/components/schemas/instrument-option'
-        symbol:
-          description: Symbols used to identify the instrument.
-          allOf:
-            - $ref: '#/components/schemas/misc-symbols'
-
-    transaction-formatted-raw:
-      type: object
-      properties:
-        open:
-          type: number
-          description: Raw number of shares or units open after the transaction.
-          example: 100
-        gain:
-          type: number
-          description: Raw realized gain for the transaction, if present.
-          example: 0
-        average:
-          type: number
-          description: Raw average cost after the transaction, if present.
-          example: 182.56
-        total:
-          type: number
-          description: Raw total transaction amount, if present.
-          example: -18265.99
-        price:
-          type: number
-          description: Raw transaction price, rate, or valuation price, if present.
-          example: 182.56
-        boughtSold:
-          type: number
-          description: Raw quantity bought or sold by the transaction, if present.
-          example: 100
-        ambiguous:
-          type: boolean
-          description: Indicates if the transaction was flagged as ambiguous by SnapTrade.
-          example: false
-        rate:
-          type: number
-          description: Raw dividend, split, merger, or spinoff rate, if present.
-          example: 0.125
-        shares:
-          type: number
-          description: Raw share quantity used for dividend, split, merger, or spinoff display, if present.
-          example: 100
-        native:
-          type: number
-          description: Raw native currency amount, if present.
-          example: 12.5
 
     snaptrade-brokerage:
       type: object
@@ -1257,17 +1176,17 @@ components:
           example: 0c1fc39b-0865-4ee2-bd21-551e9f9f866a
         name:
           type: string
-          description: The name of the brokerage.
-          example: barchart-brokerage
+          description: The SnapTrade code for the brokerage.
+          example: COINBASE
         display:
           type: string
-          description: The name of the brokerage for display to a user.
-          example: Barchart Brokerage
+          description: The SnapTrade name for the brokerage (for display purposes).
+          example: Coinbase
         logo:
           type: string
-          description: The URI for the logo image for the brokerage.
+          description: The URI for the brokerage's logo image.
           format: uri
-          example: https://example.com/brokerage-logo.png
+          example: https://passiv-brokerage-logos.s3.ca-central-1.amazonaws.com/coinbase-logo-square.jpg
         connection:
           nullable: true
           allOf:
@@ -1286,27 +1205,32 @@ components:
 
     snaptrade-connect-instructions:
       type: object
-      description: Instructions used to connect or reconnect a SnapTrade brokerage.
+      description: Instructions for connecting to a brokerage.
       properties:
+        success:
+          type: boolean
+          description: The success of the operation.
+          example: true
         uri:
           type: string
           description: The URI for brokerage authentication.
           format: uri
-          example: https://connect.snaptrade.com/session/147e7af9-f2fd-4e1d-b0c2-05059f03db89
+          example: https://app.snaptrade.com/snapTrade/redeemToken?token=7j1kFBUasV6LcKV6dexnc
       required:
+        - success
         - uri
 
     snaptrade-connection:
       type: object
-      description: Data regarding a connection to a SnapTrade brokerage.
+      description: Data related to a user's connection to a brokerage.
       properties:
         id:
           type: string
-          description: The SnapTrade identifier for the brokerage connection.
+          description: The SnapTrade identifier for the user's connection to the brokerage.
           example: 147e7af9-f2fd-4e1d-b0c2-05059f03db89
         broken:
           type: boolean
-          description: Indicates if the user needs to authenticate again.
+          description: Indicates if the authentication for the connection has expired.
           example: false
       required:
         - id
@@ -1314,7 +1238,7 @@ components:
 
     snaptrade-account:
       type: object
-      description: Data regarding a SnapTrade brokerage account.
+      description: Data related to a real-world brokerage account.
       properties:
         id:
           type: string
@@ -1323,15 +1247,11 @@ components:
         number:
           type: string
           description: The brokerage account number, masked for display.
-          example: '********1234'
+          example: 'XXXXXXD4FE'
         name:
           type: string
           description: The brokerage account name.
-          example: Individual Brokerage
-        type:
-          type: string
-          description: The brokerage account type.
-          example: CASH
+          example: My Coinbase Account
         link:
           nullable: true
           allOf:
@@ -1345,45 +1265,46 @@ components:
 
     snaptrade-link:
       type: object
-      description: Data regarding the linkage between a SnapTrade account and a portfolio.
+      description: The linkage between a SnapTrade account and a portfolio.
       properties:
-        mode:
-          description: The strategy used when importing positions into the linked portfolio.
-          allOf:
-            - $ref: '#/components/schemas/enum-snaptrade-link-mode'
+        portfolio:
+          type: string
+          description: The UUID of the linked portfolio.
+          format: uuid
+          example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
         status:
-          description: The status of the link.
+          description: The status of the link between the SnapTrade account and the portfolio.
           allOf:
             - $ref: '#/components/schemas/enum-snaptrade-link-status'
         progress:
           type: number
-          description: If the status indicates work in progress, this is the percent complete as a whole number.
+          description: Percentage completion for the current status.
           example: 100
-        timestamp:
-          type: string
-          description: The timestamp of the most recent status update.
-          format: date-time
-          example: '2026-05-28T12:30:00.000Z'
         advice:
           type: string
-          description: Additional guidance for resolving the link status, if present.
-          example: Reconnect the brokerage account to continue synchronization.
+          description: Additional information about the current status.
+          example: Account linking complete.
+        timestamp:
+          type: number
+          description: The timestamp of the most recent status update.
+          format: int64
+          example: 1780878364743
       required:
         - status
         - progress
         - timestamp
 
-    snaptrade-account-link-snapshot:
+    snaptrade-link-snapshot:
       type: object
-      description: Data regarding the status of a link between a SnapTrade account and a portfolio.
+      description: The linkage between a SnapTrade account and a portfolio.
       properties:
         user:
           type: string
-          description: The identifier of the authorized user.
+          description: The UUID of the authorized user.
           example: 01748dd1-5d6d-4ae4-91b0-4e39e80c2b35
         portfolio:
           type: string
-          description: The identifier of the linked portfolio.
+          description: The UUID of the linked portfolio.
           format: uuid
           example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
         connection:
@@ -1395,18 +1316,22 @@ components:
           description: The SnapTrade identifier for the brokerage account.
           example: ccf4c0e4-50e1-428b-9865-0d85f82256d4
         status:
-          description: The status of the link.
+          description: The status of the link between the SnapTrade account and the portfolio.
           allOf:
             - $ref: '#/components/schemas/enum-snaptrade-link-status'
         progress:
           type: number
-          description: If the status indicates work in progress, this is the percent complete as a whole number.
+          description: Percentage completion for the current status.
           example: 100
         timestamp:
+          type: number
+          description: The timestamp of the most recent status update.
+          format: int64
+          example: 1780878364743
+        advice:
           type: string
-          description: The timestamp of the most recent status update, if present.
-          format: date-time
-          example: '2026-05-28T12:30:00.000Z'
+          description: Additional information about the current status.
+          example: Account linking complete.
       required:
         - user
         - portfolio
@@ -1478,7 +1403,8 @@ tags:
   - name: Positions
   - name: Position Summaries
   - name: Position Values
-  - name: SnapTrade
+  - name: Position Values (deprecated)
+  - name: SnapTrade Integration
   - name: Service
 
 paths:
@@ -1557,7 +1483,7 @@ paths:
         - $ref: '#/components/parameters/portfolio-or-wildcard'
       responses:
         '200':
-          description: An array of portfolios (with zero, one, or many items).
+          description: An array of portfolios.
           content:
             application/json:
               schema:
@@ -1621,27 +1547,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/portfolio-or-wildcard'
         - $ref: '#/components/parameters/position-or-wildcard'
-        - name: open
-          in: query
-          required: false
-          description: If true, only open positions are returned.
-          schema:
-            type: boolean
-            example: true
         - name: symbol
           in: query
           required: false
-          description: Filters positions by instrument symbol.
+          description: If specified, only positions for a given symbol are returned.
           schema:
             type: string
             example: AAPL
-        - name: includePreviousPrice
-          in: query
-          required: false
-          description: If true, includes the previous price in returned position data.
-          schema:
-            type: boolean
-            example: false
       responses:
         '200':
           description: An array of positions (with zero, one, or many items).
@@ -1656,7 +1568,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     put:
-      summary: Updates settings for a position.
+      summary: Updates a position.
       description: Updates settings for a position (e.g. turn on automatic re-investment).
       tags:
         - Positions
@@ -1672,11 +1584,11 @@ paths:
               $ref: '#/components/schemas/position-update'
       responses:
         '200':
-          description: The updated position.
+          description: Positions affected by the update operation.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/position'
+                $ref: '#/components/schemas/transaction-mutate-result'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -1703,8 +1615,8 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     patch:
-      summary: Moves a position to another portfolio.
-      description: Moves a position to another portfolio.
+      summary: Moves a position.
+      description: Moves a position into another portfolio.
       tags:
         - Positions
       security:
@@ -1735,7 +1647,7 @@ paths:
   /portfolios/{portfolio}/summaries/{position}:
     get:
       summary: Retrieves position summaries.
-      description: Retrieves position summaries (for an entire portfolio or a single position).
+      description: Retrieves position summaries.
       tags:
         - Position Summaries
       security:
@@ -1777,28 +1689,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/position-summary'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /portfolios/{portfolio}/values/availability:
-    get:
-      summary: Returns portfolio valuation availability.
-      description: Returns portfolio valuation availability.
-      tags:
-        - Position Values
-      security:
-        - JWT: []
-      parameters:
-        - $ref: '#/components/parameters/portfolio'
-      responses:
-        '200':
-          description: Valuation availability result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/valuations-availability-result'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -2037,70 +1927,23 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /portfolios/{portfolio}/positions/{position}/transactions-formatted:
+  /portfolios/{portfolio}/values/availability:
     get:
-      summary: Returns formatted transactions.
-      description: Returns transactions whose values are suitable for display.
+      summary: Retrieves status valuations.
+      description: Retrieves status of user/portfolio/position valuations.
       tags:
-        - Transactions
+        - Position Values
       security:
         - JWT: []
       parameters:
         - $ref: '#/components/parameters/portfolio'
-        - $ref: '#/components/parameters/position-or-wildcard'
-        - name: start
-          in: query
-          required: false
-          description: Start date for the formatted transaction query.
-          schema:
-            type: string
-            format: date
-            example: '2026-01-01'
-        - name: end
-          in: query
-          required: false
-          description: End date for the formatted transaction query.
-          schema:
-            type: string
-            format: date
-            example: '2026-05-28'
-        - name: page
-          in: query
-          required: false
-          description: If true, reads a single page of formatted transactions.
-          schema:
-            type: boolean
-            example: true
-        - name: sequence
-          in: query
-          required: false
-          description: The starting sequence number for a formatted transaction page.
-          schema:
-            type: number
-            example: 1
-        - name: count
-          in: query
-          required: false
-          description: The maximum number of formatted transactions to return.
-          schema:
-            type: number
-            example: 25
-        - name: descending
-          in: query
-          required: false
-          description: If true, results are returned in descending sequence order.
-          schema:
-            type: boolean
-            example: true
       responses:
         '200':
-          description: An array of formatted transactions.
+          description: Valuation availability result.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/transaction-formatted'
+                $ref: '#/components/schemas/valuations-availability-result'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -2108,8 +1951,8 @@ paths:
 
   /portfolios/{portfolio}/positions/{position}/values:
     get:
-      summary: Returns a daily history of valuations for positions (or an entire portfolio).
-      description: Returns a daily history of valuations for positions (or an entire portfolio).
+      summary: Retrieves portfolio/position valuations.
+      description: Retrieves portfolio/position valuations.
       tags:
         - Position Values
       security:
@@ -2119,7 +1962,7 @@ paths:
         - $ref: '#/components/parameters/position-or-wildcard'
       responses:
         '200':
-          description: An array of valuations (with zero, one, or many items).
+          description: A valuation container (for the user, portfolio, or position).
           content:
             application/json:
               schema:
@@ -2131,29 +1974,27 @@ paths:
 
   /values:
     get:
-      summary: Queries position valuations.
-      description: Queries end-of-day position valuations across all user portfolios.
+      summary: Retrieves position valuations.
+      description: Retrieves position valuations (for all positions with a specific symbol)
       tags:
-        - Position Values
+        - Position Values (deprecated)
       security:
         - JWT: []
       parameters:
         - name: symbol
           in: query
           required: true
-          description: The instrument symbol.
+          description: The symbol.
           schema:
             type: string
             example: AAPL
       responses:
         '200':
-          description: An array of valuation results.
+          description: Deprecated.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/misc-valuation-container'
+                $ref: '#/components/schemas/misc-valuation-container-deprecated'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -2161,25 +2002,24 @@ paths:
 
   /values/currency:
     put:
-      summary: Updates values currency.
-      description: Recalculates aggregate values for the authorized user in the requested currency.
+      summary: Changes currency used for user/portfolio valuations.
+      description: Changes currency used for user/portfolio valuations.
       tags:
-        - Position Values
+        - Position Values (deprecated)
       security:
         - JWT: []
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/enum-currency'
+              $ref: '#/components/schemas/misc-valuation-currency-update'
       responses:
         '200':
           description: Values currency update result.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/update-values-currency-result'
+                $ref: '#/components/schemas/misc-valuation-currency-update-result'
         '400':
           $ref: '#/components/responses/SchemaError'
         '401':
@@ -2190,15 +2030,15 @@ paths:
 
   /snaptrade/brokerages:
     get:
-      summary: Returns SnapTrade brokerages.
-      description: Returns available SnapTrade brokerages and linked account metadata.
+      summary: Retrieves brokerages.
+      description: Retrieves available brokerages (and current user connections).
       tags:
-        - SnapTrade
+        - SnapTrade Integration
       security:
         - JWT: []
       responses:
         '200':
-          description: An array of SnapTrade brokerages.
+          description: An array of brokerages.
           content:
             application/json:
               schema:
@@ -2212,10 +2052,10 @@ paths:
 
   /snaptrade/connections:
     post:
-      summary: Connects a SnapTrade brokerage.
-      description: Generates connection instructions for a SnapTrade brokerage.
+      summary: Gets instructions for brokerage connection.
+      description: Gets instructions for brokerage connection.
       tags:
-        - SnapTrade
+        - SnapTrade Integration
       security:
         - JWT: []
       parameters:
@@ -2240,10 +2080,10 @@ paths:
 
   /snaptrade/connections/{connection}:
     put:
-      summary: Reconnects a SnapTrade brokerage.
-      description: Generates reconnect instructions for a SnapTrade brokerage.
+      summary: Gets instructions for brokerage reconnection.
+      description: Gets instructions for brokerage reconnection.
       tags:
-        - SnapTrade
+        - SnapTrade Integration
       security:
         - JWT: []
       parameters:
@@ -2266,10 +2106,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
-      summary: Disconnects a SnapTrade brokerage.
-      description: Removes the connection to a SnapTrade brokerage.
+      summary: Deletes a brokerage connection.
+      description: Deletes a brokerage connection.
       tags:
-        - SnapTrade
+        - SnapTrade Integration
       security:
         - JWT: []
       parameters:
@@ -2283,7 +2123,7 @@ paths:
         - name: remove
           in: query
           required: false
-          description: If true, linked portfolios are deleted.
+          description: If true, linked portfolios are also deleted.
           schema:
             type: boolean
             example: false
@@ -2301,24 +2141,24 @@ paths:
 
   /snaptrade/connections/{connection}/accounts/{account}:
     get:
-      summary: Returns SnapTrade account link status.
-      description: Returns a snapshot of the SnapTrade account link status.
+      summary: Retrieves portfolio link status.
+      description: Retrieves portfolio link status.
       tags:
-        - SnapTrade
+        - SnapTrade Integration
       security:
         - JWT: []
       parameters:
         - name: connection
           in: path
           required: true
-          description: The SnapTrade identifier for the brokerage connection.
+          description: The identifier for the brokerage connection.
           schema:
             type: string
             example: 147e7af9-f2fd-4e1d-b0c2-05059f03db89
         - name: account
           in: path
           required: true
-          description: The SnapTrade identifier for the brokerage account.
+          description: The identifier for the brokerage account.
           schema:
             type: string
             example: ccf4c0e4-50e1-428b-9865-0d85f82256d4
@@ -2328,16 +2168,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/snaptrade-account-link-snapshot'
+                $ref: '#/components/schemas/snaptrade-link-snapshot'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/ServerError'
     post:
-      summary: Links a SnapTrade account.
-      description: Imports positions from a SnapTrade account into a linked portfolio.
+      summary: Creates a linked portfolio.
+      description: Creates a linked portfolio.
       tags:
-        - SnapTrade
+        - SnapTrade Integration
       security:
         - JWT: []
       parameters:
@@ -2358,7 +2198,7 @@ paths:
         - name: mode
           in: query
           required: false
-          description: The strategy used when importing positions into the linked portfolio.
+          description: The strategy used when importing positions from the brokerage account.
           schema:
             $ref: '#/components/schemas/enum-snaptrade-link-mode'
       responses:
@@ -2373,10 +2213,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     put:
-      summary: Refreshes a SnapTrade account.
-      description: Refreshes imported positions from a SnapTrade account into a linked portfolio.
+      summary: Refreshes a linked portfolio.
+      description: Refreshes a linked portfolio.
       tags:
-        - SnapTrade
+        - SnapTrade Integration
       security:
         - JWT: []
       parameters:
@@ -2394,12 +2234,6 @@ paths:
           schema:
             type: string
             example: ccf4c0e4-50e1-428b-9865-0d85f82256d4
-        - name: mode
-          in: query
-          required: false
-          description: The strategy used when importing positions into the linked portfolio.
-          schema:
-            $ref: '#/components/schemas/enum-snaptrade-link-mode'
       responses:
         '200':
           description: SnapTrade linking report.
@@ -2412,10 +2246,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
-      summary: Unlinks a SnapTrade account.
-      description: Removes a SnapTrade account link from a portfolio.
+      summary: Unlinks a portfolio.
+      description: Unlinks a portfolio.
       tags:
-        - SnapTrade
+        - SnapTrade Integration
       security:
         - JWT: []
       parameters:
