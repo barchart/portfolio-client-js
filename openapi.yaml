@@ -896,15 +896,6 @@ components:
         - date
         - market
 
-    misc-valuation-container-deprecated:
-      type: object
-      properties:
-        user:
-          type: string
-          format: uuid
-          example: 01748dd1-5d6d-4ae4-91b0-4e39e80c2b35
-      required:
-        - user
 
     misc-valuation-currency-update:
       type: object
@@ -925,18 +916,8 @@ components:
           type: boolean
           description: Indicates if the operation was successful.
           example: true
-        userId:
-          type: string
-          description: The UUID of the user (deprecated, please remove).
-          example: 01748dd1-5d6d-4ae4-91b0-4e39e80c2b35
-        currency:
-          description: The currency code used for the recalculation.
-          allOf:
-            - $ref: '#/components/schemas/enum-currency'
       required:
         - success
-        - userId
-        - currency
 
     enum-currency:
       type: string
@@ -1403,7 +1384,6 @@ tags:
   - name: Positions
   - name: Position Summaries
   - name: Position Values
-  - name: Position Values (deprecated)
   - name: SnapTrade Integration
   - name: Service
 
@@ -1972,42 +1952,17 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /values:
-    get:
-      summary: Retrieves position valuations.
-      description: Retrieves position valuations (for all positions with a specific symbol)
+  /portfolios/{portfolio}/positions/{position}/values/settings:
+    put:
+      summary: Changes currency used for user valuations.
+      description: Changes currency used for aggregate user valuations. The portfolio and position path values must both be asterisks.
       tags:
-        - Position Values (deprecated)
+        - Position Values
       security:
         - JWT: []
       parameters:
-        - name: symbol
-          in: query
-          required: true
-          description: The symbol.
-          schema:
-            type: string
-            example: AAPL
-      responses:
-        '200':
-          description: Deprecated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/misc-valuation-container-deprecated'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /values/currency:
-    put:
-      summary: Changes currency used for user/portfolio valuations.
-      description: Changes currency used for user/portfolio valuations.
-      tags:
-        - Position Values (deprecated)
-      security:
-        - JWT: []
+        - $ref: '#/components/parameters/portfolio-or-wildcard'
+        - $ref: '#/components/parameters/position-or-wildcard'
       requestBody:
         content:
           application/json:
@@ -2026,7 +1981,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/ServerError'
-
 
   /snaptrade/brokerages:
     get:
