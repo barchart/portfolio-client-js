@@ -89,6 +89,15 @@ components:
         type: string
         example: 6ce12dec-bba9-4bf3-b865-8a4eab6e43a3
 
+    portfolio-wildcard:
+      name: portfolio
+      in: path
+      required: true
+      description: The wildcard for all portfolios (always an asterisk).
+      schema:
+        type: string
+        example: '*'
+
     position:
       name: position
       in: path
@@ -107,6 +116,15 @@ components:
       schema:
         type: string
         example: 96af2dc6-2236-4a82-84c2-bff969389e00
+
+    position-wildcard:
+      name: position
+      in: path
+      required: true
+      description: The wildcard for all positions (always an asterisk).
+      schema:
+        type: string
+        example: '*'
 
     sequence:
       name: sequence
@@ -1961,8 +1979,8 @@ paths:
       security:
         - JWT: []
       parameters:
-        - $ref: '#/components/parameters/portfolio-or-wildcard'
-        - $ref: '#/components/parameters/position-or-wildcard'
+        - $ref: '#/components/parameters/portfolio-wildcard'
+        - $ref: '#/components/parameters/position-wildcard'
       requestBody:
         content:
           application/json:
