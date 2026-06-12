@@ -32,7 +32,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(currencySelector, 'currencySelector', Function);
 
 			if (requiredGroups) {
-				assert.argumentIsArray(requiredGroups, 'requiredGroups', String);
+				assert.argumentIsArray(requiredGroups, 'requiredGroups', validateRequiredGroup, 'RequiredGroup');
 			}
 
 			assert.argumentIsOptional(requiredGroupGenerator, 'requiredGroupGenerator', Function);
@@ -106,11 +106,11 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates the required groups (i.e. descriptions). The allows for the creation of empty
+		 * Indicates the required groups. This allows for the creation of empty
 		 * groups.
 		 *
 		 * @public
-		 * @returns {String[]}
+		 * @returns {PositionLevelDefinition~RequiredGroup[]}
 		 */
 		get requiredGroups() {
 			return this._requiredGroups;
@@ -147,6 +147,8 @@ module.exports = (() => {
 			const requiredGroup = this._requiredGroupGenerator(input);
 
 			if (requiredGroup !== null) {
+				validateRequiredGroup(requiredGroup, 'requiredGroup');
+
 				this._requiredGroups.push(requiredGroup);
 			}
 
@@ -253,6 +255,13 @@ module.exports = (() => {
 		toString() {
 			return '[PositionLevelDefinition]';
 		}
+	}
+
+	function validateRequiredGroup(requiredGroup, variableName) {
+		assert.argumentIsRequired(requiredGroup, variableName, Object);
+		assert.argumentIsRequired(requiredGroup.key, `${variableName}.key`, String);
+		assert.argumentIsRequired(requiredGroup.description, `${variableName}.description`, String);
+		assert.argumentIsRequired(requiredGroup.currency, `${variableName}.currency`, Currency, 'Currency');
 	}
 
 	/**
