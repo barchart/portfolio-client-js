@@ -2390,6 +2390,7 @@ module.exports = (() => {
 		Currency.AUD,
 		Currency.CAD,
 		Currency.CHF,
+		Currency.CZK,
 		Currency.DKK,
 		Currency.GBP,
 		Currency.GBX,
@@ -2584,11 +2585,11 @@ module.exports = (() => {
 					this._suspendedPositionQuotes = new Map();
 					this._suspendedForexQuotes = new Map();
 
-					this.setQuotes(positionQuotes, forexQuotes);
-
 					Object.keys(this._trees).forEach((key) => {
 						this._trees[key].walk(group => group.resumeCalculations(), false, false);
 					});
+
+					this.setQuotes(positionQuotes, forexQuotes);
 				}
 			});
 
@@ -4412,7 +4413,7 @@ module.exports = (() => {
 							summary.count = sums[fieldName].count + 1;
 						}
 
-						if ((i + 1) == this.items.length) {
+						if ((i + 1) === this.items.length) {
 							let averageFormat;
 
 							if (summary.count > 0) {
@@ -4610,7 +4611,7 @@ module.exports = (() => {
 			return currencyTranslator.translate(value, item.currency, currency);
 		};
 
-		let updates = items.reduce((updates, item) => {
+		const updates = items.reduce((updates, item) => {
 			updates.basis = updates.basis.add(translate(item, item.data.basis));
 
 			if (item.position.instrument.type === InstrumentType.FUTURE) {
@@ -5665,7 +5666,7 @@ module.exports = (() => {
 		let realizedToday;
 		let realizedTodayChange;
 
-		if (position.latest && position.latest.gain && position.latest.date && day && position.latest.date.getIsEqual(day)) {
+		if (position.latest && position.latest.gain && position.latest.date && today && position.latest.date.getIsEqual(today)) {
 			realizedToday = position.latest.gain;
 		} else {
 			realizedToday = Decimal.ZERO;
@@ -6026,7 +6027,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(currencySelector, 'currencySelector', Function);
 
 			if (requiredGroups) {
-				assert.argumentIsArray(requiredGroups, 'requiredGroups', String);
+				assert.argumentIsArray(requiredGroups, 'requiredGroups', validateRequiredGroup, 'RequiredGroup');
 			}
 
 			assert.argumentIsOptional(requiredGroupGenerator, 'requiredGroupGenerator', Function);
@@ -6100,11 +6101,11 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Indicates the required groups (i.e. descriptions). The allows for the creation of empty
+		 * Indicates the required groups. This allows for the creation of empty
 		 * groups.
 		 *
 		 * @public
-		 * @returns {String[]}
+		 * @returns {PositionLevelDefinition~RequiredGroup[]}
 		 */
 		get requiredGroups() {
 			return this._requiredGroups;
@@ -6141,6 +6142,8 @@ module.exports = (() => {
 			const requiredGroup = this._requiredGroupGenerator(input);
 
 			if (requiredGroup !== null) {
+				validateRequiredGroup(requiredGroup, 'requiredGroup');
+
 				this._requiredGroups.push(requiredGroup);
 			}
 
@@ -6247,6 +6250,13 @@ module.exports = (() => {
 		toString() {
 			return '[PositionLevelDefinition]';
 		}
+	}
+
+	function validateRequiredGroup(requiredGroup, variableName) {
+		assert.argumentIsRequired(requiredGroup, variableName, Object);
+		assert.argumentIsRequired(requiredGroup.key, `${variableName}.key`, String);
+		assert.argumentIsRequired(requiredGroup.description, `${variableName}.description`, String);
+		assert.argumentIsRequired(requiredGroup.currency, `${variableName}.currency`, Currency, 'Currency');
 	}
 
 	/**
@@ -28689,6 +28699,103 @@ describe('When a position container data is gathered', () => {
 });
 
 },{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":12,"./../../../lib/processing/PositionGroup":13,"./../../../lib/processing/definitions/PositionLevelDefinition":15,"./../../../lib/processing/definitions/PositionLevelType":16,"./../../../lib/processing/definitions/PositionTreeDefinition":17,"@barchart/common-js/lang/Currency":49,"@barchart/common-js/lang/Decimal":53}],132:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency');
+
+const PositionLevelDefinition = require('./../../../../lib/processing/definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./../../../../lib/processing/definitions/PositionLevelType');
+
+describe('When a position level definition is created', () => {
+	'use strict';
+
+	function createDefinition(requiredGroups, requiredGroupGenerator) {
+		return new PositionLevelDefinition(
+			'Total',
+			PositionLevelType.OTHER,
+			item => item.key,
+			item => item.description,
+			item => item.currency,
+			requiredGroups,
+			requiredGroupGenerator
+		);
+	}
+
+	describe('with required groups', () => {
+		it('should accept groups with a key, description, and currency', () => {
+			const requiredGroups = [
+				{
+					key: 'totals',
+					description: 'Total',
+					currency: Currency.USD
+				}
+			];
+
+			expect(() => createDefinition(requiredGroups)).not.toThrow();
+		});
+
+		it('should reject a group without a key', () => {
+			const requiredGroups = [
+				{
+					description: 'Total',
+					currency: Currency.USD
+				}
+			];
+
+			expect(() => createDefinition(requiredGroups)).toThrow();
+		});
+
+		it('should reject a group without a description', () => {
+			const requiredGroups = [
+				{
+					key: 'totals',
+					currency: Currency.USD
+				}
+			];
+
+			expect(() => createDefinition(requiredGroups)).toThrow();
+		});
+
+		it('should reject a group without a valid currency', () => {
+			const requiredGroups = [
+				{
+					key: 'totals',
+					description: 'Total',
+					currency: 'USD'
+				}
+			];
+
+			expect(() => createDefinition(requiredGroups)).toThrow();
+		});
+	});
+
+	describe('with a required group generator', () => {
+		it('should add a valid generated group', () => {
+			const requiredGroup = {
+				key: 'totals',
+				description: 'Total',
+				currency: Currency.USD
+			};
+			const definition = createDefinition([ ], () => requiredGroup);
+
+			expect(definition.generateRequiredGroup()).toBe(requiredGroup);
+			expect(definition.requiredGroups).toEqual([ requiredGroup ]);
+		});
+
+		it('should reject an invalid generated group', () => {
+			const definition = createDefinition([ ], () => {
+				return {
+					key: 'totals',
+					description: 'Total',
+					currency: 'USD'
+				};
+			});
+
+			expect(() => definition.generateRequiredGroup()).toThrow();
+			expect(definition.requiredGroups).toEqual([ ]);
+		});
+	});
+});
+
+},{"./../../../../lib/processing/definitions/PositionLevelDefinition":15,"./../../../../lib/processing/definitions/PositionLevelType":16,"@barchart/common-js/lang/Currency":49}],133:[function(require,module,exports){
 const Gateway = require('@barchart/common-js/api/http/Gateway');
 
 const InstrumentProvider = require('./../../../lib/providers/InstrumentProvider');
@@ -28775,7 +28882,7 @@ describe('After the InstrumentProvider utility is initialized', () => {
 	});
 });
 
-},{"./../../../lib/providers/InstrumentProvider":18,"@barchart/common-js/api/http/Gateway":24}],133:[function(require,module,exports){
+},{"./../../../lib/providers/InstrumentProvider":18,"@barchart/common-js/api/http/Gateway":24}],134:[function(require,module,exports){
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -28845,7 +28952,7 @@ describe('When positions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/serialization/PositionSchema":19}],134:[function(require,module,exports){
+},{"./../../../lib/serialization/PositionSchema":19}],135:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -28912,4 +29019,4 @@ describe('When transactions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/data/TransactionType":9,"./../../../lib/serialization/TransactionSchema":20,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53}]},{},[127,128,129,130,131,132,133,134]);
+},{"./../../../lib/data/TransactionType":9,"./../../../lib/serialization/TransactionSchema":20,"@barchart/common-js/lang/Day":51,"@barchart/common-js/lang/Decimal":53}]},{},[127,128,129,130,132,131,133,134,135]);
