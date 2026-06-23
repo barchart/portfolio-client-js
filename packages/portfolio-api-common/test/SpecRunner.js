@@ -3941,6 +3941,18 @@ module.exports = (() => {
 			this._dataFormat.periodPercentPrevious = null;
 			this._dataFormat.periodPercentPrevious2 = null;
 
+			this._dataActual.todayQuote = null;
+			this._dataActual.todayExchange = null;
+
+			this._dataFormat.todayQuote = null;
+			this._dataFormat.todayExchange = null;
+
+			this._dataActual.todayPrice = null;
+			this._dataActual.todayPricePrevious = null;
+
+			this._dataFormat.todayPrice = null;
+			this._dataFormat.todayPricePrevious = null;
+
 			this._items.forEach((item) => {
 				bindItem.call(this, item);
 			});
@@ -4779,6 +4791,15 @@ module.exports = (() => {
 			}
 		}
 
+		format.todayQuote = '—';
+		format.todayExchange = '—';
+
+		format.todayPrice = '—';
+		format.todayPricePrevious = '—';
+
+		format.unrealizedToday = '—';
+		format.gainToday = '—';
+
 		format.portfolioType = portfolioType;
 	}
 
@@ -4932,6 +4953,26 @@ module.exports = (() => {
 		if (group.single && item) {
 			actual.unrealizedPrice = item.data.unrealizedPrice;
 			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, item.position.instrument);
+
+			actual.todayQuote = item.data.todayQuote;
+			actual.todayExchange = item.data.todayExchange;
+
+			format.todayQuote = actual.todayQuote === null ? '—' : actual.todayQuote.format();
+			format.todayExchange = actual.todayExchange === null ? '—' : actual.todayExchange.format();
+
+			actual.todayPrice = item.data.todayPrice;
+			actual.todayPricePrevious = item.data.todayPricePrevious;
+
+			format.todayPrice = actual.todayPrice === null ? '—' : formatFractionSpecial(actual.todayPrice, currency, item.position.instrument);
+			format.todayPricePrevious = actual.todayPricePrevious === null ? '—' : formatFractionSpecial(actual.todayPricePrevious, currency, item.position.instrument);
+
+			if (actual.todayPrice === null) {
+				format.unrealizedToday = '—';
+
+				if (actual.realizedToday !== null && actual.realizedToday.getIsEqual(Decimal.ZERO)) {
+					format.gainToday = '—';
+				}
+			}
 		}
 	}
 
@@ -5089,6 +5130,12 @@ module.exports = (() => {
 
 			this._data.marketAbsolute = null;
 			this._data.marketAbsoluteChange = null;
+
+			this._data.todayQuote = null;
+			this._data.todayExchange = null;
+
+			this._data.todayPrice = null;
+			this._data.todayPricePrevious = null;
 
 			this._data.realizedToday = null;
 			this._data.realizedTodayChange = null;
@@ -5635,6 +5682,9 @@ module.exports = (() => {
 		data.marketAbsolute = marketAbsolute;
 		data.marketAbsoluteChange = marketAbsoluteChange;
 
+		data.todayQuote = day || null;
+		data.todayExchange = today || null;
+
 		let unrealizedToday;
 		let unrealizedTodayChange;
 
@@ -5662,6 +5712,17 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+
+		if (priceIsToday && price) {
+			data.todayPrice = price;
+
+			if (data.previousPrice) {
+				data.todayPricePrevious = data.previousPrice;
+			}
+		} else {
+			data.todayPrice = null;
+			data.todayPricePrevious = null;
+		}
 
 		let realizedToday;
 		let realizedTodayChange;
@@ -13074,8 +13135,8 @@ module.exports = (() => {
     }
 
     /**
-     * Returns a new {@link Timestamp} instance shifted forward (or backward)
-     * by a specific number of milliseconds.
+     * Returns a new {@link Timestamp} instance shifted forward by a specific
+     * number of milliseconds.
      *
      * @public
      * @param {Number} milliseconds
@@ -13087,8 +13148,21 @@ module.exports = (() => {
     }
 
     /**
-     * Returns a new {@link Timestamp} instance shifted forward (or backward)
-     * by a specific number of seconds.
+     * Returns a new {@link Timestamp} instance shifted backwards by a specific
+     * number of milliseconds.
+     *
+     * @public
+     * @param {Number} milliseconds
+     * @returns {Timestamp}
+     */
+    subtract(milliseconds) {
+      assert.argumentIsRequired(milliseconds, 'milliseconds', Number);
+      return new Timestamp(this._timestamp - milliseconds, this._timezone);
+    }
+
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward by a specific
+     * number of seconds.
      *
      * @public
      * @param {Number} seconds
@@ -13097,6 +13171,19 @@ module.exports = (() => {
     addSeconds(seconds) {
       assert.argumentIsRequired(seconds, 'seconds', Number);
       return this.add(seconds * MILLISECONDS_PER_SECOND);
+    }
+
+    /**
+     * Returns a new {@link Timestamp} instance shifted backwards by a specific
+     * number of seconds.
+     *
+     * @public
+     * @param {Number} seconds
+     * @returns {Timestamp}
+     */
+    subtractSeconds(seconds) {
+      assert.argumentIsRequired(seconds, 'seconds', Number);
+      return this.subtract(seconds * MILLISECONDS_PER_SECOND);
     }
 
     /**
@@ -13179,10 +13266,9 @@ module.exports = (() => {
     }
 
     /**
-     * A comparator function for {@link Day} instances.
+     * A comparator function for {@link Timestamp} instances.
      *
      * @public
-     * @static
      * @param {Timestamp} a
      * @param {Timestamp} b
      * @returns {Number}
