@@ -67,6 +67,12 @@ module.exports = (() => {
 			this._data.marketAbsolute = null;
 			this._data.marketAbsoluteChange = null;
 
+			this._data.todayQuote = null;
+			this._data.todayExchange = null;
+
+			this._data.todayPrice = null;
+			this._data.todayPricePrevious = null;
+
 			this._data.realizedToday = null;
 			this._data.realizedTodayChange = null;
 
@@ -612,6 +618,9 @@ module.exports = (() => {
 		data.marketAbsolute = marketAbsolute;
 		data.marketAbsoluteChange = marketAbsoluteChange;
 
+		data.todayQuote = day || null;
+		data.todayExchange = today || null;
+
 		let unrealizedToday;
 		let unrealizedTodayChange;
 
@@ -639,6 +648,17 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+
+		if (priceIsToday && price) {
+			data.todayPrice = price;
+
+			if (data.previousPrice) {
+				data.todayPricePrevious = data.previousPrice;
+			}
+		} else {
+			data.todayPrice = null;
+			data.todayPricePrevious = null;
+		}
 
 		let realizedToday;
 		let realizedTodayChange;
