@@ -10,10 +10,12 @@ const array = require('@barchart/common-js/lang/array'),
 	DisposableStack = require('@barchart/common-js/collections/specialized/DisposableStack'),
 	Event = require('@barchart/common-js/messaging/Event'),
 	is = require('@barchart/common-js/lang/is'),
-	Rate = require('@barchart/common-js/lang/Rate'),
-	Tree = require('@barchart/common-js/collections/Tree');
+	Rate = require('@barchart/common-js/lang/Rate');
 
 const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+
+const BindingTree = require('./BindingTree'),
+	PositionContainerBinding = require('./PositionContainerBinding');
 
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType'),
@@ -87,7 +89,7 @@ module.exports = (() => {
 
 			this._definitions = definitions;
 
-			this._groupBindings = { };
+			this._groupObservers = { };
 
 			this._calculationSuspensions = new Set();
 
@@ -107,6 +109,9 @@ module.exports = (() => {
 
 				return map;
 			}, { });
+
+			this._portfolioBindings = Object.keys(this._portfolios).map(key => this._portfolios[key]);
+			this._binding = new PositionContainerBinding(this._portfolioBindings);
 
 			if (reportFrame) {
 				this._reportDate = reportDate;
@@ -195,11 +200,12 @@ module.exports = (() => {
 			this._nodes = { };
 
 			this._trees = this._definitions.reduce((map, treeDefinition) => {
-				const tree = new Tree();
+				const tree = new BindingTree();
 
 				createGroups.call(this, tree, this._items, treeDefinition, treeDefinition.definitions);
 
 				map[treeDefinition.name] = tree;
+				this._binding.addTree(treeDefinition.name, tree.binding);
 
 				return map;
 			}, { });
@@ -249,6 +255,36 @@ module.exports = (() => {
 
 		getCalculationsSuspended() {
 			return this._calculationSuspensions.size !== 0;
+		}
+
+		/**
+		 * The portfolios intended for binding to a user interface.
+		 *
+		 * @public
+		 * @returns {Object[]}
+		 */
+		get portfolios() {
+			return this._portfolioBindings;
+		}
+
+		/**
+		 * The position trees intended for binding to a user interface.
+		 *
+		 * @public
+		 * @returns {Object<String, BindingTree>}
+		 */
+		get trees() {
+			return this._trees;
+		}
+
+		/**
+		 * The container data intended for binding to a user interface.
+		 *
+		 * @public
+		 * @returns {PositionContainerBinding}
+		 */
+		get binding() {
+			return this._binding;
 		}
 
 		/**
@@ -329,6 +365,7 @@ module.exports = (() => {
 			const key = portfolio.portfolio;
 
 			this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio });
+			this._portfolioBindings.push(portfolio);
 
 			this._definitions.forEach((treeDefinition) => {
 				const tree = this._trees[treeDefinition.name];
@@ -392,13 +429,19 @@ module.exports = (() => {
 
 			this._portfolios[portfolio.portfolio] = portfolio;
 
+			const portfolioIndex = this._portfolioBindings.findIndex(candidate => candidate.portfolio === portfolio.portfolio);
+
+			if (!(portfolioIndex < 0)) {
+				this._portfolioBindings.splice(portfolioIndex, 1, portfolio);
+			}
+
 			getPositionItemsForPortfolio(this._items, portfolio.portfolio).forEach(item => item.updatePortfolio(portfolio));
 
 			updateEmptyPortfolioGroups.call(this, portfolio);
 		}
 
 		/**
-		 * Removes an existing portfolio, and all of it's positions, from the container. This
+		 * Removes an existing portfolio, and all of its positions, from the container. This
 		 * also triggers removal of the portfolio and it's positions from any applicable
 		 * aggregation trees.
 		 *
@@ -418,6 +461,8 @@ module.exports = (() => {
 			delete this._portfolios[portfolio.portfolio];
 
 			this._portfolios = Object.assign({}, this._portfolios);
+
+			array.remove(this._portfolioBindings, candidate => candidate.portfolio === portfolio.portfolio);
 
 			Object.keys(this._trees).forEach((key) => {
 				this._trees[key].walk((group, groupNode) => {
@@ -884,7 +929,9 @@ module.exports = (() => {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', String);
 
-			return findNode(this._trees[name], keys).getChildren().map(node => node.getValue());
+			const node = findNode(this._trees[name], keys);
+
+			return node.getChildren().map(child => child.getValue());
 		}
 
 		/**
@@ -901,7 +948,7 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Returns the a parent {@link PositionGroup} which represents a portfolio.
+		 * Returns the parent {@link PositionGroup} which represents a portfolio.
 		 *
 		 * @public
 		 * @param {PositionGroup} group
@@ -920,7 +967,7 @@ module.exports = (() => {
 		 * @returns {Object[]}
 		 */
 		getPortfolios() {
-			return Object.keys(this._portfolios).map(id => this._portfolios[id]);
+			return this._portfolioBindings;
 		}
 
 		/**
@@ -1043,20 +1090,20 @@ module.exports = (() => {
 		return null;
 	}
 
-	function addGroupBinding(group, dispoable) {
+	function addGroupObserver(group, disposable) {
 		const id = group.id;
 
-		if (!this._groupBindings.hasOwnProperty(id)) {
-			this._groupBindings[id] = new DisposableStack();
+		if (!this._groupObservers.hasOwnProperty(id)) {
+			this._groupObservers[id] = new DisposableStack();
 		}
 
-		this._groupBindings[id].push(dispoable);
+		this._groupObservers[id].push(disposable);
 	}
 
 	function initializeGroupObservers(groupTree, treeDefinition) {
 		const group = groupTree.getValue();
 
-		addGroupBinding.call(this, group, group.registerGroupExcludedChangeHandler(() => {
+		addGroupObserver.call(this, group, group.registerGroupExcludedChangeHandler(() => {
 			groupTree.climb((parentGroup, parentTree) => {
 				if (parentGroup) {
 					let excludedItems = [];
@@ -1306,8 +1353,21 @@ module.exports = (() => {
 	}
 
 	function severGroupNode(groupNodeToSever) {
+		const groups = [ ];
+
+		groupNodeToSever.walk(group => groups.push(group), true, true);
+
 		groupNodeToSever.sever();
-		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
+
+		groups.forEach((group) => {
+			if (this._groupObservers.hasOwnProperty(group.id)) {
+				this._groupObservers[group.id].dispose();
+
+				delete this._groupObservers[group.id];
+			}
+
+			delete this._nodes[group.id];
+		});
 	}
 
 	function recalculatePercentages() {

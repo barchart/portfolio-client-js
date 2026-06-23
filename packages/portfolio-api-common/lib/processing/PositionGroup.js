@@ -16,10 +16,18 @@ const InstrumentType = require('./../data/InstrumentType'),
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType');
 
+const PositionGroupBinding = require('./PositionGroupBinding');
+
 module.exports = (() => {
 	'use strict';
 
 	let counter = 0;
+
+	const DIRECTION_DOWN = 'down';
+	const DIRECTION_UNCHANGED = 'unchanged';
+	const DIRECTION_UP = 'up';
+
+	const FUNDAMENTAL_FIELDS = [ 'percentChange1m', 'percentChange1y', 'percentChange3m', 'percentChangeYtd' ];
 
 	/**
 	 * A grouping of {@link PositionItem} instances. The group aggregates from across
@@ -77,17 +85,48 @@ module.exports = (() => {
 			this._dataActual = { };
 
 			this._dataFormat.key = this._key;
+			this._dataFormat.id = this._id;
 			this._dataFormat.description = this._description;
+			this._dataFormat.levelTypeCode = this._definition.type.code;
+			this._dataFormat.single = this._single;
+			this._dataFormat.homogeneous = this._homogeneous;
+			this._dataFormat.currencyCode = this._currency.code;
+			this._dataFormat.open = false;
+			this._dataFormat.linked = false;
+			this._dataFormat.hasLinked = false;
+			this._dataFormat.hasManual = false;
+			this._dataFormat.positions = [ ];
 			this._dataFormat.hide = false;
 			this._dataFormat.invalid = false;
 			this._dataFormat.locked = false;
 			this._dataFormat.calculating = false;
 			this._dataFormat.expired = false;
+			this._dataFormat.empty = this._items.length === 0;
 			this._dataFormat.newsExists = false;
 			this._dataFormat.quantity = null;
+			this._dataFormat.quantityZero = true;
 			this._dataFormat.quantityPrevious = null;
 			this._dataFormat.basisPrice = null;
 			this._dataFormat.unrealizedPrice = null;
+			this._dataFormat.unrealizedPricePositive = false;
+			this._dataFormat.unrealizedPriceNegative = false;
+			this._dataFormat.instrument = null;
+			this._dataFormat.instrumentName = null;
+			this._dataFormat.instrumentSymbol = null;
+			this._dataFormat.instrumentSymbolBarchart = null;
+			this._dataFormat.instrumentSymbolDisplay = null;
+			this._dataFormat.instrumentType = null;
+			this._dataFormat.instrumentTypeCode = null;
+			this._dataFormat.instrumentTypeOption = false;
+			this._dataFormat.instrumentUsesSymbols = false;
+			this._dataFormat.instrumentCurrency = null;
+			this._dataFormat.instrumentExchange = null;
+			this._dataFormat.instrumentCode = null;
+			this._dataFormat.fundamental = null;
+			this._dataFormat.fundamentalPercentChange1m = null;
+			this._dataFormat.fundamentalPercentChange1y = null;
+			this._dataFormat.fundamentalPercentChange3m = null;
+			this._dataFormat.fundamentalPercentChangeYtd = null;
 
 			this._dataActual.key = this._key;
 			this._dataActual.description = this._description;
@@ -102,20 +141,18 @@ module.exports = (() => {
 
 				this._dataFormat.portfolio = item.portfolio.portfolio;
 				this._dataFormat.position = item.position.position;
-				this._dataFormat.instrument = item.position.instrument;
-				this._dataFormat.fundamental = item.fundamental || { };
+				setInstrumentFormat(this._dataFormat, item.position.instrument);
+				setFundamentalFormat(this._dataFormat, item.data.fundamental);
 			} else {
 				this._dataFormat.portfolio = null;
 				this._dataFormat.position = null;
-				this._dataFormat.instrument = null;
-				this._dataFormat.fundamental = { };
 			}
 
 			if (this._homogeneous && items.length !== 0) {
 				const item = items[0];
 
-				this._dataFormat.instrument = item.position.instrument;
-				this._dataFormat.fundamental = item.fundamental || { };
+				setInstrumentFormat(this._dataFormat, item.position.instrument);
+				setFundamentalFormat(this._dataFormat, item.data.fundamental);
 			}
 
 			this._dataActual.quoteLast = null;
@@ -135,7 +172,8 @@ module.exports = (() => {
 			this._dataFormat.quoteChangePercent = null;
 			this._dataFormat.quoteTime = null;
 			this._dataFormat.quoteVolume = null;
-			this._dataFormat.quoteChangeDirection = unchanged;
+			this._dataFormat.quoteChangeDirection = DIRECTION_UNCHANGED;
+			this._dataFormat.quoteChangePositive = false;
 			this._dataFormat.quoteChangeNegative = false;
 
 			this._dataActual.currentPrice = null;
@@ -170,27 +208,35 @@ module.exports = (() => {
 			this._dataFormat.basis2 = null;
 			this._dataFormat.realized = null;
 			this._dataFormat.realizedPercent = null;
+			this._dataFormat.realizedPositive = false;
+			this._dataFormat.realizedNegative = false;
 			this._dataFormat.realizedToday = null;
 			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.market2 = null;
 			this._dataFormat.marketPercent = null;
 			this._dataFormat.marketPercentPortfolio = null;
-			this._dataFormat.marketDirection = null;
+			this._dataFormat.marketDirection = DIRECTION_UNCHANGED;
 			this._dataFormat.unrealized = null;
 			this._dataFormat.unrealizedPercent = null;
+			this._dataFormat.unrealizedPositive = false;
 			this._dataFormat.unrealizedNegative = false;
 			this._dataFormat.unrealizedToday = null;
 			this._dataFormat.unrealizedTodayNegative = false;
 			this._dataFormat.gainToday = null;
+			this._dataFormat.gainTodayPositive = false;
 			this._dataFormat.gainTodayNegative = false;
 			this._dataFormat.total = null;
+			this._dataFormat.totalPositive = false;
 			this._dataFormat.totalNegative = false;
 			this._dataFormat.summaryTotalCurrent = null;
+			this._dataFormat.summaryTotalCurrentPositive = false;
 			this._dataFormat.summaryTotalCurrentNegative = false;
 			this._dataFormat.summaryTotalPrevious = null;
+			this._dataFormat.summaryTotalPreviousPositive = false;
 			this._dataFormat.summaryTotalPreviousNegative = false;
 			this._dataFormat.summaryTotalPrevious2 = null;
+			this._dataFormat.summaryTotalPrevious2Positive = false;
 			this._dataFormat.summaryTotalPrevious2Negative = false;
 			this._dataFormat.marketPrevious = null;
 			this._dataFormat.marketPrevious2 = null;
@@ -222,6 +268,8 @@ module.exports = (() => {
 			this._dataFormat.periodPercent = null;
 			this._dataFormat.periodPercentPrevious = null;
 			this._dataFormat.periodPercentPrevious2 = null;
+
+			this._binding = new PositionGroupBinding(this._dataFormat);
 
 			this._items.forEach((item) => {
 				bindItem.call(this, item);
@@ -308,6 +356,16 @@ module.exports = (() => {
 		 */
 		get actual() {
 			return this._dataActual;
+		}
+
+		/**
+		 * The binding data for the group.
+		 *
+		 * @public
+		 * @returns {PositionGroupBinding}
+		 */
+		get binding() {
+			return this._binding;
 		}
 
 		/**
@@ -424,6 +482,8 @@ module.exports = (() => {
 			this._items.push(item);
 			this._consideredItems.push(item);
 
+			this._dataFormat.empty = false;
+
 			bindItem.call(this, item);
 
 			this.refresh();
@@ -493,6 +553,7 @@ module.exports = (() => {
 			const showOpen = mode !== FilterMode.CLOSED;
 
 			this._filterMode = mode;
+			this._dataFormat.filterModeCode = mode.code;
 
 			this.setShowClosedPositions(showClosed);
 			this.setShowOpenedPositions(showOpen);
@@ -523,7 +584,7 @@ module.exports = (() => {
 				portfolioType = null;
 			}
 
-			this._dataFormat.portfolioType = portfolioType;
+			this._dataFormat.portfolioType = formatString(portfolioType);
 
 			this.changeCurrency(this._definition.currencySelector({ portfolio }));
 		}
@@ -659,14 +720,15 @@ module.exports = (() => {
 				this._dataActual.quoteTime = quote.timeDisplay;
 				this._dataActual.quoteVolume = is.number(quote.volume) ? quote.volume : null;
 
-				this._dataFormat.quoteTime = this._dataActual.quoteTime;
+				this._dataFormat.quoteTime = formatString(this._dataActual.quoteTime);
 				this._dataFormat.quoteVolume = formatNumber(this._dataActual.quoteVolume, 0);
 
 				const quoteChangePositive = quote.lastPriceDirection === 'up';
 				const quoteChangeNegative = quote.lastPriceDirection === 'down';
 
-				setTimeout(() => this._dataFormat.quoteChangeDirection = { up: quoteChangePositive, down: quoteChangeNegative }, 0);
+				setTimeout(() => this._dataFormat.quoteChangeDirection = formatDirection(quoteChangePositive, quoteChangeNegative), 0);
 
+				this._dataFormat.quoteChangePositive = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange > 0;
 				this._dataFormat.quoteChangeNegative = is.number(this._dataActual.quoteChange) && this._dataActual.quoteChange < 0;
 			}
 
@@ -675,18 +737,16 @@ module.exports = (() => {
 
 		const fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single || this._homogeneous) {
-				this._dataFormat.fundamental = data;
+				setFundamentalFormat(this._dataFormat, data);
 
 				return;
 			}
-
-			const fundamentalFields = [ 'percentChange1m', 'percentChange1y', 'percentChange3m', 'percentChangeYtd' ];
 
 			const fundamentalData = this.items.reduce((sums, item, i) => {
 				if (item.data && item.data.fundamental && item.data.fundamental.raw) {
 					const fundamental = item.data.fundamental.raw;
 
-					fundamentalFields.forEach((fieldName) => {
+					FUNDAMENTAL_FIELDS.forEach((fieldName) => {
 						const summary = sums[fieldName];
 						const value = fundamental[fieldName];
 
@@ -710,17 +770,15 @@ module.exports = (() => {
 				}
 
 				return sums;
-			}, fundamentalFields.reduce((sums, fieldName) => {
+			}, FUNDAMENTAL_FIELDS.reduce((sums, fieldName) => {
 				sums[fieldName] = { total: 0, count: 0, averageFormat: '—' };
 
 				return sums;
 			}, { }));
 
-			this._dataFormat.fundamental = fundamentalFields.reduce((sums, fieldName) => {
-				sums[fieldName] = fundamentalData[fieldName].averageFormat;
-
-				return sums;
-			}, { });
+			FUNDAMENTAL_FIELDS.forEach((fieldName) => {
+				this._dataFormat[getFundamentalFormatKey(fieldName)] = fundamentalData[fieldName].averageFormat;
+			});
 		});
 
 		let newsBinding = Disposable.getEmpty();
@@ -781,8 +839,131 @@ module.exports = (() => {
 
 			delete this._excludedItemMap[item.position.position];
 
+			this._dataFormat.empty = this._items.length === 0;
+
 			this.refresh();
 		});
+	}
+
+	function setInstrumentFormat(format, instrument) {
+		const symbolBarchart = instrument && instrument.symbol ? formatString(instrument.symbol.barchart) : null;
+		const symbolDisplay = instrument && instrument.symbol ? formatString(instrument.symbol.display) : null;
+		const type = instrument && instrument.type ? instrument.type : null;
+
+		format.instrumentName = instrument ? formatString(instrument.name) : null;
+		format.instrumentSymbolBarchart = symbolBarchart;
+		format.instrumentSymbolDisplay = symbolDisplay;
+		format.instrumentSymbol = symbolDisplay || symbolBarchart || format.instrumentName;
+		format.instrument = format.instrumentSymbol;
+		format.instrumentType = type ? formatString(type.description) : null;
+		format.instrumentTypeCode = type ? formatString(type.code) : null;
+		format.instrumentTypeOption = type ? type.option : false;
+		format.instrumentUsesSymbols = type ? type.usesSymbols : false;
+		format.instrumentCurrency = instrument && instrument.currency ? formatString(instrument.currency.code) : null;
+		format.instrumentExchange = instrument ? formatString(instrument.exchange) : null;
+		format.instrumentCode = instrument && instrument.code ? formatString(instrument.code.code) : null;
+	}
+
+	function setPositionsFormat(format, items) {
+		format.positions = items.map((item) => {
+			const position = item.position;
+			const portfolio = item.portfolio;
+			const instrument = position.instrument;
+
+			return {
+				portfolio: position.portfolio,
+				portfolioName: portfolio ? portfolio.name : null,
+				position: position.position,
+				cash: position.cash,
+				linked: portfolio ? !!portfolio.snaptrade : false,
+				open: position.snapshot ? position.snapshot.direction.open : false,
+				quantity: formatDecimal(item.data.quantity, 2),
+				instrumentName: instrument ? formatString(instrument.name) : null,
+				instrumentSymbolBarchart: instrument && instrument.symbol ? formatString(instrument.symbol.barchart) : null,
+				instrumentSymbolDisplay: instrument && instrument.symbol ? formatString(instrument.symbol.display) : null,
+				instrumentTypeCode: instrument && instrument.type ? formatString(instrument.type.code) : null,
+				instrumentTypeDescription: instrument && instrument.type ? formatString(instrument.type.description) : null,
+				instrumentTypeAlternateDescription: instrument && instrument.type ? formatString(instrument.type.alternateDescription) : null,
+				instrumentTypeOption: instrument && instrument.type ? instrument.type.option : false,
+				instrumentUsesSymbols: instrument && instrument.type ? instrument.type.usesSymbols : false,
+				instrumentCurrencyCode: instrument && instrument.currency ? formatString(instrument.currency.code) : null,
+				instrumentExchange: instrument ? formatString(instrument.exchange) : null,
+				instrumentCode: instrument && instrument.code ? formatString(instrument.code.code) : null
+			};
+		});
+
+		format.open = format.positions.some(position => position.open);
+		format.linked = format.positions.length !== 0 && format.positions.every(position => position.linked);
+		format.hasLinked = format.positions.some(position => position.linked);
+		format.hasManual = format.positions.some(position => !position.linked);
+	}
+
+	function setFundamentalFormat(format, data) {
+		format.fundamental = null;
+
+		FUNDAMENTAL_FIELDS.forEach((fieldName) => {
+			format[getFundamentalFormatKey(fieldName)] = formatFundamentalValue(data, fieldName);
+		});
+	}
+
+	function formatFundamentalValue(data, fieldName) {
+		if (!data) {
+			return null;
+		}
+
+		let value;
+
+		if (data.formatted && data.formatted[fieldName] !== undefined) {
+			value = data.formatted[fieldName];
+		} else if (data[fieldName] !== undefined) {
+			value = data[fieldName];
+		} else if (data.raw && data.raw[fieldName] !== undefined) {
+			value = data.raw[fieldName];
+		} else {
+			value = null;
+		}
+
+		if (value instanceof Decimal) {
+			return formatPercent(value, 2, true);
+		}
+
+		if (is.number(value)) {
+			return formatPercent(new Decimal(value), 2, true);
+		}
+
+		return formatString(value);
+	}
+
+	function getFundamentalFormatKey(fieldName) {
+		return `fundamental${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`;
+	}
+
+	function formatDirection(up, down) {
+		if (up) {
+			return DIRECTION_UP;
+		}
+
+		if (down) {
+			return DIRECTION_DOWN;
+		}
+
+		return DIRECTION_UNCHANGED;
+	}
+
+	function formatString(value) {
+		if (value === null || value === undefined) {
+			return null;
+		}
+
+		if (is.string(value)) {
+			return value;
+		}
+
+		if (is.number(value) || is.boolean(value)) {
+			return value.toString();
+		}
+
+		return null;
 	}
 
 	function formatNumber(number, precision) {
@@ -883,6 +1064,10 @@ module.exports = (() => {
 
 		const items = group._consideredItems;
 
+		format.currencyCode = currency.code;
+
+		setPositionsFormat(format, group._items);
+
 		group._bypassCurrencyTranslation = items.every(item => item.currency === currency);
 
 		const translate = (item, value) => {
@@ -982,14 +1167,19 @@ module.exports = (() => {
 		format.basis = formatCurrency(actual.basis, currency);
 		format.basis2 = formatCurrency(actual.basis2, currency);
 		format.realized = formatCurrency(actual.realized, currency);
+		format.realizedPositive = actual.realized.getIsPositive();
+		format.realizedNegative = actual.realized.getIsNegative();
 		format.unrealized = formatCurrency(actual.unrealized, currency);
 		format.realizedToday = formatCurrency(actual.realizedToday, currency);
 		format.income = formatCurrency(actual.income, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
+		format.summaryTotalCurrentPositive = updates.summaryTotalCurrent.getIsPositive();
 		format.summaryTotalCurrentNegative = updates.summaryTotalCurrent.getIsNegative();
 		format.summaryTotalPrevious = formatCurrency(updates.summaryTotalPrevious, currency);
+		format.summaryTotalPreviousPositive = updates.summaryTotalPrevious.getIsPositive();
 		format.summaryTotalPreviousNegative = updates.summaryTotalPrevious.getIsNegative();
 		format.summaryTotalPrevious2 = formatCurrency(updates.summaryTotalPrevious2, currency);
+		format.summaryTotalPrevious2Positive = updates.summaryTotalPrevious2.getIsPositive();
 		format.summaryTotalPrevious2Negative = updates.summaryTotalPrevious2.getIsNegative();
 		format.marketPrevious = formatCurrency(updates.marketPrevious, currency);
 		format.marketPrevious2 = formatCurrency(updates.marketPrevious2, currency);
@@ -1000,6 +1190,7 @@ module.exports = (() => {
 
 		if (group.homogeneous) {
 			format.quantity = formatDecimal(actual.quantity, 2);
+			format.quantityZero = actual.quantity.getIsZero();
 		}
 
 		calculateRealizedPercent(group);
@@ -1023,6 +1214,7 @@ module.exports = (() => {
 			actual.quantityPrevious = item.data.quantityPrevious;
 
 			format.quantity = formatDecimal(actual.quantity, 2);
+			format.quantityZero = actual.quantity.getIsZero();
 			format.quantityPrevious = formatDecimal(actual.quantityPrevious, 2);
 
 			actual.basisPrice = item.data.basisPrice;
@@ -1036,6 +1228,8 @@ module.exports = (() => {
 
 			actual.unrealizedPrice = item.data.unrealizedPrice;
 			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, instrument);
+			format.unrealizedPricePositive = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsPositive();
+			format.unrealizedPriceNegative = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsNegative();
 
 			format.invalid = definition.type === PositionLevelType.POSITION && item.invalid;
 			format.locked = definition.type === PositionLevelType.POSITION && item.data.locked;
@@ -1061,7 +1255,7 @@ module.exports = (() => {
 			}
 		}
 
-		format.portfolioType = portfolioType;
+		format.portfolioType = formatString(portfolioType);
 	}
 
 	function calculatePriceData(group, item, forceRefresh) {
@@ -1177,12 +1371,13 @@ module.exports = (() => {
 		format.market2 = formatCurrency(actual.market2, currency);
 
 		if (updates.marketDirection.up || updates.marketDirection.down) {
-			format.marketDirection = unchanged;
+			format.marketDirection = DIRECTION_UNCHANGED;
 
-			setTimeout(() => format.marketDirection = updates.marketDirection, 0);
+			setTimeout(() => format.marketDirection = formatDirection(updates.marketDirection.up, updates.marketDirection.down), 0);
 		}
 
 		format.unrealized = formatCurrency(actual.unrealized, currency);
+		format.unrealizedPositive = actual.unrealized.getIsPositive();
 		format.unrealizedNegative = actual.unrealized.getIsNegative();
 
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
@@ -1191,14 +1386,17 @@ module.exports = (() => {
 		format.realizedToday = formatCurrency(actual.realizedToday, currency);
 
 		format.gainToday = formatCurrency(actual.gainToday, currency);
+		format.gainTodayPositive = actual.gainToday.getIsPositive();
 		format.gainTodayNegative = actual.gainToday.getIsNegative();
 
 		format.summaryTotalCurrent = formatCurrency(actual.summaryTotalCurrent, currency);
+		format.summaryTotalCurrentPositive = actual.summaryTotalCurrent.getIsPositive();
 		format.summaryTotalCurrentNegative = actual.summaryTotalCurrent.getIsNegative();
 
 		format.periodUnrealized = formatCurrency(actual.periodUnrealized, currency);
 
 		format.total = formatCurrency(actual.total, currency);
+		format.totalPositive = actual.total.getIsPositive();
 		format.totalNegative = actual.total.getIsNegative();
 		format.totalPercent = formatPercent(actual.totalPercent, 2);
 
@@ -1214,6 +1412,8 @@ module.exports = (() => {
 		if (group.single && item) {
 			actual.unrealizedPrice = item.data.unrealizedPrice;
 			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, item.position.instrument);
+			format.unrealizedPricePositive = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsPositive();
+			format.unrealizedPriceNegative = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsNegative();
 		}
 	}
 
