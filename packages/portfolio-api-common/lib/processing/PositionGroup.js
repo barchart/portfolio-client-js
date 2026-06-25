@@ -112,17 +112,6 @@ module.exports = (() => {
 			this._dataFormat.unrealizedPricePositive = false;
 			this._dataFormat.unrealizedPriceNegative = false;
 			this._dataFormat.instrument = null;
-			this._dataFormat.instrumentName = null;
-			this._dataFormat.instrumentSymbol = null;
-			this._dataFormat.instrumentSymbolBarchart = null;
-			this._dataFormat.instrumentSymbolDisplay = null;
-			this._dataFormat.instrumentType = null;
-			this._dataFormat.instrumentTypeCode = null;
-			this._dataFormat.instrumentTypeOption = false;
-			this._dataFormat.instrumentUsesSymbols = false;
-			this._dataFormat.instrumentCurrency = null;
-			this._dataFormat.instrumentExchange = null;
-			this._dataFormat.instrumentCode = null;
 			this._dataFormat.fundamental = null;
 			this._dataFormat.fundamentalPercentChange1m = null;
 			this._dataFormat.fundamentalPercentChange1y = null;
@@ -143,7 +132,7 @@ module.exports = (() => {
 				this._dataFormat.portfolio = item.portfolio.portfolio;
 				this._dataFormat.position = item.position.position;
 
-				setInstrumentFormat(this._dataFormat, item.position.instrument);
+				this._dataFormat.instrument = item.position.instrument;
 				setFundamentalFormat(this._dataFormat, item.data.fundamental);
 			} else {
 				this._dataFormat.portfolio = null;
@@ -153,7 +142,7 @@ module.exports = (() => {
 			if (this._homogeneous && items.length !== 0) {
 				const item = items[0];
 
-				setInstrumentFormat(this._dataFormat, item.position.instrument);
+				this._dataFormat.instrument = item.position.instrument;
 				setFundamentalFormat(this._dataFormat, item.data.fundamental);
 			}
 
@@ -857,25 +846,6 @@ module.exports = (() => {
 		});
 	}
 
-	function setInstrumentFormat(format, instrument) {
-		const symbolBarchart = instrument && instrument.symbol ? formatString(instrument.symbol.barchart) : null;
-		const symbolDisplay = instrument && instrument.symbol ? formatString(instrument.symbol.display) : null;
-		const type = instrument && instrument.type ? instrument.type : null;
-
-		format.instrumentName = instrument ? formatString(instrument.name) : null;
-		format.instrumentSymbolBarchart = symbolBarchart;
-		format.instrumentSymbolDisplay = symbolDisplay;
-		format.instrumentSymbol = symbolDisplay || symbolBarchart || format.instrumentName;
-		format.instrument = format.instrumentSymbol;
-		format.instrumentType = type ? formatString(type.description) : null;
-		format.instrumentTypeCode = type ? formatString(type.code) : null;
-		format.instrumentTypeOption = type ? type.option : false;
-		format.instrumentUsesSymbols = type ? type.usesSymbols : false;
-		format.instrumentCurrency = instrument && instrument.currency ? formatString(instrument.currency.code) : null;
-		format.instrumentExchange = instrument ? formatString(instrument.exchange) : null;
-		format.instrumentCode = instrument && instrument.code ? formatString(instrument.code.code) : null;
-	}
-
 	function setPositionsFormat(format, items) {
 		const includePositions = format.single || format.homogeneous;
 
@@ -909,17 +879,7 @@ module.exports = (() => {
 				linked: positionLinked,
 				open: positionOpen,
 				quantity: formatDecimal(item.data.quantity, 2),
-				instrumentName: instrument ? formatString(instrument.name) : null,
-				instrumentSymbolBarchart: instrument && instrument.symbol ? formatString(instrument.symbol.barchart) : null,
-				instrumentSymbolDisplay: instrument && instrument.symbol ? formatString(instrument.symbol.display) : null,
-				instrumentTypeCode: instrument && instrument.type ? formatString(instrument.type.code) : null,
-				instrumentTypeDescription: instrument && instrument.type ? formatString(instrument.type.description) : null,
-				instrumentTypeAlternateDescription: instrument && instrument.type ? formatString(instrument.type.alternateDescription) : null,
-				instrumentTypeOption: instrument && instrument.type ? instrument.type.option : false,
-				instrumentUsesSymbols: instrument && instrument.type ? instrument.type.usesSymbols : false,
-				instrumentCurrencyCode: instrument && instrument.currency ? formatString(instrument.currency.code) : null,
-				instrumentExchange: instrument ? formatString(instrument.exchange) : null,
-				instrumentCode: instrument && instrument.code ? formatString(instrument.code.code) : null
+				instrument: instrument
 			});
 		});
 
