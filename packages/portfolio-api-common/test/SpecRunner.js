@@ -136,7 +136,7 @@ module.exports = (() => {
 	return AveragePriceCalculator;
 })();
 
-},{"./../data/InstrumentType":4,"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/is":68}],2:[function(require,module,exports){
+},{"./../data/InstrumentType":4,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/is":66}],2:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal'),
 	is = require('@barchart/common-js/lang/is');
 
@@ -242,7 +242,7 @@ module.exports = (() => {
 	return ValuationCalculator;
 })();
 
-},{"./../data/InstrumentType":4,"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/is":68}],3:[function(require,module,exports){
+},{"./../data/InstrumentType":4,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/is":66}],3:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -311,7 +311,7 @@ module.exports = (() => {
     return FilterMode;
 })();
 
-},{"@barchart/common-js/lang/Enum":59}],4:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":57}],4:[function(require,module,exports){
 const uuid = require('uuid');
 
 const assert = require('@barchart/common-js/lang/assert'),
@@ -680,7 +680,7 @@ module.exports = (() => {
 	return InstrumentType;
 })();
 
-},{"@barchart/common-js/lang/Enum":59,"@barchart/common-js/lang/assert":64,"uuid":115}],5:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":57,"@barchart/common-js/lang/assert":62,"uuid":113}],5:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -743,7 +743,7 @@ module.exports = (() => {
 	return OptionSide;
 })();
 
-},{"@barchart/common-js/lang/Enum":59}],6:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":57}],6:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -805,7 +805,7 @@ module.exports = (() => {
 
     return OptionsValuationType;
 })();
-},{"@barchart/common-js/lang/Enum":59}],7:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":57}],7:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Enum = require('@barchart/common-js/lang/Enum');
@@ -960,7 +960,7 @@ module.exports = (() => {
 	return PositionDirection;
 })();
 
-},{"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/Enum":59,"@barchart/common-js/lang/assert":64}],8:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Enum":57,"@barchart/common-js/lang/assert":62}],8:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -1324,7 +1324,7 @@ module.exports = (() => {
 	return PositionSummaryFrame;
 })();
 
-},{"@barchart/common-js/lang/Day":55,"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/Enum":59,"@barchart/common-js/lang/array":63,"@barchart/common-js/lang/assert":64}],9:[function(require,module,exports){
+},{"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Enum":57,"@barchart/common-js/lang/array":61,"@barchart/common-js/lang/assert":62}],9:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -1868,7 +1868,7 @@ module.exports = (() => {
 	return TransactionType;
 })();
 
-},{"@barchart/common-js/lang/Enum":59,"@barchart/common-js/lang/assert":64}],10:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":57,"@barchart/common-js/lang/assert":62}],10:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	array = require('@barchart/common-js/lang/array'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
@@ -2295,7 +2295,7 @@ module.exports = (() => {
 	return TransactionValidator;
 })();
 
-},{"./InstrumentType":4,"./PositionDirection":7,"./TransactionType":9,"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/array":63,"@barchart/common-js/lang/assert":64,"@barchart/common-js/lang/is":68}],11:[function(require,module,exports){
+},{"./InstrumentType":4,"./PositionDirection":7,"./TransactionType":9,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/array":61,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66}],11:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -2356,16 +2356,16 @@ module.exports = (() => {
 	return ValuationType;
 })();
 
-},{"@barchart/common-js/lang/Enum":59}],12:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":57}],12:[function(require,module,exports){
 const Tree = require('@barchart/common-js/collections/Tree');
-
-const PositionBindingNode = require('./PositionBindingNode');
 
 module.exports = (() => {
 	'use strict';
 
 	/**
-	 * A tree data structure which maintains a side-by-side binding tree.
+	 * A tree data structure. Each instance represents a node, holding
+	 * an item, a reference to the parent node, and a reference to
+	 * children nodes. Children are stored in insertion order.
 	 *
 	 * @public
 	 * @param {*} value - The value of the node.
@@ -2375,32 +2375,24 @@ module.exports = (() => {
 		constructor(value, parent) {
 			super(value, parent);
 
-			this._binding = new PositionBindingNode(value ? value.binding : null);
+			this._children2 = [ ];
 		}
 
 		/**
-		 * Returns the binding node associated with this tree node.
+		 * Returns the collection of children values.
 		 *
 		 * @public
-		 * @returns {PositionBindingNode}
+		 * @returns {Array<*>}
 		 */
-		get binding() {
-			return this._binding;
+		getChildren2() {
+			return this._children2;
 		}
 
-		/**
-		 * Adds a child node to the current node and returns a reference
-		 * to the child node.
-		 *
-		 * @public
-		 * @param {*} value - The value of the child.
-		 * @returns {BindingTree}
-		 */
 		addChild(value) {
 			const returnRef = new BindingTree(value, this);
 
 			this._children.push(returnRef);
-			this._binding.children.push(returnRef.binding);
+			this._children2.push(value.binding);
 
 			return returnRef;
 		}
@@ -2412,27 +2404,23 @@ module.exports = (() => {
 		 * @param {Tree} node - The child to remove.
 		 */
 		removeChild(node) {
-			const index = this._children.indexOf(node);
+			for (let i = this._children.length - 1; !(i < 0); i--) {
+				const child = this._children[i];
 
-			if (index < 0) {
-				return;
+				if (child === node) {
+					this._children.splice(i, 1);
+					this._children2.splice(i, 1);
+
+					child._parent = null;
+
+					child._children.splice(0, child._children.length);
+					child._children2.splice(0, child._children2.length);
+
+					break;
+				}
 			}
-
-			this._children.splice(index, 1);
-			this._binding.children.splice(index, 1);
-
-			node._parent = null;
-
-			node._children.splice(0, node._children.length);
-			node._binding.children.splice(0, node._binding.children.length);
 		}
 
-		/**
-		 * Returns a string representation of the tree.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
 		toString() {
 			return '[BindingTree]';
 		}
@@ -2440,38 +2428,7 @@ module.exports = (() => {
 
 	return BindingTree;
 })();
-
-},{"./PositionBindingNode":13,"@barchart/common-js/collections/Tree":46}],13:[function(require,module,exports){
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * A node in the position binding tree.
-	 *
-	 * @public
-	 * @param {PositionGroupBinding|null=} value
-	 */
-	class PositionBindingNode {
-		constructor(value) {
-			this.value = value === undefined ? null : value;
-			this.children = [ ];
-		}
-
-		/**
-		 * Returns a string representation of the node.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		toString() {
-			return '[PositionBindingNode]';
-		}
-	}
-
-	return PositionBindingNode;
-})();
-
-},{}],14:[function(require,module,exports){
+},{"@barchart/common-js/collections/Tree":44}],13:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
@@ -2488,8 +2445,7 @@ const array = require('@barchart/common-js/lang/array'),
 
 const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
-const BindingTree = require('./BindingTree'),
-	PositionContainerBinding = require('./PositionContainerBinding');
+const BindingTree = require('./BindingTree');
 
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType'),
@@ -2585,7 +2541,6 @@ module.exports = (() => {
 			}, { });
 
 			this._portfolioBindings = Object.keys(this._portfolios).map(key => this._portfolios[key]);
-			this._binding = new PositionContainerBinding(this._portfolioBindings);
 
 			if (reportFrame) {
 				this._reportDate = reportDate;
@@ -2679,7 +2634,6 @@ module.exports = (() => {
 				createGroups.call(this, tree, this._items, treeDefinition, treeDefinition.definitions);
 
 				map[treeDefinition.name] = tree;
-				this._binding.addTree(treeDefinition.name, tree.binding);
 
 				return map;
 			}, { });
@@ -2729,36 +2683,6 @@ module.exports = (() => {
 
 		getCalculationsSuspended() {
 			return this._calculationSuspensions.size !== 0;
-		}
-
-		/**
-		 * The portfolios intended for binding to a user interface.
-		 *
-		 * @public
-		 * @returns {Object[]}
-		 */
-		get portfolios() {
-			return this._portfolioBindings;
-		}
-
-		/**
-		 * The position trees intended for binding to a user interface.
-		 *
-		 * @public
-		 * @returns {Object<String, BindingTree>}
-		 */
-		get trees() {
-			return this._trees;
-		}
-
-		/**
-		 * The container data intended for binding to a user interface.
-		 *
-		 * @public
-		 * @returns {PositionContainerBinding}
-		 */
-		get binding() {
-			return this._binding;
 		}
 
 		/**
@@ -3381,13 +3305,13 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} name
 		 * @param {String[]} keys
-		 * @returns {PositionGroup}
+		 * @returns {PositionGroupBinding}
 		 */
 		getGroup(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', String);
 
-			return findNode(this._trees[name], keys).getValue();
+			return findNode(this._trees[name], keys).getValue().binding;
 		}
 
 		/**
@@ -3397,15 +3321,13 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} name
 		 * @param {String[]} keys
-		 * @returns {PositionGroup[]}
+		 * @returns {PositionGroupBinding[]}
 		 */
 		getGroups(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', String);
 
-			const node = findNode(this._trees[name], keys);
-
-			return node.getChildren().map(child => child.getValue());
+			return findNode(this._trees[name], keys).getChildren2();
 		}
 
 		/**
@@ -3827,21 +3749,8 @@ module.exports = (() => {
 	}
 
 	function severGroupNode(groupNodeToSever) {
-		const groups = [ ];
-
-		groupNodeToSever.walk(group => groups.push(group), true, true);
-
 		groupNodeToSever.sever();
-
-		groups.forEach((group) => {
-			if (this._groupObservers.hasOwnProperty(group.id)) {
-				this._groupObservers[group.id].dispose();
-
-				delete this._groupObservers[group.id];
-			}
-
-			delete this._nodes[group.id];
-		});
+		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
 	}
 
 	function recalculatePercentages() {
@@ -3890,109 +3799,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":8,"./BindingTree":12,"./PositionContainerBinding":15,"./PositionGroup":16,"./PositionItem":18,"./definitions/PositionLevelDefinition":19,"./definitions/PositionLevelType":20,"./definitions/PositionTreeDefinition":21,"@barchart/common-js/collections/sorting/ComparatorBuilder":49,"@barchart/common-js/collections/sorting/comparators":50,"@barchart/common-js/collections/specialized/DisposableStack":51,"@barchart/common-js/lang/Currency":53,"@barchart/common-js/lang/CurrencyTranslator":54,"@barchart/common-js/lang/Day":55,"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/Disposable":58,"@barchart/common-js/lang/Rate":61,"@barchart/common-js/lang/array":63,"@barchart/common-js/lang/assert":64,"@barchart/common-js/lang/is":68,"@barchart/common-js/messaging/Event":71}],15:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert');
-
-const PositionBindingNode = require('./PositionBindingNode');
-
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * Position container data intended for binding to a user interface.
-	 *
-	 * @public
-	 * @param {Object[]} portfolios
-	 */
-	class PositionContainerBinding {
-		constructor(portfolios) {
-			this.portfolios = portfolios;
-			this.trees = { };
-		}
-
-		/**
-		 * Adds a tree binding.
-		 *
-		 * @public
-		 * @param {String} name
-		 * @param {PositionBindingNode} tree
-		 */
-		addTree(name, tree) {
-			assert.argumentIsRequired(name, 'name', String);
-			assert.argumentIsRequired(tree, 'tree', PositionBindingNode, 'PositionBindingNode');
-
-			this.trees[name] = tree;
-		}
-
-		/**
-		 * Returns a single group binding from one of the trees.
-		 *
-		 * @public
-		 * @param {String} name
-		 * @param {String[]} keys
-		 * @returns {PositionGroupBinding|null}
-		 */
-		getGroup(name, keys) {
-			assert.argumentIsRequired(name, 'name', String);
-			assert.argumentIsArray(keys, 'keys', String);
-
-			const node = findNode(this.trees[name], keys);
-
-			return node ? node.value : null;
-		}
-
-		/**
-		 * Returns child group bindings from one of the trees.
-		 *
-		 * @public
-		 * @param {String} name
-		 * @param {String[]} keys
-		 * @returns {PositionGroupBinding[]}
-		 */
-		getGroups(name, keys) {
-			assert.argumentIsRequired(name, 'name', String);
-			assert.argumentIsArray(keys, 'keys', String);
-
-			const node = findNode(this.trees[name], keys);
-
-			if (!node) {
-				return [ ];
-			}
-
-			return node.children.map(child => child.value);
-		}
-
-		/**
-		 * Returns a string representation of the binding.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		toString() {
-			return '[PositionContainerBinding]';
-		}
-	}
-
-	function findNode(tree, keys) {
-		if (!tree) {
-			return null;
-		}
-
-		return keys.reduce((node, key) => {
-			if (!node) {
-				return null;
-			}
-
-			return node.children.find((child) => {
-				return child.value && child.value.formatted.key === key;
-			}) || null;
-		}, tree);
-	}
-
-	return PositionContainerBinding;
-})();
-
-},{"./PositionBindingNode":13,"@barchart/common-js/lang/assert":64}],16:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":8,"./BindingTree":12,"./PositionGroup":14,"./PositionItem":16,"./definitions/PositionLevelDefinition":17,"./definitions/PositionLevelType":18,"./definitions/PositionTreeDefinition":19,"@barchart/common-js/collections/sorting/ComparatorBuilder":47,"@barchart/common-js/collections/sorting/comparators":48,"@barchart/common-js/collections/specialized/DisposableStack":49,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/Rate":59,"@barchart/common-js/lang/array":61,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69}],14:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -4080,7 +3887,18 @@ module.exports = (() => {
 			this._dataActual = { };
 
 			this._dataFormat.key = this._key;
+			this._dataFormat.id = this._id;
 			this._dataFormat.description = this._description;
+			this._dataFormat.levelTypeCode = this._definition.type.code;
+			this._dataFormat.single = this._single;
+			this._dataFormat.homogeneous = this._homogeneous;
+			this._dataFormat.currencyCode = this._currency.code;
+			this._dataFormat.open = false;
+			this._dataFormat.linked = false;
+			this._dataFormat.hasLinked = false;
+			this._dataFormat.hasManual = false;
+			this._dataFormat.positions = [ ];
+			this._dataFormat.excluded = this._excluded;
 			this._dataFormat.hide = false;
 			this._dataFormat.invalid = false;
 			this._dataFormat.locked = false;
@@ -4096,14 +3914,6 @@ module.exports = (() => {
 			this._dataFormat.unrealizedPricePositive = false;
 			this._dataFormat.unrealizedPriceNegative = false;
 			this._dataFormat.instrument = null;
-			this._dataFormat.instrumentName = null;
-			this._dataFormat.instrumentSymbol = null;
-			this._dataFormat.instrumentSymbolBarchart = null;
-			this._dataFormat.instrumentSymbolDisplay = null;
-			this._dataFormat.instrumentType = null;
-			this._dataFormat.instrumentTypeCode = null;
-			this._dataFormat.instrumentCurrency = null;
-			this._dataFormat.instrumentExchange = null;
 			this._dataFormat.fundamental = null;
 			this._dataFormat.fundamentalPercentChange1m = null;
 			this._dataFormat.fundamentalPercentChange1y = null;
@@ -4123,7 +3933,8 @@ module.exports = (() => {
 
 				this._dataFormat.portfolio = item.portfolio.portfolio;
 				this._dataFormat.position = item.position.position;
-				setInstrumentFormat(this._dataFormat, item.position.instrument);
+
+				this._dataFormat.instrument = item.position.instrument;
 				setFundamentalFormat(this._dataFormat, item.data.fundamental);
 			} else {
 				this._dataFormat.portfolio = null;
@@ -4133,7 +3944,7 @@ module.exports = (() => {
 			if (this._homogeneous && items.length !== 0) {
 				const item = items[0];
 
-				setInstrumentFormat(this._dataFormat, item.position.instrument);
+				this._dataFormat.instrument = item.position.instrument;
 				setFundamentalFormat(this._dataFormat, item.data.fundamental);
 			}
 
@@ -4193,6 +4004,8 @@ module.exports = (() => {
 			this._dataFormat.realizedPositive = false;
 			this._dataFormat.realizedNegative = false;
 			this._dataFormat.realizedToday = null;
+			this._dataFormat.realizedTodayPositive = false;
+			this._dataFormat.realizedTodayNegative = false;
 			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.market2 = null;
@@ -4204,6 +4017,7 @@ module.exports = (() => {
 			this._dataFormat.unrealizedPositive = false;
 			this._dataFormat.unrealizedNegative = false;
 			this._dataFormat.unrealizedToday = null;
+			this._dataFormat.unrealizedTodayPositive = false;
 			this._dataFormat.unrealizedTodayNegative = false;
 			this._dataFormat.gainToday = null;
 			this._dataFormat.gainTodayPositive = false;
@@ -4251,7 +4065,11 @@ module.exports = (() => {
 			this._dataFormat.periodPercentPrevious = null;
 			this._dataFormat.periodPercentPrevious2 = null;
 
-			this._binding = new PositionGroupBinding(this._dataFormat);
+			this._binding = new PositionGroupBinding(this._dataFormat, {
+				changeCurrency: currency => this.changeCurrency(currency),
+				setExcluded: value => this.setExcluded(value),
+				setFilterMode: mode => this.setFilterMode(mode)
+			});
 
 			this._items.forEach((item) => {
 				bindItem.call(this, item);
@@ -4508,7 +4326,10 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._excluded !== value) {
-				this._groupExcludedChangeEvent.fire(this._excluded = value);
+				this._excluded = value;
+				this._dataFormat.excluded = value;
+
+				this._groupExcludedChangeEvent.fire(value);
 			}
 		}
 
@@ -4535,6 +4356,7 @@ module.exports = (() => {
 			const showOpen = mode !== FilterMode.CLOSED;
 
 			this._filterMode = mode;
+			this._dataFormat.filterModeCode = mode.code;
 
 			this.setShowClosedPositions(showClosed);
 			this.setShowOpenedPositions(showOpen);
@@ -4826,19 +4648,48 @@ module.exports = (() => {
 		});
 	}
 
-	function setInstrumentFormat(format, instrument) {
-		const symbolBarchart = instrument && instrument.symbol ? formatString(instrument.symbol.barchart) : null;
-		const symbolDisplay = instrument && instrument.symbol ? formatString(instrument.symbol.display) : null;
+	function setPositionsFormat(format, items) {
+		const includePositions = format.single || format.homogeneous;
 
-		format.instrumentName = instrument ? formatString(instrument.name) : null;
-		format.instrumentSymbolBarchart = symbolBarchart;
-		format.instrumentSymbolDisplay = symbolDisplay;
-		format.instrumentSymbol = symbolDisplay || symbolBarchart || format.instrumentName;
-		format.instrument = format.instrumentSymbol;
-		format.instrumentType = instrument && instrument.type ? formatString(instrument.type.description) : null;
-		format.instrumentTypeCode = instrument && instrument.type ? formatString(instrument.type.code) : null;
-		format.instrumentCurrency = instrument && instrument.currency ? formatString(instrument.currency.code) : null;
-		format.instrumentExchange = instrument ? formatString(instrument.exchange) : null;
+		const positions = [ ];
+		let open = false;
+		let linked = items.length !== 0;
+		let hasLinked = false;
+		let hasManual = false;
+
+		items.forEach((item) => {
+			const position = item.position;
+			const portfolio = item.portfolio;
+			const instrument = position.instrument;
+			const positionLinked = portfolio ? !!portfolio.snaptrade : false;
+			const positionOpen = position.snapshot ? position.snapshot.direction.open : false;
+
+			open = open || positionOpen;
+			linked = linked && positionLinked;
+			hasLinked = hasLinked || positionLinked;
+			hasManual = hasManual || !positionLinked;
+
+			if (!includePositions) {
+				return;
+			}
+
+			positions.push({
+				portfolio: position.portfolio,
+				portfolioName: portfolio ? portfolio.name : null,
+				position: position.position,
+				cash: position.cash,
+				linked: positionLinked,
+				open: positionOpen,
+				quantity: formatDecimal(item.data.quantity, 2),
+				instrument: instrument
+			});
+		});
+
+		format.open = open;
+		format.linked = linked;
+		format.hasLinked = hasLinked;
+		format.hasManual = hasManual;
+		format.positions = positions;
 	}
 
 	function setFundamentalFormat(format, data) {
@@ -5007,6 +4858,10 @@ module.exports = (() => {
 
 		const items = group._consideredItems;
 
+		format.currencyCode = currency.code;
+
+		setPositionsFormat(format, group._items);
+
 		group._bypassCurrencyTranslation = items.every(item => item.currency === currency);
 
 		const translate = (item, value) => {
@@ -5110,6 +4965,8 @@ module.exports = (() => {
 		format.realizedNegative = actual.realized.getIsNegative();
 		format.unrealized = formatCurrency(actual.unrealized, currency);
 		format.realizedToday = formatCurrency(actual.realizedToday, currency);
+		format.realizedTodayPositive = actual.realizedToday.getIsPositive();
+		format.realizedTodayNegative = actual.realizedToday.getIsNegative();
 		format.income = formatCurrency(actual.income, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalCurrentPositive = updates.summaryTotalCurrent.getIsPositive();
@@ -5320,9 +5177,12 @@ module.exports = (() => {
 		format.unrealizedNegative = actual.unrealized.getIsNegative();
 
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
+		format.unrealizedTodayPositive = actual.unrealizedToday.getIsPositive();
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
 
 		format.realizedToday = formatCurrency(actual.realizedToday, currency);
+		format.realizedTodayPositive = actual.realizedToday.getIsPositive();
+		format.realizedTodayNegative = actual.realizedToday.getIsNegative();
 
 		format.gainToday = formatCurrency(actual.gainToday, currency);
 		format.gainTodayPositive = actual.gainToday.getIsPositive();
@@ -5441,7 +5301,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/FilterMode":3,"./../data/InstrumentType":4,"./PositionGroupBinding":17,"./definitions/PositionLevelDefinition":19,"./definitions/PositionLevelType":20,"@barchart/common-js/lang/Currency":53,"@barchart/common-js/lang/CurrencyTranslator":54,"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/Disposable":58,"@barchart/common-js/lang/array":63,"@barchart/common-js/lang/assert":64,"@barchart/common-js/lang/formatter":66,"@barchart/common-js/lang/is":68,"@barchart/common-js/messaging/Event":71,"@barchart/marketdata-api-js/lib/utilities/format/fraction":79}],17:[function(require,module,exports){
+},{"./../data/FilterMode":3,"./../data/InstrumentType":4,"./PositionGroupBinding":15,"./definitions/PositionLevelDefinition":17,"./definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/array":61,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/formatter":64,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69,"@barchart/marketdata-api-js/lib/utilities/format/fraction":77}],15:[function(require,module,exports){
 module.exports = (() => {
 	'use strict';
 
@@ -5450,10 +5310,12 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {Object} formatted
+	 * @param {Object=} actions
 	 */
 	class PositionGroupBinding {
-		constructor(formatted) {
+		constructor(formatted, actions) {
 			this.formatted = formatted;
+			this._actions = actions || { };
 		}
 
 		/**
@@ -5464,6 +5326,67 @@ module.exports = (() => {
 		 */
 		get data() {
 			return this.formatted;
+		}
+
+		/**
+		 * Returns the binding identifier.
+		 *
+		 * @public
+		 * @returns {Number}
+		 */
+		get id() {
+			return this.formatted.id;
+		}
+
+		/**
+		 * Returns the binding key.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get key() {
+			return this.formatted.key;
+		}
+
+		/**
+		 * Returns the binding description.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get description() {
+			return this.formatted.description;
+		}
+
+		/**
+		 * Set a flag to indicate if parent groups should exclude this group's
+		 * items from their calculations.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
+		setExcluded(value) {
+			return this._actions.setExcluded(value);
+		}
+
+		/**
+		 * Sets the filter mode for the group.
+		 *
+		 * @public
+		 * @param {FilterMode} mode
+		 */
+		setFilterMode(mode) {
+			return this._actions.setFilterMode(mode);
+		}
+
+		/**
+		 * Changes the group currency.
+		 *
+		 * @public
+		 * @param {Currency} currency
+		 */
+		changeCurrency(currency) {
+			return this._actions.changeCurrency(currency);
 		}
 
 		/**
@@ -5480,7 +5403,7 @@ module.exports = (() => {
 	return PositionGroupBinding;
 })();
 
-},{}],18:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -6452,7 +6375,7 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":4,"./../data/OptionsValuationType":6,"./../data/PositionDirection":7,"@barchart/common-js/lang/Currency":53,"@barchart/common-js/lang/Day":55,"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/Disposable":58,"@barchart/common-js/lang/assert":64,"@barchart/common-js/lang/is":68,"@barchart/common-js/messaging/Event":71}],19:[function(require,module,exports){
+},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":4,"./../data/OptionsValuationType":6,"./../data/PositionDirection":7,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69}],17:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
@@ -6763,7 +6686,7 @@ module.exports = (() => {
 	return PositionLevelDefinition;
 })();
 
-},{"./../../data/InstrumentType":4,"./PositionLevelType":20,"@barchart/common-js/lang/Currency":53,"@barchart/common-js/lang/assert":64,"@barchart/common-js/lang/is":68}],20:[function(require,module,exports){
+},{"./../../data/InstrumentType":4,"./PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66}],18:[function(require,module,exports){
 const Enum = require('@barchart/common-js/lang/Enum');
 
 module.exports = (() => {
@@ -6837,7 +6760,7 @@ module.exports = (() => {
 	return PositionLevelType;
 })();
 
-},{"@barchart/common-js/lang/Enum":59}],21:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":57}],19:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert');
 
 const PositionLevelDefinition = require('./PositionLevelDefinition');
@@ -6909,7 +6832,7 @@ module.exports = (() => {
 	return PositionTreeDefinitions;
 })();
 
-},{"./PositionLevelDefinition":19,"@barchart/common-js/lang/assert":64}],22:[function(require,module,exports){
+},{"./PositionLevelDefinition":17,"@barchart/common-js/lang/assert":62}],20:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	is = require('@barchart/common-js/lang/is'),
 	promise = require('@barchart/common-js/lang/promise');
@@ -7064,7 +6987,7 @@ module.exports = (() => {
 	return InstrumentProvider;
 })();
 
-},{"@barchart/common-js/api/http/Gateway":28,"@barchart/common-js/api/http/builders/EndpointBuilder":30,"@barchart/common-js/api/http/definitions/ProtocolType":36,"@barchart/common-js/api/http/definitions/VerbType":37,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":41,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":43,"@barchart/common-js/lang/assert":64,"@barchart/common-js/lang/is":68,"@barchart/common-js/lang/promise":70}],23:[function(require,module,exports){
+},{"@barchart/common-js/api/http/Gateway":26,"@barchart/common-js/api/http/builders/EndpointBuilder":28,"@barchart/common-js/api/http/definitions/ProtocolType":34,"@barchart/common-js/api/http/definitions/VerbType":35,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":39,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":41,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66,"@barchart/common-js/lang/promise":68}],21:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
 	Enum = require('@barchart/common-js/lang/Enum'),
@@ -7272,7 +7195,7 @@ module.exports = (() => {
 	return PositionSchema;
 })();
 
-},{"./../data/InstrumentType":4,"./../data/OptionSide":5,"./../data/PositionDirection":7,"./../data/ValuationType":11,"@barchart/common-js/lang/Currency":53,"@barchart/common-js/lang/Enum":59,"@barchart/common-js/serialization/json/DataType":73,"@barchart/common-js/serialization/json/builders/SchemaBuilder":77,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":78}],24:[function(require,module,exports){
+},{"./../data/InstrumentType":4,"./../data/OptionSide":5,"./../data/PositionDirection":7,"./../data/ValuationType":11,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Enum":57,"@barchart/common-js/serialization/json/DataType":71,"@barchart/common-js/serialization/json/builders/SchemaBuilder":75,"@barchart/marketdata-api-js/lib/utilities/data/UnitCode":76}],22:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	DataType = require('@barchart/common-js/serialization/json/DataType'),
@@ -7644,7 +7567,7 @@ module.exports = (() => {
 	return TransactionSchema;
 })();
 
-},{"./../data/InstrumentType":4,"./../data/PositionDirection":7,"./../data/TransactionType":9,"@barchart/common-js/lang/Currency":53,"@barchart/common-js/lang/Enum":59,"@barchart/common-js/lang/is":68,"@barchart/common-js/serialization/json/DataType":73,"@barchart/common-js/serialization/json/builders/SchemaBuilder":77}],25:[function(require,module,exports){
+},{"./../data/InstrumentType":4,"./../data/PositionDirection":7,"./../data/TransactionType":9,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Enum":57,"@barchart/common-js/lang/is":66,"@barchart/common-js/serialization/json/DataType":71,"@barchart/common-js/serialization/json/builders/SchemaBuilder":75}],23:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   is = require('./../../lang/is');
 const FailureReasonItem = require('./FailureReasonItem'),
@@ -7868,7 +7791,7 @@ module.exports = (() => {
   return FailureReason;
 })();
 
-},{"./../../collections/Tree":46,"./../../lang/assert":64,"./../../lang/is":68,"./../../serialization/json/Schema":75,"./FailureReasonItem":26,"./FailureType":27}],26:[function(require,module,exports){
+},{"./../../collections/Tree":44,"./../../lang/assert":62,"./../../lang/is":66,"./../../serialization/json/Schema":73,"./FailureReasonItem":24,"./FailureType":25}],24:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   attributes = require('./../../lang/attributes');
 const FailureType = require('./FailureType');
@@ -7953,7 +7876,7 @@ module.exports = (() => {
   return FailureReasonItem;
 })();
 
-},{"./../../lang/assert":64,"./../../lang/attributes":65,"./FailureType":27}],27:[function(require,module,exports){
+},{"./../../lang/assert":62,"./../../lang/attributes":63,"./FailureType":25}],25:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   Enum = require('./../../lang/Enum'),
   is = require('./../../lang/is');
@@ -8164,7 +8087,7 @@ module.exports = (() => {
   return FailureType;
 })();
 
-},{"./../../lang/Enum":59,"./../../lang/assert":64,"./../../lang/is":68}],28:[function(require,module,exports){
+},{"./../../lang/Enum":57,"./../../lang/assert":62,"./../../lang/is":66}],26:[function(require,module,exports){
 const axios = require('axios');
 const array = require('./../../lang/array'),
   assert = require('./../../lang/assert'),
@@ -8349,7 +8272,7 @@ module.exports = (() => {
   return Gateway;
 })();
 
-},{"./../../lang/array":63,"./../../lang/assert":64,"./../../lang/attributes":65,"./../../lang/is":68,"./../../lang/promise":70,"./../failures/FailureReason":25,"./../failures/FailureType":27,"./definitions/Endpoint":33,"./definitions/VerbType":37,"axios":80}],29:[function(require,module,exports){
+},{"./../../lang/array":61,"./../../lang/assert":62,"./../../lang/attributes":63,"./../../lang/is":66,"./../../lang/promise":68,"./../failures/FailureReason":23,"./../failures/FailureType":25,"./definitions/Endpoint":31,"./definitions/VerbType":35,"axios":78}],27:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const Credentials = require('./../definitions/Credentials');
 module.exports = (() => {
@@ -8429,7 +8352,7 @@ module.exports = (() => {
   return CredentialsBuilder;
 })();
 
-},{"./../../../lang/assert":64,"./../definitions/Credentials":32}],30:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./../definitions/Credentials":30}],28:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const CredentialsBuilder = require('./CredentialsBuilder'),
   ParametersBuilder = require('./ParametersBuilder');
@@ -8702,7 +8625,7 @@ module.exports = (() => {
   return EndpointBuilder;
 })();
 
-},{"./../../../lang/assert":64,"./../definitions/Endpoint":33,"./../definitions/Parameters":35,"./../definitions/ProtocolType":36,"./../definitions/VerbType":37,"./../interceptors/CompositeErrorInterceptor":38,"./../interceptors/CompositeRequestInterceptor":39,"./../interceptors/CompositeResponseInterceptor":40,"./../interceptors/ErrorInterceptor":41,"./../interceptors/RequestInterceptor":42,"./../interceptors/ResponseInterceptor":43,"./CredentialsBuilder":29,"./ParametersBuilder":31}],31:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./../definitions/Endpoint":31,"./../definitions/Parameters":33,"./../definitions/ProtocolType":34,"./../definitions/VerbType":35,"./../interceptors/CompositeErrorInterceptor":36,"./../interceptors/CompositeRequestInterceptor":37,"./../interceptors/CompositeResponseInterceptor":38,"./../interceptors/ErrorInterceptor":39,"./../interceptors/RequestInterceptor":40,"./../interceptors/ResponseInterceptor":41,"./CredentialsBuilder":27,"./ParametersBuilder":29}],29:[function(require,module,exports){
 const assert = require('./../../../lang/assert'),
   attributes = require('./../../../lang/attributes'),
   is = require('./../../../lang/is');
@@ -8820,7 +8743,7 @@ module.exports = (() => {
   return ParametersBuilder;
 })();
 
-},{"./../../../lang/assert":64,"./../../../lang/attributes":65,"./../../../lang/is":68,"./../definitions/Parameter":34,"./../definitions/Parameters":35}],32:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./../../../lang/attributes":63,"./../../../lang/is":66,"./../definitions/Parameter":32,"./../definitions/Parameters":33}],30:[function(require,module,exports){
 const is = require('./../../../lang/is');
 module.exports = (() => {
   'use strict';
@@ -8878,7 +8801,7 @@ module.exports = (() => {
   return Credentials;
 })();
 
-},{"./../../../lang/is":68}],33:[function(require,module,exports){
+},{"./../../../lang/is":66}],31:[function(require,module,exports){
 const is = require('./../../../lang/is');
 const Parameters = require('./Parameters'),
   ProtocolType = require('./ProtocolType'),
@@ -9117,7 +9040,7 @@ module.exports = (() => {
   return Endpoint;
 })();
 
-},{"./../../../lang/is":68,"./../interceptors/ErrorInterceptor":41,"./../interceptors/RequestInterceptor":42,"./../interceptors/ResponseInterceptor":43,"./Parameters":35,"./ProtocolType":36,"./VerbType":37}],34:[function(require,module,exports){
+},{"./../../../lang/is":66,"./../interceptors/ErrorInterceptor":39,"./../interceptors/RequestInterceptor":40,"./../interceptors/ResponseInterceptor":41,"./Parameters":33,"./ProtocolType":34,"./VerbType":35}],32:[function(require,module,exports){
 const is = require('./../../../lang/is');
 module.exports = (() => {
   'use strict';
@@ -9210,7 +9133,7 @@ module.exports = (() => {
   return Parameter;
 })();
 
-},{"./../../../lang/is":68}],35:[function(require,module,exports){
+},{"./../../../lang/is":66}],33:[function(require,module,exports){
 const is = require('./../../../lang/is');
 const Parameter = require('./Parameter');
 module.exports = (() => {
@@ -9261,7 +9184,7 @@ module.exports = (() => {
   return Parameters;
 })();
 
-},{"./../../../lang/is":68,"./Parameter":34}],36:[function(require,module,exports){
+},{"./../../../lang/is":66,"./Parameter":32}],34:[function(require,module,exports){
 const assert = require('./../../../lang/assert'),
   Enum = require('./../../../lang/Enum'),
   is = require('./../../../lang/is');
@@ -9346,7 +9269,7 @@ module.exports = (() => {
   return ProtocolType;
 })();
 
-},{"./../../../lang/Enum":59,"./../../../lang/assert":64,"./../../../lang/is":68}],37:[function(require,module,exports){
+},{"./../../../lang/Enum":57,"./../../../lang/assert":62,"./../../../lang/is":66}],35:[function(require,module,exports){
 const Enum = require('./../../../lang/Enum');
 module.exports = (() => {
   'use strict';
@@ -9424,7 +9347,7 @@ module.exports = (() => {
   return VerbType;
 })();
 
-},{"./../../../lang/Enum":59}],38:[function(require,module,exports){
+},{"./../../../lang/Enum":57}],36:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const ErrorInterceptor = require('./ErrorInterceptor');
 module.exports = (() => {
@@ -9458,7 +9381,7 @@ module.exports = (() => {
   return CompositeErrorInterceptor;
 })();
 
-},{"./../../../lang/assert":64,"./ErrorInterceptor":41}],39:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./ErrorInterceptor":39}],37:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const RequestInterceptor = require('./RequestInterceptor');
 module.exports = (() => {
@@ -9492,7 +9415,7 @@ module.exports = (() => {
   return CompositeRequestInterceptor;
 })();
 
-},{"./../../../lang/assert":64,"./RequestInterceptor":42}],40:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./RequestInterceptor":40}],38:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const ResponseInterceptor = require('./ResponseInterceptor');
 module.exports = (() => {
@@ -9526,7 +9449,7 @@ module.exports = (() => {
   return CompositeResponseInterceptor;
 })();
 
-},{"./../../../lang/assert":64,"./ResponseInterceptor":43}],41:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./ResponseInterceptor":41}],39:[function(require,module,exports){
 const assert = require('./../../../lang/assert'),
   is = require('./../../../lang/is');
 const FailureReason = require('./../../failures/FailureReason'),
@@ -9647,7 +9570,7 @@ module.exports = (() => {
   return ErrorInterceptor;
 })();
 
-},{"./../../../lang/assert":64,"./../../../lang/is":68,"./../../failures/FailureReason":25,"./../../failures/FailureType":27}],42:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./../../../lang/is":66,"./../../failures/FailureReason":23,"./../../failures/FailureType":25}],40:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 module.exports = (() => {
   'use strict';
@@ -9737,7 +9660,7 @@ module.exports = (() => {
   return RequestInterceptor;
 })();
 
-},{"./../../../lang/assert":64}],43:[function(require,module,exports){
+},{"./../../../lang/assert":62}],41:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 module.exports = (() => {
   'use strict';
@@ -9828,7 +9751,7 @@ module.exports = (() => {
   return ResponseInterceptor;
 })();
 
-},{"./../../../lang/assert":64}],44:[function(require,module,exports){
+},{"./../../../lang/assert":62}],42:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -9898,7 +9821,7 @@ module.exports = (() => {
   return LinkedList;
 })();
 
-},{}],45:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 const assert = require('./../lang/assert');
 module.exports = (() => {
   'use strict';
@@ -9991,7 +9914,7 @@ module.exports = (() => {
   return Stack;
 })();
 
-},{"./../lang/assert":64}],46:[function(require,module,exports){
+},{"./../lang/assert":62}],44:[function(require,module,exports){
 const is = require('./../lang/is');
 module.exports = (() => {
   'use strict';
@@ -10295,7 +10218,7 @@ module.exports = (() => {
   return Tree;
 })();
 
-},{"./../lang/is":68}],47:[function(require,module,exports){
+},{"./../lang/is":66}],45:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -10352,7 +10275,7 @@ module.exports = (() => {
   return Edge;
 })();
 
-},{}],48:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 const assert = require('./../../lang/assert');
 const Edge = require('./Edge');
 module.exports = (() => {
@@ -10469,7 +10392,7 @@ module.exports = (() => {
   return Vertex;
 })();
 
-},{"./../../lang/assert":64,"./Edge":47}],49:[function(require,module,exports){
+},{"./../../lang/assert":62,"./Edge":45}],47:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   comparators = require('./comparators');
 module.exports = (() => {
@@ -10572,7 +10495,7 @@ module.exports = (() => {
   return ComparatorBuilder;
 })();
 
-},{"./../../lang/assert":64,"./comparators":50}],50:[function(require,module,exports){
+},{"./../../lang/assert":62,"./comparators":48}],48:[function(require,module,exports){
 const assert = require('./../../lang/assert');
 module.exports = (() => {
   'use strict';
@@ -10679,7 +10602,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./../../lang/assert":64}],51:[function(require,module,exports){
+},{"./../../lang/assert":62}],49:[function(require,module,exports){
 const Stack = require('./../Stack');
 const assert = require('./../../lang/assert'),
   Disposable = require('./../../lang/Disposable'),
@@ -10744,7 +10667,7 @@ module.exports = (() => {
   return DisposableStack;
 })();
 
-},{"./../../lang/Disposable":58,"./../../lang/assert":64,"./../../lang/is":68,"./../Stack":45}],52:[function(require,module,exports){
+},{"./../../lang/Disposable":56,"./../../lang/assert":62,"./../../lang/is":66,"./../Stack":43}],50:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -10803,7 +10726,7 @@ module.exports = (() => {
   return AdHoc;
 })();
 
-},{"./assert":64}],53:[function(require,module,exports){
+},{"./assert":62}],51:[function(require,module,exports){
 const assert = require('./assert'),
   Enum = require('./Enum'),
   is = require('./is');
@@ -11395,7 +11318,7 @@ module.exports = (() => {
   return Currency;
 })();
 
-},{"./Enum":59,"./assert":64,"./is":68}],54:[function(require,module,exports){
+},{"./Enum":57,"./assert":62,"./is":66}],52:[function(require,module,exports){
 const assert = require('./assert'),
   array = require('./array'),
   Currency = require('./Currency'),
@@ -11664,7 +11587,7 @@ module.exports = (() => {
   return CurrencyTranslator;
 })();
 
-},{"./../collections/graph/Edge":47,"./../collections/graph/Vertex":48,"./../collections/sorting/ComparatorBuilder":49,"./../collections/sorting/comparators":50,"./Currency":53,"./Decimal":57,"./Rate":61,"./array":63,"./assert":64,"./memoize":69}],55:[function(require,module,exports){
+},{"./../collections/graph/Edge":45,"./../collections/graph/Vertex":46,"./../collections/sorting/ComparatorBuilder":47,"./../collections/sorting/comparators":48,"./Currency":51,"./Decimal":55,"./Rate":59,"./array":61,"./assert":62,"./memoize":67}],53:[function(require,module,exports){
 const assert = require('./assert'),
   ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder'),
   comparators = require('./../collections/sorting/comparators'),
@@ -12193,7 +12116,7 @@ module.exports = (() => {
   return Day;
 })();
 
-},{"./../collections/sorting/ComparatorBuilder":49,"./../collections/sorting/comparators":50,".//DayFormatType":56,"./assert":64,"./is":68}],56:[function(require,module,exports){
+},{"./../collections/sorting/ComparatorBuilder":47,"./../collections/sorting/comparators":48,".//DayFormatType":54,"./assert":62,"./is":66}],54:[function(require,module,exports){
 const Enum = require('./Enum');
 module.exports = (() => {
   'use strict';
@@ -12312,7 +12235,7 @@ module.exports = (() => {
   return DayFormatType;
 })();
 
-},{"./Enum":59}],57:[function(require,module,exports){
+},{"./Enum":57}],55:[function(require,module,exports){
 const assert = require('./assert'),
   Enum = require('./Enum'),
   is = require('./is');
@@ -12901,7 +12824,7 @@ module.exports = (() => {
   return Decimal;
 })();
 
-},{"./Enum":59,"./assert":64,"./is":68,"big.js":109}],58:[function(require,module,exports){
+},{"./Enum":57,"./assert":62,"./is":66,"big.js":107}],56:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -13004,7 +12927,7 @@ module.exports = (() => {
   return Disposable;
 })();
 
-},{"./assert":64}],59:[function(require,module,exports){
+},{"./assert":62}],57:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -13150,7 +13073,7 @@ module.exports = (() => {
   return Enum;
 })();
 
-},{"./assert":64,"./is":68}],60:[function(require,module,exports){
+},{"./assert":62,"./is":66}],58:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 const Decimal = require('./Decimal'),
@@ -13239,7 +13162,7 @@ module.exports = (() => {
   return Money;
 })();
 
-},{"./Currency":53,"./Decimal":57,"./assert":64,"./is":68}],61:[function(require,module,exports){
+},{"./Currency":51,"./Decimal":55,"./assert":62,"./is":66}],59:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is'),
   memoize = require('./memoize');
@@ -13481,7 +13404,7 @@ module.exports = (() => {
   return Rate;
 })();
 
-},{"./Currency":53,"./Decimal":57,"./assert":64,"./is":68,"./memoize":69}],62:[function(require,module,exports){
+},{"./Currency":51,"./Decimal":55,"./assert":62,"./is":66,"./memoize":67}],60:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 const moment = require('moment-timezone');
@@ -13659,7 +13582,7 @@ module.exports = (() => {
   return Timestamp;
 })();
 
-},{"./assert":64,"./is":68,"moment-timezone":111}],63:[function(require,module,exports){
+},{"./assert":62,"./is":66,"moment-timezone":109}],61:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -14108,7 +14031,7 @@ module.exports = (() => {
   }
 })();
 
-},{"./assert":64,"./is":68}],64:[function(require,module,exports){
+},{"./assert":62,"./is":66}],62:[function(require,module,exports){
 const is = require('./is');
 module.exports = (() => {
   'use strict';
@@ -14236,7 +14159,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./is":68}],65:[function(require,module,exports){
+},{"./is":66}],63:[function(require,module,exports){
 const assert = require('./assert'),
   is = require('./is');
 module.exports = (() => {
@@ -14377,7 +14300,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":64,"./is":68}],66:[function(require,module,exports){
+},{"./assert":62,"./is":66}],64:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -14433,7 +14356,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],67:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -14472,7 +14395,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],68:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
 
@@ -14674,7 +14597,7 @@ module.exports = (() => {
   };
 })();
 
-},{}],69:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -14732,7 +14655,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":64}],70:[function(require,module,exports){
+},{"./assert":62}],68:[function(require,module,exports){
 const assert = require('./assert');
 module.exports = (() => {
   'use strict';
@@ -14922,7 +14845,7 @@ module.exports = (() => {
   };
 })();
 
-},{"./assert":64}],71:[function(require,module,exports){
+},{"./assert":62}],69:[function(require,module,exports){
 const assert = require('./../lang/assert'),
   Disposable = require('./../lang/Disposable');
 module.exports = (() => {
@@ -15036,7 +14959,7 @@ module.exports = (() => {
   return Event;
 })();
 
-},{"./../lang/Disposable":58,"./../lang/assert":64}],72:[function(require,module,exports){
+},{"./../lang/Disposable":56,"./../lang/assert":62}],70:[function(require,module,exports){
 const Currency = require('./../../lang/Currency'),
   Money = require('./../../lang/Money');
 const DataType = require('./DataType'),
@@ -15103,7 +15026,7 @@ module.exports = (() => {
   return Component;
 })();
 
-},{"./../../lang/Currency":53,"./../../lang/Money":60,"./DataType":73,"./Field":74}],73:[function(require,module,exports){
+},{"./../../lang/Currency":51,"./../../lang/Money":58,"./DataType":71,"./Field":72}],71:[function(require,module,exports){
 const moment = require('moment');
 const AdHoc = require('./../../lang/AdHoc'),
   assert = require('./../../lang/assert'),
@@ -15387,7 +15310,7 @@ module.exports = (() => {
   return DataType;
 })();
 
-},{"./../../lang/AdHoc":52,"./../../lang/Day":55,"./../../lang/Decimal":57,"./../../lang/Enum":59,"./../../lang/Timestamp":62,"./../../lang/assert":64,"./../../lang/is":68,"moment":113}],74:[function(require,module,exports){
+},{"./../../lang/AdHoc":50,"./../../lang/Day":53,"./../../lang/Decimal":55,"./../../lang/Enum":57,"./../../lang/Timestamp":60,"./../../lang/assert":62,"./../../lang/is":66,"moment":111}],72:[function(require,module,exports){
 const assert = require('./../../lang/assert'),
   is = require('./../../lang/is');
 const DataType = require('./DataType');
@@ -15461,7 +15384,7 @@ module.exports = (() => {
   return Field;
 })();
 
-},{"./../../lang/assert":64,"./../../lang/is":68,"./DataType":73}],75:[function(require,module,exports){
+},{"./../../lang/assert":62,"./../../lang/is":66,"./DataType":71}],73:[function(require,module,exports){
 const attributes = require('./../../lang/attributes'),
   functions = require('./../../lang/functions'),
   is = require('./../../lang/is');
@@ -15745,7 +15668,7 @@ module.exports = (() => {
   return Schema;
 })();
 
-},{"./../../collections/LinkedList":44,"./../../collections/Tree":46,"./../../lang/attributes":65,"./../../lang/functions":67,"./../../lang/is":68,"./Component":72,"./Field":74}],76:[function(require,module,exports){
+},{"./../../collections/LinkedList":42,"./../../collections/Tree":44,"./../../lang/attributes":63,"./../../lang/functions":65,"./../../lang/is":66,"./Component":70,"./Field":72}],74:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 const Component = require('./../Component'),
   DataType = require('./../DataType'),
@@ -15810,7 +15733,7 @@ module.exports = (() => {
   return ComponentBuilder;
 })();
 
-},{"./../../../lang/assert":64,"./../Component":72,"./../DataType":73,"./../Field":74}],77:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./../Component":70,"./../DataType":71,"./../Field":72}],75:[function(require,module,exports){
 const assert = require('./../../../lang/assert'),
   is = require('./../../../lang/is');
 const Component = require('./../Component'),
@@ -15926,7 +15849,7 @@ module.exports = (() => {
   return SchemaBuilder;
 })();
 
-},{"./../../../lang/assert":64,"./../../../lang/is":68,"./../Component":72,"./../DataType":73,"./../Field":74,"./../Schema":75,"./ComponentBuilder":76}],78:[function(require,module,exports){
+},{"./../../../lang/assert":62,"./../../../lang/is":66,"./../Component":70,"./../DataType":71,"./../Field":72,"./../Schema":73,"./ComponentBuilder":74}],76:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
   Decimal = require('@barchart/common-js/lang/Decimal'),
   is = require('@barchart/common-js/lang/is');
@@ -16197,7 +16120,7 @@ module.exports = (() => {
   return UnitCode;
 })();
 
-},{"@barchart/common-js/lang/Decimal":57,"@barchart/common-js/lang/Enum":59,"@barchart/common-js/lang/assert":64,"@barchart/common-js/lang/is":68}],79:[function(require,module,exports){
+},{"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Enum":57,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66}],77:[function(require,module,exports){
 const is = require('@barchart/common-js/lang/is');
 module.exports = (() => {
   'use strict';
@@ -16270,9 +16193,9 @@ module.exports = (() => {
   return formatFraction;
 })();
 
-},{"@barchart/common-js/lang/is":68}],80:[function(require,module,exports){
+},{"@barchart/common-js/lang/is":66}],78:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":82}],81:[function(require,module,exports){
+},{"./lib/axios":80}],79:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -16463,7 +16386,7 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-},{"../core/buildFullPath":88,"../core/createError":89,"./../core/settle":93,"./../helpers/buildURL":97,"./../helpers/cookies":99,"./../helpers/isURLSameOrigin":102,"./../helpers/parseHeaders":104,"./../utils":107}],82:[function(require,module,exports){
+},{"../core/buildFullPath":86,"../core/createError":87,"./../core/settle":91,"./../helpers/buildURL":95,"./../helpers/cookies":97,"./../helpers/isURLSameOrigin":100,"./../helpers/parseHeaders":102,"./../utils":105}],80:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -16521,7 +16444,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":83,"./cancel/CancelToken":84,"./cancel/isCancel":85,"./core/Axios":86,"./core/mergeConfig":92,"./defaults":95,"./helpers/bind":96,"./helpers/isAxiosError":101,"./helpers/spread":105,"./utils":107}],83:[function(require,module,exports){
+},{"./cancel/Cancel":81,"./cancel/CancelToken":82,"./cancel/isCancel":83,"./core/Axios":84,"./core/mergeConfig":90,"./defaults":93,"./helpers/bind":94,"./helpers/isAxiosError":99,"./helpers/spread":103,"./utils":105}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -16542,7 +16465,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],84:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -16601,14 +16524,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":83}],85:[function(require,module,exports){
+},{"./Cancel":81}],83:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],86:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -16758,7 +16681,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"../helpers/buildURL":97,"../helpers/validator":106,"./../utils":107,"./InterceptorManager":87,"./dispatchRequest":90,"./mergeConfig":92}],87:[function(require,module,exports){
+},{"../helpers/buildURL":95,"../helpers/validator":104,"./../utils":105,"./InterceptorManager":85,"./dispatchRequest":88,"./mergeConfig":90}],85:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -16814,7 +16737,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":107}],88:[function(require,module,exports){
+},{"./../utils":105}],86:[function(require,module,exports){
 'use strict';
 
 var isAbsoluteURL = require('../helpers/isAbsoluteURL');
@@ -16836,7 +16759,7 @@ module.exports = function buildFullPath(baseURL, requestedURL) {
   return requestedURL;
 };
 
-},{"../helpers/combineURLs":98,"../helpers/isAbsoluteURL":100}],89:[function(require,module,exports){
+},{"../helpers/combineURLs":96,"../helpers/isAbsoluteURL":98}],87:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -16856,7 +16779,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":91}],90:[function(require,module,exports){
+},{"./enhanceError":89}],88:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -16940,7 +16863,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":85,"../defaults":95,"./../utils":107,"./transformData":94}],91:[function(require,module,exports){
+},{"../cancel/isCancel":83,"../defaults":93,"./../utils":105,"./transformData":92}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -16984,7 +16907,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],92:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -17073,7 +16996,7 @@ module.exports = function mergeConfig(config1, config2) {
   return config;
 };
 
-},{"../utils":107}],93:[function(require,module,exports){
+},{"../utils":105}],91:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -17100,7 +17023,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":89}],94:[function(require,module,exports){
+},{"./createError":87}],92:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -17124,7 +17047,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../defaults":95,"./../utils":107}],95:[function(require,module,exports){
+},{"./../defaults":93,"./../utils":105}],93:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -17262,7 +17185,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this)}).call(this,require('_process'))
-},{"./adapters/http":81,"./adapters/xhr":81,"./core/enhanceError":91,"./helpers/normalizeHeaderName":103,"./utils":107,"_process":114}],96:[function(require,module,exports){
+},{"./adapters/http":79,"./adapters/xhr":79,"./core/enhanceError":89,"./helpers/normalizeHeaderName":101,"./utils":105,"_process":112}],94:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -17275,7 +17198,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],97:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -17347,7 +17270,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":107}],98:[function(require,module,exports){
+},{"./../utils":105}],96:[function(require,module,exports){
 'use strict';
 
 /**
@@ -17363,7 +17286,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],99:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -17418,7 +17341,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":107}],100:[function(require,module,exports){
+},{"./../utils":105}],98:[function(require,module,exports){
 'use strict';
 
 /**
@@ -17434,7 +17357,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],101:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 'use strict';
 
 /**
@@ -17447,7 +17370,7 @@ module.exports = function isAxiosError(payload) {
   return (typeof payload === 'object') && (payload.isAxiosError === true);
 };
 
-},{}],102:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -17517,7 +17440,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":107}],103:[function(require,module,exports){
+},{"./../utils":105}],101:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -17531,7 +17454,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":107}],104:[function(require,module,exports){
+},{"../utils":105}],102:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -17586,7 +17509,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":107}],105:[function(require,module,exports){
+},{"./../utils":105}],103:[function(require,module,exports){
 'use strict';
 
 /**
@@ -17615,7 +17538,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],106:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 'use strict';
 
 var pkg = require('./../../package.json');
@@ -17722,7 +17645,7 @@ module.exports = {
   validators: validators
 };
 
-},{"./../../package.json":108}],107:[function(require,module,exports){
+},{"./../../package.json":106}],105:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -18073,7 +17996,7 @@ module.exports = {
   stripBOM: stripBOM
 };
 
-},{"./helpers/bind":96}],108:[function(require,module,exports){
+},{"./helpers/bind":94}],106:[function(require,module,exports){
 module.exports={
   "name": "axios",
   "version": "0.21.4",
@@ -18159,7 +18082,7 @@ module.exports={
   ]
 }
 
-},{}],109:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 /*
  *  big.js v6.2.2
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -19204,7 +19127,7 @@ module.exports={
   }
 })(this);
 
-},{}],110:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 module.exports={
 	"version": "2025b",
 	"zones": [
@@ -20058,11 +19981,11 @@ module.exports={
 		"ZW|Africa/Maputo Africa/Harare"
 	]
 }
-},{}],111:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":110,"./moment-timezone":112}],112:[function(require,module,exports){
+},{"./data/packed/latest.json":108,"./moment-timezone":110}],110:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.48
 //! Copyright (c) JS Foundation and other contributors
@@ -20793,7 +20716,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":113}],113:[function(require,module,exports){
+},{"moment":111}],111:[function(require,module,exports){
 //! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -26483,7 +26406,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],114:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -26669,7 +26592,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],115:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26749,7 +26672,7 @@ var _stringify = _interopRequireDefault(require("./stringify.js"));
 var _parse = _interopRequireDefault(require("./parse.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./nil.js":118,"./parse.js":119,"./stringify.js":123,"./v1.js":124,"./v3.js":125,"./v4.js":127,"./v5.js":128,"./validate.js":129,"./version.js":130}],116:[function(require,module,exports){
+},{"./nil.js":116,"./parse.js":117,"./stringify.js":121,"./v1.js":122,"./v3.js":123,"./v4.js":125,"./v5.js":126,"./validate.js":127,"./version.js":128}],114:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26973,7 +26896,7 @@ function md5ii(a, b, c, d, x, s, t) {
 
 var _default = md5;
 exports.default = _default;
-},{}],117:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26985,7 +26908,7 @@ var _default = {
   randomUUID
 };
 exports.default = _default;
-},{}],118:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26994,7 +26917,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = '00000000-0000-0000-0000-000000000000';
 exports.default = _default;
-},{}],119:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27040,7 +26963,7 @@ function parse(uuid) {
 
 var _default = parse;
 exports.default = _default;
-},{"./validate.js":129}],120:[function(require,module,exports){
+},{"./validate.js":127}],118:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27049,7 +26972,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
 exports.default = _default;
-},{}],121:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27075,7 +26998,7 @@ function rng() {
 
   return getRandomValues(rnds8);
 }
-},{}],122:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27180,7 +27103,7 @@ function sha1(bytes) {
 
 var _default = sha1;
 exports.default = _default;
-},{}],123:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27225,7 +27148,7 @@ function stringify(arr, offset = 0) {
 
 var _default = stringify;
 exports.default = _default;
-},{"./validate.js":129}],124:[function(require,module,exports){
+},{"./validate.js":127}],122:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27333,7 +27256,7 @@ function v1(options, buf, offset) {
 
 var _default = v1;
 exports.default = _default;
-},{"./rng.js":121,"./stringify.js":123}],125:[function(require,module,exports){
+},{"./rng.js":119,"./stringify.js":121}],123:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27350,7 +27273,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v3 = (0, _v.default)('v3', 0x30, _md.default);
 var _default = v3;
 exports.default = _default;
-},{"./md5.js":116,"./v35.js":126}],126:[function(require,module,exports){
+},{"./md5.js":114,"./v35.js":124}],124:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27431,7 +27354,7 @@ function v35(name, version, hashfunc) {
   generateUUID.URL = URL;
   return generateUUID;
 }
-},{"./parse.js":119,"./stringify.js":123}],127:[function(require,module,exports){
+},{"./parse.js":117,"./stringify.js":121}],125:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27475,7 +27398,7 @@ function v4(options, buf, offset) {
 
 var _default = v4;
 exports.default = _default;
-},{"./native.js":117,"./rng.js":121,"./stringify.js":123}],128:[function(require,module,exports){
+},{"./native.js":115,"./rng.js":119,"./stringify.js":121}],126:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27492,7 +27415,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const v5 = (0, _v.default)('v5', 0x50, _sha.default);
 var _default = v5;
 exports.default = _default;
-},{"./sha1.js":122,"./v35.js":126}],129:[function(require,module,exports){
+},{"./sha1.js":120,"./v35.js":124}],127:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27510,7 +27433,7 @@ function validate(uuid) {
 
 var _default = validate;
 exports.default = _default;
-},{"./regex.js":120}],130:[function(require,module,exports){
+},{"./regex.js":118}],128:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27532,7 +27455,7 @@ function version(uuid) {
 
 var _default = version;
 exports.default = _default;
-},{"./validate.js":129}],131:[function(require,module,exports){
+},{"./validate.js":127}],129:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -27675,7 +27598,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(AveragePriceCalculator.calculate(instrument, -800000, 2).toFloat()).toEqual(400000);
 	});
 });
-},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":4,"@barchart/common-js/lang/Decimal":57}],132:[function(require,module,exports){
+},{"./../../../lib/calculators/AveragePriceCalculator":1,"./../../../lib/data/InstrumentType":4,"@barchart/common-js/lang/Decimal":55}],130:[function(require,module,exports){
 const Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
@@ -27930,7 +27853,7 @@ describe('When calculating the value of an "other" item"', () => {
 		expect(ValuationCalculator.calculate(instrument, null, 4)).toBe(null);
 	});
 });
-},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":4,"@barchart/common-js/lang/Decimal":57}],133:[function(require,module,exports){
+},{"./../../../lib/calculators/ValuationCalculator":2,"./../../../lib/data/InstrumentType":4,"@barchart/common-js/lang/Decimal":55}],131:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -28579,7 +28502,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	});
 });
 
-},{"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/data/TransactionType":9,"@barchart/common-js/lang/Day":55,"@barchart/common-js/lang/Decimal":57}],134:[function(require,module,exports){
+},{"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/data/TransactionType":9,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55}],132:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -28970,17 +28893,15 @@ describe('When validating position violations', () => {
     });
 });
 
-},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/TransactionType":9,"./../../../lib/data/TransactionValidator":10,"@barchart/common-js/lang/Day":55,"@barchart/common-js/lang/Decimal":57}],135:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/TransactionType":9,"./../../../lib/data/TransactionValidator":10,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55}],133:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
 const InstrumentType = require('./../../../lib/data/InstrumentType'),
+	PositionDirection = require('./../../../lib/data/PositionDirection'),
 	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
-	PositionBindingNode = require('./../../../lib/processing/PositionBindingNode'),
-	PositionGroup = require('./../../../lib/processing/PositionGroup'),
-	PositionGroupBinding = require('./../../../lib/processing/PositionGroupBinding'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./../../../lib/processing/definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./../../../lib/processing/definitions/PositionTreeDefinition');
@@ -28995,10 +28916,8 @@ describe('When a position container data is gathered', () => {
 			portfolio: portfolio,
 			position: (positionCounter++).toString(),
 			instrument: {
-				name: symbol,
 				symbol: {
-					barchart: symbol,
-					display: symbol
+					barchart: symbol
 				},
 				currency: currency || Currency.USD,
 				type: InstrumentType.EQUITY
@@ -29007,6 +28926,7 @@ describe('When a position container data is gathered', () => {
 				basis: new Decimal(123),
 				value: new Decimal(456),
 				open: new Decimal(1),
+				direction: PositionDirection.LONG,
 				income: new Decimal(0),
 				gain: new Decimal(0),
 				buys: new Decimal(50),
@@ -29044,6 +28964,10 @@ describe('When a position container data is gathered', () => {
 				}
 			};
 		});
+	}
+
+	function getRawGroup(container, name, keys) {
+		return keys.reduce((node, key) => node.findChild(group => group.key === key), container._trees[name]).getValue();
 	}
 
 	describe('for two portfolios, each with the same position, and the second portfolio with an addition position', () => {
@@ -29101,159 +29025,16 @@ describe('When a position container data is gathered', () => {
 				expect(container.getGroups(name, [ 'totals' ]).length).toEqual(2);
 			});
 
-			it('the raw container should expose raw position groups', () => {
-				const group = container.getGroup(name, [ 'totals' ]);
-				const groups = container.getGroups(name, [ 'totals' ]);
-
-				expect(group instanceof PositionGroup).toEqual(true);
-				expect(groups[0] instanceof PositionGroup).toEqual(true);
-				expect(groups[0] instanceof PositionGroupBinding).toEqual(false);
-			});
-
 			it('the "Total" group should have three items', () => {
-				expect(container.getGroup(name, [ 'totals' ]).items.length).toEqual(3);
-			});
-
-			it('the container should expose portfolio bindings', () => {
-				expect(container.portfolios).toEqual(portfolios);
-				expect(container.getPortfolios()).toBe(container.portfolios);
-			});
-
-			it('the container should expose position bindings separately from the raw tree', () => {
-				const group = container.getGroup(name, [ 'totals' ]);
-				const binding = group.binding;
-				const tree = container.trees[name];
-				const node = tree.getChildren()[0];
-				const bindingTree = container.binding.trees[name];
-				const bindingNode = bindingTree.children[0];
-
-				expect(node.getValue()).toBe(group);
-				expect(tree.binding).toBe(bindingTree);
-				expect(tree.binding.value).toBeNull();
-				expect(bindingTree instanceof PositionBindingNode).toEqual(true);
-				expect(bindingNode.value).toBe(binding);
-				expect(bindingTree.children.length).toEqual(1);
-				expect(binding instanceof PositionGroupBinding).toEqual(true);
-				expect(binding.formatted).toBe(group.data);
-				expect(binding.data).toBe(group.data);
-				expect(binding.formatted.description).toEqual('Total');
-				expect(binding.children).toBeUndefined();
-				expect(container.binding.getGroup(name, [ 'totals' ])).toBe(binding);
-				expect(container.binding.getGroups(name, [ 'totals' ])[0] instanceof PositionGroupBinding).toEqual(true);
-				expect(bindingNode.children.map(child => child.value)).toEqual(container.binding.getGroups(name, [ 'totals' ]));
-			});
-
-			it('the raw and binding trees should keep child indexes synchronized', () => {
-				const tree = container.trees[name];
-				const totalNode = tree.getChildren()[0];
-				const portfolioNode = totalNode.getChildren()[0];
-
-				expect(tree.getChildren().length).toEqual(tree.binding.children.length);
-				expect(tree.getChildren()[0].binding).toBe(tree.binding.children[0]);
-				expect(totalNode.getChildren().length).toEqual(totalNode.binding.children.length);
-				expect(totalNode.getChildren()[0].binding).toBe(totalNode.binding.children[0]);
-				expect(portfolioNode.getChildren().length).toEqual(portfolioNode.binding.children.length);
-				expect(portfolioNode.getChildren()[0].binding).toBe(portfolioNode.binding.children[0]);
-			});
-
-			it('the binding objects should not contain raw model back references', () => {
-				const tree = container.trees[name];
-				const group = container.getGroup(name, [ 'totals' ]);
-				const binding = container.binding.getGroup(name, [ 'totals' ]);
-				const bindingNode = container.binding.trees[name].children[0];
-
-				expect(Object.keys(container.binding)).toEqual([ 'portfolios', 'trees' ]);
-				expect(Object.keys(bindingNode)).toEqual([ 'value', 'children' ]);
-				expect(Object.keys(binding)).toEqual([ 'formatted' ]);
-				expect(binding).toBe(group.binding);
-				expect(bindingNode).toBe(tree.getChildren()[0].binding);
+				expect(getRawGroup(container, name, [ 'totals' ]).items.length).toEqual(3);
 			});
 
 			it('The "a" portfolio group should have one child group', () => {
 				expect(container.getGroups(name, [ 'totals', 'My First Portfolio' ]).length).toEqual(1);
 			});
 
-			it('The formatted position group binding should update after a quote change', () => {
-				const binding = container.binding.getGroups(name, [ 'totals', 'My First Portfolio' ])[0];
-
-				container.setQuotes([ { lastPrice: 200, symbol: 'AAPL' } ], [ ]);
-
-				expect(binding.formatted.currentPrice).toEqual('200.00');
-			});
-
-			it('The formatted position group binding should not expose raw instrument or fundamental data', () => {
-				const binding = container.binding.getGroups(name, [ 'totals', 'My First Portfolio' ])[0];
-
-				container.setPositionFundamentalData('AAPL', false, {
-					raw: {
-						percentChange1m: 0.01,
-						percentChange1y: 0.02,
-						percentChange3m: 0.03,
-						percentChangeYtd: 0.04
-					}
-				});
-
-				expect(binding.formatted.instrument).toEqual('AAPL');
-				expect(binding.formatted.instrumentName).toEqual('AAPL');
-				expect(binding.formatted.instrumentSymbolBarchart).toEqual('AAPL');
-				expect(binding.formatted.instrumentCurrency).toEqual('USD');
-				expect(binding.formatted.instrumentTypeCode).toEqual('EQUITY');
-				expect(binding.formatted.fundamental).toBeNull();
-				expect(binding.formatted.fundamentalPercentChange1m).toEqual('+1.00%');
-			});
-
-			it('The position group binding should be removed with its group', () => {
-				const tree = container.trees[name];
-				const parentGroup = container.getGroup(name, [ 'totals', 'My First Portfolio' ]);
-				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
-				const totalNode = tree.getChildren()[0];
-				const parentNode = totalNode.findChild(candidate => candidate === parentGroup);
-				const node = parentNode.findChild(candidate => candidate === group);
-				const parentBindingNode = container.binding.trees[name].children[0].children[0];
-
-				container.removePosition(positions[0]);
-
-				expect(container.trees[name]).toBe(tree);
-				expect(parentNode.getChildren()).not.toContain(node);
-				expect(parentBindingNode.children.map(child => child.value)).not.toContain(group.binding);
-				expect(parentNode.getChildren().length).toEqual(parentNode.binding.children.length);
-				expect(container.binding.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ])).toBeNull();
-			});
-
-			it('The portfolio bindings should update without replacing the array', () => {
-				const portfolioBindings = container.portfolios;
-				const bindingPortfolioBindings = container.binding.portfolios;
-				const portfolio = Object.assign({}, portfolios[0], { name: 'updated' });
-
-				container.updatePortfolio(portfolio);
-
-				expect(container.portfolios).toBe(portfolioBindings);
-				expect(container.binding.portfolios).toBe(bindingPortfolioBindings);
-				expect(container.binding.portfolios).toBe(container.portfolios);
-				expect(container.portfolios[0]).toBe(portfolio);
-			});
-
-			it('The portfolio bindings should support observable additions and removals', () => {
-				const portfolioBindings = container.portfolios;
-				const bindingPortfolioBindings = container.binding.portfolios;
-				const portfolio = { portfolio: 'My Third Portfolio', name: 'c' };
-
-				container.addPortfolio(portfolio);
-
-				expect(container.portfolios).toBe(portfolioBindings);
-				expect(container.binding.portfolios).toBe(bindingPortfolioBindings);
-				expect(container.binding.portfolios).toBe(container.portfolios);
-				expect(container.portfolios).toContain(portfolio);
-
-				container.removePortfolio(portfolio);
-
-				expect(container.portfolios).toBe(portfolioBindings);
-				expect(container.binding.portfolios).toBe(bindingPortfolioBindings);
-				expect(container.portfolios).not.toContain(portfolio);
-			});
-
 			it('the "a" portfolio group should have one item', () => {
-				expect(container.getGroup(name, [ 'totals', 'My First Portfolio' ]).items.length).toEqual(1);
+				expect(getRawGroup(container, name, [ 'totals', 'My First Portfolio' ]).items.length).toEqual(1);
 			});
 
 			it('The "b" portfolio group should have two child groups', () => {
@@ -29261,7 +29042,7 @@ describe('When a position container data is gathered', () => {
 			});
 
 			it('the "b" portfolio group should have two items', () => {
-				expect(container.getGroup(name, [ 'totals', 'My Second Portfolio' ]).items.length).toEqual(2);
+				expect(getRawGroup(container, name, [ 'totals', 'My Second Portfolio' ]).items.length).toEqual(2);
 			});
 
 			describe('and an item is pulled for one of the positions', function() {
@@ -29272,7 +29053,7 @@ describe('When a position container data is gathered', () => {
 				let todayDay;
 
 				beforeEach(() => {
-					item = container.getGroup(name, [ 'totals', 'My First Portfolio' ]).items[0];
+					item = getRawGroup(container, name, [ 'totals', 'My First Portfolio' ]).items[0];
 
 					const today = new Date();
 
@@ -29305,7 +29086,7 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionBindingNode":13,"./../../../lib/processing/PositionContainer":14,"./../../../lib/processing/PositionGroup":16,"./../../../lib/processing/PositionGroupBinding":17,"./../../../lib/processing/definitions/PositionLevelDefinition":19,"./../../../lib/processing/definitions/PositionLevelType":20,"./../../../lib/processing/definitions/PositionTreeDefinition":21,"@barchart/common-js/lang/Currency":53,"@barchart/common-js/lang/Decimal":57}],136:[function(require,module,exports){
+},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/PositionDirection":7,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":13,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"./../../../lib/processing/definitions/PositionTreeDefinition":19,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Decimal":55}],134:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency');
 
 const PositionLevelDefinition = require('./../../../../lib/processing/definitions/PositionLevelDefinition'),
@@ -29402,7 +29183,7 @@ describe('When a position level definition is created', () => {
 	});
 });
 
-},{"./../../../../lib/processing/definitions/PositionLevelDefinition":19,"./../../../../lib/processing/definitions/PositionLevelType":20,"@barchart/common-js/lang/Currency":53}],137:[function(require,module,exports){
+},{"./../../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../../lib/processing/definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51}],135:[function(require,module,exports){
 const Gateway = require('@barchart/common-js/api/http/Gateway');
 
 const InstrumentProvider = require('./../../../lib/providers/InstrumentProvider');
@@ -29489,7 +29270,7 @@ describe('After the InstrumentProvider utility is initialized', () => {
 	});
 });
 
-},{"./../../../lib/providers/InstrumentProvider":22,"@barchart/common-js/api/http/Gateway":28}],138:[function(require,module,exports){
+},{"./../../../lib/providers/InstrumentProvider":20,"@barchart/common-js/api/http/Gateway":26}],136:[function(require,module,exports){
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -29559,7 +29340,7 @@ describe('When positions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/serialization/PositionSchema":23}],139:[function(require,module,exports){
+},{"./../../../lib/serialization/PositionSchema":21}],137:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -29626,4 +29407,4 @@ describe('When transactions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/data/TransactionType":9,"./../../../lib/serialization/TransactionSchema":24,"@barchart/common-js/lang/Day":55,"@barchart/common-js/lang/Decimal":57}]},{},[131,132,133,134,136,135,137,138,139]);
+},{"./../../../lib/data/TransactionType":9,"./../../../lib/serialization/TransactionSchema":22,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55}]},{},[129,130,131,132,134,133,135,136,137]);
