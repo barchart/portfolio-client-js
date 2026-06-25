@@ -96,6 +96,7 @@ module.exports = (() => {
 			this._dataFormat.hasLinked = false;
 			this._dataFormat.hasManual = false;
 			this._dataFormat.positions = [ ];
+			this._dataFormat.excluded = this._excluded;
 			this._dataFormat.hide = false;
 			this._dataFormat.invalid = false;
 			this._dataFormat.locked = false;
@@ -141,6 +142,7 @@ module.exports = (() => {
 
 				this._dataFormat.portfolio = item.portfolio.portfolio;
 				this._dataFormat.position = item.position.position;
+
 				setInstrumentFormat(this._dataFormat, item.position.instrument);
 				setFundamentalFormat(this._dataFormat, item.data.fundamental);
 			} else {
@@ -211,6 +213,8 @@ module.exports = (() => {
 			this._dataFormat.realizedPositive = false;
 			this._dataFormat.realizedNegative = false;
 			this._dataFormat.realizedToday = null;
+			this._dataFormat.realizedTodayPositive = false;
+			this._dataFormat.realizedTodayNegative = false;
 			this._dataFormat.income = null;
 			this._dataFormat.market = null;
 			this._dataFormat.market2 = null;
@@ -222,6 +226,7 @@ module.exports = (() => {
 			this._dataFormat.unrealizedPositive = false;
 			this._dataFormat.unrealizedNegative = false;
 			this._dataFormat.unrealizedToday = null;
+			this._dataFormat.unrealizedTodayPositive = false;
 			this._dataFormat.unrealizedTodayNegative = false;
 			this._dataFormat.gainToday = null;
 			this._dataFormat.gainTodayPositive = false;
@@ -269,7 +274,11 @@ module.exports = (() => {
 			this._dataFormat.periodPercentPrevious = null;
 			this._dataFormat.periodPercentPrevious2 = null;
 
-			this._binding = new PositionGroupBinding(this._dataFormat);
+			this._binding = new PositionGroupBinding(this._dataFormat, {
+				changeCurrency: currency => this.changeCurrency(currency),
+				setExcluded: value => this.setExcluded(value),
+				setFilterMode: mode => this.setFilterMode(mode)
+			});
 
 			this._items.forEach((item) => {
 				bindItem.call(this, item);
@@ -526,7 +535,10 @@ module.exports = (() => {
 			assert.argumentIsRequired(value, 'value', Boolean);
 
 			if (this._excluded !== value) {
-				this._groupExcludedChangeEvent.fire(this._excluded = value);
+				this._excluded = value;
+				this._dataFormat.excluded = value;
+
+				this._groupExcludedChangeEvent.fire(value);
 			}
 		}
 
@@ -865,18 +877,37 @@ module.exports = (() => {
 	}
 
 	function setPositionsFormat(format, items) {
-		format.positions = items.map((item) => {
+		const includePositions = format.single || format.homogeneous;
+
+		const positions = [ ];
+		let open = false;
+		let linked = items.length !== 0;
+		let hasLinked = false;
+		let hasManual = false;
+
+		items.forEach((item) => {
 			const position = item.position;
 			const portfolio = item.portfolio;
 			const instrument = position.instrument;
+			const positionLinked = portfolio ? !!portfolio.snaptrade : false;
+			const positionOpen = position.snapshot ? position.snapshot.direction.open : false;
 
-			return {
+			open = open || positionOpen;
+			linked = linked && positionLinked;
+			hasLinked = hasLinked || positionLinked;
+			hasManual = hasManual || !positionLinked;
+
+			if (!includePositions) {
+				return;
+			}
+
+			positions.push({
 				portfolio: position.portfolio,
 				portfolioName: portfolio ? portfolio.name : null,
 				position: position.position,
 				cash: position.cash,
-				linked: portfolio ? !!portfolio.snaptrade : false,
-				open: position.snapshot ? position.snapshot.direction.open : false,
+				linked: positionLinked,
+				open: positionOpen,
 				quantity: formatDecimal(item.data.quantity, 2),
 				instrumentName: instrument ? formatString(instrument.name) : null,
 				instrumentSymbolBarchart: instrument && instrument.symbol ? formatString(instrument.symbol.barchart) : null,
@@ -889,13 +920,14 @@ module.exports = (() => {
 				instrumentCurrencyCode: instrument && instrument.currency ? formatString(instrument.currency.code) : null,
 				instrumentExchange: instrument ? formatString(instrument.exchange) : null,
 				instrumentCode: instrument && instrument.code ? formatString(instrument.code.code) : null
-			};
+			});
 		});
 
-		format.open = format.positions.some(position => position.open);
-		format.linked = format.positions.length !== 0 && format.positions.every(position => position.linked);
-		format.hasLinked = format.positions.some(position => position.linked);
-		format.hasManual = format.positions.some(position => !position.linked);
+		format.open = open;
+		format.linked = linked;
+		format.hasLinked = hasLinked;
+		format.hasManual = hasManual;
+		format.positions = positions;
 	}
 
 	function setFundamentalFormat(format, data) {
@@ -1171,6 +1203,8 @@ module.exports = (() => {
 		format.realizedNegative = actual.realized.getIsNegative();
 		format.unrealized = formatCurrency(actual.unrealized, currency);
 		format.realizedToday = formatCurrency(actual.realizedToday, currency);
+		format.realizedTodayPositive = actual.realizedToday.getIsPositive();
+		format.realizedTodayNegative = actual.realizedToday.getIsNegative();
 		format.income = formatCurrency(actual.income, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalCurrentPositive = updates.summaryTotalCurrent.getIsPositive();
@@ -1381,9 +1415,12 @@ module.exports = (() => {
 		format.unrealizedNegative = actual.unrealized.getIsNegative();
 
 		format.unrealizedToday = formatCurrency(actual.unrealizedToday, currency);
+		format.unrealizedTodayPositive = actual.unrealizedToday.getIsPositive();
 		format.unrealizedTodayNegative = actual.unrealizedToday.getIsNegative();
 
 		format.realizedToday = formatCurrency(actual.realizedToday, currency);
+		format.realizedTodayPositive = actual.realizedToday.getIsPositive();
+		format.realizedTodayNegative = actual.realizedToday.getIsNegative();
 
 		format.gainToday = formatCurrency(actual.gainToday, currency);
 		format.gainTodayPositive = actual.gainToday.getIsPositive();

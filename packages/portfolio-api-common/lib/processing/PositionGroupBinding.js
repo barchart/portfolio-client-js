@@ -6,10 +6,12 @@ module.exports = (() => {
 	 *
 	 * @public
 	 * @param {Object} formatted
+	 * @param {Object=} actions
 	 */
 	class PositionGroupBinding {
-		constructor(formatted) {
+		constructor(formatted, actions) {
 			this.formatted = formatted;
+			this._actions = actions || { };
 		}
 
 		/**
@@ -50,6 +52,37 @@ module.exports = (() => {
 		 */
 		get description() {
 			return this.formatted.description;
+		}
+
+		/**
+		 * Set a flag to indicate if parent groups should exclude this group's
+		 * items from their calculations.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
+		setExcluded(value) {
+			return this._actions.setExcluded(value);
+		}
+
+		/**
+		 * Sets the filter mode for the group.
+		 *
+		 * @public
+		 * @param {FilterMode} mode
+		 */
+		setFilterMode(mode) {
+			return this._actions.setFilterMode(mode);
+		}
+
+		/**
+		 * Changes the group currency.
+		 *
+		 * @public
+		 * @param {Currency} currency
+		 */
+		changeCurrency(currency) {
+			return this._actions.changeCurrency(currency);
 		}
 
 		/**

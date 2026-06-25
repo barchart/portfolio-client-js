@@ -14,8 +14,7 @@ const array = require('@barchart/common-js/lang/array'),
 
 const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
-const BindingTree = require('./BindingTree'),
-	PositionContainerBinding = require('./PositionContainerBinding');
+const BindingTree = require('./BindingTree');
 
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType'),
@@ -111,7 +110,6 @@ module.exports = (() => {
 			}, { });
 
 			this._portfolioBindings = Object.keys(this._portfolios).map(key => this._portfolios[key]);
-			this._binding = new PositionContainerBinding(this._portfolioBindings);
 
 			if (reportFrame) {
 				this._reportDate = reportDate;
@@ -205,7 +203,6 @@ module.exports = (() => {
 				createGroups.call(this, tree, this._items, treeDefinition, treeDefinition.definitions);
 
 				map[treeDefinition.name] = tree;
-				this._binding.addTree(treeDefinition.name, tree.binding);
 
 				return map;
 			}, { });
@@ -255,36 +252,6 @@ module.exports = (() => {
 
 		getCalculationsSuspended() {
 			return this._calculationSuspensions.size !== 0;
-		}
-
-		/**
-		 * The portfolios intended for binding to a user interface.
-		 *
-		 * @public
-		 * @returns {Object[]}
-		 */
-		get portfolios() {
-			return this._portfolioBindings;
-		}
-
-		/**
-		 * The position trees intended for binding to a user interface.
-		 *
-		 * @public
-		 * @returns {Object<String, BindingTree>}
-		 */
-		get trees() {
-			return this._trees;
-		}
-
-		/**
-		 * The container data intended for binding to a user interface.
-		 *
-		 * @public
-		 * @returns {PositionContainerBinding}
-		 */
-		get binding() {
-			return this._binding;
 		}
 
 		/**
@@ -907,13 +874,13 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} name
 		 * @param {String[]} keys
-		 * @returns {PositionGroup}
+		 * @returns {PositionGroupBinding}
 		 */
 		getGroup(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', String);
 
-			return findNode(this._trees[name], keys).getValue();
+			return findNode(this._trees[name], keys).getValue().binding;
 		}
 
 		/**
@@ -923,15 +890,13 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} name
 		 * @param {String[]} keys
-		 * @returns {PositionGroup[]}
+		 * @returns {PositionGroupBinding[]}
 		 */
 		getGroups(name, keys) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', String);
 
-			const node = findNode(this._trees[name], keys);
-
-			return node.getChildren().map(child => child.getValue());
+			return findNode(this._trees[name], keys).getChildren2();
 		}
 
 		/**
@@ -1353,21 +1318,8 @@ module.exports = (() => {
 	}
 
 	function severGroupNode(groupNodeToSever) {
-		const groups = [ ];
-
-		groupNodeToSever.walk(group => groups.push(group), true, true);
-
 		groupNodeToSever.sever();
-
-		groups.forEach((group) => {
-			if (this._groupObservers.hasOwnProperty(group.id)) {
-				this._groupObservers[group.id].dispose();
-
-				delete this._groupObservers[group.id];
-			}
-
-			delete this._nodes[group.id];
-		});
+		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
 	}
 
 	function recalculatePercentages() {
