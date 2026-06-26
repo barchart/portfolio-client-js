@@ -26,17 +26,23 @@ describe('After the InstrumentProvider utility is initialized', () => {
 			const endpoint = Gateway.invoke.calls.argsFor(0)[0];
 			const payload = Gateway.invoke.calls.argsFor(0)[1];
 
-			expect(endpoint.path.parameters.length).toEqual(2);
-			expect(endpoint.path.parameters[0].key).toEqual('instruments');
-			expect(endpoint.path.parameters[1].key).toEqual('symbol');
-			expect(endpoint.query.parameters.length).toEqual(0);
-			expect(payload.symbol).toEqual('XDTE');
+			expect({
+				pathKeys: endpoint.path.parameters.map(parameter => parameter.key),
+				queryKeys: endpoint.query.parameters.map(parameter => parameter.key),
+				symbol: payload.symbol
+			}).toEqual({
+				pathKeys: [ 'instruments', 'symbol' ],
+				queryKeys: [ ],
+				symbol: 'XDTE'
+			});
 		});
 
 		it('should normalize crypto instrument metadata in single-instrument responses', () => {
-			expect(result.instrument.name).toEqual('Bitcoin');
-			expect(result.instrument.currency).toEqual('USD');
-			expect(result.instrument.symbolType).toEqual(999);
+			expect(result.instrument).toEqual({
+				currency: 'USD',
+				name: 'Bitcoin',
+				symbolType: 999
+			});
 		});
 	});
 
@@ -67,19 +73,28 @@ describe('After the InstrumentProvider utility is initialized', () => {
 			const endpoint = Gateway.invoke.calls.argsFor(0)[0];
 			const payload = Gateway.invoke.calls.argsFor(0)[1];
 
-			expect(endpoint.path.parameters.length).toEqual(1);
-			expect(endpoint.path.parameters[0].key).toEqual('instruments');
-			expect(endpoint.query.parameters.length).toEqual(1);
-			expect(endpoint.query.parameters[0].key).toEqual('symbols');
-			expect(payload.symbols).toEqual('XDTE,TSLA,OIY00');
+			expect({
+				pathKeys: endpoint.path.parameters.map(parameter => parameter.key),
+				queryKeys: endpoint.query.parameters.map(parameter => parameter.key),
+				symbols: payload.symbols
+			}).toEqual({
+				pathKeys: [ 'instruments' ],
+				queryKeys: [ 'symbols' ],
+				symbols: 'XDTE,TSLA,OIY00'
+			});
 		});
 
 		it('should normalize crypto instrument metadata in batch responses', () => {
-			expect(result.instruments[0].name).toEqual('Bitcoin');
-			expect(result.instruments[0].currency).toEqual('USD');
-			expect(result.instruments[0].symbolType).toEqual(999);
-			expect(result.instruments[1].name).toEqual('Tesla Inc.');
-			expect(result.instruments[1].symbolType).toEqual(1);
+			expect(result.instruments).toEqual([
+				{
+					currency: 'USD',
+					name: 'Bitcoin',
+					symbolType: 999
+				}, {
+					name: 'Tesla Inc.',
+					symbolType: 1
+				}
+			]);
 		});
 	});
 });

@@ -1,78 +1,16 @@
-const Currency = require('@barchart/common-js/lang/Currency'),
-	Decimal = require('@barchart/common-js/lang/Decimal');
+const Currency = require('@barchart/common-js/lang/Currency');
 
-const InstrumentType = require('./../../../lib/data/InstrumentType'),
-	PositionDirection = require('./../../../lib/data/PositionDirection'),
-	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
+const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./../../../lib/processing/definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./../../../lib/processing/definitions/PositionTreeDefinition');
 
+const positionTestFactory = require('../../utils/processing/PositionTestFactory');
+
 describe('When a position container data is gathered', () => {
 	'use strict';
-
-	let positionCounter = 0;
-
-	function getPosition(portfolio, symbol, currency) {
-		return {
-			portfolio: portfolio,
-			position: (positionCounter++).toString(),
-			instrument: {
-				symbol: {
-					barchart: symbol
-				},
-				currency: currency || Currency.USD,
-				type: InstrumentType.EQUITY
-			},
-			snapshot: {
-				basis: new Decimal(123),
-				value: new Decimal(456),
-				open: new Decimal(1),
-				direction: PositionDirection.LONG,
-				income: new Decimal(0),
-				gain: new Decimal(0),
-				buys: new Decimal(50),
-				sells: new Decimal(0)
-			}
-		};
-	}
-
-	function getSummaries(position, frame, count) {
-		const ranges = frame.getRecentRanges(count - 1);
-
-		return ranges.map((range) => {
-			return {
-				portfolio: position.portfolio,
-				position: position.position,
-				frame: frame,
-				start: {
-					date: range.start,
-					open: position.snapshot.open,
-					value: position.snapshot.value,
-					basis: position.snapshot.basis
-				},
-				end: {
-					date: range.end,
-					open: position.snapshot.open,
-					value: position.snapshot.value,
-					basis: position.snapshot.basis
-				},
-				period: {
-					buys: new Decimal(0),
-					sells: new Decimal(0),
-					income: new Decimal(0),
-					realized: new Decimal(0),
-					unrealized: new Decimal(0)
-				}
-			};
-		});
-	}
-
-	function getRawGroup(container, name, keys) {
-		return keys.reduce((node, key) => node.findChild(group => group.key === key), container._trees[name]).getValue();
-	}
 
 	describe('for two portfolios, each with the same position, and the second portfolio with an addition position', () => {
 		let portfolios;
@@ -80,25 +18,22 @@ describe('When a position container data is gathered', () => {
 		let summaries;
 
 		beforeEach(() => {
+			positionTestFactory.resetPositionCounter();
+
 			portfolios = [
-				{
-					portfolio: 'My First Portfolio',
-					name: 'a'
-				}, {
-					portfolio: 'My Second Portfolio',
-					name: 'b'
-				}
+				positionTestFactory.createPortfolio('My First Portfolio', 'a'),
+				positionTestFactory.createPortfolio('My Second Portfolio', 'b')
 			];
 
 			positions = [
-				getPosition('My First Portfolio', 'AAPL'),
-				getPosition('My Second Portfolio', 'AAPL'),
-				getPosition('My Second Portfolio', 'TSLA')
+				positionTestFactory.createPosition('My First Portfolio', 'AAPL'),
+				positionTestFactory.createPosition('My Second Portfolio', 'AAPL'),
+				positionTestFactory.createPosition('My Second Portfolio', 'TSLA')
 			];
 
 			summaries = positions.reduce((accumulator, position) => {
-				accumulator = accumulator.concat(getSummaries(position, PositionSummaryFrame.YTD, 1));
-				accumulator = accumulator.concat(getSummaries(position, PositionSummaryFrame.YEARLY, 3));
+				accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame.YTD, 1));
+				accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3));
 
 				return accumulator;
 			}, [ ]);
@@ -129,61 +64,66 @@ describe('When a position container data is gathered', () => {
 				expect(container.getGroups(name, [ 'totals' ]).length).toEqual(2);
 			});
 
-			it('the "Total" group should have three items', () => {
-				expect(getRawGroup(container, name, [ 'totals' ]).items.length).toEqual(3);
+			it('the "Total" group should expose binding data, not raw position items', () => {
+				const group = container.getGroup(name, [ 'totals' ]);
+
+				expect({
+					description: group.formatted.description,
+					items: group.items,
+					positions: group.formatted.positions
+				}).toEqual({
+					description: 'Total',
+					items: undefined,
+					positions: [ ]
+				});
 			});
 
 			it('The "a" portfolio group should have one child group', () => {
 				expect(container.getGroups(name, [ 'totals', 'My First Portfolio' ]).length).toEqual(1);
 			});
 
-			it('the "a" portfolio group should have one item', () => {
-				expect(getRawGroup(container, name, [ 'totals', 'My First Portfolio' ]).items.length).toEqual(1);
+			it('the "a" position group should expose one formatted position', () => {
+				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
+
+				expect(group.formatted.positions.map(position => position.position)).toEqual([ positions[0].position ]);
 			});
 
 			it('The "b" portfolio group should have two child groups', () => {
 				expect(container.getGroups(name, [ 'totals', 'My Second Portfolio' ]).length).toEqual(2);
 			});
 
-			it('the "b" portfolio group should have two items', () => {
-				expect(getRawGroup(container, name, [ 'totals', 'My Second Portfolio' ]).items.length).toEqual(2);
+			it('the "b" portfolio group should expose two child bindings', () => {
+				const groups = container.getGroups(name, [ 'totals', 'My Second Portfolio' ]);
+
+				expect(groups.map(group => group.formatted.position)).toEqual([ positions[1].position, positions[2].position ]);
 			});
 
-			describe('and an item is pulled for one of the positions', function() {
-				let item;
+			it('the formatted position group binding should update after a quote change', () => {
+				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
 
-				let todayYear;
-				let todayMonth;
-				let todayDay;
+				container.setQuotes([ { lastPrice: 200, symbol: 'AAPL' } ], [ ]);
 
-				beforeEach(() => {
-					item = getRawGroup(container, name, [ 'totals', 'My First Portfolio' ]).items[0];
+				expect(group.formatted.currentPrice).toEqual('200.00');
+			});
 
-					const today = new Date();
+			it('the formatted position group binding should update after a fundamental data change', () => {
+				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
 
-					todayYear = today.getFullYear();
-					todayMonth = today.getMonth() + 1;
-					todayDay = today.getDate();
+				container.setPositionFundamentalData('AAPL', false, {
+					raw: {
+						percentChange1m: 0.01,
+						percentChange1y: 0.02,
+						percentChange3m: 0.03,
+						percentChangeYtd: 0.04
+					}
 				});
 
-				it('the current summary should be a YTD summary for this year', () => {
-					expect(item.currentSummary).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YTD && s.start.date.format() === `${(todayYear - 1)}-12-31` && s.end.date.format() === `${(todayYear - 0)}-12-31`));
-				});
-
-				it('should have two previous summaries', () => {
-					expect(item.previousSummaries.length).toEqual(3);
-				});
-
-				it('the previous (x1) summary should be a YEARLY summary for three years ago', () => {
-					expect(item.previousSummaries[0]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 4)}-12-31` && s.end.date.format() === `${(todayYear - 3)}-12-31`));
-				});
-
-				it('the previous (x2) summary should be a YEARLY summary for the year before last', () => {
-					expect(item.previousSummaries[1]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 3)}-12-31` && s.end.date.format() === `${(todayYear - 2)}-12-31`));
-				});
-
-				it('the previous (x3) summary should be a YEARLY summary for last year', () => {
-					expect(item.previousSummaries[2]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 2)}-12-31` && s.end.date.format() === `${(todayYear - 1)}-12-31`));
+				expect({
+					fundamental: group.formatted.fundamental,
+					percentChange1m: group.formatted.fundamentalPercentChange1m
+				}).toEqual({
+					fundamental: null,
+					percentChange1m: '+1.00%'
 				});
 			});
 		});

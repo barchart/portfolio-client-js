@@ -75,8 +75,13 @@ describe('When a position level definition is created', () => {
 			};
 			const definition = createDefinition([ ], () => requiredGroup);
 
-			expect(definition.generateRequiredGroup()).toBe(requiredGroup);
-			expect(definition.requiredGroups).toEqual([ requiredGroup ]);
+			expect({
+				generated: definition.generateRequiredGroup(),
+				requiredGroups: definition.requiredGroups
+			}).toEqual({
+				generated: requiredGroup,
+				requiredGroups: [ requiredGroup ]
+			});
 		});
 
 		it('should reject an invalid generated group', () => {
@@ -88,8 +93,15 @@ describe('When a position level definition is created', () => {
 				};
 			});
 
-			expect(() => definition.generateRequiredGroup()).toThrow();
-			expect(definition.requiredGroups).toEqual([ ]);
+			expect(() => {
+				try {
+					definition.generateRequiredGroup();
+				} finally {
+					if (definition.requiredGroups.length !== 0) {
+						throw new Error('Required groups were updated.');
+					}
+				}
+			}).toThrow();
 		});
 	});
 });

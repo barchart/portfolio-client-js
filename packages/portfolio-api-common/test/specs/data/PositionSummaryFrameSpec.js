@@ -7,6 +7,13 @@ const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame')
 describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	'use strict';
 
+	function formatRange(range) {
+		return {
+			end: range.end.format(),
+			start: range.start.format()
+		};
+	}
+
 	describe('and yearly position summary ranges are processed for a transaction set that does not close', () => {
 		let ranges;
 
@@ -42,28 +49,23 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[1].start.format()).toEqual('2015-12-31');
-			expect(ranges[1].end.format()).toEqual('2016-12-31');
+			expect(formatRange(ranges[1])).toEqual({ end: '2016-12-31', start: '2015-12-31' });
 		});
 
 		it('the third range should be from 12-31-2016 to 12-31-2017', () => {
-			expect(ranges[2].start.format()).toEqual('2016-12-31');
-			expect(ranges[2].end.format()).toEqual('2017-12-31');
+			expect(formatRange(ranges[2])).toEqual({ end: '2017-12-31', start: '2016-12-31' });
 		});
 
 		it('the fourth range should be from 12-31-2017 to 12-31-2018', () => {
-			expect(ranges[3].start.format()).toEqual('2017-12-31');
-			expect(ranges[3].end.format()).toEqual('2018-12-31');
+			expect(formatRange(ranges[3])).toEqual({ end: '2018-12-31', start: '2017-12-31' });
 		});
 
 		it('the fifth range should be from 12-31-2018 to 12-31-2019', () => {
-			expect(ranges[4].start.format()).toEqual('2018-12-31');
-			expect(ranges[4].end.format()).toEqual('2019-12-31');
+			expect(formatRange(ranges[4])).toEqual({ end: '2019-12-31', start: '2018-12-31' });
 		});
 	});
 
@@ -96,8 +98,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 	});
 
@@ -130,13 +131,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[1].start.format()).toEqual('2015-12-31');
-			expect(ranges[1].end.format()).toEqual('2016-12-31');
+			expect(formatRange(ranges[1])).toEqual({ end: '2016-12-31', start: '2015-12-31' });
 		});
 	});
 
@@ -169,18 +168,15 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[1].start.format()).toEqual('2015-12-31');
-			expect(ranges[1].end.format()).toEqual('2016-12-31');
+			expect(formatRange(ranges[1])).toEqual({ end: '2016-12-31', start: '2015-12-31' });
 		});
 
 		it('the third range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[2].start.format()).toEqual('2016-12-31');
-			expect(ranges[2].end.format()).toEqual('2017-12-31');
+			expect(formatRange(ranges[2])).toEqual({ end: '2017-12-31', start: '2016-12-31' });
 		});
 	});
 
@@ -227,13 +223,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[1].start.format()).toEqual('2015-12-31');
-			expect(ranges[1].end.format()).toEqual('2016-12-31');
+			expect(formatRange(ranges[1])).toEqual({ end: '2016-12-31', start: '2015-12-31' });
 		});
 	});
 
@@ -288,15 +282,16 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 11-30-2018 to 12-31-2018', () => {
-			expect(ranges[0].start.format()).toEqual('2018-11-30');
-			expect(ranges[0].end.format()).toEqual('2018-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2018-12-31', start: '2018-11-30' });
 		});
 
 		it('the last range should be for the previous month', () => {
 			const today = Day.getToday();
 
-			expect(ranges[ranges.length - 1].start.format()).toEqual(today.subtractMonths(2).getEndOfMonth().format());
-			expect(ranges[ranges.length - 1].end.format()).toEqual(today.subtractMonths(1).getEndOfMonth().format());
+			expect(formatRange(ranges[ranges.length - 1])).toEqual({
+				end: today.subtractMonths(1).getEndOfMonth().format(),
+				start: today.subtractMonths(2).getEndOfMonth().format()
+			});
 		});
 	});
 
@@ -329,8 +324,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 11-30-2018 to 12-31-2018', () => {
-			expect(ranges[0].start.format()).toEqual('2018-11-30');
-			expect(ranges[0].end.format()).toEqual('2018-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2018-12-31', start: '2018-11-30' });
 		});
 	});
 
@@ -363,13 +357,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 09-30-2015 to 10-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2015-09-30');
-			expect(ranges[0].end.format()).toEqual('2015-10-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-10-31', start: '2015-09-30' });
 		});
 
 		it('the second range should be from 10-31-2015 to 11-30-2015', () => {
-			expect(ranges[1].start.format()).toEqual('2015-10-31');
-			expect(ranges[1].end.format()).toEqual('2015-11-30');
+			expect(formatRange(ranges[1])).toEqual({ end: '2015-11-30', start: '2015-10-31' });
 		});
 	});
 
@@ -452,8 +444,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2020 to 12-31-2021', () => {
-			expect(ranges[0].start.format()).toEqual('2020-12-31');
-			expect(ranges[0].end.format()).toEqual('2021-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2021-12-31', start: '2020-12-31' });
 		});
 	});
 
@@ -492,8 +483,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2020 to 12-31-2021', () => {
-			expect(ranges[0].start.format()).toEqual('2020-12-31');
-			expect(ranges[0].end.format()).toEqual('2021-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2021-12-31', start: '2020-12-31' });
 		});
 	});
 

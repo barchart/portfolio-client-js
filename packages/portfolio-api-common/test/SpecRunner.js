@@ -27863,6 +27863,13 @@ const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame')
 describe('After the PositionSummaryFrame enumeration is initialized', () => {
 	'use strict';
 
+	function formatRange(range) {
+		return {
+			end: range.end.format(),
+			start: range.start.format()
+		};
+	}
+
 	describe('and yearly position summary ranges are processed for a transaction set that does not close', () => {
 		let ranges;
 
@@ -27898,28 +27905,23 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[1].start.format()).toEqual('2015-12-31');
-			expect(ranges[1].end.format()).toEqual('2016-12-31');
+			expect(formatRange(ranges[1])).toEqual({ end: '2016-12-31', start: '2015-12-31' });
 		});
 
 		it('the third range should be from 12-31-2016 to 12-31-2017', () => {
-			expect(ranges[2].start.format()).toEqual('2016-12-31');
-			expect(ranges[2].end.format()).toEqual('2017-12-31');
+			expect(formatRange(ranges[2])).toEqual({ end: '2017-12-31', start: '2016-12-31' });
 		});
 
 		it('the fourth range should be from 12-31-2017 to 12-31-2018', () => {
-			expect(ranges[3].start.format()).toEqual('2017-12-31');
-			expect(ranges[3].end.format()).toEqual('2018-12-31');
+			expect(formatRange(ranges[3])).toEqual({ end: '2018-12-31', start: '2017-12-31' });
 		});
 
 		it('the fifth range should be from 12-31-2018 to 12-31-2019', () => {
-			expect(ranges[4].start.format()).toEqual('2018-12-31');
-			expect(ranges[4].end.format()).toEqual('2019-12-31');
+			expect(formatRange(ranges[4])).toEqual({ end: '2019-12-31', start: '2018-12-31' });
 		});
 	});
 
@@ -27952,8 +27954,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 	});
 
@@ -27986,13 +27987,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[1].start.format()).toEqual('2015-12-31');
-			expect(ranges[1].end.format()).toEqual('2016-12-31');
+			expect(formatRange(ranges[1])).toEqual({ end: '2016-12-31', start: '2015-12-31' });
 		});
 	});
 
@@ -28025,18 +28024,15 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[1].start.format()).toEqual('2015-12-31');
-			expect(ranges[1].end.format()).toEqual('2016-12-31');
+			expect(formatRange(ranges[1])).toEqual({ end: '2016-12-31', start: '2015-12-31' });
 		});
 
 		it('the third range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[2].start.format()).toEqual('2016-12-31');
-			expect(ranges[2].end.format()).toEqual('2017-12-31');
+			expect(formatRange(ranges[2])).toEqual({ end: '2017-12-31', start: '2016-12-31' });
 		});
 	});
 
@@ -28083,13 +28079,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2014 to 12-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2014-12-31');
-			expect(ranges[0].end.format()).toEqual('2015-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-12-31', start: '2014-12-31' });
 		});
 
 		it('the second range should be from 12-31-2015 to 12-31-2016', () => {
-			expect(ranges[1].start.format()).toEqual('2015-12-31');
-			expect(ranges[1].end.format()).toEqual('2016-12-31');
+			expect(formatRange(ranges[1])).toEqual({ end: '2016-12-31', start: '2015-12-31' });
 		});
 	});
 
@@ -28144,15 +28138,16 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 11-30-2018 to 12-31-2018', () => {
-			expect(ranges[0].start.format()).toEqual('2018-11-30');
-			expect(ranges[0].end.format()).toEqual('2018-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2018-12-31', start: '2018-11-30' });
 		});
 
 		it('the last range should be for the previous month', () => {
 			const today = Day.getToday();
 
-			expect(ranges[ranges.length - 1].start.format()).toEqual(today.subtractMonths(2).getEndOfMonth().format());
-			expect(ranges[ranges.length - 1].end.format()).toEqual(today.subtractMonths(1).getEndOfMonth().format());
+			expect(formatRange(ranges[ranges.length - 1])).toEqual({
+				end: today.subtractMonths(1).getEndOfMonth().format(),
+				start: today.subtractMonths(2).getEndOfMonth().format()
+			});
 		});
 	});
 
@@ -28185,8 +28180,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 11-30-2018 to 12-31-2018', () => {
-			expect(ranges[0].start.format()).toEqual('2018-11-30');
-			expect(ranges[0].end.format()).toEqual('2018-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2018-12-31', start: '2018-11-30' });
 		});
 	});
 
@@ -28219,13 +28213,11 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 09-30-2015 to 10-31-2015', () => {
-			expect(ranges[0].start.format()).toEqual('2015-09-30');
-			expect(ranges[0].end.format()).toEqual('2015-10-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2015-10-31', start: '2015-09-30' });
 		});
 
 		it('the second range should be from 10-31-2015 to 11-30-2015', () => {
-			expect(ranges[1].start.format()).toEqual('2015-10-31');
-			expect(ranges[1].end.format()).toEqual('2015-11-30');
+			expect(formatRange(ranges[1])).toEqual({ end: '2015-11-30', start: '2015-10-31' });
 		});
 	});
 
@@ -28308,8 +28300,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2020 to 12-31-2021', () => {
-			expect(ranges[0].start.format()).toEqual('2020-12-31');
-			expect(ranges[0].end.format()).toEqual('2021-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2021-12-31', start: '2020-12-31' });
 		});
 	});
 
@@ -28348,8 +28339,7 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 
 		it('the first range should be from 12-31-2020 to 12-31-2021', () => {
-			expect(ranges[0].start.format()).toEqual('2020-12-31');
-			expect(ranges[0].end.format()).toEqual('2021-12-31');
+			expect(formatRange(ranges[0])).toEqual({ end: '2021-12-31', start: '2020-12-31' });
 		});
 	});
 
@@ -28894,81 +28884,92 @@ describe('When validating position violations', () => {
 });
 
 },{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/TransactionType":9,"./../../../lib/data/TransactionValidator":10,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55}],133:[function(require,module,exports){
-const Currency = require('@barchart/common-js/lang/Currency'),
-	Decimal = require('@barchart/common-js/lang/Decimal');
+const BindingTree = require('./../../../lib/processing/BindingTree');
 
-const InstrumentType = require('./../../../lib/data/InstrumentType'),
-	PositionDirection = require('./../../../lib/data/PositionDirection'),
-	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
+describe('When a binding tree is used', () => {
+	'use strict';
+
+	function createValue(key) {
+		return {
+			key: key,
+			binding: {
+				key: key
+			}
+		};
+	}
+
+	it('should keep child nodes and child bindings in the same order', () => {
+		const tree = new BindingTree();
+		const valueA = createValue('a');
+		const valueB = createValue('b');
+
+		const childA = tree.addChild(valueA);
+		const childB = tree.addChild(valueB);
+
+		expect({
+			children: tree.getChildren(),
+			bindings: tree.getChildren2()
+		}).toEqual({
+			children: [ childA, childB ],
+			bindings: [ valueA.binding, valueB.binding ]
+		});
+	});
+
+	it('should remove the matching binding when a child node is removed', () => {
+		const tree = new BindingTree();
+		const value = createValue('a');
+		const child = tree.addChild(value);
+
+		child.addChild(createValue('a-1'));
+
+		tree.removeChild(child);
+
+		expect({
+			childBindings: child.getChildren2(),
+			childChildren: child.getChildren(),
+			childParent: child.getParent(),
+			treeBindings: tree.getChildren2(),
+			treeChildren: tree.getChildren()
+		}).toEqual({
+			childBindings: [ ],
+			childChildren: [ ],
+			childParent: null,
+			treeBindings: [ ],
+			treeChildren: [ ]
+		});
+	});
+
+	it('should ignore removal of a node which is not a child', () => {
+		const tree = new BindingTree();
+		const child = tree.addChild(createValue('a'));
+		const other = new BindingTree(createValue('b'));
+
+		tree.removeChild(other);
+
+		expect({
+			children: tree.getChildren(),
+			bindings: tree.getChildren2()
+		}).toEqual({
+			children: [ child ],
+			bindings: [ child.getValue().binding ]
+		});
+	});
+});
+
+},{"./../../../lib/processing/BindingTree":12}],134:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency');
+
+const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./../../../lib/processing/definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./../../../lib/processing/definitions/PositionTreeDefinition');
 
+const positionTestFactory = require('../../utils/processing/PositionTestFactory');
+
 describe('When a position container data is gathered', () => {
 	'use strict';
-
-	let positionCounter = 0;
-
-	function getPosition(portfolio, symbol, currency) {
-		return {
-			portfolio: portfolio,
-			position: (positionCounter++).toString(),
-			instrument: {
-				symbol: {
-					barchart: symbol
-				},
-				currency: currency || Currency.USD,
-				type: InstrumentType.EQUITY
-			},
-			snapshot: {
-				basis: new Decimal(123),
-				value: new Decimal(456),
-				open: new Decimal(1),
-				direction: PositionDirection.LONG,
-				income: new Decimal(0),
-				gain: new Decimal(0),
-				buys: new Decimal(50),
-				sells: new Decimal(0)
-			}
-		};
-	}
-
-	function getSummaries(position, frame, count) {
-		const ranges = frame.getRecentRanges(count - 1);
-
-		return ranges.map((range) => {
-			return {
-				portfolio: position.portfolio,
-				position: position.position,
-				frame: frame,
-				start: {
-					date: range.start,
-					open: position.snapshot.open,
-					value: position.snapshot.value,
-					basis: position.snapshot.basis
-				},
-				end: {
-					date: range.end,
-					open: position.snapshot.open,
-					value: position.snapshot.value,
-					basis: position.snapshot.basis
-				},
-				period: {
-					buys: new Decimal(0),
-					sells: new Decimal(0),
-					income: new Decimal(0),
-					realized: new Decimal(0),
-					unrealized: new Decimal(0)
-				}
-			};
-		});
-	}
-
-	function getRawGroup(container, name, keys) {
-		return keys.reduce((node, key) => node.findChild(group => group.key === key), container._trees[name]).getValue();
-	}
 
 	describe('for two portfolios, each with the same position, and the second portfolio with an addition position', () => {
 		let portfolios;
@@ -28976,25 +28977,22 @@ describe('When a position container data is gathered', () => {
 		let summaries;
 
 		beforeEach(() => {
+			positionTestFactory.resetPositionCounter();
+
 			portfolios = [
-				{
-					portfolio: 'My First Portfolio',
-					name: 'a'
-				}, {
-					portfolio: 'My Second Portfolio',
-					name: 'b'
-				}
+				positionTestFactory.createPortfolio('My First Portfolio', 'a'),
+				positionTestFactory.createPortfolio('My Second Portfolio', 'b')
 			];
 
 			positions = [
-				getPosition('My First Portfolio', 'AAPL'),
-				getPosition('My Second Portfolio', 'AAPL'),
-				getPosition('My Second Portfolio', 'TSLA')
+				positionTestFactory.createPosition('My First Portfolio', 'AAPL'),
+				positionTestFactory.createPosition('My Second Portfolio', 'AAPL'),
+				positionTestFactory.createPosition('My Second Portfolio', 'TSLA')
 			];
 
 			summaries = positions.reduce((accumulator, position) => {
-				accumulator = accumulator.concat(getSummaries(position, PositionSummaryFrame.YTD, 1));
-				accumulator = accumulator.concat(getSummaries(position, PositionSummaryFrame.YEARLY, 3));
+				accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame.YTD, 1));
+				accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3));
 
 				return accumulator;
 			}, [ ]);
@@ -29025,68 +29023,398 @@ describe('When a position container data is gathered', () => {
 				expect(container.getGroups(name, [ 'totals' ]).length).toEqual(2);
 			});
 
-			it('the "Total" group should have three items', () => {
-				expect(getRawGroup(container, name, [ 'totals' ]).items.length).toEqual(3);
+			it('the "Total" group should expose binding data, not raw position items', () => {
+				const group = container.getGroup(name, [ 'totals' ]);
+
+				expect({
+					description: group.formatted.description,
+					items: group.items,
+					positions: group.formatted.positions
+				}).toEqual({
+					description: 'Total',
+					items: undefined,
+					positions: [ ]
+				});
 			});
 
 			it('The "a" portfolio group should have one child group', () => {
 				expect(container.getGroups(name, [ 'totals', 'My First Portfolio' ]).length).toEqual(1);
 			});
 
-			it('the "a" portfolio group should have one item', () => {
-				expect(getRawGroup(container, name, [ 'totals', 'My First Portfolio' ]).items.length).toEqual(1);
+			it('the "a" position group should expose one formatted position', () => {
+				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
+
+				expect(group.formatted.positions.map(position => position.position)).toEqual([ positions[0].position ]);
 			});
 
 			it('The "b" portfolio group should have two child groups', () => {
 				expect(container.getGroups(name, [ 'totals', 'My Second Portfolio' ]).length).toEqual(2);
 			});
 
-			it('the "b" portfolio group should have two items', () => {
-				expect(getRawGroup(container, name, [ 'totals', 'My Second Portfolio' ]).items.length).toEqual(2);
+			it('the "b" portfolio group should expose two child bindings', () => {
+				const groups = container.getGroups(name, [ 'totals', 'My Second Portfolio' ]);
+
+				expect(groups.map(group => group.formatted.position)).toEqual([ positions[1].position, positions[2].position ]);
 			});
 
-			describe('and an item is pulled for one of the positions', function() {
-				let item;
+			it('the formatted position group binding should update after a quote change', () => {
+				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
 
-				let todayYear;
-				let todayMonth;
-				let todayDay;
+				container.setQuotes([ { lastPrice: 200, symbol: 'AAPL' } ], [ ]);
 
-				beforeEach(() => {
-					item = getRawGroup(container, name, [ 'totals', 'My First Portfolio' ]).items[0];
+				expect(group.formatted.currentPrice).toEqual('200.00');
+			});
 
-					const today = new Date();
+			it('the formatted position group binding should update after a fundamental data change', () => {
+				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
 
-					todayYear = today.getFullYear();
-					todayMonth = today.getMonth() + 1;
-					todayDay = today.getDate();
+				container.setPositionFundamentalData('AAPL', false, {
+					raw: {
+						percentChange1m: 0.01,
+						percentChange1y: 0.02,
+						percentChange3m: 0.03,
+						percentChangeYtd: 0.04
+					}
 				});
 
-				it('the current summary should be a YTD summary for this year', () => {
-					expect(item.currentSummary).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YTD && s.start.date.format() === `${(todayYear - 1)}-12-31` && s.end.date.format() === `${(todayYear - 0)}-12-31`));
-				});
-
-				it('should have two previous summaries', () => {
-					expect(item.previousSummaries.length).toEqual(3);
-				});
-
-				it('the previous (x1) summary should be a YEARLY summary for three years ago', () => {
-					expect(item.previousSummaries[0]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 4)}-12-31` && s.end.date.format() === `${(todayYear - 3)}-12-31`));
-				});
-
-				it('the previous (x2) summary should be a YEARLY summary for the year before last', () => {
-					expect(item.previousSummaries[1]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 3)}-12-31` && s.end.date.format() === `${(todayYear - 2)}-12-31`));
-				});
-
-				it('the previous (x3) summary should be a YEARLY summary for last year', () => {
-					expect(item.previousSummaries[2]).toBe(summaries.find(s => s.position === item.position.position && s.frame === PositionSummaryFrame.YEARLY && s.start.date.format() === `${(todayYear - 2)}-12-31` && s.end.date.format() === `${(todayYear - 1)}-12-31`));
+				expect({
+					fundamental: group.formatted.fundamental,
+					percentChange1m: group.formatted.fundamentalPercentChange1m
+				}).toEqual({
+					fundamental: null,
+					percentChange1m: '+1.00%'
 				});
 			});
 		});
 	});
 });
 
-},{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/PositionDirection":7,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":13,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"./../../../lib/processing/definitions/PositionTreeDefinition":19,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Decimal":55}],134:[function(require,module,exports){
+},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":13,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"./../../../lib/processing/definitions/PositionTreeDefinition":19,"@barchart/common-js/lang/Currency":51}],135:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency'),
+	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator');
+
+const FilterMode = require('./../../../lib/data/FilterMode'),
+	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
+
+const PositionGroup = require('./../../../lib/processing/PositionGroup'),
+	PositionItem = require('./../../../lib/processing/PositionItem'),
+	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./../../../lib/processing/definitions/PositionLevelType');
+
+const positionTestFactory = require('../../utils/processing/PositionTestFactory');
+
+describe('When a position group is used', () => {
+	'use strict';
+
+	function createItem(symbol, portfolioName) {
+		const portfolio = positionTestFactory.createPortfolio(portfolioName || 'My Portfolio', portfolioName || 'Portfolio');
+		const position = positionTestFactory.createPosition(portfolio.portfolio, symbol);
+		const currentSummary = positionTestFactory.createSummaries(position, PositionSummaryFrame.YTD, 1)[0];
+		const previousSummaries = positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3);
+
+		return new PositionItem(portfolio, position, currentSummary, previousSummaries);
+	}
+
+	function createDefinition(type) {
+		return new PositionLevelDefinition(
+			type.description,
+			type,
+			item => item.position.position,
+			item => item.position.instrument.symbol.barchart,
+			item => item.position.instrument.currency
+		);
+	}
+
+	function createGroup(type, items) {
+		const firstItem = items[0] || null;
+		const key = firstItem ? firstItem.position.position : 'group';
+		const description = firstItem ? firstItem.position.instrument.symbol.barchart : 'Group';
+
+		return new PositionGroup(createDefinition(type), items, Currency.USD, new CurrencyTranslator([ ]), key, description, false);
+	}
+
+	beforeEach(() => {
+		positionTestFactory.resetPositionCounter();
+	});
+
+	it('should expose binding data for the formatted group payload', () => {
+		const item = createItem('AAPL');
+		const group = createGroup(PositionLevelType.POSITION, [ item ]);
+
+		expect({
+			data: group.binding.data,
+			description: group.binding.description,
+			formatted: group.binding.formatted,
+			key: group.binding.key
+		}).toEqual({
+			data: group.data,
+			description: group.description,
+			formatted: group.data,
+			key: group.key
+		});
+	});
+
+	it('should execute group actions from the binding', () => {
+		const item = createItem('AAPL');
+		const group = createGroup(PositionLevelType.POSITION, [ item ]);
+		const excludedChanges = [ ];
+
+		group.registerGroupExcludedChangeHandler(value => excludedChanges.push(value));
+
+		group.binding.setExcluded(true);
+		group.binding.setFilterMode(FilterMode.CLOSED);
+
+		expect({
+			excluded: group.excluded,
+			excludedChanges: excludedChanges,
+			formattedExcluded: group.data.excluded,
+			filterModeCode: group.data.filterModeCode
+		}).toEqual({
+			excluded: true,
+			excludedChanges: [ true ],
+			formattedExcluded: true,
+			filterModeCode: FilterMode.CLOSED.code
+		});
+	});
+
+	it('should expose formatted position data for a single-position group', () => {
+		const item = createItem('AAPL');
+		const group = createGroup(PositionLevelType.POSITION, [ item ]);
+
+		expect({
+			instruments: group.data.positions.map(position => position.instrument),
+			positions: group.data.positions.map(position => position.position),
+			single: group.single
+		}).toEqual({
+			instruments: [ item.position.instrument ],
+			positions: [ item.position.position ],
+			single: true
+		});
+	});
+
+	it('should update quote fields when an item quote changes', () => {
+		const item = createItem('AAPL');
+		const group = createGroup(PositionLevelType.POSITION, [ item ]);
+
+		item.setQuote({
+			highPrice: 205,
+			lastPrice: 200,
+			lowPrice: 195,
+			openPrice: 198,
+			previousPrice: 190,
+			priceChange: 10,
+			symbol: 'AAPL'
+		});
+
+		expect({
+			currentPrice: group.data.currentPrice,
+			quoteChange: group.data.quoteChange,
+			quoteHigh: group.data.quoteHigh,
+			quoteLow: group.data.quoteLow,
+			quoteOpen: group.data.quoteOpen
+		}).toEqual({
+			currentPrice: '200.00',
+			quoteChange: '10.00',
+			quoteHigh: '205.00',
+			quoteLow: '195.00',
+			quoteOpen: '198.00'
+		});
+	});
+
+	it('should format fundamental data for a single-position group', () => {
+		const item = createItem('AAPL');
+		const group = createGroup(PositionLevelType.POSITION, [ item ]);
+
+		item.setPositionFundamentalData({
+			raw: {
+				percentChange1m: 0.01,
+				percentChange1y: 0.02,
+				percentChange3m: 0.03,
+				percentChangeYtd: 0.04
+			}
+		});
+
+		expect({
+			fundamental: group.data.fundamental,
+			percentChange1m: group.data.fundamentalPercentChange1m,
+			percentChange1y: group.data.fundamentalPercentChange1y,
+			percentChange3m: group.data.fundamentalPercentChange3m,
+			percentChangeYtd: group.data.fundamentalPercentChangeYtd
+		}).toEqual({
+			fundamental: null,
+			percentChange1m: '+1.00%',
+			percentChange1y: '+2.00%',
+			percentChange3m: '+3.00%',
+			percentChangeYtd: '+4.00%'
+		});
+	});
+
+	it('should average fundamental data for multi-position groups', () => {
+		const firstItem = createItem('AAPL', 'First Portfolio');
+		const secondItem = createItem('MSFT', 'Second Portfolio');
+		const group = createGroup(PositionLevelType.OTHER, [ firstItem, secondItem ]);
+
+		firstItem.setPositionFundamentalData({
+			raw: {
+				percentChange1m: 0.01
+			}
+		});
+
+		secondItem.setPositionFundamentalData({
+			raw: {
+				percentChange1m: 0.03
+			}
+		});
+
+		expect({
+			homogeneous: group.homogeneous,
+			percentChange1m: group.data.fundamentalPercentChange1m,
+			single: group.single
+		}).toEqual({
+			homogeneous: false,
+			percentChange1m: '+2.00%',
+			single: false
+		});
+	});
+});
+
+},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/FilterMode":3,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionGroup":14,"./../../../lib/processing/PositionItem":16,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52}],136:[function(require,module,exports){
+const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
+
+const PositionItem = require('./../../../lib/processing/PositionItem');
+
+const positionTestFactory = require('../../utils/processing/PositionTestFactory');
+
+describe('When a position item is used', () => {
+	'use strict';
+
+	let portfolio;
+	let position;
+	let currentSummary;
+	let previousSummaries;
+	let item;
+
+	beforeEach(() => {
+		positionTestFactory.resetPositionCounter();
+
+		portfolio = positionTestFactory.createPortfolio('My Portfolio', 'Portfolio');
+		position = positionTestFactory.createPosition(portfolio.portfolio, 'AAPL');
+		currentSummary = positionTestFactory.createSummaries(position, PositionSummaryFrame.YTD, 1)[0];
+		previousSummaries = positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3);
+
+		item = new PositionItem(portfolio, position, currentSummary, previousSummaries);
+	});
+
+	it('should expose the portfolio, position, currency, and summaries supplied to the constructor', () => {
+		expect({
+			currency: item.currency,
+			currentSummary: item.currentSummary,
+			portfolio: item.portfolio,
+			position: item.position,
+			previousSummaries: item.previousSummaries
+		}).toEqual({
+			currency: position.instrument.currency,
+			currentSummary: currentSummary,
+			portfolio: portfolio,
+			position: position,
+			previousSummaries: previousSummaries
+		});
+	});
+
+	it('should update quote state and notify quote observers', () => {
+		const changes = [ ];
+		const firstQuote = { lastPrice: 200, symbol: 'AAPL' };
+		const duplicateQuote = { lastPrice: 200, symbol: 'AAPL' };
+		const secondQuote = { lastPrice: 201, symbol: 'AAPL' };
+
+		item.registerQuoteChangeHandler(quote => changes.push(quote));
+
+		item.setQuote(firstQuote);
+		item.setQuote(duplicateQuote);
+		item.setQuote(secondQuote);
+
+		expect({
+			changes: changes,
+			currentPrice: item.currentPrice,
+			previousQuote: item.previousQuote,
+			quote: item.quote
+		}).toEqual({
+			changes: [ firstQuote, secondQuote ],
+			currentPrice: 201,
+			previousQuote: firstQuote,
+			quote: secondQuote
+		});
+	});
+
+	it('should force a quote update when requested', () => {
+		const changes = [ ];
+		const firstQuote = { lastPrice: 200, symbol: 'AAPL' };
+		const duplicateQuote = { lastPrice: 200, symbol: 'AAPL' };
+
+		item.registerQuoteChangeHandler(quote => changes.push(quote));
+
+		item.setQuote(firstQuote);
+		item.setQuote(duplicateQuote, true);
+
+		expect({
+			changes: changes,
+			previousQuote: item.previousQuote,
+			quote: item.quote
+		}).toEqual({
+			changes: [ firstQuote, duplicateQuote ],
+			previousQuote: firstQuote,
+			quote: duplicateQuote
+		});
+	});
+
+	it('should update observable status fields', () => {
+		const newsChanges = [ ];
+		const fundamentalChanges = [ ];
+		const lockChanges = [ ];
+		const calculatingChanges = [ ];
+		const fundamental = {
+			raw: {
+				percentChange1m: 0.01
+			}
+		};
+
+		item.registerNewsExistsChangeHandler(value => newsChanges.push(value));
+		item.registerFundamentalDataChangeHandler(value => fundamentalChanges.push(value));
+		item.registerLockChangeHandler(value => lockChanges.push(value));
+		item.registerCalculatingChangeHandler(value => calculatingChanges.push(value));
+
+		item.setNewsArticleExists(true);
+		item.setPositionFundamentalData(fundamental);
+		item.setPositionLock(Object.assign({ }, position, { system: { locked: true } }));
+		item.setPositionCalculating(Object.assign({ }, position, { system: { calculate: { processors: 1 } } }));
+
+		expect({
+			calculating: item.data.calculating,
+			calculatingChanges: calculatingChanges,
+			fundamental: item.data.fundamental,
+			fundamentalChanges: fundamentalChanges,
+			locked: item.data.locked,
+			lockChanges: lockChanges,
+			newsChanges: newsChanges,
+			newsExists: item.data.newsExists
+		}).toEqual({
+			calculating: true,
+			calculatingChanges: [ true ],
+			fundamental: fundamental,
+			fundamentalChanges: [ fundamental ],
+			locked: true,
+			lockChanges: [ true ],
+			newsChanges: [ true ],
+			newsExists: true
+		});
+	});
+
+	it('should reject portfolio updates which move the position to another portfolio', () => {
+		expect(() => item.updatePortfolio(positionTestFactory.createPortfolio('Other Portfolio', 'Other'))).toThrow();
+	});
+});
+
+},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionItem":16}],137:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency');
 
 const PositionLevelDefinition = require('./../../../../lib/processing/definitions/PositionLevelDefinition'),
@@ -29164,8 +29492,13 @@ describe('When a position level definition is created', () => {
 			};
 			const definition = createDefinition([ ], () => requiredGroup);
 
-			expect(definition.generateRequiredGroup()).toBe(requiredGroup);
-			expect(definition.requiredGroups).toEqual([ requiredGroup ]);
+			expect({
+				generated: definition.generateRequiredGroup(),
+				requiredGroups: definition.requiredGroups
+			}).toEqual({
+				generated: requiredGroup,
+				requiredGroups: [ requiredGroup ]
+			});
 		});
 
 		it('should reject an invalid generated group', () => {
@@ -29177,13 +29510,77 @@ describe('When a position level definition is created', () => {
 				};
 			});
 
-			expect(() => definition.generateRequiredGroup()).toThrow();
-			expect(definition.requiredGroups).toEqual([ ]);
+			expect(() => {
+				try {
+					definition.generateRequiredGroup();
+				} finally {
+					if (definition.requiredGroups.length !== 0) {
+						throw new Error('Required groups were updated.');
+					}
+				}
+			}).toThrow();
 		});
 	});
 });
 
-},{"./../../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../../lib/processing/definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51}],135:[function(require,module,exports){
+},{"./../../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../../lib/processing/definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51}],138:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency');
+
+const PositionLevelDefinition = require('./../../../../lib/processing/definitions/PositionLevelDefinition'),
+	PositionLevelType = require('./../../../../lib/processing/definitions/PositionLevelType'),
+	PositionTreeDefinition = require('./../../../../lib/processing/definitions/PositionTreeDefinition');
+
+describe('When a position tree definition is created', () => {
+	'use strict';
+
+	function createLevelDefinition() {
+		return new PositionLevelDefinition(
+			'Total',
+			PositionLevelType.OTHER,
+			item => item.key,
+			item => item.description,
+			item => item.currency || Currency.USD
+		);
+	}
+
+	it('should expose the configured name, level definitions, and exclusion dependencies', () => {
+		const definitions = [ createLevelDefinition() ];
+		const exclusionDependencies = [ 'by portfolio' ];
+		const treeDefinition = new PositionTreeDefinition('by position', definitions, exclusionDependencies);
+
+		expect({
+			definitions: treeDefinition.definitions,
+			exclusionDependencies: treeDefinition.exclusionDependencies,
+			name: treeDefinition.name
+		}).toEqual({
+			definitions: definitions,
+			exclusionDependencies: exclusionDependencies,
+			name: 'by position'
+		});
+	});
+
+	it('should default exclusion dependencies to an empty array', () => {
+		const treeDefinition = new PositionTreeDefinition('by position', [ createLevelDefinition() ]);
+
+		expect(treeDefinition.exclusionDependencies).toEqual([ ]);
+	});
+
+	it('should reject invalid level definitions', () => {
+		expect(() => new PositionTreeDefinition('by position', [ { } ])).toThrow();
+	});
+
+	it('should reject invalid exclusion dependencies', () => {
+		expect(() => new PositionTreeDefinition('by position', [ createLevelDefinition() ], 'by portfolio')).toThrow();
+	});
+
+	it('should provide a string representation', () => {
+		const treeDefinition = new PositionTreeDefinition('by position', [ createLevelDefinition() ]);
+
+		expect(treeDefinition.toString()).toEqual('[PositionTreeDefinitions]');
+	});
+});
+
+},{"./../../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../../lib/processing/definitions/PositionLevelType":18,"./../../../../lib/processing/definitions/PositionTreeDefinition":19,"@barchart/common-js/lang/Currency":51}],139:[function(require,module,exports){
 const Gateway = require('@barchart/common-js/api/http/Gateway');
 
 const InstrumentProvider = require('./../../../lib/providers/InstrumentProvider');
@@ -29212,17 +29609,23 @@ describe('After the InstrumentProvider utility is initialized', () => {
 			const endpoint = Gateway.invoke.calls.argsFor(0)[0];
 			const payload = Gateway.invoke.calls.argsFor(0)[1];
 
-			expect(endpoint.path.parameters.length).toEqual(2);
-			expect(endpoint.path.parameters[0].key).toEqual('instruments');
-			expect(endpoint.path.parameters[1].key).toEqual('symbol');
-			expect(endpoint.query.parameters.length).toEqual(0);
-			expect(payload.symbol).toEqual('XDTE');
+			expect({
+				pathKeys: endpoint.path.parameters.map(parameter => parameter.key),
+				queryKeys: endpoint.query.parameters.map(parameter => parameter.key),
+				symbol: payload.symbol
+			}).toEqual({
+				pathKeys: [ 'instruments', 'symbol' ],
+				queryKeys: [ ],
+				symbol: 'XDTE'
+			});
 		});
 
 		it('should normalize crypto instrument metadata in single-instrument responses', () => {
-			expect(result.instrument.name).toEqual('Bitcoin');
-			expect(result.instrument.currency).toEqual('USD');
-			expect(result.instrument.symbolType).toEqual(999);
+			expect(result.instrument).toEqual({
+				currency: 'USD',
+				name: 'Bitcoin',
+				symbolType: 999
+			});
 		});
 	});
 
@@ -29253,24 +29656,33 @@ describe('After the InstrumentProvider utility is initialized', () => {
 			const endpoint = Gateway.invoke.calls.argsFor(0)[0];
 			const payload = Gateway.invoke.calls.argsFor(0)[1];
 
-			expect(endpoint.path.parameters.length).toEqual(1);
-			expect(endpoint.path.parameters[0].key).toEqual('instruments');
-			expect(endpoint.query.parameters.length).toEqual(1);
-			expect(endpoint.query.parameters[0].key).toEqual('symbols');
-			expect(payload.symbols).toEqual('XDTE,TSLA,OIY00');
+			expect({
+				pathKeys: endpoint.path.parameters.map(parameter => parameter.key),
+				queryKeys: endpoint.query.parameters.map(parameter => parameter.key),
+				symbols: payload.symbols
+			}).toEqual({
+				pathKeys: [ 'instruments' ],
+				queryKeys: [ 'symbols' ],
+				symbols: 'XDTE,TSLA,OIY00'
+			});
 		});
 
 		it('should normalize crypto instrument metadata in batch responses', () => {
-			expect(result.instruments[0].name).toEqual('Bitcoin');
-			expect(result.instruments[0].currency).toEqual('USD');
-			expect(result.instruments[0].symbolType).toEqual(999);
-			expect(result.instruments[1].name).toEqual('Tesla Inc.');
-			expect(result.instruments[1].symbolType).toEqual(1);
+			expect(result.instruments).toEqual([
+				{
+					currency: 'USD',
+					name: 'Bitcoin',
+					symbolType: 999
+				}, {
+					name: 'Tesla Inc.',
+					symbolType: 1
+				}
+			]);
 		});
 	});
 });
 
-},{"./../../../lib/providers/InstrumentProvider":20,"@barchart/common-js/api/http/Gateway":26}],136:[function(require,module,exports){
+},{"./../../../lib/providers/InstrumentProvider":20,"@barchart/common-js/api/http/Gateway":26}],140:[function(require,module,exports){
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -29340,7 +29752,7 @@ describe('When positions are serialized', () => {
 	});
 });
 
-},{"./../../../lib/serialization/PositionSchema":21}],137:[function(require,module,exports){
+},{"./../../../lib/serialization/PositionSchema":21}],141:[function(require,module,exports){
 const Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal');
 
@@ -29351,17 +29763,19 @@ const TransactionSchema = require('./../../../lib/serialization/TransactionSchem
 describe('When transactions are serialized', () => {
 	'use strict';
 
-	function transactionsAreEqual(a, b) {
-		expect(a.portfolio === b.portfolio).toEqual(true);
-		expect(a.position === b.position).toEqual(true);
-		expect(a.sequence === b.sequence).toEqual(true);
-		expect(a.type === b.type).toEqual(true);
-		expect(a.date.getIsEqual(b.date)).toEqual(true);
-		expect(a.price.getIsEqual(b.price)).toEqual(true);
-		expect(a.quantity.getIsEqual(b.quantity)).toEqual(true);
-		expect(a.fee.getIsEqual(b.fee)).toEqual(true);
-		expect(a.reinvest === b.reinvest).toEqual(true);
-		expect(a.cash === b.cash).toEqual(true);
+	function normalizeTransaction(transaction) {
+		return {
+			cash: transaction.cash,
+			date: transaction.date.format(),
+			fee: transaction.fee.toString(),
+			portfolio: transaction.portfolio,
+			position: transaction.position,
+			price: transaction.price.toString(),
+			quantity: transaction.quantity.toString(),
+			reinvest: transaction.reinvest,
+			sequence: transaction.sequence,
+			type: transaction.type
+		};
 	}
 
 	describe('for an edit operation (user error #1)', () => {
@@ -29401,10 +29815,92 @@ describe('When transactions are serialized', () => {
 			});
 
 			it('the deserialized data should be correct', () => {
-				transactionsAreEqual(transaction, deserialized);
+				expect(normalizeTransaction(deserialized)).toEqual(normalizeTransaction(transaction));
 			});
 		});
 	});
 });
 
-},{"./../../../lib/data/TransactionType":9,"./../../../lib/serialization/TransactionSchema":22,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55}]},{},[129,130,131,132,134,133,135,136,137]);
+},{"./../../../lib/data/TransactionType":9,"./../../../lib/serialization/TransactionSchema":22,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55}],142:[function(require,module,exports){
+const Currency = require('@barchart/common-js/lang/Currency'),
+	Decimal = require('@barchart/common-js/lang/Decimal');
+
+const InstrumentType = require('../../../lib/data/InstrumentType'),
+	PositionDirection = require('../../../lib/data/PositionDirection');
+
+let positionCounter = 0;
+
+function resetPositionCounter() {
+	positionCounter = 0;
+}
+
+function createPortfolio(portfolio, name, overrides) {
+	return Object.assign({
+		portfolio: portfolio || 'My Portfolio',
+		name: name || 'Portfolio'
+	}, overrides || { });
+}
+
+function createPosition(portfolio, symbol, currency, overrides) {
+	return Object.assign({
+		portfolio: portfolio,
+		position: (positionCounter++).toString(),
+		instrument: {
+			symbol: {
+				barchart: symbol
+			},
+			currency: currency || Currency.USD,
+			type: InstrumentType.EQUITY
+		},
+		snapshot: {
+			basis: new Decimal(123),
+			value: new Decimal(456),
+			open: new Decimal(1),
+			direction: PositionDirection.LONG,
+			income: new Decimal(0),
+			gain: new Decimal(0),
+			buys: new Decimal(50),
+			sells: new Decimal(0)
+		}
+	}, overrides || { });
+}
+
+function createSummaries(position, frame, count) {
+	const ranges = frame.getRecentRanges(count - 1);
+
+	return ranges.map((range) => {
+		return {
+			portfolio: position.portfolio,
+			position: position.position,
+			frame: frame,
+			start: {
+				date: range.start,
+				open: position.snapshot.open,
+				value: position.snapshot.value,
+				basis: position.snapshot.basis
+			},
+			end: {
+				date: range.end,
+				open: position.snapshot.open,
+				value: position.snapshot.value,
+				basis: position.snapshot.basis
+			},
+			period: {
+				buys: new Decimal(0),
+				sells: new Decimal(0),
+				income: new Decimal(0),
+				realized: new Decimal(0),
+				unrealized: new Decimal(0)
+			}
+		};
+	});
+}
+
+module.exports = {
+	createPortfolio,
+	createPosition,
+	createSummaries,
+	resetPositionCounter
+};
+
+},{"../../../lib/data/InstrumentType":4,"../../../lib/data/PositionDirection":7,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Decimal":55}]},{},[129,130,131,132,133,137,138,134,135,136,139,140,141]);

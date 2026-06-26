@@ -8,17 +8,19 @@ const TransactionSchema = require('./../../../lib/serialization/TransactionSchem
 describe('When transactions are serialized', () => {
 	'use strict';
 
-	function transactionsAreEqual(a, b) {
-		expect(a.portfolio === b.portfolio).toEqual(true);
-		expect(a.position === b.position).toEqual(true);
-		expect(a.sequence === b.sequence).toEqual(true);
-		expect(a.type === b.type).toEqual(true);
-		expect(a.date.getIsEqual(b.date)).toEqual(true);
-		expect(a.price.getIsEqual(b.price)).toEqual(true);
-		expect(a.quantity.getIsEqual(b.quantity)).toEqual(true);
-		expect(a.fee.getIsEqual(b.fee)).toEqual(true);
-		expect(a.reinvest === b.reinvest).toEqual(true);
-		expect(a.cash === b.cash).toEqual(true);
+	function normalizeTransaction(transaction) {
+		return {
+			cash: transaction.cash,
+			date: transaction.date.format(),
+			fee: transaction.fee.toString(),
+			portfolio: transaction.portfolio,
+			position: transaction.position,
+			price: transaction.price.toString(),
+			quantity: transaction.quantity.toString(),
+			reinvest: transaction.reinvest,
+			sequence: transaction.sequence,
+			type: transaction.type
+		};
 	}
 
 	describe('for an edit operation (user error #1)', () => {
@@ -58,7 +60,7 @@ describe('When transactions are serialized', () => {
 			});
 
 			it('the deserialized data should be correct', () => {
-				transactionsAreEqual(transaction, deserialized);
+				expect(normalizeTransaction(deserialized)).toEqual(normalizeTransaction(transaction));
 			});
 		});
 	});
