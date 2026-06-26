@@ -3893,6 +3893,7 @@ module.exports = (() => {
 			this._dataFormat.single = this._single;
 			this._dataFormat.homogeneous = this._homogeneous;
 			this._dataFormat.currencyCode = this._currency.code;
+			this._dataFormat.filterModeCode = this._filterMode.code;
 			this._dataFormat.open = false;
 			this._dataFormat.linked = false;
 			this._dataFormat.hasLinked = false;
