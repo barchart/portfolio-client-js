@@ -1052,6 +1052,10 @@ module.exports = (() => {
 		if (desired === Currency.GBX) {
 			desired = Currency.GBP;
 
+			if (is.number(value)) {
+				translated = new Decimal(value);
+			}
+
 			if (translated !== null) {
 				translated = translated.multiply(0.01);
 			}
