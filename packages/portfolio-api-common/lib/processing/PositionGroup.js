@@ -114,10 +114,6 @@ module.exports = (() => {
 			this._dataFormat.unrealizedPriceNegative = false;
 			this._dataFormat.instrument = null;
 			this._dataFormat.fundamental = null;
-			this._dataFormat.fundamentalPercentChange1m = null;
-			this._dataFormat.fundamentalPercentChange1y = null;
-			this._dataFormat.fundamentalPercentChange3m = null;
-			this._dataFormat.fundamentalPercentChangeYtd = null;
 
 			this._dataActual.key = this._key;
 			this._dataActual.description = this._description;
@@ -790,9 +786,11 @@ module.exports = (() => {
 				return sums;
 			}, { }));
 
-			FUNDAMENTAL_FIELDS.forEach((fieldName) => {
-				this._dataFormat[getFundamentalFormatKey(fieldName)] = fundamentalData[fieldName].averageFormat;
-			});
+			this._dataFormat.fundamental = FUNDAMENTAL_FIELDS.reduce((format, fieldName) => {
+				format[fieldName] = fundamentalData[fieldName].averageFormat;
+
+				return format;
+			}, { });
 		});
 
 		let newsBinding = Disposable.getEmpty();
@@ -904,43 +902,19 @@ module.exports = (() => {
 	}
 
 	function setFundamentalFormat(format, data) {
-		format.fundamental = null;
-
-		FUNDAMENTAL_FIELDS.forEach((fieldName) => {
-			format[getFundamentalFormatKey(fieldName)] = formatFundamentalValue(data, fieldName);
-		});
+		format.fundamental = getFundamentalFormat(data);
 	}
 
-	function formatFundamentalValue(data, fieldName) {
+	function getFundamentalFormat(data) {
 		if (!data) {
 			return null;
 		}
 
-		let value;
+		const formatted = Object.assign({ }, data);
 
-		if (data.formatted && data.formatted[fieldName] !== undefined) {
-			value = data.formatted[fieldName];
-		} else if (data[fieldName] !== undefined) {
-			value = data[fieldName];
-		} else if (data.raw && data.raw[fieldName] !== undefined) {
-			value = data.raw[fieldName];
-		} else {
-			value = null;
-		}
+		delete formatted.raw;
 
-		if (value instanceof Decimal) {
-			return formatPercent(value, 2, true);
-		}
-
-		if (is.number(value)) {
-			return formatPercent(new Decimal(value), 2, true);
-		}
-
-		return formatString(value);
-	}
-
-	function getFundamentalFormatKey(fieldName) {
-		return `fundamental${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`;
+		return formatted;
 	}
 
 	function formatDirection(up, down) {
