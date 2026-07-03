@@ -130,7 +130,7 @@ module.exports = (() => {
 				this._dataFormat.position = item.position.position;
 
 				this._dataFormat.instrument = item.position.instrument;
-				setFundamentalFormat(this._dataFormat, item.data.fundamental);
+				this._dataFormat.fundamental = getFundamentalFormat(item.data.fundamental);
 			} else {
 				this._dataFormat.portfolio = null;
 				this._dataFormat.position = null;
@@ -140,7 +140,7 @@ module.exports = (() => {
 				const item = items[0];
 
 				this._dataFormat.instrument = item.position.instrument;
-				setFundamentalFormat(this._dataFormat, item.data.fundamental);
+				this._dataFormat.fundamental = getFundamentalFormat(item.data.fundamental);
 			}
 
 			this._dataActual.quoteLast = null;
@@ -747,7 +747,7 @@ module.exports = (() => {
 
 		const fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single || this._homogeneous) {
-				setFundamentalFormat(this._dataFormat, data);
+				this._dataFormat.fundamental = getFundamentalFormat(data);
 
 				return;
 			}
@@ -899,10 +899,6 @@ module.exports = (() => {
 		format.hasLinked = hasLinked;
 		format.hasManual = hasManual;
 		format.positions = positions;
-	}
-
-	function setFundamentalFormat(format, data) {
-		format.fundamental = getFundamentalFormat(data);
 	}
 
 	function getFundamentalFormat(data) {
