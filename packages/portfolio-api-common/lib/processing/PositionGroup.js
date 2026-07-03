@@ -113,7 +113,7 @@ module.exports = (() => {
 			this._dataFormat.unrealizedPricePositive = false;
 			this._dataFormat.unrealizedPriceNegative = false;
 			this._dataFormat.instrument = null;
-			this._dataFormat.fundamental = null;
+			this._dataFormat.fundamental = { };
 
 			this._dataActual.key = this._key;
 			this._dataActual.description = this._description;
@@ -130,7 +130,7 @@ module.exports = (() => {
 				this._dataFormat.position = item.position.position;
 
 				this._dataFormat.instrument = item.position.instrument;
-				this._dataFormat.fundamental = getFundamentalFormat(item.data.fundamental);
+				this._dataFormat.fundamental = item.data.fundamental || { };
 			} else {
 				this._dataFormat.portfolio = null;
 				this._dataFormat.position = null;
@@ -140,7 +140,7 @@ module.exports = (() => {
 				const item = items[0];
 
 				this._dataFormat.instrument = item.position.instrument;
-				this._dataFormat.fundamental = getFundamentalFormat(item.data.fundamental);
+				this._dataFormat.fundamental = item.data.fundamental || { };
 			}
 
 			this._dataActual.quoteLast = null;
@@ -747,7 +747,7 @@ module.exports = (() => {
 
 		const fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single || this._homogeneous) {
-				this._dataFormat.fundamental = getFundamentalFormat(data);
+				this._dataFormat.fundamental = data;
 
 				return;
 			}
@@ -899,18 +899,6 @@ module.exports = (() => {
 		format.hasLinked = hasLinked;
 		format.hasManual = hasManual;
 		format.positions = positions;
-	}
-
-	function getFundamentalFormat(data) {
-		if (!data) {
-			return null;
-		}
-
-		const formatted = Object.assign({ }, data);
-
-		delete formatted.raw;
-
-		return formatted;
 	}
 
 	function formatDirection(up, down) {
