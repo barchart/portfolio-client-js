@@ -144,16 +144,23 @@ describe('When a position group is used', () => {
 
 		expect({
 			fundamental: group.data.fundamental,
-			percentChange1m: group.data.fundamentalPercentChange1m,
-			percentChange1y: group.data.fundamentalPercentChange1y,
-			percentChange3m: group.data.fundamentalPercentChange3m,
-			percentChangeYtd: group.data.fundamentalPercentChangeYtd
+			percentChange1m: group.data.fundamental.raw.percentChange1m,
+			percentChange1y: group.data.fundamental.raw.percentChange1y,
+			percentChange3m: group.data.fundamental.raw.percentChange3m,
+			percentChangeYtd: group.data.fundamental.raw.percentChangeYtd
 		}).toEqual({
-			fundamental: null,
-			percentChange1m: '+1.00%',
-			percentChange1y: '+2.00%',
-			percentChange3m: '+3.00%',
-			percentChangeYtd: '+4.00%'
+			fundamental: {
+				raw: {
+					percentChange1m: 0.01,
+					percentChange1y: 0.02,
+					percentChange3m: 0.03,
+					percentChangeYtd: 0.04
+				}
+			},
+			percentChange1m: 0.01,
+			percentChange1y: 0.02,
+			percentChange3m: 0.03,
+			percentChangeYtd: 0.04
 		});
 	});
 
@@ -176,7 +183,7 @@ describe('When a position group is used', () => {
 
 		expect({
 			homogeneous: group.homogeneous,
-			percentChange1m: group.data.fundamentalPercentChange1m,
+			percentChange1m: group.data.fundamental.percentChange1m,
 			single: group.single
 		}).toEqual({
 			homogeneous: false,

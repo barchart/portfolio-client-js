@@ -120,10 +120,17 @@ describe('When a position container data is gathered', () => {
 
 				expect({
 					fundamental: group.formatted.fundamental,
-					percentChange1m: group.formatted.fundamentalPercentChange1m
+					percentChange1m: group.formatted.fundamental.raw.percentChange1m
 				}).toEqual({
-					fundamental: null,
-					percentChange1m: '+1.00%'
+					fundamental: {
+						raw: {
+							percentChange1m: 0.01,
+							percentChange1y: 0.02,
+							percentChange3m: 0.03,
+							percentChangeYtd: 0.04
+						}
+					},
+					percentChange1m: 0.01
 				});
 			});
 		});
