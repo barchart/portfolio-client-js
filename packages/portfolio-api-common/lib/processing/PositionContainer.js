@@ -1319,7 +1319,18 @@ module.exports = (() => {
 
 	function severGroupNode(groupNodeToSever) {
 		groupNodeToSever.sever();
-		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
+
+		groupNodeToSever.walk(group => {
+			delete this._nodes[group.id];
+
+			if (this._groupObservers.hasOwnProperty(group.id)) {
+				const disposable = this._groupObservers[group.id];
+
+				delete this._groupObservers[group.id];
+
+				disposable.dispose();
+			}
+		}, false, true);
 	}
 
 	function recalculatePercentages() {
