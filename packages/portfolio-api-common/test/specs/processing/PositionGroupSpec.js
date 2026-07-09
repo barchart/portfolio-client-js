@@ -1,5 +1,6 @@
 const Currency = require('@barchart/common-js/lang/Currency'),
 	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator');
+const Day = require('@barchart/common-js/lang/Day');
 
 const FilterMode = require('./../../../lib/data/FilterMode'),
 	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
@@ -126,6 +127,50 @@ describe('When a position group is used', () => {
 			quoteHigh: '205.00',
 			quoteLow: '195.00',
 			quoteOpen: '198.00'
+		});
+	});
+
+	it('should update today price fields for a homogeneous group when item quotes change', () => {
+		const firstItem = createItem('AAPL', 'First Portfolio');
+		const secondItem = createItem('AAPL', 'Second Portfolio');
+		const group = createGroup(PositionLevelType.INSTRUMENT, [ firstItem, secondItem ]);
+		const today = Day.getToday();
+		const quote = {
+			lastDay: today,
+			lastPrice: 200,
+			previousPrice: 190,
+			symbol: 'AAPL'
+		};
+		const exchange = {
+			code: 'NYSE',
+			currentDay: today,
+			currentOpened: true
+		};
+
+		firstItem.setExchangeStatus(exchange);
+		secondItem.setExchangeStatus(exchange);
+
+		firstItem.setQuote(quote);
+		secondItem.setQuote(quote);
+
+		expect({
+			gainToday: group.data.gainToday,
+			homogeneous: group.homogeneous,
+			single: group.single,
+			todayExchange: group.data.todayExchange,
+			todayPrice: group.data.todayPrice,
+			todayPricePrevious: group.data.todayPricePrevious,
+			todayQuote: group.data.todayQuote,
+			unrealizedToday: group.data.unrealizedToday
+		}).toEqual({
+			gainToday: '20.00',
+			homogeneous: true,
+			single: false,
+			todayExchange: today.format(),
+			todayPrice: '200.00',
+			todayPricePrevious: '190.00',
+			todayQuote: today.format(),
+			unrealizedToday: '20.00'
 		});
 	});
 

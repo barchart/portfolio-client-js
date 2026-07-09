@@ -5191,29 +5191,37 @@ module.exports = (() => {
 		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
 		format.periodPercent = formatPercent(actual.periodPercent, 2);
 
+		let priceItem = null;
+
 		if (group.single && item) {
-			actual.unrealizedPrice = item.data.unrealizedPrice;
-			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, item.position.instrument);
+			priceItem = item;
+		} else if (group.homogeneous && group._consideredItems.length !== 0) {
+			priceItem = group._consideredItems[0];
+		}
+
+		if (priceItem) {
+			actual.unrealizedPrice = priceItem.data.unrealizedPrice;
+			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, priceItem.position.instrument);
 
 			format.unrealizedPricePositive = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsPositive();
 			format.unrealizedPriceNegative = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsNegative();
 
-			actual.todayQuote = item.data.todayQuote;
-			actual.todayExchange = item.data.todayExchange;
+			actual.todayQuote = priceItem.data.todayQuote;
+			actual.todayExchange = priceItem.data.todayExchange;
 
 			format.todayQuote = actual.todayQuote === null ? '—' : actual.todayQuote.format();
 			format.todayExchange = actual.todayExchange === null ? '—' : actual.todayExchange.format();
 
-			actual.todayPrice = item.data.todayPrice;
-			actual.todayPricePrevious = item.data.todayPricePrevious;
+			actual.todayPrice = priceItem.data.todayPrice;
+			actual.todayPricePrevious = priceItem.data.todayPricePrevious;
 
-			format.todayPrice = actual.todayPrice === null ? '—' : formatFractionSpecial(actual.todayPrice, currency, item.position.instrument);
-			format.todayPricePrevious = actual.todayPricePrevious === null ? '—' : formatFractionSpecial(actual.todayPricePrevious, currency, item.position.instrument);
+			format.todayPrice = actual.todayPrice === null ? '—' : formatFractionSpecial(actual.todayPrice, currency, priceItem.position.instrument);
+			format.todayPricePrevious = actual.todayPricePrevious === null ? '—' : formatFractionSpecial(actual.todayPricePrevious, currency, priceItem.position.instrument);
 
 			if (actual.todayPrice === null) {
 				format.unrealizedToday = '—';
 
-				if (actual.realizedToday !== null && actual.realizedToday.getIsEqual(Decimal.ZERO)) {
+				if (actual.realizedToday.getIsEqual(Decimal.ZERO)) {
 					format.gainToday = '—';
 				}
 			}
@@ -29148,6 +29156,7 @@ describe('When a position container data is gathered', () => {
 },{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":13,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"./../../../lib/processing/definitions/PositionTreeDefinition":19,"@barchart/common-js/lang/Currency":51}],135:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator');
+const Day = require('@barchart/common-js/lang/Day');
 
 const FilterMode = require('./../../../lib/data/FilterMode'),
 	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
@@ -29277,6 +29286,50 @@ describe('When a position group is used', () => {
 		});
 	});
 
+	it('should update today price fields for a homogeneous group when item quotes change', () => {
+		const firstItem = createItem('AAPL', 'First Portfolio');
+		const secondItem = createItem('AAPL', 'Second Portfolio');
+		const group = createGroup(PositionLevelType.INSTRUMENT, [ firstItem, secondItem ]);
+		const today = Day.getToday();
+		const quote = {
+			lastDay: today,
+			lastPrice: 200,
+			previousPrice: 190,
+			symbol: 'AAPL'
+		};
+		const exchange = {
+			code: 'NYSE',
+			currentDay: today,
+			currentOpened: true
+		};
+
+		firstItem.setExchangeStatus(exchange);
+		secondItem.setExchangeStatus(exchange);
+
+		firstItem.setQuote(quote);
+		secondItem.setQuote(quote);
+
+		expect({
+			gainToday: group.data.gainToday,
+			homogeneous: group.homogeneous,
+			single: group.single,
+			todayExchange: group.data.todayExchange,
+			todayPrice: group.data.todayPrice,
+			todayPricePrevious: group.data.todayPricePrevious,
+			todayQuote: group.data.todayQuote,
+			unrealizedToday: group.data.unrealizedToday
+		}).toEqual({
+			gainToday: '20.00',
+			homogeneous: true,
+			single: false,
+			todayExchange: today.format(),
+			todayPrice: '200.00',
+			todayPricePrevious: '190.00',
+			todayQuote: today.format(),
+			unrealizedToday: '20.00'
+		});
+	});
+
 	it('should format fundamental data for a single-position group', () => {
 		const item = createItem('AAPL');
 		const group = createGroup(PositionLevelType.POSITION, [ item ]);
@@ -29341,7 +29394,7 @@ describe('When a position group is used', () => {
 	});
 });
 
-},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/FilterMode":3,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionGroup":14,"./../../../lib/processing/PositionItem":16,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52}],136:[function(require,module,exports){
+},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/FilterMode":3,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionGroup":14,"./../../../lib/processing/PositionItem":16,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Day":53}],136:[function(require,module,exports){
 const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionItem = require('./../../../lib/processing/PositionItem');
