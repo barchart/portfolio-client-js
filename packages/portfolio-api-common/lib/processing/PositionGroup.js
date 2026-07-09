@@ -1389,29 +1389,37 @@ module.exports = (() => {
 		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
 		format.periodPercent = formatPercent(actual.periodPercent, 2);
 
+		let priceItem = null;
+
 		if (group.single && item) {
-			actual.unrealizedPrice = item.data.unrealizedPrice;
-			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, item.position.instrument);
+			priceItem = item;
+		} else if (group.homogeneous && group._consideredItems.length !== 0) {
+			priceItem = group._consideredItems[0];
+		}
+
+		if (priceItem) {
+			actual.unrealizedPrice = priceItem.data.unrealizedPrice;
+			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, priceItem.position.instrument);
 
 			format.unrealizedPricePositive = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsPositive();
 			format.unrealizedPriceNegative = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsNegative();
 
-			actual.todayQuote = item.data.todayQuote;
-			actual.todayExchange = item.data.todayExchange;
+			actual.todayQuote = priceItem.data.todayQuote;
+			actual.todayExchange = priceItem.data.todayExchange;
 
 			format.todayQuote = actual.todayQuote === null ? '—' : actual.todayQuote.format();
 			format.todayExchange = actual.todayExchange === null ? '—' : actual.todayExchange.format();
 
-			actual.todayPrice = item.data.todayPrice;
-			actual.todayPricePrevious = item.data.todayPricePrevious;
+			actual.todayPrice = priceItem.data.todayPrice;
+			actual.todayPricePrevious = priceItem.data.todayPricePrevious;
 
-			format.todayPrice = actual.todayPrice === null ? '—' : formatFractionSpecial(actual.todayPrice, currency, item.position.instrument);
-			format.todayPricePrevious = actual.todayPricePrevious === null ? '—' : formatFractionSpecial(actual.todayPricePrevious, currency, item.position.instrument);
+			format.todayPrice = actual.todayPrice === null ? '—' : formatFractionSpecial(actual.todayPrice, currency, priceItem.position.instrument);
+			format.todayPricePrevious = actual.todayPricePrevious === null ? '—' : formatFractionSpecial(actual.todayPricePrevious, currency, priceItem.position.instrument);
 
 			if (actual.todayPrice === null) {
 				format.unrealizedToday = '—';
 
-				if (actual.realizedToday !== null && actual.realizedToday.getIsEqual(Decimal.ZERO)) {
+				if (actual.realizedToday.getIsEqual(Decimal.ZERO)) {
 					format.gainToday = '—';
 				}
 			}
