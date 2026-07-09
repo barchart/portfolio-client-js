@@ -16,7 +16,7 @@ const InstrumentType = require('./../data/InstrumentType'),
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType');
 
-const PositionGroupBinding = require('./PositionGroupBinding');
+const PositionGroupBinding = require('./binding/PositionGroupBinding');
 
 module.exports = (() => {
 	'use strict';

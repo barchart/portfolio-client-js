@@ -11,6 +11,7 @@ module.exports = (() => {
 	class PositionGroupBinding {
 		constructor(formatted, actions) {
 			this.formatted = formatted;
+
 			this._actions = actions || { };
 		}
 

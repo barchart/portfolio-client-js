@@ -12,9 +12,9 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate');
 
-const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+const BindingTree = require('./binding/BindingTree');
 
-const BindingTree = require('./BindingTree');
+const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType'),

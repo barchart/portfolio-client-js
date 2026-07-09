@@ -1,4 +1,4 @@
-const BindingTree = require('./../../../lib/processing/BindingTree');
+const BindingTree = require('./../../../../lib/processing/binding/BindingTree');
 
 describe('When a binding tree is used', () => {
 	'use strict';

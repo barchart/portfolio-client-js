@@ -2357,78 +2357,6 @@ module.exports = (() => {
 })();
 
 },{"@barchart/common-js/lang/Enum":57}],12:[function(require,module,exports){
-const Tree = require('@barchart/common-js/collections/Tree');
-
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * A tree data structure. Each instance represents a node, holding
-	 * an item, a reference to the parent node, and a reference to
-	 * children nodes. Children are stored in insertion order.
-	 *
-	 * @public
-	 * @param {*} value - The value of the node.
-	 * @param {Tree=} parent - The parent node. If not supplied, this will be the root node.
-	 */
-	class BindingTree extends Tree {
-		constructor(value, parent) {
-			super(value, parent);
-
-			this._children2 = [ ];
-		}
-
-		/**
-		 * Returns the collection of children values.
-		 *
-		 * @public
-		 * @returns {Array<*>}
-		 */
-		getChildren2() {
-			return this._children2;
-		}
-
-		addChild(value) {
-			const returnRef = new BindingTree(value, this);
-
-			this._children.push(returnRef);
-			this._children2.push(value.binding);
-
-			return returnRef;
-		}
-
-		/**
-		 * Removes a child node.
-		 *
-		 * @public
-		 * @param {Tree} node - The child to remove.
-		 */
-		removeChild(node) {
-			for (let i = this._children.length - 1; !(i < 0); i--) {
-				const child = this._children[i];
-
-				if (child === node) {
-					this._children.splice(i, 1);
-					this._children2.splice(i, 1);
-
-					child._parent = null;
-
-					child._children.splice(0, child._children.length);
-					child._children2.splice(0, child._children2.length);
-
-					break;
-				}
-			}
-		}
-
-		toString() {
-			return '[BindingTree]';
-		}
-	}
-
-	return BindingTree;
-})();
-},{"@barchart/common-js/collections/Tree":44}],13:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
@@ -2443,9 +2371,9 @@ const array = require('@barchart/common-js/lang/array'),
 	is = require('@barchart/common-js/lang/is'),
 	Rate = require('@barchart/common-js/lang/Rate');
 
-const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
+const BindingTree = require('./binding/BindingTree');
 
-const BindingTree = require('./BindingTree');
+const PositionSummaryFrame = require('./../data/PositionSummaryFrame');
 
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType'),
@@ -3799,7 +3727,7 @@ module.exports = (() => {
 	return PositionContainer;
 })();
 
-},{"./../data/PositionSummaryFrame":8,"./BindingTree":12,"./PositionGroup":14,"./PositionItem":16,"./definitions/PositionLevelDefinition":17,"./definitions/PositionLevelType":18,"./definitions/PositionTreeDefinition":19,"@barchart/common-js/collections/sorting/ComparatorBuilder":47,"@barchart/common-js/collections/sorting/comparators":48,"@barchart/common-js/collections/specialized/DisposableStack":49,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/Rate":59,"@barchart/common-js/lang/array":61,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69}],14:[function(require,module,exports){
+},{"./../data/PositionSummaryFrame":8,"./PositionGroup":13,"./PositionItem":14,"./binding/BindingTree":15,"./definitions/PositionLevelDefinition":17,"./definitions/PositionLevelType":18,"./definitions/PositionTreeDefinition":19,"@barchart/common-js/collections/sorting/ComparatorBuilder":47,"@barchart/common-js/collections/sorting/comparators":48,"@barchart/common-js/collections/specialized/DisposableStack":49,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/Rate":59,"@barchart/common-js/lang/array":61,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69}],13:[function(require,module,exports){
 const array = require('@barchart/common-js/lang/array'),
 	assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
@@ -3818,7 +3746,7 @@ const InstrumentType = require('./../data/InstrumentType'),
 const PositionLevelDefinition = require('./definitions/PositionLevelDefinition'),
 	PositionLevelType = require('./definitions/PositionLevelType');
 
-const PositionGroupBinding = require('./PositionGroupBinding');
+const PositionGroupBinding = require('./binding/PositionGroupBinding');
 
 module.exports = (() => {
 	'use strict';
@@ -5313,109 +5241,7 @@ module.exports = (() => {
 	return PositionGroup;
 })();
 
-},{"./../data/FilterMode":3,"./../data/InstrumentType":4,"./PositionGroupBinding":15,"./definitions/PositionLevelDefinition":17,"./definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/array":61,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/formatter":64,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69,"@barchart/marketdata-api-js/lib/utilities/format/fraction":77}],15:[function(require,module,exports){
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * Aggregated position data intended for binding to a user interface.
-	 *
-	 * @public
-	 * @param {Object} formatted
-	 * @param {Object=} actions
-	 */
-	class PositionGroupBinding {
-		constructor(formatted, actions) {
-			this.formatted = formatted;
-			this._actions = actions || { };
-		}
-
-		/**
-		 * Returns formatted data.
-		 *
-		 * @public
-		 * @returns {Object}
-		 */
-		get data() {
-			return this.formatted;
-		}
-
-		/**
-		 * Returns the binding identifier.
-		 *
-		 * @public
-		 * @returns {Number}
-		 */
-		get id() {
-			return this.formatted.id;
-		}
-
-		/**
-		 * Returns the binding key.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		get key() {
-			return this.formatted.key;
-		}
-
-		/**
-		 * Returns the binding description.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		get description() {
-			return this.formatted.description;
-		}
-
-		/**
-		 * Set a flag to indicate if parent groups should exclude this group's
-		 * items from their calculations.
-		 *
-		 * @public
-		 * @param {Boolean} value
-		 */
-		setExcluded(value) {
-			return this._actions.setExcluded(value);
-		}
-
-		/**
-		 * Sets the filter mode for the group.
-		 *
-		 * @public
-		 * @param {FilterMode} mode
-		 */
-		setFilterMode(mode) {
-			return this._actions.setFilterMode(mode);
-		}
-
-		/**
-		 * Changes the group currency.
-		 *
-		 * @public
-		 * @param {Currency} currency
-		 */
-		changeCurrency(currency) {
-			return this._actions.changeCurrency(currency);
-		}
-
-		/**
-		 * Returns a string representation of the binding.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		toString() {
-			return '[PositionGroupBinding]';
-		}
-	}
-
-	return PositionGroupBinding;
-})();
-
-},{}],16:[function(require,module,exports){
+},{"./../data/FilterMode":3,"./../data/InstrumentType":4,"./binding/PositionGroupBinding":16,"./definitions/PositionLevelDefinition":17,"./definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/array":61,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/formatter":64,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69,"@barchart/marketdata-api-js/lib/utilities/format/fraction":77}],14:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	Day = require('@barchart/common-js/lang/Day'),
@@ -6407,7 +6233,182 @@ module.exports = (() => {
 	return PositionItem;
 })();
 
-},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":4,"./../data/OptionsValuationType":6,"./../data/PositionDirection":7,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69}],17:[function(require,module,exports){
+},{"./../calculators/AveragePriceCalculator":1,"./../calculators/ValuationCalculator":2,"./../data/InstrumentType":4,"./../data/OptionsValuationType":6,"./../data/PositionDirection":7,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55,"@barchart/common-js/lang/Disposable":56,"@barchart/common-js/lang/assert":62,"@barchart/common-js/lang/is":66,"@barchart/common-js/messaging/Event":69}],15:[function(require,module,exports){
+const Tree = require('@barchart/common-js/collections/Tree');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * A tree data structure. Each instance represents a node, holding
+	 * an item, a reference to the parent node, and a reference to
+	 * children nodes. Children are stored in insertion order.
+	 *
+	 * @public
+	 * @param {*} value - The value of the node.
+	 * @param {Tree=} parent - The parent node. If not supplied, this will be the root node.
+	 */
+	class BindingTree extends Tree {
+		constructor(value, parent) {
+			super(value, parent);
+
+			this._children2 = [ ];
+		}
+
+		/**
+		 * Returns the collection of children values.
+		 *
+		 * @public
+		 * @returns {Array<*>}
+		 */
+		getChildren2() {
+			return this._children2;
+		}
+
+		addChild(value) {
+			const returnRef = new BindingTree(value, this);
+
+			this._children.push(returnRef);
+			this._children2.push(value.binding);
+
+			return returnRef;
+		}
+
+		/**
+		 * Removes a child node.
+		 *
+		 * @public
+		 * @param {Tree} node - The child to remove.
+		 */
+		removeChild(node) {
+			for (let i = this._children.length - 1; !(i < 0); i--) {
+				const child = this._children[i];
+
+				if (child === node) {
+					this._children.splice(i, 1);
+					this._children2.splice(i, 1);
+
+					child._parent = null;
+
+					child._children.splice(0, child._children.length);
+					child._children2.splice(0, child._children2.length);
+
+					break;
+				}
+			}
+		}
+
+		toString() {
+			return '[BindingTree]';
+		}
+	}
+
+	return BindingTree;
+})();
+},{"@barchart/common-js/collections/Tree":44}],16:[function(require,module,exports){
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * Aggregated position data intended for binding to a user interface.
+	 *
+	 * @public
+	 * @param {Object} formatted
+	 * @param {Object=} actions
+	 */
+	class PositionGroupBinding {
+		constructor(formatted, actions) {
+			this.formatted = formatted;
+
+			this._actions = actions || { };
+		}
+
+		/**
+		 * Returns formatted data.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
+		get data() {
+			return this.formatted;
+		}
+
+		/**
+		 * Returns the binding identifier.
+		 *
+		 * @public
+		 * @returns {Number}
+		 */
+		get id() {
+			return this.formatted.id;
+		}
+
+		/**
+		 * Returns the binding key.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get key() {
+			return this.formatted.key;
+		}
+
+		/**
+		 * Returns the binding description.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get description() {
+			return this.formatted.description;
+		}
+
+		/**
+		 * Set a flag to indicate if parent groups should exclude this group's
+		 * items from their calculations.
+		 *
+		 * @public
+		 * @param {Boolean} value
+		 */
+		setExcluded(value) {
+			return this._actions.setExcluded(value);
+		}
+
+		/**
+		 * Sets the filter mode for the group.
+		 *
+		 * @public
+		 * @param {FilterMode} mode
+		 */
+		setFilterMode(mode) {
+			return this._actions.setFilterMode(mode);
+		}
+
+		/**
+		 * Changes the group currency.
+		 *
+		 * @public
+		 * @param {Currency} currency
+		 */
+		changeCurrency(currency) {
+			return this._actions.changeCurrency(currency);
+		}
+
+		/**
+		 * Returns a string representation of the binding.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		toString() {
+			return '[PositionGroupBinding]';
+		}
+	}
+
+	return PositionGroupBinding;
+})();
+
+},{}],17:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Currency = require('@barchart/common-js/lang/Currency'),
 	is = require('@barchart/common-js/lang/is');
@@ -28941,79 +28942,6 @@ describe('When validating position violations', () => {
 });
 
 },{"./../../../lib/data/InstrumentType":4,"./../../../lib/data/TransactionType":9,"./../../../lib/data/TransactionValidator":10,"@barchart/common-js/lang/Day":53,"@barchart/common-js/lang/Decimal":55}],133:[function(require,module,exports){
-const BindingTree = require('./../../../lib/processing/BindingTree');
-
-describe('When a binding tree is used', () => {
-	'use strict';
-
-	function createValue(key) {
-		return {
-			key: key,
-			binding: {
-				key: key
-			}
-		};
-	}
-
-	it('should keep child nodes and child bindings in the same order', () => {
-		const tree = new BindingTree();
-		const valueA = createValue('a');
-		const valueB = createValue('b');
-
-		const childA = tree.addChild(valueA);
-		const childB = tree.addChild(valueB);
-
-		expect({
-			children: tree.getChildren(),
-			bindings: tree.getChildren2()
-		}).toEqual({
-			children: [ childA, childB ],
-			bindings: [ valueA.binding, valueB.binding ]
-		});
-	});
-
-	it('should remove the matching binding when a child node is removed', () => {
-		const tree = new BindingTree();
-		const value = createValue('a');
-		const child = tree.addChild(value);
-
-		child.addChild(createValue('a-1'));
-
-		tree.removeChild(child);
-
-		expect({
-			childBindings: child.getChildren2(),
-			childChildren: child.getChildren(),
-			childParent: child.getParent(),
-			treeBindings: tree.getChildren2(),
-			treeChildren: tree.getChildren()
-		}).toEqual({
-			childBindings: [ ],
-			childChildren: [ ],
-			childParent: null,
-			treeBindings: [ ],
-			treeChildren: [ ]
-		});
-	});
-
-	it('should ignore removal of a node which is not a child', () => {
-		const tree = new BindingTree();
-		const child = tree.addChild(createValue('a'));
-		const other = new BindingTree(createValue('b'));
-
-		tree.removeChild(other);
-
-		expect({
-			children: tree.getChildren(),
-			bindings: tree.getChildren2()
-		}).toEqual({
-			children: [ child ],
-			bindings: [ child.getValue().binding ]
-		});
-	});
-});
-
-},{"./../../../lib/processing/BindingTree":12}],134:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency');
 
 const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
@@ -29153,7 +29081,7 @@ describe('When a position container data is gathered', () => {
 	});
 });
 
-},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":13,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"./../../../lib/processing/definitions/PositionTreeDefinition":19,"@barchart/common-js/lang/Currency":51}],135:[function(require,module,exports){
+},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionContainer":12,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"./../../../lib/processing/definitions/PositionTreeDefinition":19,"@barchart/common-js/lang/Currency":51}],134:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency'),
 	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator');
 const Day = require('@barchart/common-js/lang/Day');
@@ -29394,7 +29322,7 @@ describe('When a position group is used', () => {
 	});
 });
 
-},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/FilterMode":3,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionGroup":14,"./../../../lib/processing/PositionItem":16,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Day":53}],136:[function(require,module,exports){
+},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/FilterMode":3,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionGroup":13,"./../../../lib/processing/PositionItem":14,"./../../../lib/processing/definitions/PositionLevelDefinition":17,"./../../../lib/processing/definitions/PositionLevelType":18,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/CurrencyTranslator":52,"@barchart/common-js/lang/Day":53}],135:[function(require,module,exports){
 const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionItem = require('./../../../lib/processing/PositionItem');
@@ -29530,7 +29458,80 @@ describe('When a position item is used', () => {
 	});
 });
 
-},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionItem":16}],137:[function(require,module,exports){
+},{"../../utils/processing/PositionTestFactory":142,"./../../../lib/data/PositionSummaryFrame":8,"./../../../lib/processing/PositionItem":14}],136:[function(require,module,exports){
+const BindingTree = require('./../../../../lib/processing/binding/BindingTree');
+
+describe('When a binding tree is used', () => {
+	'use strict';
+
+	function createValue(key) {
+		return {
+			key: key,
+			binding: {
+				key: key
+			}
+		};
+	}
+
+	it('should keep child nodes and child bindings in the same order', () => {
+		const tree = new BindingTree();
+		const valueA = createValue('a');
+		const valueB = createValue('b');
+
+		const childA = tree.addChild(valueA);
+		const childB = tree.addChild(valueB);
+
+		expect({
+			children: tree.getChildren(),
+			bindings: tree.getChildren2()
+		}).toEqual({
+			children: [ childA, childB ],
+			bindings: [ valueA.binding, valueB.binding ]
+		});
+	});
+
+	it('should remove the matching binding when a child node is removed', () => {
+		const tree = new BindingTree();
+		const value = createValue('a');
+		const child = tree.addChild(value);
+
+		child.addChild(createValue('a-1'));
+
+		tree.removeChild(child);
+
+		expect({
+			childBindings: child.getChildren2(),
+			childChildren: child.getChildren(),
+			childParent: child.getParent(),
+			treeBindings: tree.getChildren2(),
+			treeChildren: tree.getChildren()
+		}).toEqual({
+			childBindings: [ ],
+			childChildren: [ ],
+			childParent: null,
+			treeBindings: [ ],
+			treeChildren: [ ]
+		});
+	});
+
+	it('should ignore removal of a node which is not a child', () => {
+		const tree = new BindingTree();
+		const child = tree.addChild(createValue('a'));
+		const other = new BindingTree(createValue('b'));
+
+		tree.removeChild(other);
+
+		expect({
+			children: tree.getChildren(),
+			bindings: tree.getChildren2()
+		}).toEqual({
+			children: [ child ],
+			bindings: [ child.getValue().binding ]
+		});
+	});
+});
+
+},{"./../../../../lib/processing/binding/BindingTree":15}],137:[function(require,module,exports){
 const Currency = require('@barchart/common-js/lang/Currency');
 
 const PositionLevelDefinition = require('./../../../../lib/processing/definitions/PositionLevelDefinition'),
@@ -30019,4 +30020,4 @@ module.exports = {
 	resetPositionCounter
 };
 
-},{"../../../lib/data/InstrumentType":4,"../../../lib/data/PositionDirection":7,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Decimal":55}]},{},[129,130,131,132,133,137,138,134,135,136,139,140,141]);
+},{"../../../lib/data/InstrumentType":4,"../../../lib/data/PositionDirection":7,"@barchart/common-js/lang/Currency":51,"@barchart/common-js/lang/Decimal":55}]},{},[129,130,131,132,136,137,138,133,134,135,139,140,141]);
