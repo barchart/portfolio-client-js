@@ -2768,7 +2768,7 @@ module.exports = (() => {
 
 		/**
 		 * Removes an existing portfolio, and all of its positions, from the container. This
-		 * also triggers removal of the portfolio and it's positions from any applicable
+		 * also triggers removal of the portfolio and its positions from any applicable
 		 * aggregation trees.
 		 *
 		 * @public
@@ -3678,7 +3678,18 @@ module.exports = (() => {
 
 	function severGroupNode(groupNodeToSever) {
 		groupNodeToSever.sever();
-		groupNodeToSever.walk(group => delete this._nodes[group.id], false, true);
+
+		groupNodeToSever.walk(group => {
+			delete this._nodes[group.id];
+
+			if (this._groupObservers.hasOwnProperty(group.id)) {
+				const disposable = this._groupObservers[group.id];
+
+				delete this._groupObservers[group.id];
+
+				disposable.dispose();
+			}
+		}, false, true);
 	}
 
 	function recalculatePercentages() {
