@@ -409,7 +409,7 @@ module.exports = (() => {
 
 		/**
 		 * Removes an existing portfolio, and all of its positions, from the container. This
-		 * also triggers removal of the portfolio and it's positions from any applicable
+		 * also triggers removal of the portfolio and its positions from any applicable
 		 * aggregation trees.
 		 *
 		 * @public
