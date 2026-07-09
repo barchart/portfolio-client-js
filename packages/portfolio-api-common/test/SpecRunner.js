@@ -3915,11 +3915,7 @@ module.exports = (() => {
 			this._dataFormat.unrealizedPricePositive = false;
 			this._dataFormat.unrealizedPriceNegative = false;
 			this._dataFormat.instrument = null;
-			this._dataFormat.fundamental = null;
-			this._dataFormat.fundamentalPercentChange1m = null;
-			this._dataFormat.fundamentalPercentChange1y = null;
-			this._dataFormat.fundamentalPercentChange3m = null;
-			this._dataFormat.fundamentalPercentChangeYtd = null;
+			this._dataFormat.fundamental = { };
 
 			this._dataActual.key = this._key;
 			this._dataActual.description = this._description;
@@ -3936,7 +3932,7 @@ module.exports = (() => {
 				this._dataFormat.position = item.position.position;
 
 				this._dataFormat.instrument = item.position.instrument;
-				setFundamentalFormat(this._dataFormat, item.data.fundamental);
+				this._dataFormat.fundamental = item.data.fundamental || { };
 			} else {
 				this._dataFormat.portfolio = null;
 				this._dataFormat.position = null;
@@ -3946,7 +3942,7 @@ module.exports = (() => {
 				const item = items[0];
 
 				this._dataFormat.instrument = item.position.instrument;
-				setFundamentalFormat(this._dataFormat, item.data.fundamental);
+				this._dataFormat.fundamental = item.data.fundamental || { };
 			}
 
 			this._dataActual.quoteLast = null;
@@ -4065,6 +4061,18 @@ module.exports = (() => {
 			this._dataFormat.periodPercent = null;
 			this._dataFormat.periodPercentPrevious = null;
 			this._dataFormat.periodPercentPrevious2 = null;
+
+			this._dataActual.todayQuote = null;
+			this._dataActual.todayExchange = null;
+
+			this._dataFormat.todayQuote = null;
+			this._dataFormat.todayExchange = null;
+
+			this._dataActual.todayPrice = null;
+			this._dataActual.todayPricePrevious = null;
+
+			this._dataFormat.todayPrice = null;
+			this._dataFormat.todayPricePrevious = null;
 
 			this._binding = new PositionGroupBinding(this._dataFormat, {
 				changeCurrency: currency => this.changeCurrency(currency),
@@ -4541,7 +4549,7 @@ module.exports = (() => {
 
 		const fundamentalBinding = item.registerFundamentalDataChangeHandler((data) => {
 			if (this._single || this._homogeneous) {
-				setFundamentalFormat(this._dataFormat, data);
+				this._dataFormat.fundamental = data;
 
 				return;
 			}
@@ -4580,9 +4588,11 @@ module.exports = (() => {
 				return sums;
 			}, { }));
 
-			FUNDAMENTAL_FIELDS.forEach((fieldName) => {
-				this._dataFormat[getFundamentalFormatKey(fieldName)] = fundamentalData[fieldName].averageFormat;
-			});
+			this._dataFormat.fundamental = FUNDAMENTAL_FIELDS.reduce((format, fieldName) => {
+				format[fieldName] = fundamentalData[fieldName].averageFormat;
+
+				return format;
+			}, { });
 		});
 
 		let newsBinding = Disposable.getEmpty();
@@ -4691,46 +4701,6 @@ module.exports = (() => {
 		format.hasLinked = hasLinked;
 		format.hasManual = hasManual;
 		format.positions = positions;
-	}
-
-	function setFundamentalFormat(format, data) {
-		format.fundamental = null;
-
-		FUNDAMENTAL_FIELDS.forEach((fieldName) => {
-			format[getFundamentalFormatKey(fieldName)] = formatFundamentalValue(data, fieldName);
-		});
-	}
-
-	function formatFundamentalValue(data, fieldName) {
-		if (!data) {
-			return null;
-		}
-
-		let value;
-
-		if (data.formatted && data.formatted[fieldName] !== undefined) {
-			value = data.formatted[fieldName];
-		} else if (data[fieldName] !== undefined) {
-			value = data[fieldName];
-		} else if (data.raw && data.raw[fieldName] !== undefined) {
-			value = data.raw[fieldName];
-		} else {
-			value = null;
-		}
-
-		if (value instanceof Decimal) {
-			return formatPercent(value, 2, true);
-		}
-
-		if (is.number(value)) {
-			return formatPercent(new Decimal(value), 2, true);
-		}
-
-		return formatString(value);
-	}
-
-	function getFundamentalFormatKey(fieldName) {
-		return `fundamental${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`;
 	}
 
 	function formatDirection(up, down) {
@@ -5057,6 +5027,14 @@ module.exports = (() => {
 		}
 
 		format.portfolioType = formatString(portfolioType);
+		format.todayQuote = '—';
+		format.todayExchange = '—';
+
+		format.todayPrice = '—';
+		format.todayPricePrevious = '—';
+
+		format.unrealizedToday = '—';
+		format.gainToday = '—';
 	}
 
 	function calculatePriceData(group, item, forceRefresh) {
@@ -5216,8 +5194,29 @@ module.exports = (() => {
 		if (group.single && item) {
 			actual.unrealizedPrice = item.data.unrealizedPrice;
 			format.unrealizedPrice = formatFractionSpecial(actual.unrealizedPrice, currency, item.position.instrument);
+
 			format.unrealizedPricePositive = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsPositive();
 			format.unrealizedPriceNegative = actual.unrealizedPrice !== null && actual.unrealizedPrice.getIsNegative();
+
+			actual.todayQuote = item.data.todayQuote;
+			actual.todayExchange = item.data.todayExchange;
+
+			format.todayQuote = actual.todayQuote === null ? '—' : actual.todayQuote.format();
+			format.todayExchange = actual.todayExchange === null ? '—' : actual.todayExchange.format();
+
+			actual.todayPrice = item.data.todayPrice;
+			actual.todayPricePrevious = item.data.todayPricePrevious;
+
+			format.todayPrice = actual.todayPrice === null ? '—' : formatFractionSpecial(actual.todayPrice, currency, item.position.instrument);
+			format.todayPricePrevious = actual.todayPricePrevious === null ? '—' : formatFractionSpecial(actual.todayPricePrevious, currency, item.position.instrument);
+
+			if (actual.todayPrice === null) {
+				format.unrealizedToday = '—';
+
+				if (actual.realizedToday !== null && actual.realizedToday.getIsEqual(Decimal.ZERO)) {
+					format.gainToday = '—';
+				}
+			}
 		}
 	}
 
@@ -5477,6 +5476,12 @@ module.exports = (() => {
 
 			this._data.marketAbsolute = null;
 			this._data.marketAbsoluteChange = null;
+
+			this._data.todayQuote = null;
+			this._data.todayExchange = null;
+
+			this._data.todayPrice = null;
+			this._data.todayPricePrevious = null;
 
 			this._data.realizedToday = null;
 			this._data.realizedTodayChange = null;
@@ -6023,6 +6028,9 @@ module.exports = (() => {
 		data.marketAbsolute = marketAbsolute;
 		data.marketAbsoluteChange = marketAbsoluteChange;
 
+		data.todayQuote = day || null;
+		data.todayExchange = today || null;
+
 		let unrealizedToday;
 		let unrealizedTodayChange;
 
@@ -6050,6 +6058,17 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+
+		if (priceIsToday && price) {
+			data.todayPrice = price;
+
+			if (data.previousPrice) {
+				data.todayPricePrevious = data.previousPrice;
+			}
+		} else {
+			data.todayPrice = null;
+			data.todayPricePrevious = null;
+		}
 
 		let realizedToday;
 		let realizedTodayChange;
@@ -13462,8 +13481,8 @@ module.exports = (() => {
     }
 
     /**
-     * Returns a new {@link Timestamp} instance shifted forward (or backward)
-     * by a specific number of milliseconds.
+     * Returns a new {@link Timestamp} instance shifted forward by a specific
+     * number of milliseconds.
      *
      * @public
      * @param {Number} milliseconds
@@ -13475,8 +13494,21 @@ module.exports = (() => {
     }
 
     /**
-     * Returns a new {@link Timestamp} instance shifted forward (or backward)
-     * by a specific number of seconds.
+     * Returns a new {@link Timestamp} instance shifted backwards by a specific
+     * number of milliseconds.
+     *
+     * @public
+     * @param {Number} milliseconds
+     * @returns {Timestamp}
+     */
+    subtract(milliseconds) {
+      assert.argumentIsRequired(milliseconds, 'milliseconds', Number);
+      return new Timestamp(this._timestamp - milliseconds, this._timezone);
+    }
+
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward by a specific
+     * number of seconds.
      *
      * @public
      * @param {Number} seconds
@@ -13485,6 +13517,19 @@ module.exports = (() => {
     addSeconds(seconds) {
       assert.argumentIsRequired(seconds, 'seconds', Number);
       return this.add(seconds * MILLISECONDS_PER_SECOND);
+    }
+
+    /**
+     * Returns a new {@link Timestamp} instance shifted backwards by a specific
+     * number of seconds.
+     *
+     * @public
+     * @param {Number} seconds
+     * @returns {Timestamp}
+     */
+    subtractSeconds(seconds) {
+      assert.argumentIsRequired(seconds, 'seconds', Number);
+      return this.subtract(seconds * MILLISECONDS_PER_SECOND);
     }
 
     /**
@@ -13567,10 +13612,9 @@ module.exports = (() => {
     }
 
     /**
-     * A comparator function for {@link Day} instances.
+     * A comparator function for {@link Timestamp} instances.
      *
      * @public
-     * @static
      * @param {Timestamp} a
      * @param {Timestamp} b
      * @returns {Number}
@@ -29084,10 +29128,17 @@ describe('When a position container data is gathered', () => {
 
 				expect({
 					fundamental: group.formatted.fundamental,
-					percentChange1m: group.formatted.fundamentalPercentChange1m
+					percentChange1m: group.formatted.fundamental.raw.percentChange1m
 				}).toEqual({
-					fundamental: null,
-					percentChange1m: '+1.00%'
+					fundamental: {
+						raw: {
+							percentChange1m: 0.01,
+							percentChange1y: 0.02,
+							percentChange3m: 0.03,
+							percentChangeYtd: 0.04
+						}
+					},
+					percentChange1m: 0.01
 				});
 			});
 		});
@@ -29241,16 +29292,23 @@ describe('When a position group is used', () => {
 
 		expect({
 			fundamental: group.data.fundamental,
-			percentChange1m: group.data.fundamentalPercentChange1m,
-			percentChange1y: group.data.fundamentalPercentChange1y,
-			percentChange3m: group.data.fundamentalPercentChange3m,
-			percentChangeYtd: group.data.fundamentalPercentChangeYtd
+			percentChange1m: group.data.fundamental.raw.percentChange1m,
+			percentChange1y: group.data.fundamental.raw.percentChange1y,
+			percentChange3m: group.data.fundamental.raw.percentChange3m,
+			percentChangeYtd: group.data.fundamental.raw.percentChangeYtd
 		}).toEqual({
-			fundamental: null,
-			percentChange1m: '+1.00%',
-			percentChange1y: '+2.00%',
-			percentChange3m: '+3.00%',
-			percentChangeYtd: '+4.00%'
+			fundamental: {
+				raw: {
+					percentChange1m: 0.01,
+					percentChange1y: 0.02,
+					percentChange3m: 0.03,
+					percentChangeYtd: 0.04
+				}
+			},
+			percentChange1m: 0.01,
+			percentChange1y: 0.02,
+			percentChange3m: 0.03,
+			percentChangeYtd: 0.04
 		});
 	});
 
@@ -29273,7 +29331,7 @@ describe('When a position group is used', () => {
 
 		expect({
 			homogeneous: group.homogeneous,
-			percentChange1m: group.data.fundamentalPercentChange1m,
+			percentChange1m: group.data.fundamental.percentChange1m,
 			single: group.single
 		}).toEqual({
 			homogeneous: false,
