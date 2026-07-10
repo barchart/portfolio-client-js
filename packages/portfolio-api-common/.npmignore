@@ -1,5 +1,7 @@
 *
 
+tools/
+
 !lib/**
 !LICENSE
 !package.json

@@ -15,7 +15,9 @@
     }
   ],
   "scripts": {
-    "test": "echo \"Error: Please use gulp to run tests\" && exit 1"
+    "build:test-bundle": "node tools/build-test-bundle.mjs",
+    "lint": "jshint lib test/specs test/utils",
+    "test": "yarn build:test-bundle && jasmine --config=jasmine.json"
   },
   "repository": {
     "type": "git",
@@ -27,19 +29,9 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "babelify": "^10.0.0",
-    "browserify": "^16.5.0",
-    "git-get-status": "^1.0.5",
-    "glob": "^6.0.1",
-    "gulp": "^4.0.2",
-    "gulp-git": "^2.9.0",
-    "gulp-jasmine": "^2.2.1",
-    "gulp-jshint": "^2.1.0",
-    "gulp-prompt": "^1.2.0",
-    "jshint": "^2.10.3",
-    "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0"
+    "esbuild": "^0.25.0",
+    "jasmine": "^2.99.0",
+    "jshint": "^2.10.3"
   },
   "license": "MIT"
 }
