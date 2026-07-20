@@ -170,6 +170,28 @@ module.exports = (() => {
 		}
 
 		/**
+		 * A summary for the current week (to date).
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionSummaryFrame}
+		 */
+		static get WTD() {
+			return wtd;
+		}
+
+		/**
+		 * A summary for the current month (to date).
+		 *
+		 * @public
+		 * @static
+		 * @returns {PositionSummaryFrame}
+		 */
+		static get MTD() {
+			return mtd;
+		}
+
+		/**
 		 * A summary the current year (to date).
 		 *
 		 * @public
@@ -201,6 +223,8 @@ module.exports = (() => {
 	const yearly = new PositionSummaryFrame('YEARLY', 'year', false, getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
 	const quarterly = new PositionSummaryFrame('QUARTERLY', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
 	const monthly = new PositionSummaryFrame('MONTHLY', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+	const wtd = new PositionSummaryFrame('WTD', 'week-to-date', true, getWeekToDateRanges, getWeekToDateStartDate, getWeekToDateRangeDescription);
+	const mtd = new PositionSummaryFrame('MTD', 'month-to-date', true, getMonthToDateRanges, getMonthToDateStartDate, getMonthToDateRangeDescription);
 	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
 
 	/**
@@ -307,6 +331,39 @@ module.exports = (() => {
 		return ranges;
 	}
 
+	function getWeekToDateRanges(transactions) {
+		const ranges = [ ];
+
+		if (transactions.length !== 0) {
+			const last = array.last(transactions);
+
+			const start = getWeekToDateStartDate(0);
+			const end = start.addDays(7);
+
+			if (!last.snapshot.open.getIsZero() || (last.date.getIsAfter(start) && !last.date.getIsAfter(end))) {
+				ranges.push(getRange(start, end));
+			}
+		}
+
+		return ranges;
+	}
+
+	function getMonthToDateRanges(transactions) {
+		const ranges = [ ];
+
+		if (transactions.length !== 0) {
+			const last = array.last(transactions);
+			const start = getMonthToDateStartDate(0);
+			const end = start.addMonths(1).getEndOfMonth();
+
+			if (!last.snapshot.open.getIsZero() || (last.date.getIsAfter(start) && !last.date.getIsAfter(end))) {
+				ranges.push(getRange(start, end));
+			}
+		}
+
+		return ranges;
+	}
+
 	function getYearlyStartDate(periods, date) {
 		const today = date || Day.getToday();
 
@@ -332,6 +389,27 @@ module.exports = (() => {
 		return null;
 	}
 
+	function getWeekToDateStartDate(periods, date) {
+		const today = date || Day.getToday();
+		const dayNames = [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ];
+
+		let daysSinceSunday = dayNames.indexOf(today.getName());
+
+		if (daysSinceSunday === 0) {
+			daysSinceSunday = 7;
+		}
+
+		return today.subtractDays(daysSinceSunday + (periods * 7));
+	}
+
+	function getMonthToDateStartDate(periods, date) {
+		const today = date || Day.getToday();
+
+		return today
+			.subtractMonths(periods)
+			.subtractDays(today.day);
+	}
+
 	function getYearlyRangeDescription(start, end) {
 		return `Year ended ${end.format()}`;
 	}
@@ -346,6 +424,14 @@ module.exports = (() => {
 
 	function getYearToDateRangeDescription(start, end) {
 		return `${end.year.toString()} YTD`;
+	}
+
+	function getWeekToDateRangeDescription(start, end) {
+		return `Week ended ${end.format()} (to date)`;
+	}
+
+	function getMonthToDateRangeDescription(start, end) {
+		return `${end.year.toString()}-${end.month.toString()} MTD`;
 	}
 
 	function getFilteredTransactions(transactions) {
