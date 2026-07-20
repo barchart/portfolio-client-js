@@ -23,6 +23,8 @@ module.exports = (() => {
 
 	let counter = 0;
 
+	const DAYS_PER_YEAR = 365;
+
 	const DIRECTION_DOWN = 'down';
 	const DIRECTION_UNCHANGED = 'unchanged';
 	const DIRECTION_UP = 'up';
@@ -177,6 +179,8 @@ module.exports = (() => {
 			this._dataActual.unrealized = null;
 			this._dataActual.unrealizedToday = null;
 			this._dataActual.gainToday = null;
+			this._dataActual.todayDivisor = null;
+			this._dataActual.todaysGainLossPercent = null;
 			this._dataActual.total = null;
 			this._dataActual.summaryTotalCurrent = null;
 			this._dataActual.summaryTotalPrevious = null;
@@ -190,6 +194,19 @@ module.exports = (() => {
 			this._dataActual.periodDivisorCurrent = null;
 			this._dataActual.periodDivisorPrevious = null;
 			this._dataActual.periodDivisorPrevious2 = null;
+			this._dataActual.weekToDateGain = null;
+			this._dataActual.weekToDateDivisor = null;
+			this._dataActual.weekToDatePercent = null;
+			this._dataActual.weekToDateComplete = false;
+			this._dataActual.monthToDateGain = null;
+			this._dataActual.monthToDateDivisor = null;
+			this._dataActual.monthToDatePercent = null;
+			this._dataActual.monthToDateComplete = false;
+			this._dataActual.daysHeld = null;
+			this._dataActual.weeksHeld = null;
+			this._dataActual.holdingPeriodComplete = false;
+			this._dataActual.annualizedDaysHeld = null;
+			this._dataActual.annualizedReturnPercent = null;
 
 			this._dataFormat.currentPrice = null;
 			this._dataFormat.basis = null;
@@ -217,6 +234,7 @@ module.exports = (() => {
 			this._dataFormat.gainToday = null;
 			this._dataFormat.gainTodayPositive = false;
 			this._dataFormat.gainTodayNegative = false;
+			this._dataFormat.todaysGainLossPercent = null;
 			this._dataFormat.total = null;
 			this._dataFormat.totalPositive = false;
 			this._dataFormat.totalNegative = false;
@@ -259,6 +277,11 @@ module.exports = (() => {
 			this._dataFormat.periodPercent = null;
 			this._dataFormat.periodPercentPrevious = null;
 			this._dataFormat.periodPercentPrevious2 = null;
+			this._dataFormat.weekToDatePercent = null;
+			this._dataFormat.monthToDatePercent = null;
+			this._dataFormat.daysHeld = null;
+			this._dataFormat.weeksHeld = null;
+			this._dataFormat.annualizedReturnPercent = null;
 
 			this._dataActual.todayQuote = null;
 			this._dataActual.todayExchange = null;
@@ -1078,6 +1101,10 @@ module.exports = (() => {
 			updates.periodDivisorCurrent = updates.periodDivisorCurrent.add(translate(item, item.data.periodDivisor));
 			updates.periodDivisorPrevious = updates.periodDivisorPrevious.add(translate(item, item.data.periodDivisorPrevious));
 			updates.periodDivisorPrevious2 = updates.periodDivisorPrevious2.add(translate(item, item.data.periodDivisorPrevious2));
+			updates.weekToDateGain = updates.weekToDateGain.add(translate(item, item.data.weekToDateGain));
+			updates.weekToDateDivisor = updates.weekToDateDivisor.add(translate(item, item.data.weekToDateDivisor));
+			updates.monthToDateGain = updates.monthToDateGain.add(translate(item, item.data.monthToDateGain));
+			updates.monthToDateDivisor = updates.monthToDateDivisor.add(translate(item, item.data.monthToDateDivisor));
 
 			if (group.homogeneous) {
 				updates.quantity = updates.quantity.add(item.data.quantity);
@@ -1104,6 +1131,10 @@ module.exports = (() => {
 			periodDivisorCurrent: Decimal.ZERO,
 			periodDivisorPrevious: Decimal.ZERO,
 			periodDivisorPrevious2: Decimal.ZERO,
+			weekToDateGain: Decimal.ZERO,
+			weekToDateDivisor: Decimal.ZERO,
+			monthToDateGain: Decimal.ZERO,
+			monthToDateDivisor: Decimal.ZERO,
 			quantity: Decimal.ZERO
 		});
 
@@ -1126,6 +1157,30 @@ module.exports = (() => {
 		actual.periodDivisorCurrent = updates.periodDivisorCurrent;
 		actual.periodDivisorPrevious = updates.periodDivisorPrevious;
 		actual.periodDivisorPrevious2 = updates.periodDivisorPrevious2;
+		actual.weekToDateGain = updates.weekToDateGain;
+		actual.weekToDateDivisor = updates.weekToDateDivisor;
+		actual.monthToDateGain = updates.monthToDateGain;
+		actual.monthToDateDivisor = updates.monthToDateDivisor;
+
+		const holdingItem = group.single && items.length === 1 ? items[0] : null;
+
+		actual.daysHeld = holdingItem === null ? null : holdingItem.data.daysHeld;
+		actual.weeksHeld = holdingItem === null ? null : holdingItem.data.weeksHeld;
+
+		const nonCashItems = items.filter(item => item.position.instrument.type !== InstrumentType.CASH);
+
+		actual.holdingPeriodComplete = nonCashItems.length !== 0 && nonCashItems.every(item => item.data.daysHeld !== null);
+
+		actual.annualizedDaysHeld = nonCashItems.reduce((daysHeld, item) => {
+			if (item.data.daysHeld === null) {
+				return daysHeld;
+			}
+
+			return daysHeld === null ? item.data.daysHeld : Math.max(daysHeld, item.data.daysHeld);
+		}, null);
+
+		actual.weekToDateComplete = nonCashItems.every(item => item.data.weekToDateSummaryExists);
+		actual.monthToDateComplete = nonCashItems.every(item => item.data.monthToDateSummaryExists);
 
 		if (group.homogeneous) {
 			actual.quantity = updates.quantity;
@@ -1156,6 +1211,8 @@ module.exports = (() => {
 		format.periodRealized = formatCurrency(updates.periodRealized, currency);
 		format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
+		format.daysHeld = formatNumber(actual.daysHeld, 0);
+		format.weeksHeld = formatNumber(actual.weeksHeld, 0);
 
 		if (group.homogeneous) {
 			format.quantity = formatDecimal(actual.quantity, 2);
@@ -1168,10 +1225,14 @@ module.exports = (() => {
 		actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
 		actual.periodPercentPrevious = calculateGainPercent(actual.summaryTotalPrevious, actual.periodDivisorPrevious);
 		actual.periodPercentPrevious2 = calculateGainPercent(actual.summaryTotalPrevious2, actual.periodDivisorPrevious2);
+		actual.weekToDatePercent = actual.weekToDateComplete ? calculateGainPercent(actual.weekToDateGain, actual.weekToDateDivisor) : null;
+		actual.monthToDatePercent = actual.monthToDateComplete ? calculateGainPercent(actual.monthToDateGain, actual.monthToDateDivisor) : null;
 
 		format.periodPercent = formatPercent(actual.periodPercent, 2);
 		format.periodPercentPrevious = formatPercent(actual.periodPercentPrevious, 2);
 		format.periodPercentPrevious2 = formatPercent(actual.periodPercentPrevious2, 2);
+		format.weekToDatePercent = formatPercent(actual.weekToDatePercent, 2);
+		format.monthToDatePercent = formatPercent(actual.monthToDatePercent, 2);
 
 		const groupItems = group._items;
 
@@ -1275,9 +1336,12 @@ module.exports = (() => {
 				updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 				updates.unrealizedToday = updates.unrealizedToday.add(translate(item, item.data.unrealizedToday));
 				updates.realizedToday = updates.realizedToday.add(translate(item, item.data.realizedToday));
-				updates.gainToday = updates.gainToday.add(translate(item, item.data.unrealizedToday.add(item.data.realizedToday)));
+				updates.gainToday = updates.gainToday.add(translate(item, item.data.gainToday));
+				updates.todayDivisor = updates.todayDivisor.add(translate(item, item.data.todayDivisor));
 				updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.periodGain));
 				updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
+				updates.weekToDateGain = updates.weekToDateGain.add(translate(item, item.data.weekToDateGain));
+				updates.monthToDateGain = updates.monthToDateGain.add(translate(item, item.data.monthToDateGain));
 
 				return updates;
 			}, {
@@ -1289,8 +1353,11 @@ module.exports = (() => {
 				unrealizedToday: Decimal.ZERO,
 				realizedToday: Decimal.ZERO,
 				gainToday: Decimal.ZERO,
+				todayDivisor: Decimal.ZERO,
 				summaryTotalCurrent: Decimal.ZERO,
-				periodUnrealized: Decimal.ZERO
+				periodUnrealized: Decimal.ZERO,
+				weekToDateGain: Decimal.ZERO,
+				monthToDateGain: Decimal.ZERO
 			});
 		} else {
 			updates = { };
@@ -1308,9 +1375,12 @@ module.exports = (() => {
 			updates.unrealized = actual.unrealized.add(translate(item, item.data.unrealizedChange));
 			updates.unrealizedToday = actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange));
 			updates.realizedToday = actual.realizedToday.add(translate(item, item.data.realizedTodayChange));
-			updates.gainToday = actual.gainToday.add(translate(item, item.data.unrealizedTodayChange).add(item.data.realizedTodayChange));
+			updates.gainToday = actual.gainToday.add(translate(item, item.data.gainTodayChange));
+			updates.todayDivisor = actual.todayDivisor.add(translate(item, item.data.todayDivisorChange));
 			updates.summaryTotalCurrent = actual.summaryTotalCurrent.add(translate(item, item.data.periodGainChange));
 			updates.periodUnrealized = actual.periodUnrealized.add(translate(item, item.data.periodUnrealizedChange));
+			updates.weekToDateGain = actual.weekToDateGain.add(translate(item, item.data.weekToDateGainChange));
+			updates.monthToDateGain = actual.monthToDateGain.add(translate(item, item.data.monthToDateGainChange));
 		}
 
 		actual.market = updates.market;
@@ -1320,11 +1390,21 @@ module.exports = (() => {
 		actual.unrealizedToday = updates.unrealizedToday;
 		actual.realizedToday = updates.realizedToday;
 		actual.gainToday = updates.gainToday;
+		actual.todayDivisor = updates.todayDivisor;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.periodUnrealized = updates.periodUnrealized;
+		actual.weekToDateGain = updates.weekToDateGain;
+		actual.monthToDateGain = updates.monthToDateGain;
 
 		actual.total = updates.unrealized.add(actual.realized).add(actual.income);
 		actual.totalPercent = calculateGainPercent(actual.total, actual.totalDivisor);
+		actual.todaysGainLossPercent = calculateGainPercent(actual.gainToday, actual.todayDivisor);
+		actual.weekToDatePercent = actual.weekToDateComplete ? calculateGainPercent(actual.weekToDateGain, actual.weekToDateDivisor) : null;
+		actual.monthToDatePercent = actual.monthToDateComplete ? calculateGainPercent(actual.monthToDateGain, actual.monthToDateDivisor) : null;
+
+		const annualizedReturnExists = group._consideredItems.some(item => item.data.annualizedReturnPercent !== null);
+
+		actual.annualizedReturnPercent = annualizedReturnExists ? calculateAnnualizedReturnPercent(actual.totalPercent, actual.totalDivisor, actual.annualizedDaysHeld, actual.holdingPeriodComplete) : null;
 
 		let marketChange = updates.market.subtract(actual.marketPrevious);
 		let marketChangePercent;
@@ -1368,6 +1448,7 @@ module.exports = (() => {
 		format.gainToday = formatCurrency(actual.gainToday, currency);
 		format.gainTodayPositive = actual.gainToday.getIsPositive();
 		format.gainTodayNegative = actual.gainToday.getIsNegative();
+		format.todaysGainLossPercent = formatPercent(actual.todaysGainLossPercent, 2);
 
 		format.summaryTotalCurrent = formatCurrency(actual.summaryTotalCurrent, currency);
 		format.summaryTotalCurrentPositive = actual.summaryTotalCurrent.getIsPositive();
@@ -1379,6 +1460,9 @@ module.exports = (() => {
 		format.totalPositive = actual.total.getIsPositive();
 		format.totalNegative = actual.total.getIsNegative();
 		format.totalPercent = formatPercent(actual.totalPercent, 2);
+		format.weekToDatePercent = formatPercent(actual.weekToDatePercent, 2);
+		format.monthToDatePercent = formatPercent(actual.monthToDatePercent, 2);
+		format.annualizedReturnPercent = formatPercent(actual.annualizedReturnPercent, 2);
 
 		format.marketChange = formatCurrency(actual.marketChange, currency);
 		format.marketChangePercent = formatPercent(actual.marketChangePercent, 2);
@@ -1504,6 +1588,16 @@ module.exports = (() => {
 
 	function calculateGainPercent(gain, basis) {
 		return basis.getIsApproximate(Decimal.ZERO, 4) ? Decimal.ZERO : gain.divide(basis);
+	}
+
+	function calculateAnnualizedReturnPercent(totalPercent, totalDivisor, daysHeld, holdingPeriodComplete) {
+		if (!holdingPeriodComplete || totalDivisor.getIsApproximate(Decimal.ZERO, 4) || daysHeld < DAYS_PER_YEAR || totalPercent.toFloat() < -1) {
+			return null;
+		}
+
+		const annualizedReturn = Math.pow(1 + totalPercent.toFloat(), DAYS_PER_YEAR / daysHeld) - 1;
+
+		return Number.isFinite(annualizedReturn) ? new Decimal(annualizedReturn) : null;
 	}
 
 	const unchanged = { up: false, down: false };

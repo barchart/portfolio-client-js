@@ -16,6 +16,8 @@ const AveragePriceCalculator = require('./../calculators/AveragePriceCalculator'
 module.exports = (() => {
 	'use strict';
 
+	const DAYS_PER_YEAR = 365;
+
 	/**
 	 * A container for a single position, which handles quote changes and notifies
 	 * observers -- which are typically parent-level {@link PositionGroup}
@@ -28,9 +30,10 @@ module.exports = (() => {
 	 * @param {Object[]} previousSummaries
 	 * @param {Boolean} reporting
 	 * @param {Day|null} reportDate
+	 * @param {Object=} periodSummaries
 	 */
 	class PositionItem extends Disposable {
-		constructor(portfolio, position, currentSummary, previousSummaries, reporting, reportDate) {
+		constructor(portfolio, position, currentSummary, previousSummaries, reporting, reportDate, periodSummaries) {
 			super();
 
 			this._portfolio = portfolio;
@@ -47,6 +50,7 @@ module.exports = (() => {
 
 			this._currentSummary = currentSummary || null;
 			this._previousSummaries = previousSummaries || [ ];
+			this._periodSummaries = periodSummaries || { };
 
 			this._reporting = reporting;
 			this._reportDate = reportDate || null;
@@ -75,6 +79,11 @@ module.exports = (() => {
 
 			this._data.realizedToday = null;
 			this._data.realizedTodayChange = null;
+			this._data.gainToday = null;
+			this._data.gainTodayChange = null;
+			this._data.todayDivisor = null;
+			this._data.todayDivisorChange = null;
+			this._data.todaysGainLossPercent = null;
 
 			this._data.unrealizedToday = null;
 			this._data.unrealizedTodayChange = null;
@@ -115,9 +124,26 @@ module.exports = (() => {
 			this._data.periodDivisorPrevious = null;
 			this._data.periodDivisorPrevious2 = null;
 
+			this._data.weekToDateGain = null;
+			this._data.weekToDateGainChange = null;
+			this._data.weekToDateDivisor = null;
+			this._data.weekToDatePercent = null;
+			this._data.weekToDateSummaryExists = false;
+
+			this._data.monthToDateGain = null;
+			this._data.monthToDateGainChange = null;
+			this._data.monthToDateDivisor = null;
+			this._data.monthToDatePercent = null;
+			this._data.monthToDateSummaryExists = false;
+
 			this._data.initiate = null;
 
 			this._data.totalDivisor = null;
+			this._data.totalPercent = null;
+
+			this._data.daysHeld = null;
+			this._data.weeksHeld = null;
+			this._data.annualizedReturnPercent = null;
 
 			this._data.newsExists = false;
 			this._data.fundamental = { };
@@ -310,8 +336,12 @@ module.exports = (() => {
 
 				this._today = calculateToday(this._reportDate, this._exchangeStatus);
 
+				calculateHoldingPeriodData(this);
+
 				if (this._currentQuote) {
 					this.setQuote(this._currentQuote, true);
+				} else {
+					this._data.annualizedReturnPercent = calculateAnnualizedReturnPercent(this._position.instrument.type, this._data.totalPercent, this._data.totalDivisor, this._data.daysHeld);
 				}
 			}
 		}
@@ -499,6 +529,9 @@ module.exports = (() => {
 		const previousSummary2 = getPreviousSummary(item.previousSummaries, 2);
 		const previousSummary3 = getPreviousSummary(item.previousSummaries, 3);
 
+		const weekToDateSummary = item._periodSummaries.weekToDate || null;
+		const monthToDateSummary = item._periodSummaries.monthToDate || null;
+
 		const snapshot = getSnapshot(position, currentSummary, item._reporting);
 
 		const data = item._data;
@@ -539,6 +572,16 @@ module.exports = (() => {
 		data.periodDivisorPrevious = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
 		data.periodDivisorPrevious2 = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
 
+		data.weekToDateGain = calculatePeriodGain(position.instrument, data.initiate, weekToDateSummary, null, null, true);
+		data.weekToDateDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, weekToDateSummary, null, true);
+		data.weekToDateSummaryExists = weekToDateSummary !== null;
+		data.weekToDatePercent = data.weekToDateSummaryExists ? calculateGainPercent(data.weekToDateGain, data.weekToDateDivisor) : null;
+
+		data.monthToDateGain = calculatePeriodGain(position.instrument, data.initiate, monthToDateSummary, null, null, true);
+		data.monthToDateDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, monthToDateSummary, null, true);
+		data.monthToDateSummaryExists = monthToDateSummary !== null;
+		data.monthToDatePercent = data.monthToDateSummaryExists ? calculateGainPercent(data.monthToDateGain, data.monthToDateDivisor) : null;
+
 		data.basisPrice = AveragePriceCalculator.calculate(position.instrument, data.basis, snapshot.open) || Decimal.ZERO;
 		data.basisPrice = data.basisPrice.opposite();
 
@@ -555,6 +598,35 @@ module.exports = (() => {
 		}
 
 		data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, position);
+
+		calculateHoldingPeriodData(item, snapshot);
+	}
+
+	function calculateHoldingPeriodData(item, snapshot) {
+		const data = item._data;
+
+		const openingDate = is.object(item.position.opening) ? item.position.opening.date : null;
+		const closingDate = is.object(item.position.closing) ? item.position.closing.date : null;
+
+		const currentSnapshot = snapshot || getSnapshot(item.position, item.currentSummary, item._reporting);
+
+		data.daysHeld = null;
+		data.weeksHeld = null;
+
+		if (openingDate instanceof Day && !openingDate.getIsAfter(item._today)) {
+			let heldUntil;
+
+			if (currentSnapshot.open.getIsZero()) {
+				heldUntil = closingDate instanceof Day && !closingDate.getIsBefore(openingDate) && !closingDate.getIsAfter(item._today) ? closingDate : null;
+			} else {
+				heldUntil = item._today;
+			}
+
+			if (heldUntil !== null) {
+				data.daysHeld = Day.countDaysBetween(openingDate, heldUntil);
+				data.weeksHeld = Math.floor(data.daysHeld / 7);
+			}
+		}
 	}
 
 	/**
@@ -623,6 +695,7 @@ module.exports = (() => {
 
 		let unrealizedToday;
 		let unrealizedTodayChange;
+		let todayDivisor;
 
 		// 2025/07/20, BRI. The unrealized gain should only be calculated if the position
 		// has quoted today. That means the position item is date-aware at this point. In
@@ -636,8 +709,10 @@ module.exports = (() => {
 			const unrealizedTodayBase = ValuationCalculator.calculate(position.instrument, data.previousPrice, snapshot.open);
 
 			unrealizedToday = market.subtract(unrealizedTodayBase);
+			todayDivisor = unrealizedTodayBase.absolute();
 		} else {
 			unrealizedToday = Decimal.ZERO;
+			todayDivisor = Decimal.ZERO;
 		}
 
 		if (data.unrealizedToday !== null) {
@@ -648,6 +723,14 @@ module.exports = (() => {
 
 		data.unrealizedToday = unrealizedToday;
 		data.unrealizedTodayChange = unrealizedTodayChange;
+
+		if (data.todayDivisor !== null) {
+			data.todayDivisorChange = todayDivisor.subtract(data.todayDivisor);
+		} else {
+			data.todayDivisorChange = todayDivisor;
+		}
+
+		data.todayDivisor = todayDivisor;
 
 		if (priceIsToday && price) {
 			data.todayPrice = price;
@@ -678,8 +761,24 @@ module.exports = (() => {
 		data.realizedToday = realizedToday;
 		data.realizedTodayChange = realizedTodayChange;
 
+		const gainToday = unrealizedToday.add(realizedToday);
+
+		if (data.gainToday !== null) {
+			data.gainTodayChange = gainToday.subtract(data.gainToday);
+		} else {
+			data.gainTodayChange = gainToday;
+		}
+
+		data.gainToday = gainToday;
+		data.todaysGainLossPercent = calculateGainPercent(data.gainToday, data.todayDivisor);
+
 		const currentSummary = item.currentSummary;
 		const previousSummary = getPreviousSummary(item.previousSummaries, 1);
+
+		const weekToDateSummary = item._periodSummaries.weekToDate || null;
+		const monthToDateSummary = item._periodSummaries.monthToDate || null;
+
+		let currentPriceToUse = null;
 
 		if (currentSummary && position.instrument.type !== InstrumentType.CASH) {
 			let priceToUse;
@@ -698,6 +797,8 @@ module.exports = (() => {
 			}
 
 			if (priceToUse !== null) {
+				currentPriceToUse = priceToUse;
+
 				const unrealized = ValuationCalculator.calculate(position.instrument, priceToUse, currentSummary.end.open).add(currentSummary.end.basis);
 
 				let unrealizedChange;
@@ -744,12 +845,55 @@ module.exports = (() => {
 				data.unrealizedChange = Decimal.ZERO;
 				data.periodUnrealizedChange = Decimal.ZERO;
 				data.periodGainChange = Decimal.ZERO;
+				data.weekToDateGainChange = Decimal.ZERO;
+				data.monthToDateGainChange = Decimal.ZERO;
 			}
 		} else {
 			data.unrealizedChange = Decimal.ZERO;
 			data.periodUnrealizedChange = Decimal.ZERO;
 			data.periodGainChange = Decimal.ZERO;
+			data.weekToDateGainChange = Decimal.ZERO;
+			data.monthToDateGainChange = Decimal.ZERO;
 		}
+
+		if (position.instrument.type !== InstrumentType.CASH) {
+			if (currentPriceToUse === null) {
+				if (worthless) {
+					currentPriceToUse = Decimal.ZERO;
+				} else if (price) {
+					currentPriceToUse = price;
+				} else if (data.previousPrice) {
+					currentPriceToUse = new Decimal(data.previousPrice);
+				}
+			}
+
+			if (currentPriceToUse !== null) {
+				const weekToDateData = calculateCurrentPeriodData(position.instrument, data.initiate, weekToDateSummary, currentPriceToUse, data.weekToDateGain, data.weekToDateDivisor);
+
+				const monthToDateData = calculateCurrentPeriodData(position.instrument, data.initiate, monthToDateSummary, currentPriceToUse, data.monthToDateGain, data.monthToDateDivisor);
+
+				data.weekToDateGain = weekToDateData.gain;
+				data.weekToDateGainChange = weekToDateData.gainChange;
+				data.weekToDatePercent = weekToDateData.percent;
+
+				data.monthToDateGain = monthToDateData.gain;
+				data.monthToDateGainChange = monthToDateData.gainChange;
+				data.monthToDatePercent = monthToDateData.percent;
+			}
+		}
+
+		data.totalPercent = calculateGainPercent(data.unrealized.add(data.realized).add(data.income), data.totalDivisor);
+		data.annualizedReturnPercent = calculateAnnualizedReturnPercent(position.instrument.type, data.totalPercent, data.totalDivisor, data.daysHeld);
+	}
+
+	function calculateCurrentPeriodData(instrument, direction, summary, price, previousGain, divisor) {
+		const gain = calculatePeriodGain(instrument, direction, summary, null, price, true);
+
+		return {
+			gain: gain,
+			gainChange: gain.subtract(previousGain),
+			percent: summary === null ? null : calculateGainPercent(gain, divisor)
+		};
 	}
 
 	function guessInitialDirection(position, previousSummaries, currentSummary) {
@@ -776,7 +920,7 @@ module.exports = (() => {
 		return direction || PositionDirection.LONG;
 	}
 
-	function calculatePeriodGain(instrument, direction, currentSummary, previousSummary, overridePrice) {
+	function calculatePeriodGain(instrument, direction, currentSummary, previousSummary, overridePrice, useCurrentStart) {
 		let returnRef;
 
 		const type = instrument.type;
@@ -786,6 +930,8 @@ module.exports = (() => {
 
 			if (previousSummary) {
 				startValue = previousSummary.end.value;
+			} else if (useCurrentStart) {
+				startValue = currentSummary.start.value;
 			} else {
 				startValue = Decimal.ZERO;
 			}
@@ -810,7 +956,7 @@ module.exports = (() => {
 		return returnRef;
 	}
 
-	function calculatePeriodDivisor(type, direction, currentSummary, previousSummary) {
+	function calculatePeriodDivisor(type, direction, currentSummary, previousSummary, useCurrentStart) {
 		let returnRef;
 
 		if (currentSummary && type !== InstrumentType.CASH) {
@@ -818,6 +964,8 @@ module.exports = (() => {
 
 			if (previousSummary) {
 				startValue = previousSummary.end.value;
+			} else if (useCurrentStart) {
+				startValue = currentSummary.start.value;
 			} else {
 				startValue = Decimal.ZERO;
 			}
@@ -862,6 +1010,20 @@ module.exports = (() => {
 		}
 
 		return divisor;
+	}
+
+	function calculateGainPercent(gain, divisor) {
+		return divisor.getIsApproximate(Decimal.ZERO, 4) ? Decimal.ZERO : gain.divide(divisor);
+	}
+
+	function calculateAnnualizedReturnPercent(type, totalPercent, totalDivisor, daysHeld) {
+		if (type === InstrumentType.CASH || totalDivisor.getIsApproximate(Decimal.ZERO, 4) || daysHeld === null || daysHeld < DAYS_PER_YEAR || totalPercent.toFloat() < -1) {
+			return null;
+		}
+
+		const annualizedReturn = Math.pow(1 + totalPercent.toFloat(), DAYS_PER_YEAR / daysHeld) - 1;
+
+		return Number.isFinite(annualizedReturn) ? new Decimal(annualizedReturn) : null;
 	}
 
 	function getPreviousSummary(previousSummaries, count) {

@@ -121,6 +121,9 @@ module.exports = (() => {
 				this._previousSummaryRanges = this._currentSummaryFrame.getPriorRanges(reportDate, 3);
 
 				this._previousSummaryRanges.pop();
+
+				this._weekToDateSummaryRange = null;
+				this._monthToDateSummaryRange = null;
 			} else {
 				this._reportDate = null;
 
@@ -131,6 +134,9 @@ module.exports = (() => {
 				this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(3);
 
 				this._previousSummaryRanges.shift();
+
+				this._weekToDateSummaryRange = array.first(PositionSummaryFrame.WTD.getRecentRanges(0));
+				this._monthToDateSummaryRange = array.first(PositionSummaryFrame.MTD.getRecentRanges(0));
 			}
 
 			this._summariesCurrent = summaries.reduce((map, summary) => {
@@ -141,6 +147,18 @@ module.exports = (() => {
 
 			this._summariesPrevious = summaries.reduce((map, summary) => {
 				addSummaryPrevious(map, summary, this._previousSummaryFrame, this._previousSummaryRanges);
+
+				return map;
+			}, { });
+
+			this._summariesWeekToDate = summaries.reduce((map, summary) => {
+				addSummaryForRange(map, summary, PositionSummaryFrame.WTD, this._weekToDateSummaryRange);
+
+				return map;
+			}, { });
+
+			this._summariesMonthToDate = summaries.reduce((map, summary) => {
+				addSummaryForRange(map, summary, PositionSummaryFrame.MTD, this._monthToDateSummaryRange);
 
 				return map;
 			}, { });
@@ -486,6 +504,8 @@ module.exports = (() => {
 			summaries.forEach((summary) => {
 				addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
 				addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
+				addSummaryForRange(this._summariesWeekToDate, summary, PositionSummaryFrame.WTD, this._weekToDateSummaryRange);
+				addSummaryForRange(this._summariesMonthToDate, summary, PositionSummaryFrame.MTD, this._monthToDateSummaryRange);
 			});
 
 			const item = createPositionItem.call(this, position, false);
@@ -1245,6 +1265,12 @@ module.exports = (() => {
 		}
 	}
 
+	function addSummaryForRange(map, summary, frame, range) {
+		if (range !== null && summary.frame === frame && range.start.getIsEqual(summary.start.date) && range.end.getIsEqual(summary.end.date)) {
+			map[summary.position] = summary;
+		}
+	}
+
 	function addBarchartSymbol(map, item) {
 		const barchartSymbol = extractSymbolForBarchart(item.position);
 
@@ -1276,8 +1302,13 @@ module.exports = (() => {
 			const currentSummary = this._summariesCurrent[ position.position ] || null;
 			const previousSummaries = this._summariesPrevious[ position.position ] || getSummaryArray(this._previousSummaryRanges);
 
+			const periodSummaries = {
+				weekToDate: this._summariesWeekToDate[ position.position ] || null,
+				monthToDate: this._summariesMonthToDate[ position.position ] || null
+			};
+
 			if (!requireCurrentSummary || currentSummary !== null) {
-				return new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate);
+				return new PositionItem(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate, periodSummaries);
 			}
 		}
 
@@ -1291,6 +1322,8 @@ module.exports = (() => {
 
 		delete this._summariesCurrent[positionItem.position.position];
 		delete this._summariesPrevious[positionItem.position.position];
+		delete this._summariesWeekToDate[positionItem.position.position];
+		delete this._summariesMonthToDate[positionItem.position.position];
 
 		array.remove(this._items, i => i === positionItem);
 
