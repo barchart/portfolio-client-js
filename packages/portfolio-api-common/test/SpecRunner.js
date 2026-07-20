@@ -939,14 +939,14 @@
       var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
       var Decimal_exports = {};
       __export(Decimal_exports, {
-        default: () => Decimal6
+        default: () => Decimal8
       });
       module.exports = __toCommonJS(Decimal_exports);
       var assert = __toESM(require_assert());
       var is = __toESM(require_is());
       var import_Enum = __toESM(require_Enum());
       var import_big = __toESM(require_big());
-      var Decimal6 = class _Decimal {
+      var Decimal8 = class _Decimal {
         #big;
         /**
          * @param {Decimal|number|string} value - The value.
@@ -1419,9 +1419,9 @@
       var zero = new import_big.default(0);
       var positiveOne = new import_big.default(1);
       var negativeOne = new import_big.default(-1);
-      var decimalZero = new Decimal6(zero);
-      var decimalOne = new Decimal6(positiveOne);
-      var decimalNegativeOne = new Decimal6(negativeOne);
+      var decimalZero = new Decimal8(zero);
+      var decimalOne = new Decimal8(positiveOne);
+      var decimalNegativeOne = new Decimal8(negativeOne);
       var RoundingMode = class extends import_Enum.default {
         #value;
         /**
@@ -2203,7 +2203,7 @@
       var Enum = require_Enum();
       module.exports = (() => {
         "use strict";
-        class InstrumentType4 extends Enum {
+        class InstrumentType5 extends Enum {
           constructor(code, description, alternateDescription, canExistEmpty, canReinvest, canShort, canSwitchDirection, usesSymbols, hasCorporateActions, allowFractional, closeFractional, roundQuantity, strictOrdering, generator) {
             super(code, description);
             assert.argumentIsRequired(alternateDescription, "alternateDescription", String);
@@ -2453,7 +2453,7 @@
            * @returns {InstrumentType|null}
            */
           static parse(code) {
-            return Enum.fromCode(InstrumentType4, code);
+            return Enum.fromCode(InstrumentType5, code);
           }
           /**
            * Generates an identifier for the instrument.
@@ -2464,7 +2464,7 @@
            * @returns {String}
            */
           static generateIdentifier(instrument) {
-            const type = Enum.fromCode(InstrumentType4, instrument.type.code);
+            const type = Enum.fromCode(InstrumentType5, instrument.type.code);
             return type.generateIdentifier(instrument);
           }
           /**
@@ -2477,17 +2477,17 @@
           static fromSymbolType(code) {
             assert.argumentIsRequired(code, "code", Number);
             if (code === 1 || code === 6 || code === 7 || code === 11) {
-              return InstrumentType4.EQUITY;
+              return InstrumentType5.EQUITY;
             } else if (code === 34) {
-              return InstrumentType4.EQUITY_OPTION;
+              return InstrumentType5.EQUITY_OPTION;
             } else if (code === 5 || code === 15) {
-              return InstrumentType4.FUND;
+              return InstrumentType5.FUND;
             } else if (code === 2) {
-              return InstrumentType4.FUTURE;
+              return InstrumentType5.FUTURE;
             } else if (code === 12) {
-              return InstrumentType4.FUTURE_OPTION;
+              return InstrumentType5.FUTURE_OPTION;
             } else if (code === 999) {
-              return InstrumentType4.CRYPTO;
+              return InstrumentType5.CRYPTO;
             } else {
               throw new Error(`Unable to determine InstrumentType for [ ${code} ]`);
             }
@@ -2496,15 +2496,15 @@
             return `[InstrumentType (code=${this.code})]`;
           }
         }
-        const cash = new InstrumentType4("CASH", "cash", "Cash", true, false, false, true, false, false, true, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
-        const crypto2 = new InstrumentType4("CRYPTO", "crypto", "Crypto", false, false, true, false, true, false, true, false, false, true, (instrument) => `BARCHART-CRYPTO-${instrument.name.toUpperCase()}`);
-        const equity = new InstrumentType4("EQUITY", "equity", "Equities", false, true, true, false, true, true, true, true, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const equityOption = new InstrumentType4("EQUITY_OPTION", "equity option", "Equity Options", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const fund = new InstrumentType4("FUND", "mutual fund", "Funds", false, true, false, false, true, true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const future = new InstrumentType4("FUTURE", "futures contract", "Futures", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const futureOption = new InstrumentType4("FUTURE_OPTION", "futures option", "Futures Options", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const other = new InstrumentType4("OTHER", "other", "Other", false, false, false, false, false, false, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
-        return InstrumentType4;
+        const cash = new InstrumentType5("CASH", "cash", "Cash", true, false, false, true, false, false, true, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+        const crypto2 = new InstrumentType5("CRYPTO", "crypto", "Crypto", false, false, true, false, true, false, true, false, false, true, (instrument) => `BARCHART-CRYPTO-${instrument.name.toUpperCase()}`);
+        const equity = new InstrumentType5("EQUITY", "equity", "Equities", false, true, true, false, true, true, true, true, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const equityOption = new InstrumentType5("EQUITY_OPTION", "equity option", "Equity Options", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const fund = new InstrumentType5("FUND", "mutual fund", "Funds", false, true, false, false, true, true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const future = new InstrumentType5("FUTURE", "futures contract", "Futures", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const futureOption = new InstrumentType5("FUTURE_OPTION", "futures option", "Futures Options", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const other = new InstrumentType5("OTHER", "other", "Other", false, false, false, false, false, false, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
+        return InstrumentType5;
       })();
     }
   });
@@ -2512,9 +2512,9 @@
   // lib/calculators/AveragePriceCalculator.js
   var require_AveragePriceCalculator = __commonJS({
     "lib/calculators/AveragePriceCalculator.js"(exports, module) {
-      var Decimal6 = require_Decimal();
+      var Decimal8 = require_Decimal();
       var is = require_is();
-      var InstrumentType4 = require_InstrumentType();
+      var InstrumentType5 = require_InstrumentType();
       module.exports = (() => {
         "use strict";
         class AveragePriceCalculator2 {
@@ -2533,14 +2533,14 @@
           static calculate(instrument, basis, quantity) {
             let basisToUse = null;
             if (is.number(basis)) {
-              basisToUse = new Decimal6(basis);
-            } else if (basis instanceof Decimal6) {
+              basisToUse = new Decimal8(basis);
+            } else if (basis instanceof Decimal8) {
               basisToUse = basis;
             }
             let quantityToUse = null;
             if (is.number(basis)) {
-              quantityToUse = new Decimal6(quantity);
-            } else if (basis instanceof Decimal6) {
+              quantityToUse = new Decimal8(quantity);
+            } else if (basis instanceof Decimal8) {
               quantityToUse = quantity;
             }
             const calculator = calculators.get(instrument.type);
@@ -2551,7 +2551,7 @@
           }
         }
         function calculateForCash(instrument, basis, quantity) {
-          return Decimal6.ONE;
+          return Decimal8.ONE;
         }
         function calculateForCrypto(instrument, basis, quantity) {
           if (basis === null || quantity === null || quantity.getIsZero()) {
@@ -2601,14 +2601,14 @@
           return basis.divide(quantity).opposite();
         }
         const calculators = /* @__PURE__ */ new Map();
-        calculators.set(InstrumentType4.CASH, calculateForCash);
-        calculators.set(InstrumentType4.CRYPTO, calculateForCrypto);
-        calculators.set(InstrumentType4.EQUITY, calculateForEquity);
-        calculators.set(InstrumentType4.EQUITY_OPTION, calculateForEquityOption);
-        calculators.set(InstrumentType4.FUND, calculateForFund);
-        calculators.set(InstrumentType4.FUTURE, calculateForFuture);
-        calculators.set(InstrumentType4.FUTURE_OPTION, calculateForFutureOption);
-        calculators.set(InstrumentType4.OTHER, calculateForOther);
+        calculators.set(InstrumentType5.CASH, calculateForCash);
+        calculators.set(InstrumentType5.CRYPTO, calculateForCrypto);
+        calculators.set(InstrumentType5.EQUITY, calculateForEquity);
+        calculators.set(InstrumentType5.EQUITY_OPTION, calculateForEquityOption);
+        calculators.set(InstrumentType5.FUND, calculateForFund);
+        calculators.set(InstrumentType5.FUTURE, calculateForFuture);
+        calculators.set(InstrumentType5.FUTURE_OPTION, calculateForFutureOption);
+        calculators.set(InstrumentType5.OTHER, calculateForOther);
         return AveragePriceCalculator2;
       })();
     }
@@ -2617,9 +2617,9 @@
   // lib/calculators/ValuationCalculator.js
   var require_ValuationCalculator = __commonJS({
     "lib/calculators/ValuationCalculator.js"(exports, module) {
-      var Decimal6 = require_Decimal();
+      var Decimal8 = require_Decimal();
       var is = require_is();
-      var InstrumentType4 = require_InstrumentType();
+      var InstrumentType5 = require_InstrumentType();
       module.exports = (() => {
         "use strict";
         class ValuationCalculator2 {
@@ -2638,8 +2638,8 @@
           static calculate(instrument, price, quantity) {
             let priceToUse = null;
             if (is.number(price)) {
-              priceToUse = new Decimal6(price);
-            } else if (price instanceof Decimal6) {
+              priceToUse = new Decimal8(price);
+            } else if (price instanceof Decimal8) {
               priceToUse = price;
             }
             if (priceToUse === null) {
@@ -2653,7 +2653,7 @@
           }
         }
         function calculateForCash(instrument, price, quantity) {
-          return new Decimal6(quantity);
+          return new Decimal8(quantity);
         }
         function calculateForCrypto(instrument, price, quantity) {
           return price.multiply(quantity);
@@ -2682,14 +2682,14 @@
           return price.multiply(quantity);
         }
         const calculators = /* @__PURE__ */ new Map();
-        calculators.set(InstrumentType4.CASH, calculateForCash);
-        calculators.set(InstrumentType4.CRYPTO, calculateForCrypto);
-        calculators.set(InstrumentType4.EQUITY, calculateForEquity);
-        calculators.set(InstrumentType4.EQUITY_OPTION, calculateForEquityOption);
-        calculators.set(InstrumentType4.FUND, calculateForFund);
-        calculators.set(InstrumentType4.FUTURE, calculateForFuture);
-        calculators.set(InstrumentType4.FUTURE_OPTION, calculateForFutureOption);
-        calculators.set(InstrumentType4.OTHER, calculateForOther);
+        calculators.set(InstrumentType5.CASH, calculateForCash);
+        calculators.set(InstrumentType5.CRYPTO, calculateForCrypto);
+        calculators.set(InstrumentType5.EQUITY, calculateForEquity);
+        calculators.set(InstrumentType5.EQUITY_OPTION, calculateForEquityOption);
+        calculators.set(InstrumentType5.FUND, calculateForFund);
+        calculators.set(InstrumentType5.FUTURE, calculateForFuture);
+        calculators.set(InstrumentType5.FUTURE_OPTION, calculateForFutureOption);
+        calculators.set(InstrumentType5.OTHER, calculateForOther);
         return ValuationCalculator2;
       })();
     }
@@ -3123,7 +3123,7 @@
       var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
       var Day_exports = {};
       __export(Day_exports, {
-        default: () => Day5
+        default: () => Day7
       });
       module.exports = __toCommonJS(Day_exports);
       var assert = __toESM(require_assert());
@@ -3131,7 +3131,7 @@
       var is = __toESM(require_is());
       var import_ComparatorBuilder = __toESM(require_ComparatorBuilder());
       var import_DayFormatType = __toESM(require_DayFormatType());
-      var Day5 = class _Day {
+      var Day7 = class _Day {
         #year;
         #month;
         #day;
@@ -3622,7 +3622,7 @@
       }
       var comparator = import_ComparatorBuilder.default.startWith((a, b) => comparators.compareNumbers(a.year, b.year)).thenBy((a, b) => comparators.compareNumbers(a.month, b.month)).thenBy((a, b) => comparators.compareNumbers(a.day, b.day)).toComparator();
       var NAMES_OF_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-      var REFERENCE_MONDAY = new Day5(2024, 1, 1);
+      var REFERENCE_MONDAY = new Day7(2024, 1, 1);
       {
         const cjsExports = module.exports;
         const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
@@ -3940,8 +3940,8 @@
     "lib/data/PositionSummaryFrame.js"(exports, module) {
       var array = require_array();
       var assert = require_assert();
-      var Day5 = require_Day();
-      var Decimal6 = require_Decimal();
+      var Day7 = require_Day();
+      var Decimal8 = require_Decimal();
       var Enum = require_Enum();
       module.exports = (() => {
         "use strict";
@@ -3988,7 +3988,7 @@
            */
           getRecentRanges(periods) {
             const startDate = this.getStartDate(periods);
-            const transaction = { date: startDate, snapshot: { open: Decimal6.ONE } };
+            const transaction = { date: startDate, snapshot: { open: Decimal8.ONE } };
             return this.getRanges([transaction]);
           }
           /**
@@ -4010,8 +4010,8 @@
            * @returns {PositionSummaryRange[]}
            */
           getRangesFromDate(date) {
-            assert.argumentIsRequired(date, "date", Day5, "Day");
-            const transaction = { date, snapshot: { open: Decimal6.ONE } };
+            assert.argumentIsRequired(date, "date", Day7, "Day");
+            const transaction = { date, snapshot: { open: Decimal8.ONE } };
             return this.getRanges([transaction]);
           }
           /**
@@ -4024,10 +4024,10 @@
            * @returns {PositionSummaryRange[]}
            */
           getPriorRanges(date, periods) {
-            assert.argumentIsRequired(date, "date", Day5, "Day");
+            assert.argumentIsRequired(date, "date", Day7, "Day");
             assert.argumentIsRequired(periods, "periods", Number, "Number");
-            const transactionOne = { date: this.getStartDate(periods - 1, date), snapshot: { open: Decimal6.ONE } };
-            const transactionTwo = { date, snapshot: { open: Decimal6.ZERO } };
+            const transactionOne = { date: this.getStartDate(periods - 1, date), snapshot: { open: Decimal8.ONE } };
+            const transactionTwo = { date, snapshot: { open: Decimal8.ZERO } };
             return this._rangeCalculator([transactionOne, transactionTwo]);
           }
           /**
@@ -4040,7 +4040,7 @@
            */
           getStartDate(periods, start) {
             assert.argumentIsRequired(periods, "periods", Number);
-            assert.argumentIsOptional(start, "start", Day5, "Day");
+            assert.argumentIsOptional(start, "start", Day7, "Day");
             return this._startDateCalculator(periods, start);
           }
           /**
@@ -4074,6 +4074,26 @@
             return monthly;
           }
           /**
+           * A summary for the current week (to date).
+           *
+           * @public
+           * @static
+           * @returns {PositionSummaryFrame}
+           */
+          static get WTD() {
+            return wtd;
+          }
+          /**
+           * A summary for the current month (to date).
+           *
+           * @public
+           * @static
+           * @returns {PositionSummaryFrame}
+           */
+          static get MTD() {
+            return mtd;
+          }
+          /**
            * A summary the current year (to date).
            *
            * @public
@@ -4102,6 +4122,8 @@
         const yearly = new PositionSummaryFrame5("YEARLY", "year", false, getYearlyRanges, getYearlyStartDate, getYearlyRangeDescription);
         const quarterly = new PositionSummaryFrame5("QUARTERLY", "quarter", false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
         const monthly = new PositionSummaryFrame5("MONTHLY", "month", false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
+        const wtd = new PositionSummaryFrame5("WTD", "week-to-date", true, getWeekToDateRanges, getWeekToDateStartDate, getWeekToDateRangeDescription);
+        const mtd = new PositionSummaryFrame5("MTD", "month-to-date", true, getMonthToDateRanges, getMonthToDateStartDate, getMonthToDateRangeDescription);
         const ytd = new PositionSummaryFrame5("YTD", "year-to-date", true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
         function getRange(start, end) {
           return { start, end };
@@ -4116,9 +4138,9 @@
             if (last.snapshot.open.getIsZero()) {
               lastYear = last.date.year + 1;
             } else {
-              lastYear = Day5.getToday().year;
+              lastYear = Day7.getToday().year;
             }
-            for (let end = new Day5(firstDate.year, 12, 31); end.year < lastYear; end = end.addYears(1)) {
+            for (let end = new Day7(firstDate.year, 12, 31); end.year < lastYear; end = end.addYears(1)) {
               ranges.push(getRange(end.subtractYears(1), end));
             }
           }
@@ -4130,7 +4152,7 @@
         function getMonthlyRanges(transactions) {
           const ranges = [];
           if (transactions.length !== 0) {
-            const today = Day5.getToday();
+            const today = Day7.getToday();
             const first = array.first(transactions);
             const last = array.last(transactions);
             const firstDate = first.date;
@@ -4154,28 +4176,65 @@
           const ranges = [];
           if (transactions.length !== 0) {
             const last = array.last(transactions);
-            const currentYear = Day5.getToday().year;
+            const currentYear = Day7.getToday().year;
             if (!last.snapshot.open.getIsZero() || last.date.year === currentYear) {
-              let end = new Day5(currentYear, 12, 31);
+              let end = new Day7(currentYear, 12, 31);
               let start = end.subtractYears(1);
               ranges.push(getRange(start, end));
             }
           }
           return ranges;
         }
+        function getWeekToDateRanges(transactions) {
+          const ranges = [];
+          if (transactions.length !== 0) {
+            const last = array.last(transactions);
+            const start = getWeekToDateStartDate(0);
+            const end = start.addDays(7);
+            if (!last.snapshot.open.getIsZero() || last.date.getIsAfter(start) && !last.date.getIsAfter(end)) {
+              ranges.push(getRange(start, end));
+            }
+          }
+          return ranges;
+        }
+        function getMonthToDateRanges(transactions) {
+          const ranges = [];
+          if (transactions.length !== 0) {
+            const last = array.last(transactions);
+            const start = getMonthToDateStartDate(0);
+            const end = start.addMonths(1).getEndOfMonth();
+            if (!last.snapshot.open.getIsZero() || last.date.getIsAfter(start) && !last.date.getIsAfter(end)) {
+              ranges.push(getRange(start, end));
+            }
+          }
+          return ranges;
+        }
         function getYearlyStartDate(periods, date) {
-          const today = date || Day5.getToday();
+          const today = date || Day7.getToday();
           return today.subtractMonths(today.month - 1).subtractDays(today.day).subtractYears(periods);
         }
         function getQuarterlyStartDate(periods, date) {
           return null;
         }
         function getMonthlyStartDate(periods, date) {
-          const today = date || Day5.getToday();
+          const today = date || Day7.getToday();
           return today.subtractMonths(periods).subtractDays(today.day);
         }
         function getYearToDateStartDate(periods, date) {
           return null;
+        }
+        function getWeekToDateStartDate(periods, date) {
+          const today = date || Day7.getToday();
+          const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+          let daysSinceSunday = dayNames.indexOf(today.getName());
+          if (daysSinceSunday === 0) {
+            daysSinceSunday = 7;
+          }
+          return today.subtractDays(daysSinceSunday + periods * 7);
+        }
+        function getMonthToDateStartDate(periods, date) {
+          const today = date || Day7.getToday();
+          return today.subtractMonths(periods).subtractDays(today.day);
         }
         function getYearlyRangeDescription(start, end) {
           return `Year ended ${end.format()}`;
@@ -4188,6 +4247,12 @@
         }
         function getYearToDateRangeDescription(start, end) {
           return `${end.year.toString()} YTD`;
+        }
+        function getWeekToDateRangeDescription(start, end) {
+          return `Week ended ${end.format()} (to date)`;
+        }
+        function getMonthToDateRangeDescription(start, end) {
+          return `${end.year.toString()}-${end.month.toString()} MTD`;
         }
         function getFilteredTransactions(transactions) {
           return transactions.reduce((filtered, transaction) => {
@@ -4678,11 +4743,11 @@
   var require_PositionDirection = __commonJS({
     "lib/data/PositionDirection.js"(exports, module) {
       var assert = require_assert();
-      var Decimal6 = require_Decimal();
+      var Decimal8 = require_Decimal();
       var Enum = require_Enum();
       module.exports = (() => {
         "use strict";
-        class PositionDirection extends Enum {
+        class PositionDirection2 extends Enum {
           constructor(code, description, sign) {
             super(code, description);
             assert.argumentIsRequired(sign, "sign", String);
@@ -4772,7 +4837,7 @@
            * @returns {PositionDirection|null}
            */
           static parse(code) {
-            return Enum.fromCode(PositionDirection, code);
+            return Enum.fromCode(PositionDirection2, code);
           }
           /**
            * Given an open quantity, returns a {@link PositionDirection} that
@@ -4784,7 +4849,7 @@
            * @returns {PositionDirection}
            */
           static for(open) {
-            assert.argumentIsRequired(open, "open", Decimal6, "Decimal");
+            assert.argumentIsRequired(open, "open", Decimal8, "Decimal");
             if (open.getIsPositive()) {
               return long;
             } else if (open.getIsNegative()) {
@@ -4797,10 +4862,10 @@
             return `[PositionDirection (code=${this.code})]`;
           }
         }
-        const long = new PositionDirection("LONG", "Long", "positive");
-        const short = new PositionDirection("SHORT", "Short", "negative");
-        const even = new PositionDirection("EVEN", "Even", "zero");
-        return PositionDirection;
+        const long = new PositionDirection2("LONG", "Long", "positive");
+        const short = new PositionDirection2("SHORT", "Short", "negative");
+        const even = new PositionDirection2("EVEN", "Even", "zero");
+        return PositionDirection2;
       })();
     }
   });
@@ -4810,10 +4875,10 @@
     "lib/data/TransactionValidator.js"(exports, module) {
       var assert = require_assert();
       var array = require_array();
-      var Decimal6 = require_Decimal();
+      var Decimal8 = require_Decimal();
       var is = require_is();
-      var InstrumentType4 = require_InstrumentType();
-      var PositionDirection = require_PositionDirection();
+      var InstrumentType5 = require_InstrumentType();
+      var PositionDirection2 = require_PositionDirection();
       var TransactionType4 = require_TransactionType();
       module.exports = (() => {
         "use strict";
@@ -4906,17 +4971,17 @@
            */
           static getSwitchIndex(transactions, instrumentType, position) {
             assert.argumentIsArray(transactions, "transactions");
-            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType4, "InstrumentType");
+            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType5, "InstrumentType");
             assert.argumentIsOptional(position, "position");
-            let open = position ? position.snapshot.open : Decimal6.ZERO;
-            let currentDirection = open.getIsZero() ? null : PositionDirection.for(open);
+            let open = position ? position.snapshot.open : Decimal8.ZERO;
+            let currentDirection = open.getIsZero() ? null : PositionDirection2.for(open);
             return transactions.findIndex((t) => {
               let quantity = t.quantity.absolute();
               if (t.type.sale) {
                 quantity = quantity.opposite();
               }
               const nextOpen = open.add(quantity);
-              const nextDirection = nextOpen.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(nextOpen);
+              const nextDirection = nextOpen.getIsZero() ? PositionDirection2.EVEN : PositionDirection2.for(nextOpen);
               const isValidSwitch = TransactionValidator2.validateDirectionSwitch(instrumentType, currentDirection, nextDirection);
               if (!isValidSwitch) {
                 return true;
@@ -4938,10 +5003,10 @@
            */
           static getPositionViolationIndex(transactions, instrumentType, position) {
             assert.argumentIsArray(transactions, "transactions");
-            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType4, "InstrumentType");
+            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType5, "InstrumentType");
             assert.argumentIsOptional(position, "position");
-            let open = position ? position.snapshot.open : Decimal6.ZERO;
-            let currentDirection = open.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(open);
+            let open = position ? position.snapshot.open : Decimal8.ZERO;
+            let currentDirection = open.getIsZero() ? PositionDirection2.EVEN : PositionDirection2.for(open);
             return transactions.findIndex((t) => {
               const quantity = t.quantity.absolute();
               const type = t.type;
@@ -4952,7 +5017,7 @@
               }
               const delta = type.sale ? quantity.opposite() : quantity;
               const nextOpen = open.add(delta);
-              const nextDirection = nextOpen.getIsZero() ? PositionDirection.EVEN : PositionDirection.for(nextOpen);
+              const nextDirection = nextOpen.getIsZero() ? PositionDirection2.EVEN : PositionDirection2.for(nextOpen);
               open = nextOpen;
               currentDirection = nextDirection;
               return false;
@@ -4969,7 +5034,7 @@
           * @returns {TransactionType[]}
           */
           static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
-            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType4, "InstrumentType");
+            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType5, "InstrumentType");
             assert.argumentIsOptional(userInitiated, "userInitiated", Boolean);
             let valid = validTransactionTypes[instrumentType.code] || [];
             if (userInitiated) {
@@ -5036,8 +5101,8 @@
            * @returns {Boolean}
            */
           static validateDirection(instrumentType, direction) {
-            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType4, "InstrumentType");
-            assert.argumentIsRequired(direction, "direction", PositionDirection, "PositionDirection");
+            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType5, "InstrumentType");
+            assert.argumentIsRequired(direction, "direction", PositionDirection2, "PositionDirection");
             return validDirections[instrumentType.code].some((d) => d === direction);
           }
           /**
@@ -5064,60 +5129,60 @@
           if (!validTransactionTypes.hasOwnProperty(instrumentTypeCode)) {
             validTransactionTypes[instrumentTypeCode] = [];
           }
-          validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [PositionDirection.LONG, PositionDirection.SHORT, PositionDirection.EVEN] });
+          validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [PositionDirection2.LONG, PositionDirection2.SHORT, PositionDirection2.EVEN] });
         }
-        associateTypes(InstrumentType4.CRYPTO, TransactionType4.BUY, true, [PositionDirection.LONG, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.CRYPTO, TransactionType4.SELL, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.CRYPTO, TransactionType4.SELL_SHORT, true, [PositionDirection.SHORT, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.CRYPTO, TransactionType4.BUY_SHORT, true, [PositionDirection.SHORT]);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.BUY, true, [PositionDirection.LONG, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.SELL, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.SELL_SHORT, true, [PositionDirection.SHORT, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.BUY_SHORT, true, [PositionDirection.SHORT]);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.FEE, true, [PositionDirection.LONG, PositionDirection.SHORT]);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.DIVIDEND, false);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.DIVIDEND_REINVEST, false);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.DIVIDEND_STOCK, false);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.SPLIT, false);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.DELIST, false);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.MERGER_OPEN, false);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.MERGER_CLOSE, false);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.SPINOFF, false);
-        associateTypes(InstrumentType4.EQUITY, TransactionType4.SPINOFF_OPEN, false);
-        associateTypes(InstrumentType4.EQUITY_OPTION, TransactionType4.BUY, true, [PositionDirection.LONG, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.EQUITY_OPTION, TransactionType4.SELL, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.EQUITY_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection.SHORT, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.EQUITY_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection.SHORT]);
-        associateTypes(InstrumentType4.FUND, TransactionType4.BUY, true, [PositionDirection.LONG, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.FUND, TransactionType4.SELL, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.FUND, TransactionType4.FEE, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.FUND, TransactionType4.FEE_UNITS, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.DISTRIBUTION_CASH, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.DISTRIBUTION_REINVEST, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.DISTRIBUTION_FUND, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.SPLIT, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.DELIST, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.MERGER_OPEN, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.MERGER_CLOSE, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.SPINOFF, false);
-        associateTypes(InstrumentType4.FUND, TransactionType4.SPINOFF_OPEN, false);
-        associateTypes(InstrumentType4.FUTURE, TransactionType4.BUY, true, [PositionDirection.LONG, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.FUTURE, TransactionType4.SELL, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.FUTURE, TransactionType4.SELL_SHORT, true, [PositionDirection.SHORT, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.FUTURE, TransactionType4.BUY_SHORT, true, [PositionDirection.SHORT]);
-        associateTypes(InstrumentType4.FUTURE_OPTION, TransactionType4.BUY, true, [PositionDirection.LONG, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.FUTURE_OPTION, TransactionType4.SELL, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.FUTURE_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection.SHORT, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.FUTURE_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection.SHORT]);
-        associateTypes(InstrumentType4.OTHER, TransactionType4.BUY, true, [PositionDirection.LONG, PositionDirection.EVEN]);
-        associateTypes(InstrumentType4.OTHER, TransactionType4.SELL, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.OTHER, TransactionType4.INCOME, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.OTHER, TransactionType4.FEE, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.OTHER, TransactionType4.VALUATION, true, [PositionDirection.LONG]);
-        associateTypes(InstrumentType4.CASH, TransactionType4.DEPOSIT, true);
-        associateTypes(InstrumentType4.CASH, TransactionType4.WITHDRAWAL, true);
-        associateTypes(InstrumentType4.CASH, TransactionType4.DEBIT, false);
-        associateTypes(InstrumentType4.CASH, TransactionType4.CREDIT, false);
+        associateTypes(InstrumentType5.CRYPTO, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.CRYPTO, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.CRYPTO, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.CRYPTO, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.FEE, true, [PositionDirection2.LONG, PositionDirection2.SHORT]);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.DIVIDEND, false);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.DIVIDEND_REINVEST, false);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.DIVIDEND_STOCK, false);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.SPLIT, false);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.DELIST, false);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.MERGER_OPEN, false);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.MERGER_CLOSE, false);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.SPINOFF, false);
+        associateTypes(InstrumentType5.EQUITY, TransactionType4.SPINOFF_OPEN, false);
+        associateTypes(InstrumentType5.EQUITY_OPTION, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.EQUITY_OPTION, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.EQUITY_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.EQUITY_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType5.FUND, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.FUND, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.FUND, TransactionType4.FEE, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.FUND, TransactionType4.FEE_UNITS, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.DISTRIBUTION_CASH, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.DISTRIBUTION_REINVEST, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.DISTRIBUTION_FUND, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.SPLIT, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.DELIST, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.MERGER_OPEN, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.MERGER_CLOSE, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.SPINOFF, false);
+        associateTypes(InstrumentType5.FUND, TransactionType4.SPINOFF_OPEN, false);
+        associateTypes(InstrumentType5.FUTURE, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.FUTURE, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.FUTURE, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.FUTURE, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType5.FUTURE_OPTION, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.FUTURE_OPTION, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.FUTURE_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.FUTURE_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType5.OTHER, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType5.OTHER, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.OTHER, TransactionType4.INCOME, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.OTHER, TransactionType4.FEE, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.OTHER, TransactionType4.VALUATION, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType5.CASH, TransactionType4.DEPOSIT, true);
+        associateTypes(InstrumentType5.CASH, TransactionType4.WITHDRAWAL, true);
+        associateTypes(InstrumentType5.CASH, TransactionType4.DEBIT, false);
+        associateTypes(InstrumentType5.CASH, TransactionType4.CREDIT, false);
         const validDirections = {};
         function associateDirections(instrumentType, positionDirection) {
           const instrumentTypeCode = instrumentType.code;
@@ -5126,28 +5191,28 @@
           }
           validDirections[instrumentTypeCode].push(positionDirection);
         }
-        associateDirections(InstrumentType4.CRYPTO, PositionDirection.EVEN);
-        associateDirections(InstrumentType4.CRYPTO, PositionDirection.LONG);
-        associateDirections(InstrumentType4.CRYPTO, PositionDirection.SHORT);
-        associateDirections(InstrumentType4.EQUITY, PositionDirection.EVEN);
-        associateDirections(InstrumentType4.EQUITY, PositionDirection.LONG);
-        associateDirections(InstrumentType4.EQUITY, PositionDirection.SHORT);
-        associateDirections(InstrumentType4.EQUITY_OPTION, PositionDirection.EVEN);
-        associateDirections(InstrumentType4.EQUITY_OPTION, PositionDirection.LONG);
-        associateDirections(InstrumentType4.EQUITY_OPTION, PositionDirection.SHORT);
-        associateDirections(InstrumentType4.FUND, PositionDirection.EVEN);
-        associateDirections(InstrumentType4.FUND, PositionDirection.LONG);
-        associateDirections(InstrumentType4.FUTURE, PositionDirection.EVEN);
-        associateDirections(InstrumentType4.FUTURE, PositionDirection.LONG);
-        associateDirections(InstrumentType4.FUTURE, PositionDirection.SHORT);
-        associateDirections(InstrumentType4.FUTURE_OPTION, PositionDirection.EVEN);
-        associateDirections(InstrumentType4.FUTURE_OPTION, PositionDirection.LONG);
-        associateDirections(InstrumentType4.FUTURE_OPTION, PositionDirection.SHORT);
-        associateDirections(InstrumentType4.OTHER, PositionDirection.EVEN);
-        associateDirections(InstrumentType4.OTHER, PositionDirection.LONG);
-        associateDirections(InstrumentType4.CASH, PositionDirection.EVEN);
-        associateDirections(InstrumentType4.CASH, PositionDirection.LONG);
-        associateDirections(InstrumentType4.CASH, PositionDirection.SHORT);
+        associateDirections(InstrumentType5.CRYPTO, PositionDirection2.EVEN);
+        associateDirections(InstrumentType5.CRYPTO, PositionDirection2.LONG);
+        associateDirections(InstrumentType5.CRYPTO, PositionDirection2.SHORT);
+        associateDirections(InstrumentType5.EQUITY, PositionDirection2.EVEN);
+        associateDirections(InstrumentType5.EQUITY, PositionDirection2.LONG);
+        associateDirections(InstrumentType5.EQUITY, PositionDirection2.SHORT);
+        associateDirections(InstrumentType5.EQUITY_OPTION, PositionDirection2.EVEN);
+        associateDirections(InstrumentType5.EQUITY_OPTION, PositionDirection2.LONG);
+        associateDirections(InstrumentType5.EQUITY_OPTION, PositionDirection2.SHORT);
+        associateDirections(InstrumentType5.FUND, PositionDirection2.EVEN);
+        associateDirections(InstrumentType5.FUND, PositionDirection2.LONG);
+        associateDirections(InstrumentType5.FUTURE, PositionDirection2.EVEN);
+        associateDirections(InstrumentType5.FUTURE, PositionDirection2.LONG);
+        associateDirections(InstrumentType5.FUTURE, PositionDirection2.SHORT);
+        associateDirections(InstrumentType5.FUTURE_OPTION, PositionDirection2.EVEN);
+        associateDirections(InstrumentType5.FUTURE_OPTION, PositionDirection2.LONG);
+        associateDirections(InstrumentType5.FUTURE_OPTION, PositionDirection2.SHORT);
+        associateDirections(InstrumentType5.OTHER, PositionDirection2.EVEN);
+        associateDirections(InstrumentType5.OTHER, PositionDirection2.LONG);
+        associateDirections(InstrumentType5.CASH, PositionDirection2.EVEN);
+        associateDirections(InstrumentType5.CASH, PositionDirection2.LONG);
+        associateDirections(InstrumentType5.CASH, PositionDirection2.SHORT);
         return TransactionValidator2;
       })();
     }
@@ -7632,7 +7697,7 @@
       var assert = require_assert();
       var Currency5 = require_Currency();
       var is = require_is();
-      var InstrumentType4 = require_InstrumentType();
+      var InstrumentType5 = require_InstrumentType();
       var PositionLevelType5 = require_PositionLevelType();
       module.exports = (() => {
         "use strict";
@@ -7821,12 +7886,12 @@
            * @returns {String}
            */
           static getKeyForAssetClassGroup(type, currency) {
-            assert.argumentIsRequired(type, "type", InstrumentType4, "InstrumentType");
+            assert.argumentIsRequired(type, "type", InstrumentType5, "InstrumentType");
             assert.argumentIsRequired(currency, "currency", Currency5, "Currency");
             return `${type.code}|${currency.code}`;
           }
           static getDescriptionForAssetClassGroup(type, currency, defaultCurrency) {
-            assert.argumentIsRequired(type, "type", InstrumentType4, "InstrumentType");
+            assert.argumentIsRequired(type, "type", InstrumentType5, "InstrumentType");
             assert.argumentIsRequired(currency, "currency", Currency5, "Currency");
             assert.argumentIsOptional(defaultCurrency, "defaultCurrency", Currency5, "Currency");
             return `${type.alternateDescription}${currency === (defaultCurrency || Currency5.CAD) ? "" : ` (${currency.alternateDescription})`}`;
@@ -8184,13 +8249,13 @@
       var assert = require_assert();
       var Currency5 = require_Currency();
       var CurrencyTranslator2 = require_CurrencyTranslator();
-      var Decimal6 = require_Decimal();
+      var Decimal8 = require_Decimal();
       var Disposable = require_Disposable();
       var Event = require_Event();
       var formatter = require_formatter();
       var is = require_is();
       var fractionFormatter = require_fraction();
-      var InstrumentType4 = require_InstrumentType();
+      var InstrumentType5 = require_InstrumentType();
       var FilterMode2 = require_FilterMode();
       var PositionLevelDefinition5 = require_PositionLevelDefinition();
       var PositionLevelType5 = require_PositionLevelType();
@@ -8198,6 +8263,7 @@
       module.exports = (() => {
         "use strict";
         let counter = 0;
+        const DAYS_PER_YEAR = 365;
         const DIRECTION_DOWN = "down";
         const DIRECTION_UNCHANGED = "unchanged";
         const DIRECTION_UP = "up";
@@ -8314,6 +8380,8 @@
             this._dataActual.unrealized = null;
             this._dataActual.unrealizedToday = null;
             this._dataActual.gainToday = null;
+            this._dataActual.todayDivisor = null;
+            this._dataActual.todaysGainLossPercent = null;
             this._dataActual.total = null;
             this._dataActual.summaryTotalCurrent = null;
             this._dataActual.summaryTotalPrevious = null;
@@ -8327,6 +8395,19 @@
             this._dataActual.periodDivisorCurrent = null;
             this._dataActual.periodDivisorPrevious = null;
             this._dataActual.periodDivisorPrevious2 = null;
+            this._dataActual.weekToDateGain = null;
+            this._dataActual.weekToDateDivisor = null;
+            this._dataActual.weekToDatePercent = null;
+            this._dataActual.weekToDateComplete = false;
+            this._dataActual.monthToDateGain = null;
+            this._dataActual.monthToDateDivisor = null;
+            this._dataActual.monthToDatePercent = null;
+            this._dataActual.monthToDateComplete = false;
+            this._dataActual.daysHeld = null;
+            this._dataActual.weeksHeld = null;
+            this._dataActual.holdingPeriodComplete = false;
+            this._dataActual.annualizedDaysHeld = null;
+            this._dataActual.annualizedReturnPercent = null;
             this._dataFormat.currentPrice = null;
             this._dataFormat.basis = null;
             this._dataFormat.basis2 = null;
@@ -8353,6 +8434,7 @@
             this._dataFormat.gainToday = null;
             this._dataFormat.gainTodayPositive = false;
             this._dataFormat.gainTodayNegative = false;
+            this._dataFormat.todaysGainLossPercent = null;
             this._dataFormat.total = null;
             this._dataFormat.totalPositive = false;
             this._dataFormat.totalNegative = false;
@@ -8389,6 +8471,11 @@
             this._dataFormat.periodPercent = null;
             this._dataFormat.periodPercentPrevious = null;
             this._dataFormat.periodPercentPrevious2 = null;
+            this._dataFormat.weekToDatePercent = null;
+            this._dataFormat.monthToDatePercent = null;
+            this._dataFormat.daysHeld = null;
+            this._dataFormat.weeksHeld = null;
+            this._dataFormat.annualizedReturnPercent = null;
             this._dataActual.todayQuote = null;
             this._dataActual.todayExchange = null;
             this._dataFormat.todayQuote = null;
@@ -8773,7 +8860,7 @@
               this._dataActual.quoteChange = is.number(quote.priceChange) ? quote.priceChange : null;
               this._dataActual.quoteChangePercent = is.number(quote.percentChange) ? quote.percentChange : null;
               this._dataFormat.quoteChange = formatFraction(this._dataActual.quoteChange, currency, instrument, this._useBarchartPriceFormattingRules);
-              this._dataFormat.quoteChangePercent = formatPercent(new Decimal6(this._dataActual.quoteChangePercent || 0), 2);
+              this._dataFormat.quoteChangePercent = formatPercent(new Decimal8(this._dataActual.quoteChangePercent || 0), 2);
               this._dataActual.quoteTime = quote.timeDisplay;
               this._dataActual.quoteVolume = is.number(quote.volume) ? quote.volume : null;
               this._dataFormat.quoteTime = formatString(this._dataActual.quoteTime);
@@ -8804,7 +8891,7 @@
                   if (i + 1 === this.items.length) {
                     let averageFormat;
                     if (summary.count > 0) {
-                      averageFormat = formatPercent(new Decimal6(summary.total / summary.count), 2, true);
+                      averageFormat = formatPercent(new Decimal8(summary.total / summary.count), 2, true);
                     } else {
                       averageFormat = "\u2014";
                     }
@@ -8942,7 +9029,7 @@
             return "\u2014";
           }
           let prefix;
-          if (is.boolean(plus) && plus && !Decimal6.getIsNegative(decimal)) {
+          if (is.boolean(plus) && plus && !Decimal8.getIsNegative(decimal)) {
             prefix = "+";
           } else {
             prefix = "";
@@ -8950,12 +9037,12 @@
           return `${prefix}${formatDecimal(decimal.multiply(100), precision)}%`;
         }
         function formatFraction(value, currency, instrument, useBarchartPriceFormattingRules) {
-          let decimal = value instanceof Decimal6;
+          let decimal = value instanceof Decimal8;
           let precision = currency.precision;
           if (instrument && value !== null) {
             const type = instrument.type;
             const code = instrument.code;
-            if (code && code.supportsFractions && (type === InstrumentType4.FUTURE || type === InstrumentType4.FUTURE_OPTION)) {
+            if (code && code.supportsFractions && (type === InstrumentType5.FUTURE || type === InstrumentType5.FUTURE_OPTION)) {
               const rounded = code.roundToNearestTick(decimal ? value.toFloat() : value, instrument.future ? instrument.future.tick : instrument.option.tick, true);
               return fractionFormatter(rounded, code.fractionFactor, code.fractionDigits, "-", true);
             }
@@ -8986,7 +9073,7 @@
           if (desired === Currency5.GBX) {
             desired = Currency5.GBP;
             if (is.number(value)) {
-              translated = new Decimal6(value);
+              translated = new Decimal8(value);
             }
             if (translated !== null) {
               translated = translated.multiply(0.01);
@@ -9011,7 +9098,7 @@
           };
           const updates = items.reduce((updates2, item) => {
             updates2.basis = updates2.basis.add(translate(item, item.data.basis));
-            if (item.position.instrument.type === InstrumentType4.FUTURE) {
+            if (item.position.instrument.type === InstrumentType5.FUTURE) {
               if (group.single) {
                 updates2.basis2 = null;
               }
@@ -9030,38 +9117,46 @@
             updates2.periodIncome = updates2.periodIncome.add(translate(item, item.data.periodIncome));
             updates2.periodRealized = updates2.periodRealized.add(translate(item, item.data.periodRealized));
             updates2.periodUnrealized = updates2.periodUnrealized.add(translate(item, item.data.periodUnrealized));
-            if (item.position.instrument.type === InstrumentType4.CASH) {
+            if (item.position.instrument.type === InstrumentType5.CASH) {
               updates2.cashTotal = updates2.cashTotal.add(translate(item, item.data.market));
             }
             updates2.totalDivisor = updates2.totalDivisor.add(translate(item, item.data.totalDivisor));
             updates2.periodDivisorCurrent = updates2.periodDivisorCurrent.add(translate(item, item.data.periodDivisor));
             updates2.periodDivisorPrevious = updates2.periodDivisorPrevious.add(translate(item, item.data.periodDivisorPrevious));
             updates2.periodDivisorPrevious2 = updates2.periodDivisorPrevious2.add(translate(item, item.data.periodDivisorPrevious2));
+            updates2.weekToDateGain = updates2.weekToDateGain.add(translate(item, item.data.weekToDateGain));
+            updates2.weekToDateDivisor = updates2.weekToDateDivisor.add(translate(item, item.data.weekToDateDivisor));
+            updates2.monthToDateGain = updates2.monthToDateGain.add(translate(item, item.data.monthToDateGain));
+            updates2.monthToDateDivisor = updates2.monthToDateDivisor.add(translate(item, item.data.monthToDateDivisor));
             if (group.homogeneous) {
               updates2.quantity = updates2.quantity.add(item.data.quantity);
             }
             return updates2;
           }, {
-            basis: Decimal6.ZERO,
-            basis2: Decimal6.ZERO,
-            realized: Decimal6.ZERO,
-            unrealized: Decimal6.ZERO,
-            realizedToday: Decimal6.ZERO,
-            income: Decimal6.ZERO,
-            summaryTotalCurrent: Decimal6.ZERO,
-            summaryTotalPrevious: Decimal6.ZERO,
-            summaryTotalPrevious2: Decimal6.ZERO,
-            marketPrevious: Decimal6.ZERO,
-            marketPrevious2: Decimal6.ZERO,
-            periodIncome: Decimal6.ZERO,
-            periodRealized: Decimal6.ZERO,
-            periodUnrealized: Decimal6.ZERO,
-            cashTotal: Decimal6.ZERO,
-            totalDivisor: Decimal6.ZERO,
-            periodDivisorCurrent: Decimal6.ZERO,
-            periodDivisorPrevious: Decimal6.ZERO,
-            periodDivisorPrevious2: Decimal6.ZERO,
-            quantity: Decimal6.ZERO
+            basis: Decimal8.ZERO,
+            basis2: Decimal8.ZERO,
+            realized: Decimal8.ZERO,
+            unrealized: Decimal8.ZERO,
+            realizedToday: Decimal8.ZERO,
+            income: Decimal8.ZERO,
+            summaryTotalCurrent: Decimal8.ZERO,
+            summaryTotalPrevious: Decimal8.ZERO,
+            summaryTotalPrevious2: Decimal8.ZERO,
+            marketPrevious: Decimal8.ZERO,
+            marketPrevious2: Decimal8.ZERO,
+            periodIncome: Decimal8.ZERO,
+            periodRealized: Decimal8.ZERO,
+            periodUnrealized: Decimal8.ZERO,
+            cashTotal: Decimal8.ZERO,
+            totalDivisor: Decimal8.ZERO,
+            periodDivisorCurrent: Decimal8.ZERO,
+            periodDivisorPrevious: Decimal8.ZERO,
+            periodDivisorPrevious2: Decimal8.ZERO,
+            weekToDateGain: Decimal8.ZERO,
+            weekToDateDivisor: Decimal8.ZERO,
+            monthToDateGain: Decimal8.ZERO,
+            monthToDateDivisor: Decimal8.ZERO,
+            quantity: Decimal8.ZERO
           });
           actual.basis = updates.basis;
           actual.basis2 = updates.basis2;
@@ -9082,6 +9177,23 @@
           actual.periodDivisorCurrent = updates.periodDivisorCurrent;
           actual.periodDivisorPrevious = updates.periodDivisorPrevious;
           actual.periodDivisorPrevious2 = updates.periodDivisorPrevious2;
+          actual.weekToDateGain = updates.weekToDateGain;
+          actual.weekToDateDivisor = updates.weekToDateDivisor;
+          actual.monthToDateGain = updates.monthToDateGain;
+          actual.monthToDateDivisor = updates.monthToDateDivisor;
+          const holdingItem = group.single && items.length === 1 ? items[0] : null;
+          actual.daysHeld = holdingItem === null ? null : holdingItem.data.daysHeld;
+          actual.weeksHeld = holdingItem === null ? null : holdingItem.data.weeksHeld;
+          const nonCashItems = items.filter((item) => item.position.instrument.type !== InstrumentType5.CASH);
+          actual.holdingPeriodComplete = nonCashItems.length !== 0 && nonCashItems.every((item) => item.data.daysHeld !== null);
+          actual.annualizedDaysHeld = nonCashItems.reduce((daysHeld, item) => {
+            if (item.data.daysHeld === null) {
+              return daysHeld;
+            }
+            return daysHeld === null ? item.data.daysHeld : Math.max(daysHeld, item.data.daysHeld);
+          }, null);
+          actual.weekToDateComplete = nonCashItems.every((item) => item.data.weekToDateSummaryExists);
+          actual.monthToDateComplete = nonCashItems.every((item) => item.data.monthToDateSummaryExists);
           if (group.homogeneous) {
             actual.quantity = updates.quantity;
           }
@@ -9110,6 +9222,8 @@
           format.periodRealized = formatCurrency(updates.periodRealized, currency);
           format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
           format.cashTotal = formatCurrency(updates.cashTotal, currency);
+          format.daysHeld = formatNumber(actual.daysHeld, 0);
+          format.weeksHeld = formatNumber(actual.weeksHeld, 0);
           if (group.homogeneous) {
             format.quantity = formatDecimal(actual.quantity, 2);
             format.quantityZero = actual.quantity.getIsZero();
@@ -9119,9 +9233,13 @@
           actual.periodPercent = calculateGainPercent(actual.summaryTotalCurrent, actual.periodDivisorCurrent);
           actual.periodPercentPrevious = calculateGainPercent(actual.summaryTotalPrevious, actual.periodDivisorPrevious);
           actual.periodPercentPrevious2 = calculateGainPercent(actual.summaryTotalPrevious2, actual.periodDivisorPrevious2);
+          actual.weekToDatePercent = actual.weekToDateComplete ? calculateGainPercent(actual.weekToDateGain, actual.weekToDateDivisor) : null;
+          actual.monthToDatePercent = actual.monthToDateComplete ? calculateGainPercent(actual.monthToDateGain, actual.monthToDateDivisor) : null;
           format.periodPercent = formatPercent(actual.periodPercent, 2);
           format.periodPercentPrevious = formatPercent(actual.periodPercentPrevious, 2);
           format.periodPercentPrevious2 = formatPercent(actual.periodPercentPrevious2, 2);
+          format.weekToDatePercent = formatPercent(actual.weekToDatePercent, 2);
+          format.monthToDatePercent = formatPercent(actual.monthToDatePercent, 2);
           const groupItems = group._items;
           if (group.single && groupItems.length === 1) {
             const item = groupItems[0];
@@ -9187,7 +9305,7 @@
             const items = group._consideredItems;
             updates = items.reduce((updates2, item2) => {
               updates2.market = updates2.market.add(translate(item2, item2.data.market));
-              if (item2.position.instrument.type === InstrumentType4.FUTURE) {
+              if (item2.position.instrument.type === InstrumentType5.FUTURE) {
                 updates2.market2 = updates2.market2.add(translate(item2, item2.data.unrealized));
               } else {
                 updates2.market2 = updates2.market2.add(translate(item2, item2.data.market));
@@ -9196,26 +9314,32 @@
               updates2.unrealized = updates2.unrealized.add(translate(item2, item2.data.unrealized));
               updates2.unrealizedToday = updates2.unrealizedToday.add(translate(item2, item2.data.unrealizedToday));
               updates2.realizedToday = updates2.realizedToday.add(translate(item2, item2.data.realizedToday));
-              updates2.gainToday = updates2.gainToday.add(translate(item2, item2.data.unrealizedToday.add(item2.data.realizedToday)));
+              updates2.gainToday = updates2.gainToday.add(translate(item2, item2.data.gainToday));
+              updates2.todayDivisor = updates2.todayDivisor.add(translate(item2, item2.data.todayDivisor));
               updates2.summaryTotalCurrent = updates2.summaryTotalCurrent.add(translate(item2, item2.data.periodGain));
               updates2.periodUnrealized = updates2.periodUnrealized.add(translate(item2, item2.data.periodUnrealized));
+              updates2.weekToDateGain = updates2.weekToDateGain.add(translate(item2, item2.data.weekToDateGain));
+              updates2.monthToDateGain = updates2.monthToDateGain.add(translate(item2, item2.data.monthToDateGain));
               return updates2;
             }, {
-              market: Decimal6.ZERO,
-              market2: Decimal6.ZERO,
-              marketAbsolute: Decimal6.ZERO,
+              market: Decimal8.ZERO,
+              market2: Decimal8.ZERO,
+              marketAbsolute: Decimal8.ZERO,
               marketDirection: unchanged,
-              unrealized: Decimal6.ZERO,
-              unrealizedToday: Decimal6.ZERO,
-              realizedToday: Decimal6.ZERO,
-              gainToday: Decimal6.ZERO,
-              summaryTotalCurrent: Decimal6.ZERO,
-              periodUnrealized: Decimal6.ZERO
+              unrealized: Decimal8.ZERO,
+              unrealizedToday: Decimal8.ZERO,
+              realizedToday: Decimal8.ZERO,
+              gainToday: Decimal8.ZERO,
+              todayDivisor: Decimal8.ZERO,
+              summaryTotalCurrent: Decimal8.ZERO,
+              periodUnrealized: Decimal8.ZERO,
+              weekToDateGain: Decimal8.ZERO,
+              monthToDateGain: Decimal8.ZERO
             });
           } else {
             updates = {};
             updates.market = actual.market.add(translate(item, item.data.marketChange));
-            if (item.position.instrument.type === InstrumentType4.FUTURE) {
+            if (item.position.instrument.type === InstrumentType5.FUTURE) {
               updates.market2 = actual.market2.add(translate(item, item.data.unrealizedChange));
             } else {
               updates.market2 = actual.market2.add(translate(item, item.data.marketChange));
@@ -9225,9 +9349,12 @@
             updates.unrealized = actual.unrealized.add(translate(item, item.data.unrealizedChange));
             updates.unrealizedToday = actual.unrealizedToday.add(translate(item, item.data.unrealizedTodayChange));
             updates.realizedToday = actual.realizedToday.add(translate(item, item.data.realizedTodayChange));
-            updates.gainToday = actual.gainToday.add(translate(item, item.data.unrealizedTodayChange).add(item.data.realizedTodayChange));
+            updates.gainToday = actual.gainToday.add(translate(item, item.data.gainTodayChange));
+            updates.todayDivisor = actual.todayDivisor.add(translate(item, item.data.todayDivisorChange));
             updates.summaryTotalCurrent = actual.summaryTotalCurrent.add(translate(item, item.data.periodGainChange));
             updates.periodUnrealized = actual.periodUnrealized.add(translate(item, item.data.periodUnrealizedChange));
+            updates.weekToDateGain = actual.weekToDateGain.add(translate(item, item.data.weekToDateGainChange));
+            updates.monthToDateGain = actual.monthToDateGain.add(translate(item, item.data.monthToDateGainChange));
           }
           actual.market = updates.market;
           actual.market2 = updates.market2;
@@ -9236,19 +9363,27 @@
           actual.unrealizedToday = updates.unrealizedToday;
           actual.realizedToday = updates.realizedToday;
           actual.gainToday = updates.gainToday;
+          actual.todayDivisor = updates.todayDivisor;
           actual.summaryTotalCurrent = updates.summaryTotalCurrent;
           actual.periodUnrealized = updates.periodUnrealized;
+          actual.weekToDateGain = updates.weekToDateGain;
+          actual.monthToDateGain = updates.monthToDateGain;
           actual.total = updates.unrealized.add(actual.realized).add(actual.income);
           actual.totalPercent = calculateGainPercent(actual.total, actual.totalDivisor);
+          actual.todaysGainLossPercent = calculateGainPercent(actual.gainToday, actual.todayDivisor);
+          actual.weekToDatePercent = actual.weekToDateComplete ? calculateGainPercent(actual.weekToDateGain, actual.weekToDateDivisor) : null;
+          actual.monthToDatePercent = actual.monthToDateComplete ? calculateGainPercent(actual.monthToDateGain, actual.monthToDateDivisor) : null;
+          const annualizedReturnExists = group._consideredItems.some((item2) => item2.data.annualizedReturnPercent !== null);
+          actual.annualizedReturnPercent = annualizedReturnExists ? calculateAnnualizedReturnPercent(actual.totalPercent, actual.totalDivisor, actual.annualizedDaysHeld, actual.holdingPeriodComplete) : null;
           let marketChange = updates.market.subtract(actual.marketPrevious);
           let marketChangePercent;
-          if (actual.marketPrevious.getIsApproximate(Decimal6.ZERO, 4)) {
+          if (actual.marketPrevious.getIsApproximate(Decimal8.ZERO, 4)) {
             if (marketChange.getIsPositive()) {
-              marketChangePercent = Decimal6.ONE;
+              marketChangePercent = Decimal8.ONE;
             } else if (marketChange.getIsNegative()) {
-              marketChangePercent = Decimal6.NEGATIVE_ONE;
+              marketChangePercent = Decimal8.NEGATIVE_ONE;
             } else {
-              marketChangePercent = Decimal6.ZERO;
+              marketChangePercent = Decimal8.ZERO;
             }
           } else {
             marketChangePercent = marketChange.divide(actual.marketPrevious);
@@ -9273,6 +9408,7 @@
           format.gainToday = formatCurrency(actual.gainToday, currency);
           format.gainTodayPositive = actual.gainToday.getIsPositive();
           format.gainTodayNegative = actual.gainToday.getIsNegative();
+          format.todaysGainLossPercent = formatPercent(actual.todaysGainLossPercent, 2);
           format.summaryTotalCurrent = formatCurrency(actual.summaryTotalCurrent, currency);
           format.summaryTotalCurrentPositive = actual.summaryTotalCurrent.getIsPositive();
           format.summaryTotalCurrentNegative = actual.summaryTotalCurrent.getIsNegative();
@@ -9281,6 +9417,9 @@
           format.totalPositive = actual.total.getIsPositive();
           format.totalNegative = actual.total.getIsNegative();
           format.totalPercent = formatPercent(actual.totalPercent, 2);
+          format.weekToDatePercent = formatPercent(actual.weekToDatePercent, 2);
+          format.monthToDatePercent = formatPercent(actual.monthToDatePercent, 2);
+          format.annualizedReturnPercent = formatPercent(actual.annualizedReturnPercent, 2);
           format.marketChange = formatCurrency(actual.marketChange, currency);
           format.marketChangePercent = formatPercent(actual.marketChangePercent, 2);
           calculateRealizedPercent(group);
@@ -9308,7 +9447,7 @@
             format.todayPricePrevious = actual.todayPricePrevious === null ? "\u2014" : formatFractionSpecial(actual.todayPricePrevious, currency, priceItem.position.instrument);
             if (actual.todayPrice === null) {
               format.unrealizedToday = "\u2014";
-              if (actual.realizedToday.getIsEqual(Decimal6.ZERO)) {
+              if (actual.realizedToday.getIsEqual(Decimal8.ZERO)) {
                 format.gainToday = "\u2014";
               }
             }
@@ -9324,7 +9463,7 @@
               return null;
             }
             const parentData = parent._dataActual;
-            if (parentData.marketAbsolute === null || parentData.marketAbsolute.getIsApproximate(Decimal6.ZERO, 4)) {
+            if (parentData.marketAbsolute === null || parentData.marketAbsolute.getIsApproximate(Decimal8.ZERO, 4)) {
               return null;
             }
             let numerator;
@@ -9352,8 +9491,8 @@
           const totalBasis = actual.totalDivisor;
           const numerator = actual.realized;
           const denominator = totalBasis.subtract(openBasis);
-          if (denominator.getIsApproximate(Decimal6.ZERO, 4)) {
-            actual.realizedPercent = Decimal6.ZERO;
+          if (denominator.getIsApproximate(Decimal8.ZERO, 4)) {
+            actual.realizedPercent = Decimal8.ZERO;
           } else {
             actual.realizedPercent = numerator.divide(denominator);
           }
@@ -9364,15 +9503,22 @@
           const format = group._dataFormat;
           const numerator = actual.unrealized;
           const denominator = actual.basis.absolute();
-          if (denominator.getIsApproximate(Decimal6.ZERO, 4)) {
-            actual.unrealizedPercent = Decimal6.ZERO;
+          if (denominator.getIsApproximate(Decimal8.ZERO, 4)) {
+            actual.unrealizedPercent = Decimal8.ZERO;
           } else {
             actual.unrealizedPercent = numerator.divide(denominator);
           }
           format.unrealizedPercent = formatPercent(actual.unrealizedPercent, 2);
         }
         function calculateGainPercent(gain, basis) {
-          return basis.getIsApproximate(Decimal6.ZERO, 4) ? Decimal6.ZERO : gain.divide(basis);
+          return basis.getIsApproximate(Decimal8.ZERO, 4) ? Decimal8.ZERO : gain.divide(basis);
+        }
+        function calculateAnnualizedReturnPercent(totalPercent, totalDivisor, daysHeld, holdingPeriodComplete) {
+          if (!holdingPeriodComplete || totalDivisor.getIsApproximate(Decimal8.ZERO, 4) || daysHeld < DAYS_PER_YEAR || totalPercent.toFloat() < -1) {
+            return null;
+          }
+          const annualizedReturn = Math.pow(1 + totalPercent.toFloat(), DAYS_PER_YEAR / daysHeld) - 1;
+          return Number.isFinite(annualizedReturn) ? new Decimal8(annualizedReturn) : null;
         }
         const unchanged = { up: false, down: false };
         return PositionGroup2;
@@ -9436,20 +9582,21 @@
     "lib/processing/PositionItem.js"(exports, module) {
       var assert = require_assert();
       var Currency5 = require_Currency();
-      var Day5 = require_Day();
-      var Decimal6 = require_Decimal();
+      var Day7 = require_Day();
+      var Decimal8 = require_Decimal();
       var Disposable = require_Disposable();
       var Event = require_Event();
       var is = require_is();
-      var InstrumentType4 = require_InstrumentType();
-      var PositionDirection = require_PositionDirection();
+      var InstrumentType5 = require_InstrumentType();
+      var PositionDirection2 = require_PositionDirection();
       var OptionsValuationType = require_OptionsValuationType();
       var AveragePriceCalculator2 = require_AveragePriceCalculator();
       var ValuationCalculator2 = require_ValuationCalculator();
       module.exports = (() => {
         "use strict";
+        const DAYS_PER_YEAR = 365;
         class PositionItem3 extends Disposable {
-          constructor(portfolio, position, currentSummary, previousSummaries, reporting, reportDate) {
+          constructor(portfolio, position, currentSummary, previousSummaries, reporting, reportDate, periodSummaries) {
             super();
             this._portfolio = portfolio;
             this._position = position;
@@ -9460,6 +9607,7 @@
             this._exchangeStatus = null;
             this._currentSummary = currentSummary || null;
             this._previousSummaries = previousSummaries || [];
+            this._periodSummaries = periodSummaries || {};
             this._reporting = reporting;
             this._reportDate = reportDate || null;
             this._today = calculateToday(this._reportDate, this._exchangeStatus);
@@ -9478,6 +9626,11 @@
             this._data.todayPricePrevious = null;
             this._data.realizedToday = null;
             this._data.realizedTodayChange = null;
+            this._data.gainToday = null;
+            this._data.gainTodayChange = null;
+            this._data.todayDivisor = null;
+            this._data.todayDivisorChange = null;
+            this._data.todaysGainLossPercent = null;
             this._data.unrealizedToday = null;
             this._data.unrealizedTodayChange = null;
             this._data.unrealized = null;
@@ -9504,8 +9657,22 @@
             this._data.periodDivisorChange = null;
             this._data.periodDivisorPrevious = null;
             this._data.periodDivisorPrevious2 = null;
+            this._data.weekToDateGain = null;
+            this._data.weekToDateGainChange = null;
+            this._data.weekToDateDivisor = null;
+            this._data.weekToDatePercent = null;
+            this._data.weekToDateSummaryExists = false;
+            this._data.monthToDateGain = null;
+            this._data.monthToDateGainChange = null;
+            this._data.monthToDateDivisor = null;
+            this._data.monthToDatePercent = null;
+            this._data.monthToDateSummaryExists = false;
             this._data.initiate = null;
             this._data.totalDivisor = null;
+            this._data.totalPercent = null;
+            this._data.daysHeld = null;
+            this._data.weeksHeld = null;
+            this._data.annualizedReturnPercent = null;
             this._data.newsExists = false;
             this._data.fundamental = {};
             this._data.calculating = getIsCalculating(position);
@@ -9662,13 +9829,16 @@
           setExchangeStatus(exchange) {
             assert.argumentIsRequired(exchange, "exchange", Object);
             assert.argumentIsRequired(exchange.code, "exchange.code", String);
-            assert.argumentIsRequired(exchange.currentDay, "exchange.currentDay", Day5, "Day");
+            assert.argumentIsRequired(exchange.currentDay, "exchange.currentDay", Day7, "Day");
             assert.argumentIsRequired(exchange.currentOpened, "exchange.currentOpened", Boolean);
             if (this._exchangeStatus === null || !(exchange.currentDay.getIsEqual(this._exchangeStatus.currentDay) && exchange.currentOpened === this._exchangeStatus.currentOpened)) {
               this._exchangeStatus = exchange;
               this._today = calculateToday(this._reportDate, this._exchangeStatus);
+              calculateHoldingPeriodData(this);
               if (this._currentQuote) {
                 this.setQuote(this._currentQuote, true);
+              } else {
+                this._data.annualizedReturnPercent = calculateAnnualizedReturnPercent(this._position.instrument.type, this._data.totalPercent, this._data.totalDivisor, this._data.daysHeld);
               }
             }
           }
@@ -9824,6 +9994,8 @@
           const previousSummary1 = getPreviousSummary(item.previousSummaries, 1);
           const previousSummary2 = getPreviousSummary(item.previousSummaries, 2);
           const previousSummary3 = getPreviousSummary(item.previousSummaries, 3);
+          const weekToDateSummary = item._periodSummaries.weekToDate || null;
+          const monthToDateSummary = item._periodSummaries.monthToDate || null;
           const snapshot = getSnapshot(position, currentSummary, item._reporting);
           const data = item._data;
           data.initiate = guessInitialDirection(position, item.previousSummaries, item.currentSummary);
@@ -9833,25 +10005,33 @@
           if (snapshot.basis) {
             basis = snapshot.basis.opposite();
           } else {
-            basis = Decimal6.ZERO;
+            basis = Decimal8.ZERO;
           }
           data.basis = basis;
           data.realized = snapshot.gain;
-          data.unrealized = Decimal6.ZERO;
+          data.unrealized = Decimal8.ZERO;
           data.income = snapshot.income;
-          data.marketPrevious = previousSummary1 === null ? Decimal6.ZERO : previousSummary1.end.value;
-          data.marketPrevious2 = previousSummary2 === null ? Decimal6.ZERO : previousSummary2.end.value;
-          data.quantityPrevious = previousSummary1 === null ? Decimal6.ZERO : previousSummary1.end.open;
+          data.marketPrevious = previousSummary1 === null ? Decimal8.ZERO : previousSummary1.end.value;
+          data.marketPrevious2 = previousSummary2 === null ? Decimal8.ZERO : previousSummary2.end.value;
+          data.quantityPrevious = previousSummary1 === null ? Decimal8.ZERO : previousSummary1.end.open;
           data.periodGain = calculatePeriodGain(position.instrument, data.initiate, currentSummary, previousSummary1);
           data.periodGainPrevious = calculatePeriodGain(position.instrument, data.initiate, previousSummary1, previousSummary2);
           data.periodGainPrevious2 = calculatePeriodGain(position.instrument, data.initiate, previousSummary2, previousSummary3);
-          data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal6.ZERO;
-          data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal6.ZERO;
+          data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal8.ZERO;
+          data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal8.ZERO;
           data.periodUnrealized = calculatePeriodUnrealized(position.instrument.type, data.periodGain, data.periodRealized, data.periodIncome);
           data.periodDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, currentSummary, previousSummary1);
           data.periodDivisorPrevious = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary1, previousSummary2);
           data.periodDivisorPrevious2 = calculatePeriodDivisor(position.instrument.type, data.initiate, previousSummary2, previousSummary3);
-          data.basisPrice = AveragePriceCalculator2.calculate(position.instrument, data.basis, snapshot.open) || Decimal6.ZERO;
+          data.weekToDateGain = calculatePeriodGain(position.instrument, data.initiate, weekToDateSummary, null, null, true);
+          data.weekToDateDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, weekToDateSummary, null, true);
+          data.weekToDateSummaryExists = weekToDateSummary !== null;
+          data.weekToDatePercent = data.weekToDateSummaryExists ? calculateGainPercent(data.weekToDateGain, data.weekToDateDivisor) : null;
+          data.monthToDateGain = calculatePeriodGain(position.instrument, data.initiate, monthToDateSummary, null, null, true);
+          data.monthToDateDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, monthToDateSummary, null, true);
+          data.monthToDateSummaryExists = monthToDateSummary !== null;
+          data.monthToDatePercent = data.monthToDateSummaryExists ? calculateGainPercent(data.monthToDateGain, data.monthToDateDivisor) : null;
+          data.basisPrice = AveragePriceCalculator2.calculate(position.instrument, data.basis, snapshot.open) || Decimal8.ZERO;
           data.basisPrice = data.basisPrice.opposite();
           if (currentSummary && !currentSummary.end.open.getIsZero()) {
             data.periodPrice = currentSummary.end.value.divide(currentSummary.end.open);
@@ -9864,21 +10044,42 @@
             data.periodPricePrevious = null;
           }
           data.totalDivisor = calculateTotalDivisor(position.instrument.type, data.initiate, position);
+          calculateHoldingPeriodData(item, snapshot);
+        }
+        function calculateHoldingPeriodData(item, snapshot) {
+          const data = item._data;
+          const openingDate = is.object(item.position.opening) ? item.position.opening.date : null;
+          const closingDate = is.object(item.position.closing) ? item.position.closing.date : null;
+          const currentSnapshot = snapshot || getSnapshot(item.position, item.currentSummary, item._reporting);
+          data.daysHeld = null;
+          data.weeksHeld = null;
+          if (openingDate instanceof Day7 && !openingDate.getIsAfter(item._today)) {
+            let heldUntil;
+            if (currentSnapshot.open.getIsZero()) {
+              heldUntil = closingDate instanceof Day7 && !closingDate.getIsBefore(openingDate) && !closingDate.getIsAfter(item._today) ? closingDate : null;
+            } else {
+              heldUntil = item._today;
+            }
+            if (heldUntil !== null) {
+              data.daysHeld = Day7.countDaysBetween(openingDate, heldUntil);
+              data.weeksHeld = Math.floor(data.daysHeld / 7);
+            }
+          }
         }
         function calculatePriceData(item, price, day, today) {
           const position = item.position;
           const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
           const data = item._data;
-          const worthless = data.expired && (position.instrument.type === InstrumentType4.EQUITY_OPTION || position.instrument.type === InstrumentType4.FUTURE_OPTION);
+          const worthless = data.expired && (position.instrument.type === InstrumentType5.EQUITY_OPTION || position.instrument.type === InstrumentType5.FUTURE_OPTION);
           let market;
-          if (position.instrument.type === InstrumentType4.OTHER) {
+          if (position.instrument.type === InstrumentType5.OTHER) {
             market = snapshot.value;
-          } else if (position.instrument.type === InstrumentType4.CASH) {
+          } else if (position.instrument.type === InstrumentType5.CASH) {
             market = snapshot.open;
           } else {
             let priceToUse;
             if (worthless) {
-              priceToUse = Decimal6.ZERO;
+              priceToUse = Decimal8.ZERO;
             } else {
               priceToUse = price;
             }
@@ -9905,12 +10106,15 @@
           data.todayExchange = today || null;
           let unrealizedToday;
           let unrealizedTodayChange;
+          let todayDivisor;
           const priceIsToday = day && today.getIsEqual(day);
           if (priceIsToday && data.previousPrice && price) {
             const unrealizedTodayBase = ValuationCalculator2.calculate(position.instrument, data.previousPrice, snapshot.open);
             unrealizedToday = market.subtract(unrealizedTodayBase);
+            todayDivisor = unrealizedTodayBase.absolute();
           } else {
-            unrealizedToday = Decimal6.ZERO;
+            unrealizedToday = Decimal8.ZERO;
+            todayDivisor = Decimal8.ZERO;
           }
           if (data.unrealizedToday !== null) {
             unrealizedTodayChange = unrealizedToday.subtract(data.unrealizedToday);
@@ -9919,6 +10123,12 @@
           }
           data.unrealizedToday = unrealizedToday;
           data.unrealizedTodayChange = unrealizedTodayChange;
+          if (data.todayDivisor !== null) {
+            data.todayDivisorChange = todayDivisor.subtract(data.todayDivisor);
+          } else {
+            data.todayDivisorChange = todayDivisor;
+          }
+          data.todayDivisor = todayDivisor;
           if (priceIsToday && price) {
             data.todayPrice = price;
             if (data.previousPrice) {
@@ -9933,7 +10143,7 @@
           if (position.latest && position.latest.gain && position.latest.date && today && position.latest.date.getIsEqual(today)) {
             realizedToday = position.latest.gain;
           } else {
-            realizedToday = Decimal6.ZERO;
+            realizedToday = Decimal8.ZERO;
           }
           if (data.realizedToday) {
             realizedTodayChange = realizedToday.subtract(data.realizedToday);
@@ -9942,29 +10152,41 @@
           }
           data.realizedToday = realizedToday;
           data.realizedTodayChange = realizedTodayChange;
+          const gainToday = unrealizedToday.add(realizedToday);
+          if (data.gainToday !== null) {
+            data.gainTodayChange = gainToday.subtract(data.gainToday);
+          } else {
+            data.gainTodayChange = gainToday;
+          }
+          data.gainToday = gainToday;
+          data.todaysGainLossPercent = calculateGainPercent(data.gainToday, data.todayDivisor);
           const currentSummary = item.currentSummary;
           const previousSummary = getPreviousSummary(item.previousSummaries, 1);
-          if (currentSummary && position.instrument.type !== InstrumentType4.CASH) {
+          const weekToDateSummary = item._periodSummaries.weekToDate || null;
+          const monthToDateSummary = item._periodSummaries.monthToDate || null;
+          let currentPriceToUse = null;
+          if (currentSummary && position.instrument.type !== InstrumentType5.CASH) {
             let priceToUse;
             if (worthless) {
-              priceToUse = Decimal6.ZERO;
+              priceToUse = Decimal8.ZERO;
             } else if (price) {
               priceToUse = price;
             } else if (data.previousPrice) {
-              priceToUse = new Decimal6(data.previousPrice);
+              priceToUse = new Decimal8(data.previousPrice);
             } else if (!currentSummary.end.open.getIsZero()) {
-              priceToUse = AveragePriceCalculator2.calculate(position.instrument, currentSummary.end.value, currentSummary.end.open) || Decimal6.ZERO;
+              priceToUse = AveragePriceCalculator2.calculate(position.instrument, currentSummary.end.value, currentSummary.end.open) || Decimal8.ZERO;
               priceToUse = priceToUse.opposite();
             } else {
               priceToUse = null;
             }
             if (priceToUse !== null) {
+              currentPriceToUse = priceToUse;
               const unrealized = ValuationCalculator2.calculate(position.instrument, priceToUse, currentSummary.end.open).add(currentSummary.end.basis);
               let unrealizedChange;
               if (data.unrealized !== null) {
                 unrealizedChange = unrealized.subtract(data.unrealized);
               } else {
-                unrealizedChange = Decimal6.ZERO;
+                unrealizedChange = Decimal8.ZERO;
               }
               data.unrealized = unrealized;
               data.unrealizedChange = unrealizedChange;
@@ -9973,7 +10195,7 @@
               if (data.periodGain !== null) {
                 periodGainChange = periodGain.subtract(data.periodGain);
               } else {
-                periodGainChange = Decimal6.ZERO;
+                periodGainChange = Decimal8.ZERO;
               }
               data.periodGain = periodGain;
               data.periodGainChange = periodGainChange;
@@ -9982,7 +10204,7 @@
               if (data.periodUnrealized !== null) {
                 periodUnrealizedChange = periodUnrealized.subtract(data.periodUnrealized);
               } else {
-                periodUnrealizedChange = Decimal6.ZERO;
+                periodUnrealizedChange = Decimal8.ZERO;
               }
               data.periodUnrealized = periodUnrealized;
               data.periodUnrealizedChange = periodUnrealizedChange;
@@ -9992,15 +10214,50 @@
                 data.unrealizedPrice = data.basisPrice.opposite().add(priceToUse);
               }
             } else {
-              data.unrealizedChange = Decimal6.ZERO;
-              data.periodUnrealizedChange = Decimal6.ZERO;
-              data.periodGainChange = Decimal6.ZERO;
+              data.unrealizedChange = Decimal8.ZERO;
+              data.periodUnrealizedChange = Decimal8.ZERO;
+              data.periodGainChange = Decimal8.ZERO;
+              data.weekToDateGainChange = Decimal8.ZERO;
+              data.monthToDateGainChange = Decimal8.ZERO;
             }
           } else {
-            data.unrealizedChange = Decimal6.ZERO;
-            data.periodUnrealizedChange = Decimal6.ZERO;
-            data.periodGainChange = Decimal6.ZERO;
+            data.unrealizedChange = Decimal8.ZERO;
+            data.periodUnrealizedChange = Decimal8.ZERO;
+            data.periodGainChange = Decimal8.ZERO;
+            data.weekToDateGainChange = Decimal8.ZERO;
+            data.monthToDateGainChange = Decimal8.ZERO;
           }
+          if (position.instrument.type !== InstrumentType5.CASH) {
+            if (currentPriceToUse === null) {
+              if (worthless) {
+                currentPriceToUse = Decimal8.ZERO;
+              } else if (price) {
+                currentPriceToUse = price;
+              } else if (data.previousPrice) {
+                currentPriceToUse = new Decimal8(data.previousPrice);
+              }
+            }
+            if (currentPriceToUse !== null) {
+              const weekToDateData = calculateCurrentPeriodData(position.instrument, data.initiate, weekToDateSummary, currentPriceToUse, data.weekToDateGain, data.weekToDateDivisor);
+              const monthToDateData = calculateCurrentPeriodData(position.instrument, data.initiate, monthToDateSummary, currentPriceToUse, data.monthToDateGain, data.monthToDateDivisor);
+              data.weekToDateGain = weekToDateData.gain;
+              data.weekToDateGainChange = weekToDateData.gainChange;
+              data.weekToDatePercent = weekToDateData.percent;
+              data.monthToDateGain = monthToDateData.gain;
+              data.monthToDateGainChange = monthToDateData.gainChange;
+              data.monthToDatePercent = monthToDateData.percent;
+            }
+          }
+          data.totalPercent = calculateGainPercent(data.unrealized.add(data.realized).add(data.income), data.totalDivisor);
+          data.annualizedReturnPercent = calculateAnnualizedReturnPercent(position.instrument.type, data.totalPercent, data.totalDivisor, data.daysHeld);
+        }
+        function calculateCurrentPeriodData(instrument, direction, summary, price, previousGain, divisor) {
+          const gain = calculatePeriodGain(instrument, direction, summary, null, price, true);
+          return {
+            gain,
+            gainChange: gain.subtract(previousGain),
+            percent: summary === null ? null : calculateGainPercent(gain, divisor)
+          };
         }
         function guessInitialDirection(position, previousSummaries, currentSummary) {
           if (position.snapshot.initial) {
@@ -10009,25 +10266,27 @@
           const summaries = previousSummaries.concat(currentSummary);
           const direction = summaries.reduce((accumulator, summary) => {
             let returnRef = accumulator;
-            if (summary !== null && summary.start.direction !== PositionDirection.EVEN) {
+            if (summary !== null && summary.start.direction !== PositionDirection2.EVEN) {
               returnRef = summary.start.direction;
             }
-            if (summary !== null && summary.end.direction !== PositionDirection.EVEN) {
+            if (summary !== null && summary.end.direction !== PositionDirection2.EVEN) {
               returnRef = summary.end.direction;
             }
             return returnRef;
           }, null);
-          return direction || PositionDirection.LONG;
+          return direction || PositionDirection2.LONG;
         }
-        function calculatePeriodGain(instrument, direction, currentSummary, previousSummary, overridePrice) {
+        function calculatePeriodGain(instrument, direction, currentSummary, previousSummary, overridePrice, useCurrentStart) {
           let returnRef;
           const type = instrument.type;
-          if (currentSummary && type !== InstrumentType4.CASH) {
+          if (currentSummary && type !== InstrumentType5.CASH) {
             let startValue;
             if (previousSummary) {
               startValue = previousSummary.end.value;
+            } else if (useCurrentStart) {
+              startValue = currentSummary.start.value;
             } else {
-              startValue = Decimal6.ZERO;
+              startValue = Decimal8.ZERO;
             }
             let endValue;
             if (overridePrice) {
@@ -10040,51 +10299,63 @@
             const incomeChange = currentSummary.period.income;
             returnRef = valueChange.add(tradeChange).add(incomeChange);
           } else {
-            returnRef = Decimal6.ZERO;
+            returnRef = Decimal8.ZERO;
           }
           return returnRef;
         }
-        function calculatePeriodDivisor(type, direction, currentSummary, previousSummary) {
+        function calculatePeriodDivisor(type, direction, currentSummary, previousSummary, useCurrentStart) {
           let returnRef;
-          if (currentSummary && type !== InstrumentType4.CASH) {
+          if (currentSummary && type !== InstrumentType5.CASH) {
             let startValue;
             if (previousSummary) {
               startValue = previousSummary.end.value;
+            } else if (useCurrentStart) {
+              startValue = currentSummary.start.value;
             } else {
-              startValue = Decimal6.ZERO;
+              startValue = Decimal8.ZERO;
             }
-            if (direction === PositionDirection.SHORT) {
+            if (direction === PositionDirection2.SHORT) {
               returnRef = startValue.opposite().add(currentSummary.period.sells);
             } else {
               returnRef = startValue.add(currentSummary.period.buys.opposite());
             }
           } else {
-            returnRef = Decimal6.ZERO;
+            returnRef = Decimal8.ZERO;
           }
           return returnRef;
         }
         function calculatePeriodUnrealized(type, periodGain, periodRealized, periodIncome) {
           let returnRef;
-          if (type !== InstrumentType4.CASH) {
+          if (type !== InstrumentType5.CASH) {
             returnRef = periodRealized.add(periodIncome).subtract(periodGain).opposite();
           } else {
-            returnRef = Decimal6.ZERO;
+            returnRef = Decimal8.ZERO;
           }
           return returnRef;
         }
         function calculateTotalDivisor(type, direction, position) {
-          if (type === InstrumentType4.CASH) {
-            return Decimal6.ZERO;
+          if (type === InstrumentType5.CASH) {
+            return Decimal8.ZERO;
           }
           let divisor;
-          if (direction === PositionDirection.SHORT) {
+          if (direction === PositionDirection2.SHORT) {
             divisor = position.snapshot.sells;
-          } else if (direction === PositionDirection.LONG) {
+          } else if (direction === PositionDirection2.LONG) {
             divisor = position.snapshot.buys.opposite();
           } else {
-            divisor = Decimal6.ZERO;
+            divisor = Decimal8.ZERO;
           }
           return divisor;
+        }
+        function calculateGainPercent(gain, divisor) {
+          return divisor.getIsApproximate(Decimal8.ZERO, 4) ? Decimal8.ZERO : gain.divide(divisor);
+        }
+        function calculateAnnualizedReturnPercent(type, totalPercent, totalDivisor, daysHeld) {
+          if (type === InstrumentType5.CASH || totalDivisor.getIsApproximate(Decimal8.ZERO, 4) || daysHeld === null || daysHeld < DAYS_PER_YEAR || totalPercent.toFloat() < -1) {
+            return null;
+          }
+          const annualizedReturn = Math.pow(1 + totalPercent.toFloat(), DAYS_PER_YEAR / daysHeld) - 1;
+          return Number.isFinite(annualizedReturn) ? new Decimal8(annualizedReturn) : null;
         }
         function getPreviousSummary(previousSummaries, count) {
           const index = previousSummaries.length - count;
@@ -10108,9 +10379,9 @@
           assert.argumentIsRequired(position, "position");
           const type = position.instrument.type;
           let expiration;
-          if (type === InstrumentType4.FUTURE) {
+          if (type === InstrumentType5.FUTURE) {
             expiration = position.instrument.future.expiration;
-          } else if (type === InstrumentType4.FUTURE_OPTION || type === InstrumentType4.EQUITY_OPTION) {
+          } else if (type === InstrumentType5.FUTURE_OPTION || type === InstrumentType5.EQUITY_OPTION) {
             expiration = position.instrument.option.expiration;
           } else {
             expiration = null;
@@ -10136,16 +10407,16 @@
           return snapshot;
         }
         function calculateToday(reportDate, exchangeStatus) {
-          if (reportDate instanceof Day5) {
+          if (reportDate instanceof Day7) {
             return reportDate;
           }
-          if (exchangeStatus && exchangeStatus.currentDay instanceof Day5) {
+          if (exchangeStatus && exchangeStatus.currentDay instanceof Day7) {
             return exchangeStatus.currentDay;
           }
-          return Day5.getToday();
+          return Day7.getToday();
         }
         function calculateQuoteDay(quote) {
-          if (quote && quote.lastDay instanceof Day5) {
+          if (quote && quote.lastDay instanceof Day7) {
             return quote.lastDay;
           }
           return null;
@@ -10190,8 +10461,8 @@
       var comparators = require_comparators();
       var Currency5 = require_Currency();
       var CurrencyTranslator2 = require_CurrencyTranslator();
-      var Day5 = require_Day();
-      var Decimal6 = require_Decimal();
+      var Day7 = require_Day();
+      var Decimal8 = require_Decimal();
       var Disposable = require_Disposable();
       var DisposableStack = require_DisposableStack();
       var Event = require_Event();
@@ -10233,7 +10504,7 @@
             assert.argumentIsArray(summaries, "summaries");
             assert.argumentIsOptional(reportFrame, "reportFrame", PositionSummaryFrame5, "PositionSummaryFrame");
             if (reportFrame) {
-              assert.argumentIsRequired(reportDate, "reportDate", Day5, "Day");
+              assert.argumentIsRequired(reportDate, "reportDate", Day7, "Day");
             }
             if (currencyPairs) {
               assert.argumentIsArray(currencyPairs, "currencyPairs");
@@ -10264,6 +10535,8 @@
               this._previousSummaryFrame = reportFrame;
               this._previousSummaryRanges = this._currentSummaryFrame.getPriorRanges(reportDate, 3);
               this._previousSummaryRanges.pop();
+              this._weekToDateSummaryRange = null;
+              this._monthToDateSummaryRange = null;
             } else {
               this._reportDate = null;
               this._currentSummaryFrame = PositionSummaryFrame5.YTD;
@@ -10271,6 +10544,8 @@
               this._previousSummaryFrame = PositionSummaryFrame5.YEARLY;
               this._previousSummaryRanges = this._previousSummaryFrame.getRecentRanges(3);
               this._previousSummaryRanges.shift();
+              this._weekToDateSummaryRange = array.first(PositionSummaryFrame5.WTD.getRecentRanges(0));
+              this._monthToDateSummaryRange = array.first(PositionSummaryFrame5.MTD.getRecentRanges(0));
             }
             this._summariesCurrent = summaries.reduce((map, summary) => {
               addSummaryCurrent(map, summary, this._currentSummaryFrame, this._currentSummaryRange);
@@ -10278,6 +10553,14 @@
             }, {});
             this._summariesPrevious = summaries.reduce((map, summary) => {
               addSummaryPrevious(map, summary, this._previousSummaryFrame, this._previousSummaryRanges);
+              return map;
+            }, {});
+            this._summariesWeekToDate = summaries.reduce((map, summary) => {
+              addSummaryForRange(map, summary, PositionSummaryFrame5.WTD, this._weekToDateSummaryRange);
+              return map;
+            }, {});
+            this._summariesMonthToDate = summaries.reduce((map, summary) => {
+              addSummaryForRange(map, summary, PositionSummaryFrame5.MTD, this._monthToDateSummaryRange);
               return map;
             }, {});
             this._items = positions.reduce((items, position) => {
@@ -10313,7 +10596,7 @@
             }
             this._currencyTranslator = new CurrencyTranslator2(this._forexSymbols.concat(STATIC_RATES.map((r) => r.getSymbol())));
             const forexQuotes = this._forexSymbols.map((symbol) => {
-              return Rate.fromPair(Decimal6.ONE, symbol);
+              return Rate.fromPair(Decimal8.ONE, symbol);
             });
             this._currencyTranslator.setRates(forexQuotes.concat(STATIC_RATES));
             this._nodes = {};
@@ -10540,6 +10823,8 @@
             summaries.forEach((summary) => {
               addSummaryCurrent(this._summariesCurrent, summary, this._currentSummaryFrame, this._currentSummaryRange);
               addSummaryPrevious(this._summariesPrevious, summary, this._previousSummaryFrame, this._previousSummaryRanges);
+              addSummaryForRange(this._summariesWeekToDate, summary, PositionSummaryFrame5.WTD, this._weekToDateSummaryRange);
+              addSummaryForRange(this._summariesMonthToDate, summary, PositionSummaryFrame5.MTD, this._monthToDateSummaryRange);
             });
             const item = createPositionItem.call(this, position, false);
             addBarchartSymbol(this._symbols, item);
@@ -10748,7 +11033,7 @@
           setExchangeStatus(exchange) {
             assert.argumentIsRequired(exchange, "exchange", Object);
             assert.argumentIsRequired(exchange.code, "exchange.code", String);
-            assert.argumentIsRequired(exchange.currentDay, "exchange.currentDay", Day5, "Day");
+            assert.argumentIsRequired(exchange.currentDay, "exchange.currentDay", Day7, "Day");
             assert.argumentIsRequired(exchange.currentOpened, "exchange.currentOpened", Boolean);
             const code = exchange.code;
             this._exchanges[code] = exchange;
@@ -11142,6 +11427,11 @@
             }
           }
         }
+        function addSummaryForRange(map, summary, frame, range) {
+          if (range !== null && summary.frame === frame && range.start.getIsEqual(summary.start.date) && range.end.getIsEqual(summary.end.date)) {
+            map[summary.position] = summary;
+          }
+        }
         function addBarchartSymbol(map, item) {
           const barchartSymbol = extractSymbolForBarchart(item.position);
           if (barchartSymbol) {
@@ -11165,8 +11455,12 @@
           if (portfolio) {
             const currentSummary = this._summariesCurrent[position.position] || null;
             const previousSummaries = this._summariesPrevious[position.position] || getSummaryArray(this._previousSummaryRanges);
+            const periodSummaries = {
+              weekToDate: this._summariesWeekToDate[position.position] || null,
+              monthToDate: this._summariesMonthToDate[position.position] || null
+            };
             if (!requireCurrentSummary || currentSummary !== null) {
-              return new PositionItem3(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate);
+              return new PositionItem3(portfolio, position, currentSummary, previousSummaries, this._reporting, this._reportDate, periodSummaries);
             }
           }
           return null;
@@ -11177,6 +11471,8 @@
           }
           delete this._summariesCurrent[positionItem.position.position];
           delete this._summariesPrevious[positionItem.position.position];
+          delete this._summariesWeekToDate[positionItem.position.position];
+          delete this._summariesMonthToDate[positionItem.position.position];
           array.remove(this._items, (i) => i === positionItem);
           const barchartSymbol = extractSymbolForBarchart(positionItem.position);
           if (this._symbols.hasOwnProperty(barchartSymbol)) {
@@ -11223,9 +11519,9 @@
   var require_PositionTestFactory = __commonJS({
     "test/utils/processing/PositionTestFactory.js"(exports, module) {
       var Currency5 = require_Currency();
-      var Decimal6 = require_Decimal();
-      var InstrumentType4 = require_InstrumentType();
-      var PositionDirection = require_PositionDirection();
+      var Decimal8 = require_Decimal();
+      var InstrumentType5 = require_InstrumentType();
+      var PositionDirection2 = require_PositionDirection();
       var positionCounter = 0;
       function resetPositionCounter() {
         positionCounter = 0;
@@ -11245,17 +11541,17 @@
               barchart: symbol
             },
             currency: currency || Currency5.USD,
-            type: InstrumentType4.EQUITY
+            type: InstrumentType5.EQUITY
           },
           snapshot: {
-            basis: new Decimal6(123),
-            value: new Decimal6(456),
-            open: new Decimal6(1),
-            direction: PositionDirection.LONG,
-            income: new Decimal6(0),
-            gain: new Decimal6(0),
-            buys: new Decimal6(50),
-            sells: new Decimal6(0)
+            basis: new Decimal8(123),
+            value: new Decimal8(456),
+            open: new Decimal8(1),
+            direction: PositionDirection2.LONG,
+            income: new Decimal8(0),
+            gain: new Decimal8(0),
+            buys: new Decimal8(50),
+            sells: new Decimal8(0)
           }
         }, overrides || {});
       }
@@ -11279,11 +11575,11 @@
               basis: position.snapshot.basis
             },
             period: {
-              buys: new Decimal6(0),
-              sells: new Decimal6(0),
-              income: new Decimal6(0),
-              realized: new Decimal6(0),
-              unrealized: new Decimal6(0)
+              buys: new Decimal8(0),
+              sells: new Decimal8(0),
+              income: new Decimal8(0),
+              realized: new Decimal8(0),
+              unrealized: new Decimal8(0)
             }
           };
         });
@@ -17793,7 +18089,7 @@
   var require_UnitCode = __commonJS({
     "node_modules/@barchart/marketdata-api-js/lib/utilities/data/UnitCode.js"(exports, module) {
       var assert = require_assert();
-      var Decimal6 = require_Decimal();
+      var Decimal8 = require_Decimal();
       var is = require_is();
       var Enum = require_Enum();
       module.exports = (() => {
@@ -17928,8 +18224,8 @@
            */
           getMinimumTick(tickIncrement) {
             assert.argumentIsValid(tickIncrement, "tickIncrement", is.integer, "must be an integer");
-            const one = new Decimal6(1);
-            const ten = new Decimal6(10);
+            const one = new Decimal8(1);
+            const ten = new Decimal8(10);
             let discretePrice;
             if (this.supportsFractions) {
               discretePrice = one.divide(this._fractionFactor);
@@ -17951,7 +18247,7 @@
           getMinimumTickValue(tickIncrement, pointValue) {
             assert.argumentIsValid(tickIncrement, "tickIncrement", is.integer, "must be an integer");
             assert.argumentIsValid(pointValue, "pointValue", is.number, "must be a number");
-            const minimumTick = new Decimal6(this.getMinimumTick(tickIncrement));
+            const minimumTick = new Decimal8(this.getMinimumTick(tickIncrement));
             const minimumTickValue = minimumTick.multiply(pointValue);
             return minimumTickValue.toFloat();
           }
@@ -17964,19 +18260,19 @@
            * @returns {Number}
            */
           roundToNearestTick(value, minimumTick, roundToZero) {
-            assert.argumentIsValid(value, "value", (x) => is.number(x) || x instanceof Decimal6, "must be a number primitive or a Decimal instance");
-            assert.argumentIsValid(minimumTick, "minimumTick", (x) => is.number(x) || x instanceof Decimal6, "must be a number primitive or a Decimal instance");
+            assert.argumentIsValid(value, "value", (x) => is.number(x) || x instanceof Decimal8, "must be a number primitive or a Decimal instance");
+            assert.argumentIsValid(minimumTick, "minimumTick", (x) => is.number(x) || x instanceof Decimal8, "must be a number primitive or a Decimal instance");
             assert.argumentIsOptional(roundToZero, "roundToZero", Boolean);
             let valueToUse;
-            if (value instanceof Decimal6) {
+            if (value instanceof Decimal8) {
               valueToUse = value;
             } else {
-              valueToUse = new Decimal6(value);
+              valueToUse = new Decimal8(value);
             }
             let ticks = valueToUse.divide(minimumTick);
             let remainder = valueToUse.mod(minimumTick);
             if (!remainder.getIsZero()) {
-              ticks = ticks.round(0, is.boolean(roundToZero) && roundToZero ? Decimal6.ROUNDING_MODE.DOWN : Decimal6.ROUNDING_MODE.NORMAL);
+              ticks = ticks.round(0, is.boolean(roundToZero) && roundToZero ? Decimal8.ROUNDING_MODE.DOWN : Decimal8.ROUNDING_MODE.NORMAL);
             }
             return ticks.multiply(minimumTick).toFloat();
           }
@@ -18132,9 +18428,9 @@
       var Enum = require_Enum();
       var SchemaBuilder = require_SchemaBuilder();
       var UnitCode = require_UnitCode();
-      var InstrumentType4 = require_InstrumentType();
+      var InstrumentType5 = require_InstrumentType();
       var OptionSide = require_OptionSide();
-      var PositionDirection = require_PositionDirection();
+      var PositionDirection2 = require_PositionDirection();
       var ValuationType = require_ValuationType();
       module.exports = (() => {
         "use strict";
@@ -18197,13 +18493,13 @@
           }
         }
         const complete = new PositionSchema2(
-          SchemaBuilder.withName("complete").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType4, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING, true).withField("legacy.position", DataType.STRING, true).withField("system.version", DataType.NUMBER, true).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("root", DataType.STRING, true).schema
+          SchemaBuilder.withName("complete").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING, true).withField("legacy.position", DataType.STRING, true).withField("system.version", DataType.NUMBER, true).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("root", DataType.STRING, true).schema
         );
         const client = new PositionSchema2(
-          SchemaBuilder.withName("client").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType4, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("previous", DataType.NUMBER, true).schema
+          SchemaBuilder.withName("client").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("previous", DataType.NUMBER, true).schema
         );
         const update = new PositionSchema2(
-          SchemaBuilder.withName("update").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("mapping.name", DataType.STRING, true).withField("mapping.type", DataType.forEnum(InstrumentType4, "InstrumentType"), true).withField("mapping.currency", DataType.forEnum(Currency5, "Currency"), true).withField("mapping.symbol.barchart", DataType.STRING, true).withField("mapping.symbol.display", DataType.STRING, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName("update").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("mapping.name", DataType.STRING, true).withField("mapping.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("mapping.currency", DataType.forEnum(Currency5, "Currency"), true).withField("mapping.symbol.barchart", DataType.STRING, true).withField("mapping.symbol.display", DataType.STRING, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).schema
         );
         const simple = new PositionSchema2(
           SchemaBuilder.withName("simple").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).schema
@@ -18221,8 +18517,8 @@
       var DataType = require_DataType();
       var Enum = require_Enum();
       var SchemaBuilder = require_SchemaBuilder();
-      var InstrumentType4 = require_InstrumentType();
-      var PositionDirection = require_PositionDirection();
+      var InstrumentType5 = require_InstrumentType();
+      var PositionDirection2 = require_PositionDirection();
       var TransactionType4 = require_TransactionType();
       module.exports = (() => {
         "use strict";
@@ -18316,13 +18612,13 @@
           }
         }
         const complete = new TransactionSchema2(
-          SchemaBuilder.withName("complete").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.STRING, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING).withField("legacy.position", DataType.STRING, true).withField("legacy.transaction", DataType.STRING, true).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("dividend.reference", DataType.STRING, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).withField("system.sequence", DataType.NUMBER).withField("system.version", DataType.STRING).withField("system.timestamp", DataType.TIMESTAMP).schema
+          SchemaBuilder.withName("complete").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.STRING, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING).withField("legacy.position", DataType.STRING, true).withField("legacy.transaction", DataType.STRING, true).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("dividend.reference", DataType.STRING, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).withField("system.sequence", DataType.NUMBER).withField("system.version", DataType.STRING).withField("system.timestamp", DataType.TIMESTAMP).schema
         );
         const client = new TransactionSchema2(
-          SchemaBuilder.withName("client").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.NUMBER, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).schema
+          SchemaBuilder.withName("client").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.NUMBER, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).schema
         );
         const buy = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.BUY.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType4, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType4.BUY.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
         );
         const sell = new TransactionSchema2(
           SchemaBuilder.withName(TransactionType4.SELL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL, true).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).withField("close", DataType.BOOLEAN, true).schema
@@ -18331,16 +18627,16 @@
           SchemaBuilder.withName(TransactionType4.BUY_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL, true).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).withField("close", DataType.BOOLEAN, true).schema
         );
         const sellShort = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.SELL_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType4, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType4.SELL_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
         );
         const fee = new TransactionSchema2(
           SchemaBuilder.withName(TransactionType4.FEE.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("fee", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const deposit = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.DEPOSIT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType4, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType4.DEPOSIT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const withdrawal = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.WITHDRAWAL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType4, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType4.WITHDRAWAL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const valuation = new TransactionSchema2(
           SchemaBuilder.withName(TransactionType4.VALUATION.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("rate", DataType.DECIMAL, true).withField("value", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).schema
@@ -19151,6 +19447,64 @@
         });
       });
     });
+    describe("and current to-date frame boundaries are calculated", () => {
+      const thursday = new Day(2026, 7, 16);
+      const createClosedTransactions = (closingDate) => [
+        {
+          date: closingDate.subtractDays(1),
+          snapshot: { open: Decimal3.ONE },
+          type: TransactionType.BUY
+        },
+        {
+          date: closingDate,
+          snapshot: { open: Decimal3.ZERO },
+          type: TransactionType.SELL
+        }
+      ];
+      it("the WTD frame should use the prior Sunday as its opening boundary", () => {
+        const start = PositionSummaryFrame.WTD.getStartDate(0, thursday);
+        expect(start.format()).toEqual("2026-07-12");
+      });
+      it("the WTD frame should keep Sunday in the week that just ended", () => {
+        const start = PositionSummaryFrame.WTD.getStartDate(0, new Day(2026, 7, 19));
+        expect(start.format()).toEqual("2026-07-12");
+      });
+      it("the WTD range should cover Monday through Sunday", () => {
+        const today = Day.getToday();
+        const ranges = PositionSummaryFrame.WTD.getRangesFromDate(today);
+        const start = PositionSummaryFrame.WTD.getStartDate(0, today);
+        expect(formatRange(ranges[0])).toEqual({ end: start.addDays(7).format(), start: start.format() });
+      });
+      it("the WTD frame should exclude a position closed on its opening boundary", () => {
+        const start = PositionSummaryFrame.WTD.getStartDate(0);
+        const ranges = PositionSummaryFrame.WTD.getRanges(createClosedTransactions(start));
+        expect(ranges.length).toEqual(0);
+      });
+      it("the MTD frame should use the prior month end as its opening boundary", () => {
+        const start = PositionSummaryFrame.MTD.getStartDate(0, thursday);
+        expect(start.format()).toEqual("2026-06-30");
+      });
+      it("the MTD range should end at the current month end", () => {
+        const today = Day.getToday();
+        const ranges = PositionSummaryFrame.MTD.getRangesFromDate(today);
+        const start = PositionSummaryFrame.MTD.getStartDate(0, today);
+        expect(formatRange(ranges[0])).toEqual({ end: today.getEndOfMonth().format(), start: start.format() });
+      });
+      it("the MTD frame should exclude a position closed on its opening boundary", () => {
+        const start = PositionSummaryFrame.MTD.getStartDate(0);
+        const ranges = PositionSummaryFrame.MTD.getRanges(createClosedTransactions(start));
+        expect(ranges.length).toEqual(0);
+      });
+      it("should parse the new frame codes", () => {
+        expect({
+          mtd: PositionSummaryFrame.parse("MTD"),
+          wtd: PositionSummaryFrame.parse("WTD")
+        }).toEqual({
+          mtd: PositionSummaryFrame.MTD,
+          wtd: PositionSummaryFrame.WTD
+        });
+      });
+    });
     describe("and prior ranges are calculated", () => {
       describe("for YEARLY ranges", () => {
         describe("from 2017-10-10, including one previous ranges", () => {
@@ -19517,6 +19871,8 @@
         summaries = positions.reduce((accumulator, position) => {
           accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame2.YTD, 1));
           accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame2.YEARLY, 3));
+          accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame2.WTD, 1));
+          accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame2.MTD, 1));
           return accumulator;
         }, []);
       });
@@ -19559,6 +19915,16 @@
         it('the "a" position group should expose one formatted position', () => {
           const group = container.getGroup(name, ["totals", "My First Portfolio", positions[0].position]);
           expect(group.formatted.positions.map((position) => position.position)).toEqual([positions[0].position]);
+        });
+        it("the position group should expose current WTD and MTD returns", () => {
+          const group = container.getGroup(name, ["totals", "My First Portfolio", positions[0].position]);
+          expect({
+            monthToDatePercent: group.formatted.monthToDatePercent,
+            weekToDatePercent: group.formatted.weekToDatePercent
+          }).toEqual({
+            monthToDatePercent: "0.00%",
+            weekToDatePercent: "0.00%"
+          });
         });
         it('The "b" portfolio group should have two child groups', () => {
           expect(container.getGroups(name, ["totals", "My Second Portfolio"]).length).toEqual(2);
@@ -19604,6 +19970,7 @@
   // test/specs/processing/PositionGroupSpec.js
   var Currency2 = require_Currency();
   var CurrencyTranslator = require_CurrencyTranslator();
+  var Decimal5 = require_Decimal();
   var Day3 = require_Day();
   var FilterMode = require_FilterMode();
   var PositionSummaryFrame3 = require_PositionSummaryFrame();
@@ -19620,6 +19987,40 @@
       const currentSummary = positionTestFactory2.createSummaries(position, PositionSummaryFrame3.YTD, 1)[0];
       const previousSummaries = positionTestFactory2.createSummaries(position, PositionSummaryFrame3.YEARLY, 3);
       return new PositionItem(portfolio, position, currentSummary, previousSummaries);
+    }
+    function createReturnItem(symbol, daysHeld, buys) {
+      const today = new Day3(2026, 7, 16);
+      const portfolio = positionTestFactory2.createPortfolio(`${symbol} Portfolio`, `${symbol} Portfolio`);
+      const position = positionTestFactory2.createPosition(portfolio.portfolio, symbol);
+      const currentSummary = positionTestFactory2.createSummaries(position, PositionSummaryFrame3.YTD, 1)[0];
+      const previousSummaries = positionTestFactory2.createSummaries(position, PositionSummaryFrame3.YEARLY, 3);
+      const createCurrentPeriodSummary = (frame) => {
+        const summary = positionTestFactory2.createSummaries(position, frame, 1)[0];
+        summary.start.value = new Decimal5(100);
+        summary.end.value = new Decimal5(100);
+        summary.end.basis = new Decimal5(-100);
+        return summary;
+      };
+      position.opening = { date: today.subtractDays(daysHeld) };
+      position.snapshot.basis = new Decimal5(-100);
+      position.snapshot.buys = buys || new Decimal5(-100);
+      position.snapshot.open = new Decimal5(1);
+      position.snapshot.value = new Decimal5(100);
+      currentSummary.start.value = new Decimal5(100);
+      currentSummary.end.value = new Decimal5(100);
+      currentSummary.end.basis = new Decimal5(-100);
+      currentSummary.end.open = new Decimal5(1);
+      const item = new PositionItem(portfolio, position, currentSummary, previousSummaries, false, today, {
+        weekToDate: createCurrentPeriodSummary(PositionSummaryFrame3.WTD),
+        monthToDate: createCurrentPeriodSummary(PositionSummaryFrame3.MTD)
+      });
+      item.setQuote({
+        lastDay: today,
+        lastPrice: 110,
+        previousPrice: 100,
+        symbol
+      });
+      return item;
     }
     function createDefinition(type) {
       return new PositionLevelDefinition2(
@@ -19808,9 +20209,82 @@
         single: false
       });
     });
+    it("should expose holding-period data for a single-position group", () => {
+      const item = createReturnItem("AAPL", 365);
+      const group = createGroup(PositionLevelType2.POSITION, [item]);
+      expect({
+        daysHeldActual: group.actual.daysHeld,
+        daysHeldFormatted: group.data.daysHeld,
+        weeksHeldActual: group.actual.weeksHeld,
+        weeksHeldFormatted: group.data.weeksHeld
+      }).toEqual({
+        daysHeldActual: 365,
+        daysHeldFormatted: "365",
+        weeksHeldActual: 52,
+        weeksHeldFormatted: "52"
+      });
+    });
+    it("should aggregate return data without exposing a group holding period", () => {
+      const firstItem = createReturnItem("AAPL", 365);
+      const secondItem = createReturnItem("MSFT", 730);
+      const group = createGroup(PositionLevelType2.OTHER, [firstItem, secondItem]);
+      expect({
+        actualDaysHeld: group.actual.daysHeld,
+        actualMonthToDatePercent: group.actual.monthToDatePercent.toFloat(),
+        actualTodaysGainLossPercent: group.actual.todaysGainLossPercent.toFloat(),
+        actualWeekToDatePercent: group.actual.weekToDatePercent.toFloat(),
+        annualizedReturnPercent: group.data.annualizedReturnPercent,
+        daysHeld: group.data.daysHeld,
+        monthToDatePercent: group.data.monthToDatePercent,
+        todaysGainLossPercent: group.data.todaysGainLossPercent,
+        weekToDatePercent: group.data.weekToDatePercent,
+        weeksHeld: group.data.weeksHeld
+      }).toEqual({
+        actualDaysHeld: null,
+        actualMonthToDatePercent: 0.1,
+        actualTodaysGainLossPercent: 0.1,
+        actualWeekToDatePercent: 0.1,
+        annualizedReturnPercent: "4.88%",
+        daysHeld: "\u2014",
+        monthToDatePercent: "10.00%",
+        todaysGainLossPercent: "10.00%",
+        weekToDatePercent: "10.00%",
+        weeksHeld: "\u2014"
+      });
+    });
+    it("should not annualize group returns held for less than one year", () => {
+      const group = createGroup(PositionLevelType2.OTHER, [createReturnItem("AAPL", 3)]);
+      expect({
+        actual: group.actual.annualizedReturnPercent,
+        formatted: group.data.annualizedReturnPercent
+      }).toEqual({
+        actual: null,
+        formatted: "\u2014"
+      });
+    });
+    it("should not annualize group returns when all item annualized returns are unavailable", () => {
+      const items = [
+        createReturnItem("AAPL", 3),
+        createReturnItem("MSFT", 365, Decimal5.ZERO)
+      ];
+      const group = createGroup(PositionLevelType2.OTHER, items);
+      expect({
+        actual: group.actual.annualizedReturnPercent,
+        formatted: group.data.annualizedReturnPercent,
+        items: items.map((item) => item.data.annualizedReturnPercent)
+      }).toEqual({
+        actual: null,
+        formatted: "\u2014",
+        items: [null, null]
+      });
+    });
   });
 
   // test/specs/processing/PositionItemSpec.js
+  var Day4 = require_Day();
+  var Decimal6 = require_Decimal();
+  var InstrumentType4 = require_InstrumentType();
+  var PositionDirection = require_PositionDirection();
   var PositionSummaryFrame4 = require_PositionSummaryFrame();
   var PositionItem2 = require_PositionItem();
   var positionTestFactory3 = require_PositionTestFactory();
@@ -19922,6 +20396,164 @@
     });
     it("should reject portfolio updates which move the position to another portfolio", () => {
       expect(() => item.updatePortfolio(positionTestFactory3.createPortfolio("Other Portfolio", "Other"))).toThrow();
+    });
+    it("should calculate holding-period and current-period return data", () => {
+      const today = new Day4(2026, 7, 16);
+      const openingDate = today.subtractDays(365);
+      const createCurrentPeriodSummary = (frame) => {
+        const summary = positionTestFactory3.createSummaries(position, frame, 1)[0];
+        summary.start.value = new Decimal6(100);
+        summary.end.value = new Decimal6(100);
+        summary.end.basis = new Decimal6(-100);
+        return summary;
+      };
+      position.opening = { date: openingDate };
+      position.snapshot.basis = new Decimal6(-100);
+      position.snapshot.buys = new Decimal6(-100);
+      position.snapshot.open = new Decimal6(1);
+      position.snapshot.value = new Decimal6(100);
+      currentSummary.start.value = new Decimal6(100);
+      currentSummary.end.value = new Decimal6(100);
+      currentSummary.end.basis = new Decimal6(-100);
+      currentSummary.end.open = new Decimal6(1);
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today, {
+        weekToDate: createCurrentPeriodSummary(PositionSummaryFrame4.WTD),
+        monthToDate: createCurrentPeriodSummary(PositionSummaryFrame4.MTD)
+      });
+      item.setQuote({
+        lastDay: today,
+        lastPrice: 110,
+        previousPrice: 100,
+        symbol: "AAPL"
+      });
+      expect({
+        annualizedReturnPercent: Number(item.data.annualizedReturnPercent.toFloat().toFixed(10)),
+        daysHeld: item.data.daysHeld,
+        monthToDatePercent: item.data.monthToDatePercent.toFloat(),
+        todaysGainLossPercent: item.data.todaysGainLossPercent.toFloat(),
+        weekToDatePercent: item.data.weekToDatePercent.toFloat(),
+        weeksHeld: item.data.weeksHeld
+      }).toEqual({
+        annualizedReturnPercent: 0.1,
+        daysHeld: 365,
+        monthToDatePercent: 0.1,
+        todaysGainLossPercent: 0.1,
+        weekToDatePercent: 0.1,
+        weeksHeld: 52
+      });
+    });
+    it("should leave holding-period data unavailable without a reliable opening date", () => {
+      expect({
+        annualizedReturnPercent: item.data.annualizedReturnPercent,
+        daysHeld: item.data.daysHeld,
+        monthToDatePercent: item.data.monthToDatePercent,
+        weekToDatePercent: item.data.weekToDatePercent,
+        weeksHeld: item.data.weeksHeld
+      }).toEqual({
+        annualizedReturnPercent: null,
+        daysHeld: null,
+        monthToDatePercent: null,
+        weekToDatePercent: null,
+        weeksHeld: null
+      });
+    });
+    it("should calculate a closed position holding period through its closing date", () => {
+      const today = new Day4(2026, 7, 16);
+      position.opening = { date: today.subtractDays(100) };
+      position.closing = { date: today.subtractDays(40) };
+      position.snapshot.open = Decimal6.ZERO;
+      currentSummary.end.open = Decimal6.ZERO;
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today);
+      expect({
+        daysHeld: item.data.daysHeld,
+        weeksHeld: item.data.weeksHeld
+      }).toEqual({
+        daysHeld: 60,
+        weeksHeld: 8
+      });
+    });
+    it("should leave a closed position holding period unavailable without a reliable closing date", () => {
+      const today = new Day4(2026, 7, 16);
+      position.opening = { date: today.subtractDays(100) };
+      position.snapshot.open = Decimal6.ZERO;
+      currentSummary.end.open = Decimal6.ZERO;
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today);
+      expect({
+        daysHeld: item.data.daysHeld,
+        weeksHeld: item.data.weeksHeld
+      }).toEqual({
+        daysHeld: null,
+        weeksHeld: null
+      });
+    });
+    it("should use the absolute previous value for short-position today returns", () => {
+      const today = new Day4(2026, 7, 16);
+      position.snapshot.initial = PositionDirection.SHORT;
+      position.snapshot.open = new Decimal6(-1);
+      currentSummary.end.open = new Decimal6(-1);
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today);
+      item.setQuote({
+        lastDay: today,
+        lastPrice: 90,
+        previousPrice: 100,
+        symbol: "AAPL"
+      });
+      expect(item.data.todaysGainLossPercent.toFloat()).toEqual(0.1);
+    });
+    it("should safely return zero for a closed position without a previous-value denominator", () => {
+      const today = new Day4(2026, 7, 16);
+      position.snapshot.open = Decimal6.ZERO;
+      position.latest = { date: today, gain: new Decimal6(10) };
+      currentSummary.end.open = Decimal6.ZERO;
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today);
+      item.setQuote({
+        lastDay: today,
+        lastPrice: 110,
+        previousPrice: 100,
+        symbol: "AAPL"
+      });
+      expect(item.data.todaysGainLossPercent.toFloat()).toEqual(0);
+    });
+    it("should not annualize CASH positions", () => {
+      const today = new Day4(2026, 7, 16);
+      position.opening = { date: today.subtractDays(365) };
+      position.instrument.type = InstrumentType4.CASH;
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today);
+      expect({
+        annualizedReturnPercent: item.data.annualizedReturnPercent,
+        daysHeld: item.data.daysHeld
+      }).toEqual({
+        annualizedReturnPercent: null,
+        daysHeld: 365
+      });
+    });
+    it("should not annualize positions held for less than one year", () => {
+      const today = new Day4(2026, 7, 16);
+      position.opening = { date: today.subtractDays(3) };
+      position.snapshot.basis = new Decimal6(-1);
+      position.snapshot.buys = new Decimal6(-1);
+      position.snapshot.value = new Decimal6(1);
+      currentSummary.end.basis = new Decimal6(-1);
+      currentSummary.end.open = Decimal6.ONE;
+      currentSummary.end.value = Decimal6.ONE;
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today);
+      item.setQuote({ lastDay: today, lastPrice: 48.04, symbol: "AAPL" });
+      expect({
+        annualizedReturnPercent: item.data.annualizedReturnPercent,
+        daysHeld: item.data.daysHeld,
+        totalPercent: Number(item.data.totalPercent.toFloat().toFixed(10))
+      }).toEqual({
+        annualizedReturnPercent: null,
+        daysHeld: 3,
+        totalPercent: 47.04
+      });
+    });
+    it("should not annualize a return with a zero since-inception divisor", () => {
+      const today = new Day4(2026, 7, 16);
+      position.opening = { date: today.subtractDays(365) };
+      position.snapshot.buys = Decimal6.ZERO;
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today);
+      expect(item.data.annualizedReturnPercent).toEqual(null);
     });
   });
 
@@ -20214,6 +20846,7 @@
   });
 
   // test/specs/serialization/PositionSchemaSpec.js
+  var Day5 = require_Day();
   var PositionSchema = require_PositionSchema();
   describe("When positions are serialized", () => {
     "use strict";
@@ -20232,6 +20865,12 @@
           },
           "position": "a5cdc2e8-d9c6-4a1f-8f05-e271a5824f87",
           "transaction": 2987,
+          "opening": {
+            "date": "2019-04-15"
+          },
+          "closing": {
+            "date": "2020-06-11"
+          },
           "cash": true,
           "valuation": "AVG",
           "snapshot": {
@@ -20268,15 +20907,23 @@
           expect(typeof deserialized).toEqual("object");
         });
         it("the deserialized data should be correct", () => {
-          expect(deserialized.position).toEqual(position.position);
+          expect({
+            closingDate: deserialized.closing.date,
+            openingDate: deserialized.opening.date,
+            position: deserialized.position
+          }).toEqual({
+            closingDate: new Day5(2020, 6, 11),
+            openingDate: new Day5(2019, 4, 15),
+            position: position.position
+          });
         });
       });
     });
   });
 
   // test/specs/serialization/TransactionSchemaSpec.js
-  var Day4 = require_Day();
-  var Decimal5 = require_Decimal();
+  var Day6 = require_Day();
+  var Decimal7 = require_Decimal();
   var TransactionType3 = require_TransactionType();
   var TransactionSchema = require_TransactionSchema();
   describe("When transactions are serialized", () => {
@@ -20304,10 +20951,10 @@
         transaction.position = "c2eefcde-f8d0-438d-9414-28f307d7b544";
         transaction.sequence = 1;
         transaction.type = TransactionType3.BUY;
-        transaction.date = new Day4(2018, 7, 9);
-        transaction.price = new Decimal5(15.92);
-        transaction.quantity = new Decimal5(100);
-        transaction.fee = new Decimal5(9.95);
+        transaction.date = new Day6(2018, 7, 9);
+        transaction.price = new Decimal7(15.92);
+        transaction.quantity = new Decimal7(100);
+        transaction.fee = new Decimal7(9.95);
         transaction.reinvest = "default";
         transaction.cash = "default";
         const formatted = TransactionSchema.BUY.schema.format(transaction);

@@ -603,6 +603,80 @@ describe('After the PositionSummaryFrame enumeration is initialized', () => {
 		});
 	});
 
+	describe('and current to-date frame boundaries are calculated', () => {
+		const thursday = new Day(2026, 7, 16);
+		const createClosedTransactions = (closingDate) => [
+			{
+				date: closingDate.subtractDays(1),
+				snapshot: { open: Decimal.ONE },
+				type: TransactionType.BUY
+			},
+			{
+				date: closingDate,
+				snapshot: { open: Decimal.ZERO },
+				type: TransactionType.SELL
+			}
+		];
+
+		it('the WTD frame should use the prior Sunday as its opening boundary', () => {
+			const start = PositionSummaryFrame.WTD.getStartDate(0, thursday);
+
+			expect(start.format()).toEqual('2026-07-12');
+		});
+
+		it('the WTD frame should keep Sunday in the week that just ended', () => {
+			const start = PositionSummaryFrame.WTD.getStartDate(0, new Day(2026, 7, 19));
+
+			expect(start.format()).toEqual('2026-07-12');
+		});
+
+		it('the WTD range should cover Monday through Sunday', () => {
+			const today = Day.getToday();
+			const ranges = PositionSummaryFrame.WTD.getRangesFromDate(today);
+			const start = PositionSummaryFrame.WTD.getStartDate(0, today);
+
+			expect(formatRange(ranges[0])).toEqual({ end: start.addDays(7).format(), start: start.format() });
+		});
+
+		it('the WTD frame should exclude a position closed on its opening boundary', () => {
+			const start = PositionSummaryFrame.WTD.getStartDate(0);
+			const ranges = PositionSummaryFrame.WTD.getRanges(createClosedTransactions(start));
+
+			expect(ranges.length).toEqual(0);
+		});
+
+		it('the MTD frame should use the prior month end as its opening boundary', () => {
+			const start = PositionSummaryFrame.MTD.getStartDate(0, thursday);
+
+			expect(start.format()).toEqual('2026-06-30');
+		});
+
+		it('the MTD range should end at the current month end', () => {
+			const today = Day.getToday();
+			const ranges = PositionSummaryFrame.MTD.getRangesFromDate(today);
+			const start = PositionSummaryFrame.MTD.getStartDate(0, today);
+
+			expect(formatRange(ranges[0])).toEqual({ end: today.getEndOfMonth().format(), start: start.format() });
+		});
+
+		it('the MTD frame should exclude a position closed on its opening boundary', () => {
+			const start = PositionSummaryFrame.MTD.getStartDate(0);
+			const ranges = PositionSummaryFrame.MTD.getRanges(createClosedTransactions(start));
+
+			expect(ranges.length).toEqual(0);
+		});
+
+		it('should parse the new frame codes', () => {
+			expect({
+				mtd: PositionSummaryFrame.parse('MTD'),
+				wtd: PositionSummaryFrame.parse('WTD')
+			}).toEqual({
+				mtd: PositionSummaryFrame.MTD,
+				wtd: PositionSummaryFrame.WTD
+			});
+		});
+	});
+
 	describe('and prior ranges are calculated', () => {
 		describe('for YEARLY ranges', () => {
 			describe('from 2017-10-10, including one previous ranges', () => {

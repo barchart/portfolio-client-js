@@ -34,6 +34,8 @@ describe('When a position container data is gathered', () => {
 			summaries = positions.reduce((accumulator, position) => {
 				accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame.YTD, 1));
 				accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3));
+				accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame.WTD, 1));
+				accumulator = accumulator.concat(positionTestFactory.createSummaries(position, PositionSummaryFrame.MTD, 1));
 
 				return accumulator;
 			}, [ ]);
@@ -86,6 +88,18 @@ describe('When a position container data is gathered', () => {
 				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
 
 				expect(group.formatted.positions.map(position => position.position)).toEqual([ positions[0].position ]);
+			});
+
+			it('the position group should expose current WTD and MTD returns', () => {
+				const group = container.getGroup(name, [ 'totals', 'My First Portfolio', positions[0].position ]);
+
+				expect({
+					monthToDatePercent: group.formatted.monthToDatePercent,
+					weekToDatePercent: group.formatted.weekToDatePercent
+				}).toEqual({
+					monthToDatePercent: '0.00%',
+					weekToDatePercent: '0.00%'
+				});
 			});
 
 			it('The "b" portfolio group should have two child groups', () => {

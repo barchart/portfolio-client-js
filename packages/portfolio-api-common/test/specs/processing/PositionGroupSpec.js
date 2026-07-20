@@ -1,5 +1,6 @@
 const Currency = require('@barchart/common-js/lang/Currency'),
-	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator');
+	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
+	Decimal = require('@barchart/common-js/lang/Decimal');
 const Day = require('@barchart/common-js/lang/Day');
 
 const FilterMode = require('./../../../lib/data/FilterMode'),
@@ -22,6 +23,48 @@ describe('When a position group is used', () => {
 		const previousSummaries = positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3);
 
 		return new PositionItem(portfolio, position, currentSummary, previousSummaries);
+	}
+
+	function createReturnItem(symbol, daysHeld, buys) {
+		const today = new Day(2026, 7, 16);
+		const portfolio = positionTestFactory.createPortfolio(`${symbol} Portfolio`, `${symbol} Portfolio`);
+		const position = positionTestFactory.createPosition(portfolio.portfolio, symbol);
+		const currentSummary = positionTestFactory.createSummaries(position, PositionSummaryFrame.YTD, 1)[0];
+		const previousSummaries = positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3);
+		const createCurrentPeriodSummary = (frame) => {
+			const summary = positionTestFactory.createSummaries(position, frame, 1)[0];
+
+			summary.start.value = new Decimal(100);
+			summary.end.value = new Decimal(100);
+			summary.end.basis = new Decimal(-100);
+
+			return summary;
+		};
+
+		position.opening = { date: today.subtractDays(daysHeld) };
+		position.snapshot.basis = new Decimal(-100);
+		position.snapshot.buys = buys || new Decimal(-100);
+		position.snapshot.open = new Decimal(1);
+		position.snapshot.value = new Decimal(100);
+
+		currentSummary.start.value = new Decimal(100);
+		currentSummary.end.value = new Decimal(100);
+		currentSummary.end.basis = new Decimal(-100);
+		currentSummary.end.open = new Decimal(1);
+
+		const item = new PositionItem(portfolio, position, currentSummary, previousSummaries, false, today, {
+			weekToDate: createCurrentPeriodSummary(PositionSummaryFrame.WTD),
+			monthToDate: createCurrentPeriodSummary(PositionSummaryFrame.MTD)
+		});
+
+		item.setQuote({
+			lastDay: today,
+			lastPrice: 110,
+			previousPrice: 100,
+			symbol: symbol
+		});
+
+		return item;
 	}
 
 	function createDefinition(type) {
@@ -234,6 +277,83 @@ describe('When a position group is used', () => {
 			homogeneous: false,
 			percentChange1m: '+2.00%',
 			single: false
+		});
+	});
+
+	it('should expose holding-period data for a single-position group', () => {
+		const item = createReturnItem('AAPL', 365);
+		const group = createGroup(PositionLevelType.POSITION, [ item ]);
+
+		expect({
+			daysHeldActual: group.actual.daysHeld,
+			daysHeldFormatted: group.data.daysHeld,
+			weeksHeldActual: group.actual.weeksHeld,
+			weeksHeldFormatted: group.data.weeksHeld
+		}).toEqual({
+			daysHeldActual: 365,
+			daysHeldFormatted: '365',
+			weeksHeldActual: 52,
+			weeksHeldFormatted: '52'
+		});
+	});
+
+	it('should aggregate return data without exposing a group holding period', () => {
+		const firstItem = createReturnItem('AAPL', 365);
+		const secondItem = createReturnItem('MSFT', 730);
+		const group = createGroup(PositionLevelType.OTHER, [ firstItem, secondItem ]);
+
+		expect({
+			actualDaysHeld: group.actual.daysHeld,
+			actualMonthToDatePercent: group.actual.monthToDatePercent.toFloat(),
+			actualTodaysGainLossPercent: group.actual.todaysGainLossPercent.toFloat(),
+			actualWeekToDatePercent: group.actual.weekToDatePercent.toFloat(),
+			annualizedReturnPercent: group.data.annualizedReturnPercent,
+			daysHeld: group.data.daysHeld,
+			monthToDatePercent: group.data.monthToDatePercent,
+			todaysGainLossPercent: group.data.todaysGainLossPercent,
+			weekToDatePercent: group.data.weekToDatePercent,
+			weeksHeld: group.data.weeksHeld
+		}).toEqual({
+			actualDaysHeld: null,
+			actualMonthToDatePercent: 0.1,
+			actualTodaysGainLossPercent: 0.1,
+			actualWeekToDatePercent: 0.1,
+			annualizedReturnPercent: '4.88%',
+			daysHeld: '—',
+			monthToDatePercent: '10.00%',
+			todaysGainLossPercent: '10.00%',
+			weekToDatePercent: '10.00%',
+			weeksHeld: '—'
+		});
+	});
+
+	it('should not annualize group returns held for less than one year', () => {
+		const group = createGroup(PositionLevelType.OTHER, [ createReturnItem('AAPL', 3) ]);
+
+		expect({
+			actual: group.actual.annualizedReturnPercent,
+			formatted: group.data.annualizedReturnPercent
+		}).toEqual({
+			actual: null,
+			formatted: '—'
+		});
+	});
+
+	it('should not annualize group returns when all item annualized returns are unavailable', () => {
+		const items = [
+			createReturnItem('AAPL', 3),
+			createReturnItem('MSFT', 365, Decimal.ZERO)
+		];
+		const group = createGroup(PositionLevelType.OTHER, items);
+
+		expect({
+			actual: group.actual.annualizedReturnPercent,
+			formatted: group.data.annualizedReturnPercent,
+			items: items.map(item => item.data.annualizedReturnPercent)
+		}).toEqual({
+			actual: null,
+			formatted: '—',
+			items: [ null, null ]
 		});
 	});
 });

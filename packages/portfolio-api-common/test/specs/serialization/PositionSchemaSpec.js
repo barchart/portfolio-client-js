@@ -1,3 +1,5 @@
+const Day = require('@barchart/common-js/lang/Day');
+
 const PositionSchema = require('./../../../lib/serialization/PositionSchema');
 
 describe('When positions are serialized', () => {
@@ -19,6 +21,12 @@ describe('When positions are serialized', () => {
 				},
 				"position": "a5cdc2e8-d9c6-4a1f-8f05-e271a5824f87",
 				"transaction": 2987,
+				"opening": {
+					"date": "2019-04-15"
+				},
+				"closing": {
+					"date": "2020-06-11"
+				},
 				"cash": true,
 				"valuation": "AVG",
 				"snapshot": {
@@ -61,7 +69,15 @@ describe('When positions are serialized', () => {
 			});
 
 			it('the deserialized data should be correct', () => {
-				expect(deserialized.position).toEqual(position.position);
+				expect({
+					closingDate: deserialized.closing.date,
+					openingDate: deserialized.opening.date,
+					position: deserialized.position
+				}).toEqual({
+					closingDate: new Day(2020, 6, 11),
+					openingDate: new Day(2019, 4, 15),
+					position: position.position
+				});
 			});
 		});
 	});
