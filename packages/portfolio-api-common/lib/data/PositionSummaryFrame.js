@@ -224,7 +224,7 @@ module.exports = (() => {
 	const quarterly = new PositionSummaryFrame('QUARTERLY', 'quarter', false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
 	const monthly = new PositionSummaryFrame('MONTHLY', 'month', false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
 	const wtd = new PositionSummaryFrame('WTD', 'week-to-date', true, getWeekToDateRanges, getWeekToDateStartDate, getWeekToDateRangeDescription);
-	const mtd = new PositionSummaryFrame('MTD', 'month-to-date', true, getMonthToDateRanges, getMonthToDateStartDate, getMonthToDateRangeDescription);
+	const mtd = new PositionSummaryFrame('MTD', 'month-to-date', true, getMonthToDateRanges, getMonthlyStartDate, getMonthToDateRangeDescription);
 	const ytd = new PositionSummaryFrame('YTD', 'year-to-date', true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
 
 	/**
@@ -353,7 +353,7 @@ module.exports = (() => {
 
 		if (transactions.length !== 0) {
 			const last = array.last(transactions);
-			const start = getMonthToDateStartDate(0);
+			const start = getMonthlyStartDate(0);
 			const end = start.addMonths(1).getEndOfMonth();
 
 			if (!last.snapshot.open.getIsZero() || (last.date.getIsAfter(start) && !last.date.getIsAfter(end))) {
@@ -400,14 +400,6 @@ module.exports = (() => {
 		}
 
 		return today.subtractDays(daysSinceSunday + (periods * 7));
-	}
-
-	function getMonthToDateStartDate(periods, date) {
-		const today = date || Day.getToday();
-
-		return today
-			.subtractMonths(periods)
-			.subtractDays(today.day);
 	}
 
 	function getYearlyRangeDescription(start, end) {
