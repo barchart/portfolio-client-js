@@ -2203,7 +2203,7 @@
       var Enum = require_Enum();
       module.exports = (() => {
         "use strict";
-        class InstrumentType5 extends Enum {
+        class InstrumentType6 extends Enum {
           constructor(code, description, alternateDescription, canExistEmpty, canReinvest, canShort, canSwitchDirection, usesSymbols, hasCorporateActions, allowFractional, closeFractional, roundQuantity, strictOrdering, generator) {
             super(code, description);
             assert.argumentIsRequired(alternateDescription, "alternateDescription", String);
@@ -2453,7 +2453,7 @@
            * @returns {InstrumentType|null}
            */
           static parse(code) {
-            return Enum.fromCode(InstrumentType5, code);
+            return Enum.fromCode(InstrumentType6, code);
           }
           /**
            * Generates an identifier for the instrument.
@@ -2464,7 +2464,7 @@
            * @returns {String}
            */
           static generateIdentifier(instrument) {
-            const type = Enum.fromCode(InstrumentType5, instrument.type.code);
+            const type = Enum.fromCode(InstrumentType6, instrument.type.code);
             return type.generateIdentifier(instrument);
           }
           /**
@@ -2477,17 +2477,17 @@
           static fromSymbolType(code) {
             assert.argumentIsRequired(code, "code", Number);
             if (code === 1 || code === 6 || code === 7 || code === 11) {
-              return InstrumentType5.EQUITY;
+              return InstrumentType6.EQUITY;
             } else if (code === 34) {
-              return InstrumentType5.EQUITY_OPTION;
+              return InstrumentType6.EQUITY_OPTION;
             } else if (code === 5 || code === 15) {
-              return InstrumentType5.FUND;
+              return InstrumentType6.FUND;
             } else if (code === 2) {
-              return InstrumentType5.FUTURE;
+              return InstrumentType6.FUTURE;
             } else if (code === 12) {
-              return InstrumentType5.FUTURE_OPTION;
+              return InstrumentType6.FUTURE_OPTION;
             } else if (code === 999) {
-              return InstrumentType5.CRYPTO;
+              return InstrumentType6.CRYPTO;
             } else {
               throw new Error(`Unable to determine InstrumentType for [ ${code} ]`);
             }
@@ -2496,15 +2496,15 @@
             return `[InstrumentType (code=${this.code})]`;
           }
         }
-        const cash = new InstrumentType5("CASH", "cash", "Cash", true, false, false, true, false, false, true, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
-        const crypto2 = new InstrumentType5("CRYPTO", "crypto", "Crypto", false, false, true, false, true, false, true, false, false, true, (instrument) => `BARCHART-CRYPTO-${instrument.name.toUpperCase()}`);
-        const equity = new InstrumentType5("EQUITY", "equity", "Equities", false, true, true, false, true, true, true, true, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const equityOption = new InstrumentType5("EQUITY_OPTION", "equity option", "Equity Options", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const fund = new InstrumentType5("FUND", "mutual fund", "Funds", false, true, false, false, true, true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const future = new InstrumentType5("FUTURE", "futures contract", "Futures", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const futureOption = new InstrumentType5("FUTURE_OPTION", "futures option", "Futures Options", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
-        const other = new InstrumentType5("OTHER", "other", "Other", false, false, false, false, false, false, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
-        return InstrumentType5;
+        const cash = new InstrumentType6("CASH", "cash", "Cash", true, false, false, true, false, false, true, false, false, false, (instrument) => `BARCHART-${instrument.type.code}-${instrument.currency.code}`);
+        const crypto2 = new InstrumentType6("CRYPTO", "crypto", "Crypto", false, false, true, false, true, false, true, false, false, true, (instrument) => `BARCHART-CRYPTO-${instrument.name.toUpperCase()}`);
+        const equity = new InstrumentType6("EQUITY", "equity", "Equities", false, true, true, false, true, true, true, true, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const equityOption = new InstrumentType6("EQUITY_OPTION", "equity option", "Equity Options", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const fund = new InstrumentType6("FUND", "mutual fund", "Funds", false, true, false, false, true, true, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const future = new InstrumentType6("FUTURE", "futures contract", "Futures", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const futureOption = new InstrumentType6("FUTURE_OPTION", "futures option", "Futures Options", false, false, true, false, true, false, false, false, false, true, (instrument) => `BARCHART-${instrument.type.code}-${instrument.symbol.barchart}`);
+        const other = new InstrumentType6("OTHER", "other", "Other", false, false, false, false, false, false, true, false, true, true, (instrument) => `BARCHART-${instrument.type.code}-${uuid.v4()}`);
+        return InstrumentType6;
       })();
     }
   });
@@ -2514,7 +2514,7 @@
     "lib/calculators/AveragePriceCalculator.js"(exports, module) {
       var Decimal8 = require_Decimal();
       var is = require_is();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       module.exports = (() => {
         "use strict";
         class AveragePriceCalculator2 {
@@ -2601,14 +2601,14 @@
           return basis.divide(quantity).opposite();
         }
         const calculators = /* @__PURE__ */ new Map();
-        calculators.set(InstrumentType5.CASH, calculateForCash);
-        calculators.set(InstrumentType5.CRYPTO, calculateForCrypto);
-        calculators.set(InstrumentType5.EQUITY, calculateForEquity);
-        calculators.set(InstrumentType5.EQUITY_OPTION, calculateForEquityOption);
-        calculators.set(InstrumentType5.FUND, calculateForFund);
-        calculators.set(InstrumentType5.FUTURE, calculateForFuture);
-        calculators.set(InstrumentType5.FUTURE_OPTION, calculateForFutureOption);
-        calculators.set(InstrumentType5.OTHER, calculateForOther);
+        calculators.set(InstrumentType6.CASH, calculateForCash);
+        calculators.set(InstrumentType6.CRYPTO, calculateForCrypto);
+        calculators.set(InstrumentType6.EQUITY, calculateForEquity);
+        calculators.set(InstrumentType6.EQUITY_OPTION, calculateForEquityOption);
+        calculators.set(InstrumentType6.FUND, calculateForFund);
+        calculators.set(InstrumentType6.FUTURE, calculateForFuture);
+        calculators.set(InstrumentType6.FUTURE_OPTION, calculateForFutureOption);
+        calculators.set(InstrumentType6.OTHER, calculateForOther);
         return AveragePriceCalculator2;
       })();
     }
@@ -2619,7 +2619,7 @@
     "lib/calculators/ValuationCalculator.js"(exports, module) {
       var Decimal8 = require_Decimal();
       var is = require_is();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       module.exports = (() => {
         "use strict";
         class ValuationCalculator2 {
@@ -2682,14 +2682,14 @@
           return price.multiply(quantity);
         }
         const calculators = /* @__PURE__ */ new Map();
-        calculators.set(InstrumentType5.CASH, calculateForCash);
-        calculators.set(InstrumentType5.CRYPTO, calculateForCrypto);
-        calculators.set(InstrumentType5.EQUITY, calculateForEquity);
-        calculators.set(InstrumentType5.EQUITY_OPTION, calculateForEquityOption);
-        calculators.set(InstrumentType5.FUND, calculateForFund);
-        calculators.set(InstrumentType5.FUTURE, calculateForFuture);
-        calculators.set(InstrumentType5.FUTURE_OPTION, calculateForFutureOption);
-        calculators.set(InstrumentType5.OTHER, calculateForOther);
+        calculators.set(InstrumentType6.CASH, calculateForCash);
+        calculators.set(InstrumentType6.CRYPTO, calculateForCrypto);
+        calculators.set(InstrumentType6.EQUITY, calculateForEquity);
+        calculators.set(InstrumentType6.EQUITY_OPTION, calculateForEquityOption);
+        calculators.set(InstrumentType6.FUND, calculateForFund);
+        calculators.set(InstrumentType6.FUTURE, calculateForFuture);
+        calculators.set(InstrumentType6.FUTURE_OPTION, calculateForFutureOption);
+        calculators.set(InstrumentType6.OTHER, calculateForOther);
         return ValuationCalculator2;
       })();
     }
@@ -4123,7 +4123,7 @@
         const quarterly = new PositionSummaryFrame5("QUARTERLY", "quarter", false, getQuarterlyRanges, getQuarterlyStartDate, getQuarterlyRangeDescription);
         const monthly = new PositionSummaryFrame5("MONTHLY", "month", false, getMonthlyRanges, getMonthlyStartDate, getMonthlyRangeDescription);
         const wtd = new PositionSummaryFrame5("WTD", "week-to-date", true, getWeekToDateRanges, getWeekToDateStartDate, getWeekToDateRangeDescription);
-        const mtd = new PositionSummaryFrame5("MTD", "month-to-date", true, getMonthToDateRanges, getMonthToDateStartDate, getMonthToDateRangeDescription);
+        const mtd = new PositionSummaryFrame5("MTD", "month-to-date", true, getMonthToDateRanges, getMonthlyStartDate, getMonthToDateRangeDescription);
         const ytd = new PositionSummaryFrame5("YTD", "year-to-date", true, getYearToDateRanges, getYearToDateStartDate, getYearToDateRangeDescription);
         function getRange(start, end) {
           return { start, end };
@@ -4201,7 +4201,7 @@
           const ranges = [];
           if (transactions.length !== 0) {
             const last = array.last(transactions);
-            const start = getMonthToDateStartDate(0);
+            const start = getMonthlyStartDate(0);
             const end = start.addMonths(1).getEndOfMonth();
             if (!last.snapshot.open.getIsZero() || last.date.getIsAfter(start) && !last.date.getIsAfter(end)) {
               ranges.push(getRange(start, end));
@@ -4231,10 +4231,6 @@
             daysSinceSunday = 7;
           }
           return today.subtractDays(daysSinceSunday + periods * 7);
-        }
-        function getMonthToDateStartDate(periods, date) {
-          const today = date || Day7.getToday();
-          return today.subtractMonths(periods).subtractDays(today.day);
         }
         function getYearlyRangeDescription(start, end) {
           return `Year ended ${end.format()}`;
@@ -4877,7 +4873,7 @@
       var array = require_array();
       var Decimal8 = require_Decimal();
       var is = require_is();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       var PositionDirection2 = require_PositionDirection();
       var TransactionType4 = require_TransactionType();
       module.exports = (() => {
@@ -4971,7 +4967,7 @@
            */
           static getSwitchIndex(transactions, instrumentType, position) {
             assert.argumentIsArray(transactions, "transactions");
-            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType5, "InstrumentType");
+            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType6, "InstrumentType");
             assert.argumentIsOptional(position, "position");
             let open = position ? position.snapshot.open : Decimal8.ZERO;
             let currentDirection = open.getIsZero() ? null : PositionDirection2.for(open);
@@ -5003,7 +4999,7 @@
            */
           static getPositionViolationIndex(transactions, instrumentType, position) {
             assert.argumentIsArray(transactions, "transactions");
-            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType5, "InstrumentType");
+            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType6, "InstrumentType");
             assert.argumentIsOptional(position, "position");
             let open = position ? position.snapshot.open : Decimal8.ZERO;
             let currentDirection = open.getIsZero() ? PositionDirection2.EVEN : PositionDirection2.for(open);
@@ -5034,7 +5030,7 @@
           * @returns {TransactionType[]}
           */
           static getTransactionTypesFor(instrumentType, userInitiated, currentDirection) {
-            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType5, "InstrumentType");
+            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType6, "InstrumentType");
             assert.argumentIsOptional(userInitiated, "userInitiated", Boolean);
             let valid = validTransactionTypes[instrumentType.code] || [];
             if (userInitiated) {
@@ -5101,7 +5097,7 @@
            * @returns {Boolean}
            */
           static validateDirection(instrumentType, direction) {
-            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType5, "InstrumentType");
+            assert.argumentIsRequired(instrumentType, "instrumentType", InstrumentType6, "InstrumentType");
             assert.argumentIsRequired(direction, "direction", PositionDirection2, "PositionDirection");
             return validDirections[instrumentType.code].some((d) => d === direction);
           }
@@ -5131,58 +5127,58 @@
           }
           validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [PositionDirection2.LONG, PositionDirection2.SHORT, PositionDirection2.EVEN] });
         }
-        associateTypes(InstrumentType5.CRYPTO, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.CRYPTO, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.CRYPTO, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.CRYPTO, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.FEE, true, [PositionDirection2.LONG, PositionDirection2.SHORT]);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.DIVIDEND, false);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.DIVIDEND_REINVEST, false);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.DIVIDEND_STOCK, false);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.SPLIT, false);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.DELIST, false);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.MERGER_OPEN, false);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.MERGER_CLOSE, false);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.SPINOFF, false);
-        associateTypes(InstrumentType5.EQUITY, TransactionType4.SPINOFF_OPEN, false);
-        associateTypes(InstrumentType5.EQUITY_OPTION, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.EQUITY_OPTION, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.EQUITY_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.EQUITY_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType5.FUND, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.FUND, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.FUND, TransactionType4.FEE, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.FUND, TransactionType4.FEE_UNITS, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.DISTRIBUTION_CASH, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.DISTRIBUTION_REINVEST, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.DISTRIBUTION_FUND, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.SPLIT, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.DELIST, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.MERGER_OPEN, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.MERGER_CLOSE, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.SPINOFF, false);
-        associateTypes(InstrumentType5.FUND, TransactionType4.SPINOFF_OPEN, false);
-        associateTypes(InstrumentType5.FUTURE, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.FUTURE, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.FUTURE, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.FUTURE, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType5.FUTURE_OPTION, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.FUTURE_OPTION, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.FUTURE_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.FUTURE_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType5.OTHER, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType5.OTHER, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.OTHER, TransactionType4.INCOME, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.OTHER, TransactionType4.FEE, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.OTHER, TransactionType4.VALUATION, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType5.CASH, TransactionType4.DEPOSIT, true);
-        associateTypes(InstrumentType5.CASH, TransactionType4.WITHDRAWAL, true);
-        associateTypes(InstrumentType5.CASH, TransactionType4.DEBIT, false);
-        associateTypes(InstrumentType5.CASH, TransactionType4.CREDIT, false);
+        associateTypes(InstrumentType6.CRYPTO, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.CRYPTO, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.CRYPTO, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.CRYPTO, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.FEE, true, [PositionDirection2.LONG, PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.DIVIDEND, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.DIVIDEND_REINVEST, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.DIVIDEND_STOCK, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.SPLIT, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.DELIST, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.MERGER_OPEN, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.MERGER_CLOSE, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.SPINOFF, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType4.SPINOFF_OPEN, false);
+        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.FUND, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUND, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.FUND, TransactionType4.FEE, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.FUND, TransactionType4.FEE_UNITS, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.DISTRIBUTION_CASH, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.DISTRIBUTION_REINVEST, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.DISTRIBUTION_FUND, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.SPLIT, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.DELIST, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.MERGER_OPEN, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.MERGER_CLOSE, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.SPINOFF, false);
+        associateTypes(InstrumentType6.FUND, TransactionType4.SPINOFF_OPEN, false);
+        associateTypes(InstrumentType6.FUTURE, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUTURE, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.FUTURE, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUTURE, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.OTHER, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.OTHER, TransactionType4.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.OTHER, TransactionType4.INCOME, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.OTHER, TransactionType4.FEE, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.OTHER, TransactionType4.VALUATION, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.CASH, TransactionType4.DEPOSIT, true);
+        associateTypes(InstrumentType6.CASH, TransactionType4.WITHDRAWAL, true);
+        associateTypes(InstrumentType6.CASH, TransactionType4.DEBIT, false);
+        associateTypes(InstrumentType6.CASH, TransactionType4.CREDIT, false);
         const validDirections = {};
         function associateDirections(instrumentType, positionDirection) {
           const instrumentTypeCode = instrumentType.code;
@@ -5191,28 +5187,28 @@
           }
           validDirections[instrumentTypeCode].push(positionDirection);
         }
-        associateDirections(InstrumentType5.CRYPTO, PositionDirection2.EVEN);
-        associateDirections(InstrumentType5.CRYPTO, PositionDirection2.LONG);
-        associateDirections(InstrumentType5.CRYPTO, PositionDirection2.SHORT);
-        associateDirections(InstrumentType5.EQUITY, PositionDirection2.EVEN);
-        associateDirections(InstrumentType5.EQUITY, PositionDirection2.LONG);
-        associateDirections(InstrumentType5.EQUITY, PositionDirection2.SHORT);
-        associateDirections(InstrumentType5.EQUITY_OPTION, PositionDirection2.EVEN);
-        associateDirections(InstrumentType5.EQUITY_OPTION, PositionDirection2.LONG);
-        associateDirections(InstrumentType5.EQUITY_OPTION, PositionDirection2.SHORT);
-        associateDirections(InstrumentType5.FUND, PositionDirection2.EVEN);
-        associateDirections(InstrumentType5.FUND, PositionDirection2.LONG);
-        associateDirections(InstrumentType5.FUTURE, PositionDirection2.EVEN);
-        associateDirections(InstrumentType5.FUTURE, PositionDirection2.LONG);
-        associateDirections(InstrumentType5.FUTURE, PositionDirection2.SHORT);
-        associateDirections(InstrumentType5.FUTURE_OPTION, PositionDirection2.EVEN);
-        associateDirections(InstrumentType5.FUTURE_OPTION, PositionDirection2.LONG);
-        associateDirections(InstrumentType5.FUTURE_OPTION, PositionDirection2.SHORT);
-        associateDirections(InstrumentType5.OTHER, PositionDirection2.EVEN);
-        associateDirections(InstrumentType5.OTHER, PositionDirection2.LONG);
-        associateDirections(InstrumentType5.CASH, PositionDirection2.EVEN);
-        associateDirections(InstrumentType5.CASH, PositionDirection2.LONG);
-        associateDirections(InstrumentType5.CASH, PositionDirection2.SHORT);
+        associateDirections(InstrumentType6.CRYPTO, PositionDirection2.EVEN);
+        associateDirections(InstrumentType6.CRYPTO, PositionDirection2.LONG);
+        associateDirections(InstrumentType6.CRYPTO, PositionDirection2.SHORT);
+        associateDirections(InstrumentType6.EQUITY, PositionDirection2.EVEN);
+        associateDirections(InstrumentType6.EQUITY, PositionDirection2.LONG);
+        associateDirections(InstrumentType6.EQUITY, PositionDirection2.SHORT);
+        associateDirections(InstrumentType6.EQUITY_OPTION, PositionDirection2.EVEN);
+        associateDirections(InstrumentType6.EQUITY_OPTION, PositionDirection2.LONG);
+        associateDirections(InstrumentType6.EQUITY_OPTION, PositionDirection2.SHORT);
+        associateDirections(InstrumentType6.FUND, PositionDirection2.EVEN);
+        associateDirections(InstrumentType6.FUND, PositionDirection2.LONG);
+        associateDirections(InstrumentType6.FUTURE, PositionDirection2.EVEN);
+        associateDirections(InstrumentType6.FUTURE, PositionDirection2.LONG);
+        associateDirections(InstrumentType6.FUTURE, PositionDirection2.SHORT);
+        associateDirections(InstrumentType6.FUTURE_OPTION, PositionDirection2.EVEN);
+        associateDirections(InstrumentType6.FUTURE_OPTION, PositionDirection2.LONG);
+        associateDirections(InstrumentType6.FUTURE_OPTION, PositionDirection2.SHORT);
+        associateDirections(InstrumentType6.OTHER, PositionDirection2.EVEN);
+        associateDirections(InstrumentType6.OTHER, PositionDirection2.LONG);
+        associateDirections(InstrumentType6.CASH, PositionDirection2.EVEN);
+        associateDirections(InstrumentType6.CASH, PositionDirection2.LONG);
+        associateDirections(InstrumentType6.CASH, PositionDirection2.SHORT);
         return TransactionValidator2;
       })();
     }
@@ -5812,894 +5808,6 @@
     }
   });
 
-  // node_modules/@barchart/common-js/dist/cjs/lang/memoize.js
-  var require_memoize = __commonJS({
-    "node_modules/@barchart/common-js/dist/cjs/lang/memoize.js"(exports, module) {
-      var __create = Object.create;
-      var __defProp = Object.defineProperty;
-      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-      var __getOwnPropNames2 = Object.getOwnPropertyNames;
-      var __getProtoOf = Object.getPrototypeOf;
-      var __hasOwnProp = Object.prototype.hasOwnProperty;
-      var __export = (target, all) => {
-        for (var name in all)
-          __defProp(target, name, { get: all[name], enumerable: true });
-      };
-      var __copyProps = (to, from, except, desc) => {
-        if (from && typeof from === "object" || typeof from === "function") {
-          for (let key of __getOwnPropNames2(from))
-            if (!__hasOwnProp.call(to, key) && key !== except)
-              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-        }
-        return to;
-      };
-      var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-        // If the importer is in node compatibility mode or this is not an ESM
-        // file that has been converted to a CommonJS file using a Babel-
-        // compatible transform (i.e. "__esModule" has not been set), then set
-        // "default" to the CommonJS "module.exports" for node compatibility.
-        isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-        mod
-      ));
-      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-      var memoize_exports = {};
-      __export(memoize_exports, {
-        cache: () => cache,
-        simple: () => simple
-      });
-      module.exports = __toCommonJS(memoize_exports);
-      var assert = __toESM(require_assert());
-      function simple(fn) {
-        const cache2 = {};
-        return (x) => {
-          if (!Object.prototype.hasOwnProperty.call(cache2, x)) {
-            cache2[x] = fn(x);
-          }
-          return cache2[x];
-        };
-      }
-      function cache(fn, duration) {
-        assert.argumentIsRequired(fn, "fn", Function);
-        assert.argumentIsOptional(duration, "duration", Number);
-        const durationToUse = duration || 0;
-        let executionTime = null;
-        let cacheResult = null;
-        return () => {
-          const currentTime = (/* @__PURE__ */ new Date()).getTime();
-          if (executionTime === null || durationToUse > 0 && currentTime > executionTime + durationToUse) {
-            executionTime = currentTime;
-            cacheResult = fn();
-          }
-          return cacheResult;
-        };
-      }
-    }
-  });
-
-  // node_modules/@barchart/common-js/dist/cjs/lang/Rate.js
-  var require_Rate = __commonJS({
-    "node_modules/@barchart/common-js/dist/cjs/lang/Rate.js"(exports, module) {
-      var __create = Object.create;
-      var __defProp = Object.defineProperty;
-      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-      var __getOwnPropNames2 = Object.getOwnPropertyNames;
-      var __getProtoOf = Object.getPrototypeOf;
-      var __hasOwnProp = Object.prototype.hasOwnProperty;
-      var __export = (target, all) => {
-        for (var name in all)
-          __defProp(target, name, { get: all[name], enumerable: true });
-      };
-      var __copyProps = (to, from, except, desc) => {
-        if (from && typeof from === "object" || typeof from === "function") {
-          for (let key of __getOwnPropNames2(from))
-            if (!__hasOwnProp.call(to, key) && key !== except)
-              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-        }
-        return to;
-      };
-      var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-        // If the importer is in node compatibility mode or this is not an ESM
-        // file that has been converted to a CommonJS file using a Babel-
-        // compatible transform (i.e. "__esModule" has not been set), then set
-        // "default" to the CommonJS "module.exports" for node compatibility.
-        isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-        mod
-      ));
-      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-      var Rate_exports = {};
-      __export(Rate_exports, {
-        default: () => Rate
-      });
-      module.exports = __toCommonJS(Rate_exports);
-      var assert = __toESM(require_assert());
-      var is = __toESM(require_is());
-      var memoize = __toESM(require_memoize());
-      var import_Currency = __toESM(require_Currency());
-      var import_Decimal = __toESM(require_Decimal());
-      var Rate = class _Rate {
-        #decimal;
-        #float;
-        #numerator;
-        #denominator;
-        /**
-         * @param {number|string|Decimal} value - The rate
-         * @param {Currency} numerator - The quote currency
-         * @param {Currency} denominator - The base currency
-         */
-        constructor(value, numerator, denominator) {
-          assert.argumentIsRequired(numerator, "numerator", import_Currency.default, "Currency");
-          assert.argumentIsRequired(denominator, "denominator", import_Currency.default, "Currency");
-          if (numerator === denominator) {
-            throw new Error("A rate cannot use two identical currencies.");
-          }
-          if (is.number(value)) {
-            this.#decimal = null;
-            this.#float = value;
-          } else if (value instanceof import_Decimal.default) {
-            this.#decimal = value;
-            this.#float = null;
-          } else {
-            this.#decimal = new import_Decimal.default(value);
-            this.#float = null;
-          }
-          if (this.#float !== null && !(this.#float > 0) || this.#decimal !== null && !this.#decimal.getIsPositive()) {
-            throw new Error("Rate value must be positive.");
-          }
-          this.#numerator = numerator;
-          this.#denominator = denominator;
-        }
-        /**
-         * The rate (as a {@link Decimal}) instance.
-         *
-         * @public
-         * @returns {Decimal}
-         */
-        get decimal() {
-          if (this.#decimal === null) {
-            this.#decimal = new import_Decimal.default(this.float);
-          }
-          return this.#decimal;
-        }
-        /**
-         * The rate (as a floating point number).
-         *
-         * @public
-         * @returns {number}
-         */
-        get float() {
-          if (this.#float === null) {
-            this.#float = this.#decimal.toNumber();
-          }
-          return this.#float;
-        }
-        /**
-         * The numerator (i.e. quote) currency. In other words,
-         * this is EUR of the EURUSD pair.
-         *
-         * @public
-         * @returns {Currency}
-         */
-        get numerator() {
-          return this.#numerator;
-        }
-        /**
-         * The quote (i.e. numerator) currency. In other words,
-         * this is EUR of the EURUSD pair.
-         *
-         * @public
-         * @returns {Currency}
-         */
-        get quote() {
-          return this.#numerator;
-        }
-        /**
-         * The denominator (i.e. base) currency. In other words,
-         * this is USD of the EURUSD pair.
-         *
-         * @public
-         * @returns {Currency}
-         */
-        get denominator() {
-          return this.#denominator;
-        }
-        /**
-         * The base (i.e. denominator) currency. In other words,
-         * this is USD of the EURUSD pair.
-         *
-         * @public
-         * @returns {Currency}
-         */
-        get base() {
-          return this.#denominator;
-        }
-        /**
-         * Returns the equivalent rate with the numerator and denominator (i.e. the quote and base)
-         * currencies.
-         *
-         * @public
-         * @returns {Rate}
-         */
-        invert() {
-          let inverted;
-          if (this.#decimal === null) {
-            inverted = 1 / this.#float;
-          } else {
-            inverted = import_Decimal.default.ONE.divide(this.decimal);
-          }
-          return new _Rate(inverted, this.#denominator, this.#numerator);
-        }
-        /**
-         * Formats the currency pair as a string (e.g. "EURUSD" or "^EURUSD").
-         *
-         * @public
-         * @param {boolean=} useCarat - If true, a carat is used as a prefix to the resulting string.
-         * @returns {string}
-         */
-        formatPair(useCarat) {
-          assert.argumentIsOptional(useCarat, "useCarat", Boolean);
-          return `${useCarat ? "^" : ""}${this.#numerator.code}${this.#denominator.code}`;
-        }
-        /**
-         * Returns the Barchart symbol for the exchange rate.
-         *
-         * @public
-         * @return {string}
-         */
-        getSymbol() {
-          return `^${this.denominator.code}${this.numerator.code}`;
-        }
-        /**
-         * Creates a {@link Rate} instance, when given a value
-         *
-         * @public
-         * @static
-         * @param {number|string|Decimal} value - The rate.
-         * @param {string} symbol - A string that can be parsed as a currency pair.
-         * @returns {Rate}
-         */
-        static fromPair(value, symbol) {
-          assert.argumentIsRequired(symbol, "symbol", String);
-          const pair = parsePair(symbol);
-          return new _Rate(value, import_Currency.default.parse(pair.numerator), import_Currency.default.parse(pair.denominator));
-        }
-        /**
-         * Given a {@link Decimal} value in a known currency, output
-         * a {@link Decimal} converted to an alternate currency.
-         *
-         * @public
-         * @static
-         * @param {Decimal} amount - The amount to convert.
-         * @param {Currency} currency - The currency of the amount.
-         * @param {Currency} desiredCurrency - The currency to convert to.
-         * @param {...Rate} rates - A list of exchange rates to be used for the conversion.
-         * @returns {Decimal}
-         */
-        static convert(amount, currency, desiredCurrency, ...rates) {
-          assert.argumentIsRequired(amount, "amount", import_Decimal.default, "Decimal");
-          assert.argumentIsRequired(currency, "currency", import_Currency.default, "Currency");
-          assert.argumentIsRequired(desiredCurrency, "desiredCurrency", import_Currency.default, "Currency");
-          if (currency === desiredCurrency) {
-            return amount;
-          }
-          if (currency === import_Currency.default.GBX) {
-            const gbp = convert(amount, import_Currency.default.GBX, import_Currency.default.GBP, [GBPGBX]);
-            return convert(gbp, import_Currency.default.GBP, desiredCurrency, rates);
-          }
-          if (desiredCurrency === import_Currency.default.GBX) {
-            const gbp = convert(amount, currency, import_Currency.default.GBP, [GBXGBP, ...rates]);
-            return convert(gbp, import_Currency.default.GBP, import_Currency.default.GBX, [GBXGBP]);
-          }
-          return convert(amount, currency, desiredCurrency, rates);
-        }
-        /**
-         * Returns a list of rates which do no change.
-         *
-         * @public
-         * @static
-         * @returns {Rate[]}
-         */
-        static getStaticRates() {
-          return [new _Rate(GBXGBP.float, GBXGBP.numerator, GBXGBP.denominator)];
-        }
-        /**
-         * Returns a string representation.
-         *
-         * @public
-         * @returns {string}
-         */
-        toString() {
-          return `[Rate]`;
-        }
-      };
-      var pairExpression = /^\^?([A-Z]{3})([A-Z]{3})$/;
-      var parsePair = memoize.simple((symbol) => {
-        const match = symbol.match(pairExpression);
-        if (match === null) {
-          throw new Error('The "pair" argument cannot be parsed.');
-        }
-        return {
-          numerator: match[2],
-          denominator: match[1]
-        };
-      });
-      function convert(amount, currency, desiredCurrency, rates) {
-        if (currency === desiredCurrency) {
-          return amount;
-        }
-        const numerator = desiredCurrency;
-        const denominator = currency;
-        let rate = rates.find((r) => r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator);
-        if (rate && rate.numerator === denominator) {
-          rate = rate.invert();
-        }
-        if (!rate) {
-          throw new Error("Unable to perform conversion, given the rates provided.");
-        }
-        return amount.multiply(rate.decimal);
-      }
-      var GBPGBX = Rate.fromPair(100, "^GBPGBX");
-      var GBXGBP = Rate.fromPair(0.01, "^GBXGBP");
-      {
-        const cjsExports = module.exports;
-        const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
-        if (cjsDefaultExport && (typeof cjsDefaultExport === "function" || typeof cjsDefaultExport === "object")) {
-          Object.keys(cjsExports).forEach((key) => {
-            if (key !== "default" && key !== "__esModule") {
-              cjsDefaultExport[key] = cjsExports[key];
-            }
-          });
-        }
-        module.exports = cjsDefaultExport;
-      }
-    }
-  });
-
-  // node_modules/@barchart/common-js/dist/cjs/collections/graph/Edge.js
-  var require_Edge = __commonJS({
-    "node_modules/@barchart/common-js/dist/cjs/collections/graph/Edge.js"(exports, module) {
-      var __defProp = Object.defineProperty;
-      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-      var __getOwnPropNames2 = Object.getOwnPropertyNames;
-      var __hasOwnProp = Object.prototype.hasOwnProperty;
-      var __export = (target, all) => {
-        for (var name in all)
-          __defProp(target, name, { get: all[name], enumerable: true });
-      };
-      var __copyProps = (to, from, except, desc) => {
-        if (from && typeof from === "object" || typeof from === "function") {
-          for (let key of __getOwnPropNames2(from))
-            if (!__hasOwnProp.call(to, key) && key !== except)
-              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-        }
-        return to;
-      };
-      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-      var Edge_exports = {};
-      __export(Edge_exports, {
-        default: () => Edge
-      });
-      module.exports = __toCommonJS(Edge_exports);
-      var Edge = class {
-        #from;
-        #to;
-        #data;
-        /**
-         * @param {Vertex} from
-         * @param {Vertex} to
-         * @param {*=} data
-         */
-        constructor(from, to, data) {
-          this.#from = from;
-          this.#to = to;
-          this.#data = data || null;
-        }
-        /**
-         * The starting vertex.
-         *
-         * @public
-         * @returns {Vertex}
-         */
-        get from() {
-          return this.#from;
-        }
-        /**
-         * The end vertex.
-         *
-         * @public
-         * @returns {Vertex}
-         */
-        get to() {
-          return this.#to;
-        }
-        /**
-         * Ad hoc data associated with the edge (in other words the "value"
-         * of the edge).
-         *
-         * @public
-         * @returns {*|null}
-         */
-        get data() {
-          return this.#data;
-        }
-        /**
-         * Returns a string representation.
-         *
-         * @public
-         * @returns {string}
-         */
-        toString() {
-          return `[Edge (from=${this.from.data.toString()}, to=${this.to.data.toString()}})]`;
-        }
-      };
-      {
-        const cjsExports = module.exports;
-        const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
-        if (cjsDefaultExport && (typeof cjsDefaultExport === "function" || typeof cjsDefaultExport === "object")) {
-          Object.keys(cjsExports).forEach((key) => {
-            if (key !== "default" && key !== "__esModule") {
-              cjsDefaultExport[key] = cjsExports[key];
-            }
-          });
-        }
-        module.exports = cjsDefaultExport;
-      }
-    }
-  });
-
-  // node_modules/@barchart/common-js/dist/cjs/collections/graph/Vertex.js
-  var require_Vertex = __commonJS({
-    "node_modules/@barchart/common-js/dist/cjs/collections/graph/Vertex.js"(exports, module) {
-      var __create = Object.create;
-      var __defProp = Object.defineProperty;
-      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-      var __getOwnPropNames2 = Object.getOwnPropertyNames;
-      var __getProtoOf = Object.getPrototypeOf;
-      var __hasOwnProp = Object.prototype.hasOwnProperty;
-      var __export = (target, all) => {
-        for (var name in all)
-          __defProp(target, name, { get: all[name], enumerable: true });
-      };
-      var __copyProps = (to, from, except, desc) => {
-        if (from && typeof from === "object" || typeof from === "function") {
-          for (let key of __getOwnPropNames2(from))
-            if (!__hasOwnProp.call(to, key) && key !== except)
-              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-        }
-        return to;
-      };
-      var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-        // If the importer is in node compatibility mode or this is not an ESM
-        // file that has been converted to a CommonJS file using a Babel-
-        // compatible transform (i.e. "__esModule" has not been set), then set
-        // "default" to the CommonJS "module.exports" for node compatibility.
-        isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-        mod
-      ));
-      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-      var Vertex_exports = {};
-      __export(Vertex_exports, {
-        default: () => Vertex
-      });
-      module.exports = __toCommonJS(Vertex_exports);
-      var assert = __toESM(require_assert());
-      var import_Edge = __toESM(require_Edge());
-      var Vertex = class _Vertex {
-        #data;
-        #edges;
-        /**
-         * @param {*=} data
-         */
-        constructor(data) {
-          this.#data = data || null;
-          this.#edges = [];
-        }
-        /**
-         * Ad hoc data associated with the vertex (in other words the "value"
-         * of the vertex).
-         *
-         * @public
-         * @returns {*}
-         */
-        get data() {
-          return this.#data;
-        }
-        /**
-         * Returns all edges from this vertex to other vertices.
-         *
-         * @public
-         * @returns {Edge[]}
-         */
-        getEdges() {
-          return this.#edges;
-        }
-        /**
-         * Adds an edge.
-         *
-         * @public
-         * @param {Vertex} other
-         * @param {*=} data
-         * @returns {Edge}
-         */
-        addEdge(other, data) {
-          assert.argumentIsRequired(other, "other", _Vertex, "Vertex");
-          if (other === this) {
-            throw new Error("Graph vertex cannot connect to itself.");
-          }
-          if (this.hasEdge(other)) {
-            throw new Error(`Graph already has edge between [ ${this.data.toString()} ] and [ ${other.data.toString()} ]`);
-          }
-          const edge = new import_Edge.default(this, other, data);
-          this.#edges.push(edge);
-          return edge;
-        }
-        /**
-         * Locates an edge.
-         *
-         * @public
-         * @param {Vertex} other
-         * @returns {Edge|null}
-         */
-        getEdge(other) {
-          return this.#edges.find((e) => e.to === other) || null;
-        }
-        /**
-         * Indicates if this vertex has an edge.
-         *
-         * @public
-         * @param {Vertex} other
-         * @returns {boolean}
-         */
-        hasEdge(other) {
-          return this.getEdge(other) !== null;
-        }
-        /**
-         * Finds all possible paths from this vertex (node) to another vertex (node).
-         *
-         * @public
-         * @param {Vertex} other
-         * @param {Edge[]=} walk
-         * @returns {Edge[][]}
-         */
-        getPaths(other, walk) {
-          if (walk && this === other) {
-            return [walk];
-          }
-          if (walk && walk.some((edge) => edge.from === this)) {
-            return [];
-          }
-          let paths = [];
-          this.#edges.forEach((edge) => {
-            let current;
-            if (walk) {
-              current = walk.slice(0);
-            } else {
-              current = [];
-            }
-            current.push(edge);
-            paths = paths.concat(edge.to.getPaths(other, current));
-          });
-          return paths;
-        }
-        /**
-         * Returns a string representation.
-         *
-         * @public
-         * @returns {string}
-         */
-        toString() {
-          return `[Vertex (data=${this.data.toString()})]`;
-        }
-      };
-      {
-        const cjsExports = module.exports;
-        const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
-        if (cjsDefaultExport && (typeof cjsDefaultExport === "function" || typeof cjsDefaultExport === "object")) {
-          Object.keys(cjsExports).forEach((key) => {
-            if (key !== "default" && key !== "__esModule") {
-              cjsDefaultExport[key] = cjsExports[key];
-            }
-          });
-        }
-        module.exports = cjsDefaultExport;
-      }
-    }
-  });
-
-  // node_modules/@barchart/common-js/dist/cjs/lang/CurrencyTranslator.js
-  var require_CurrencyTranslator = __commonJS({
-    "node_modules/@barchart/common-js/dist/cjs/lang/CurrencyTranslator.js"(exports, module) {
-      var __create = Object.create;
-      var __defProp = Object.defineProperty;
-      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-      var __getOwnPropNames2 = Object.getOwnPropertyNames;
-      var __getProtoOf = Object.getPrototypeOf;
-      var __hasOwnProp = Object.prototype.hasOwnProperty;
-      var __export = (target, all) => {
-        for (var name in all)
-          __defProp(target, name, { get: all[name], enumerable: true });
-      };
-      var __copyProps = (to, from, except, desc) => {
-        if (from && typeof from === "object" || typeof from === "function") {
-          for (let key of __getOwnPropNames2(from))
-            if (!__hasOwnProp.call(to, key) && key !== except)
-              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-        }
-        return to;
-      };
-      var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-        // If the importer is in node compatibility mode or this is not an ESM
-        // file that has been converted to a CommonJS file using a Babel-
-        // compatible transform (i.e. "__esModule" has not been set), then set
-        // "default" to the CommonJS "module.exports" for node compatibility.
-        isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-        mod
-      ));
-      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-      var CurrencyTranslator_exports = {};
-      __export(CurrencyTranslator_exports, {
-        default: () => CurrencyTranslator2
-      });
-      module.exports = __toCommonJS(CurrencyTranslator_exports);
-      var assert = __toESM(require_assert());
-      var array = __toESM(require_array());
-      var comparators = __toESM(require_comparators());
-      var memoize = __toESM(require_memoize());
-      var import_Currency = __toESM(require_Currency());
-      var import_Decimal = __toESM(require_Decimal());
-      var import_Rate = __toESM(require_Rate());
-      var import_ComparatorBuilder = __toESM(require_ComparatorBuilder());
-      var import_Edge = __toESM(require_Edge());
-      var import_Vertex = __toESM(require_Vertex());
-      var CurrencyTranslator2 = class {
-        #translators;
-        #maps;
-        /**
-         * @param {string[]} symbols - Forex symbols which will be used for translations.
-         */
-        constructor(symbols) {
-          assert.argumentIsArray(symbols, "symbols", String);
-          this.#translators = solve(symbols);
-          this.#maps = {};
-          this.#maps.rates = /* @__PURE__ */ new Map();
-          this.#maps.translation = /* @__PURE__ */ new Map();
-          this.#translators.forEach((translator) => {
-            const path = translator.path;
-            path.forEach((edge) => {
-              const from = edge.from.data;
-              const to = edge.to.data;
-              if (!this.#maps.rates.has(from)) {
-                this.#maps.rates.set(from, /* @__PURE__ */ new Map());
-              }
-              if (!this.#maps.rates.get(from).has(to)) {
-                this.#maps.rates.get(from).set(to, { edge, translators: [] });
-              }
-              this.#maps.rates.get(from).get(to).translators.push(translator);
-            });
-          });
-          this.#translators.forEach((translator) => {
-            const from = translator.from;
-            const to = translator.to;
-            if (!this.#maps.translation.has(from)) {
-              this.#maps.translation.set(from, /* @__PURE__ */ new Map());
-            }
-            this.#maps.translation.get(from).set(to, translator);
-          });
-        }
-        /**
-         * Updates the calculator with new rates.
-         *
-         * @public
-         * @param {Rate[]} rates
-         */
-        setRates(rates) {
-          rates.forEach((rate) => {
-            this.setRate(rate);
-          });
-        }
-        /**
-         * Updates the calculator with a new rate.
-         *
-         * @public
-         * @param {Rate} rate
-         */
-        setRate(rate) {
-          assert.argumentIsRequired(rate, "rate", import_Rate.default, "Rate");
-          this.#updateRate(rate);
-          this.#updateRate(rate.invert());
-        }
-        /**
-         * Performs a currency translation, using the rates previously supplied to
-         * the calculator.
-         *
-         * @public
-         * @param {number|Decimal} amount
-         * @param {Currency} current
-         * @param {Currency} desired
-         * @returns {number|Decimal}
-         */
-        translate(amount, current, desired) {
-          assert.argumentIsRequired(current, "current", import_Currency.default, "Currency");
-          assert.argumentIsRequired(desired, "desired", import_Currency.default, "Currency");
-          if (current === desired) {
-            return amount;
-          }
-          return this.#maps.translation.get(current).get(desired).translate(amount);
-        }
-        /**
-         * Returns a string representation.
-         *
-         * @public
-         * @returns {string}
-         */
-        toString() {
-          return `[CurrencyTranslator]`;
-        }
-        #updateRate(rate) {
-          const from = rate.base;
-          const to = rate.quote;
-          const data = this.#maps.rates.get(from).get(to);
-          const current = data.edge.data.rate;
-          if (current !== null && current === rate.float) {
-            return;
-          }
-          data.edge.data.rate = rate.float;
-          data.translators.forEach((t) => t.clear());
-        }
-      };
-      var pairExpression = /^\^?([A-Z]{3})([A-Z]{3})$/;
-      var parsePair = memoize.simple((symbol) => {
-        const match = symbol.match(pairExpression);
-        if (match === null) {
-          throw new Error('The "pair" argument cannot be parsed.');
-        }
-        return {
-          quote: import_Currency.default.parse(match[1]),
-          base: import_Currency.default.parse(match[2])
-        };
-      });
-      var solve = (symbols) => {
-        const vertices = /* @__PURE__ */ new Map();
-        const getVertex = (currency, create) => {
-          if (create && !vertices.has(currency)) {
-            vertices.set(currency, new import_Vertex.default(currency));
-          }
-          return vertices.get(currency) || null;
-        };
-        const graph = (currencyA, currencyB) => {
-          const vertexA = getVertex(currencyA, true);
-          const vertexB = getVertex(currencyB, true);
-          if (!vertexA.hasEdge(vertexB)) {
-            vertexA.addEdge(vertexB, { rate: null });
-          }
-        };
-        const currencies = /* @__PURE__ */ new Set();
-        symbols.forEach((symbol) => {
-          const pair = parsePair(symbol);
-          currencies.add(pair.quote);
-          currencies.add(pair.base);
-          graph(pair.quote, pair.base);
-          graph(pair.base, pair.quote);
-        });
-        const translators = [];
-        currencies.forEach((currencyA) => {
-          currencies.forEach((currencyB) => {
-            if (currencyA === currencyB) {
-              return;
-            }
-            const vertexA = getVertex(currencyA, false);
-            const vertexB = getVertex(currencyB, false);
-            const candidates = vertexA.getPaths(vertexB);
-            if (candidates.length === 0) {
-              console.warn(`Unable to find path for [ ${currencyA.code} ] to [ ${currencyB.code} ]`);
-              return;
-            }
-            candidates.sort(pathComparator);
-            translators.push(new Translator(candidates[0]));
-          });
-        });
-        return translators;
-      };
-      var Translator = class {
-        #path;
-        #factors;
-        constructor(path) {
-          assert.argumentIsArray(path, "path", import_Edge.default, "Edge");
-          this.#path = path;
-          this.#factors = {};
-          this.#factors.float = null;
-          this.#factors.decimal = null;
-        }
-        /**
-         * The currency of the input value.
-         *
-         * @public
-         * @returns {Currency}
-         */
-        get from() {
-          return array.first(this.#path).from.data;
-        }
-        /**
-         * The currency of the output value.
-         *
-         * @public
-         * @returns {Currency}
-         */
-        get to() {
-          return array.last(this.#path).to.data;
-        }
-        /**
-         * The graph edges (steps) used to convert from the source
-         * currency to the desired currency.
-         *
-         * @public
-         * @returns {Edge[]}
-         */
-        get path() {
-          return this.#path.slice(0);
-        }
-        /**
-         * Clears the cached factor used to convert values.
-         *
-         * @public
-         */
-        clear() {
-          this.#factors.float = null;
-          this.#factors.decimal = null;
-        }
-        /**
-         * Translates an amount in the source currency to the desired currency.
-         *
-         * @public
-         * @param {number|Decimal} amount
-         * @returns {number|Decimal}
-         */
-        translate(amount) {
-          const ready = this.#checkFactors();
-          if (!ready) {
-            throw new Error(`Unable to translate from [ ${this.from.code} ] to [ ${this.to.code} ], exchange rate is unknown.`);
-          }
-          if (amount instanceof import_Decimal.default) {
-            return amount.multiply(this.#factors.decimal);
-          } else {
-            return amount * this.#factors.float;
-          }
-        }
-        toString() {
-          return `[Translator (path=${this.#path.map((edge) => `${edge.from.code} > ${edge.to.code}`).join()})]`;
-        }
-        #checkFactors() {
-          if (this.#factors.float !== null) {
-            return true;
-          }
-          let factor = 1;
-          for (let i = 0; i < this.#path.length; i++) {
-            const edge = this.#path[i];
-            if (edge.data.rate === null) {
-              return false;
-            }
-            factor = factor * edge.data.rate;
-          }
-          this.#factors.float = factor;
-          this.#factors.decimal = import_Decimal.default.parse(factor);
-          return true;
-        }
-      };
-      var pathComparator = import_ComparatorBuilder.default.startWith((a, b) => comparators.compareNumbers(a.length, b.length)).toComparator();
-      {
-        const cjsExports = module.exports;
-        const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
-        if (cjsDefaultExport && (typeof cjsDefaultExport === "function" || typeof cjsDefaultExport === "object")) {
-          Object.keys(cjsExports).forEach((key) => {
-            if (key !== "default" && key !== "__esModule") {
-              cjsDefaultExport[key] = cjsExports[key];
-            }
-          });
-        }
-        module.exports = cjsDefaultExport;
-      }
-    }
-  });
-
   // node_modules/@barchart/common-js/dist/cjs/lang/Disposable.js
   var require_Disposable = __commonJS({
     "node_modules/@barchart/common-js/dist/cjs/lang/Disposable.js"(exports, module) {
@@ -7261,6 +6369,348 @@
     }
   });
 
+  // node_modules/@barchart/common-js/dist/cjs/lang/memoize.js
+  var require_memoize = __commonJS({
+    "node_modules/@barchart/common-js/dist/cjs/lang/memoize.js"(exports, module) {
+      var __create = Object.create;
+      var __defProp = Object.defineProperty;
+      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+      var __getOwnPropNames2 = Object.getOwnPropertyNames;
+      var __getProtoOf = Object.getPrototypeOf;
+      var __hasOwnProp = Object.prototype.hasOwnProperty;
+      var __export = (target, all) => {
+        for (var name in all)
+          __defProp(target, name, { get: all[name], enumerable: true });
+      };
+      var __copyProps = (to, from, except, desc) => {
+        if (from && typeof from === "object" || typeof from === "function") {
+          for (let key of __getOwnPropNames2(from))
+            if (!__hasOwnProp.call(to, key) && key !== except)
+              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+        }
+        return to;
+      };
+      var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+        // If the importer is in node compatibility mode or this is not an ESM
+        // file that has been converted to a CommonJS file using a Babel-
+        // compatible transform (i.e. "__esModule" has not been set), then set
+        // "default" to the CommonJS "module.exports" for node compatibility.
+        isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+        mod
+      ));
+      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+      var memoize_exports = {};
+      __export(memoize_exports, {
+        cache: () => cache,
+        simple: () => simple
+      });
+      module.exports = __toCommonJS(memoize_exports);
+      var assert = __toESM(require_assert());
+      function simple(fn) {
+        const cache2 = {};
+        return (x) => {
+          if (!Object.prototype.hasOwnProperty.call(cache2, x)) {
+            cache2[x] = fn(x);
+          }
+          return cache2[x];
+        };
+      }
+      function cache(fn, duration) {
+        assert.argumentIsRequired(fn, "fn", Function);
+        assert.argumentIsOptional(duration, "duration", Number);
+        const durationToUse = duration || 0;
+        let executionTime = null;
+        let cacheResult = null;
+        return () => {
+          const currentTime = (/* @__PURE__ */ new Date()).getTime();
+          if (executionTime === null || durationToUse > 0 && currentTime > executionTime + durationToUse) {
+            executionTime = currentTime;
+            cacheResult = fn();
+          }
+          return cacheResult;
+        };
+      }
+    }
+  });
+
+  // node_modules/@barchart/common-js/dist/cjs/lang/Rate.js
+  var require_Rate = __commonJS({
+    "node_modules/@barchart/common-js/dist/cjs/lang/Rate.js"(exports, module) {
+      var __create = Object.create;
+      var __defProp = Object.defineProperty;
+      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+      var __getOwnPropNames2 = Object.getOwnPropertyNames;
+      var __getProtoOf = Object.getPrototypeOf;
+      var __hasOwnProp = Object.prototype.hasOwnProperty;
+      var __export = (target, all) => {
+        for (var name in all)
+          __defProp(target, name, { get: all[name], enumerable: true });
+      };
+      var __copyProps = (to, from, except, desc) => {
+        if (from && typeof from === "object" || typeof from === "function") {
+          for (let key of __getOwnPropNames2(from))
+            if (!__hasOwnProp.call(to, key) && key !== except)
+              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+        }
+        return to;
+      };
+      var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+        // If the importer is in node compatibility mode or this is not an ESM
+        // file that has been converted to a CommonJS file using a Babel-
+        // compatible transform (i.e. "__esModule" has not been set), then set
+        // "default" to the CommonJS "module.exports" for node compatibility.
+        isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+        mod
+      ));
+      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+      var Rate_exports = {};
+      __export(Rate_exports, {
+        default: () => Rate
+      });
+      module.exports = __toCommonJS(Rate_exports);
+      var assert = __toESM(require_assert());
+      var is = __toESM(require_is());
+      var memoize = __toESM(require_memoize());
+      var import_Currency = __toESM(require_Currency());
+      var import_Decimal = __toESM(require_Decimal());
+      var Rate = class _Rate {
+        #decimal;
+        #float;
+        #numerator;
+        #denominator;
+        /**
+         * @param {number|string|Decimal} value - The rate
+         * @param {Currency} numerator - The quote currency
+         * @param {Currency} denominator - The base currency
+         */
+        constructor(value, numerator, denominator) {
+          assert.argumentIsRequired(numerator, "numerator", import_Currency.default, "Currency");
+          assert.argumentIsRequired(denominator, "denominator", import_Currency.default, "Currency");
+          if (numerator === denominator) {
+            throw new Error("A rate cannot use two identical currencies.");
+          }
+          if (is.number(value)) {
+            this.#decimal = null;
+            this.#float = value;
+          } else if (value instanceof import_Decimal.default) {
+            this.#decimal = value;
+            this.#float = null;
+          } else {
+            this.#decimal = new import_Decimal.default(value);
+            this.#float = null;
+          }
+          if (this.#float !== null && !(this.#float > 0) || this.#decimal !== null && !this.#decimal.getIsPositive()) {
+            throw new Error("Rate value must be positive.");
+          }
+          this.#numerator = numerator;
+          this.#denominator = denominator;
+        }
+        /**
+         * The rate (as a {@link Decimal}) instance.
+         *
+         * @public
+         * @returns {Decimal}
+         */
+        get decimal() {
+          if (this.#decimal === null) {
+            this.#decimal = new import_Decimal.default(this.float);
+          }
+          return this.#decimal;
+        }
+        /**
+         * The rate (as a floating point number).
+         *
+         * @public
+         * @returns {number}
+         */
+        get float() {
+          if (this.#float === null) {
+            this.#float = this.#decimal.toNumber();
+          }
+          return this.#float;
+        }
+        /**
+         * The numerator (i.e. quote) currency. In other words,
+         * this is EUR of the EURUSD pair.
+         *
+         * @public
+         * @returns {Currency}
+         */
+        get numerator() {
+          return this.#numerator;
+        }
+        /**
+         * The quote (i.e. numerator) currency. In other words,
+         * this is EUR of the EURUSD pair.
+         *
+         * @public
+         * @returns {Currency}
+         */
+        get quote() {
+          return this.#numerator;
+        }
+        /**
+         * The denominator (i.e. base) currency. In other words,
+         * this is USD of the EURUSD pair.
+         *
+         * @public
+         * @returns {Currency}
+         */
+        get denominator() {
+          return this.#denominator;
+        }
+        /**
+         * The base (i.e. denominator) currency. In other words,
+         * this is USD of the EURUSD pair.
+         *
+         * @public
+         * @returns {Currency}
+         */
+        get base() {
+          return this.#denominator;
+        }
+        /**
+         * Returns the equivalent rate with the numerator and denominator (i.e. the quote and base)
+         * currencies.
+         *
+         * @public
+         * @returns {Rate}
+         */
+        invert() {
+          let inverted;
+          if (this.#decimal === null) {
+            inverted = 1 / this.#float;
+          } else {
+            inverted = import_Decimal.default.ONE.divide(this.decimal);
+          }
+          return new _Rate(inverted, this.#denominator, this.#numerator);
+        }
+        /**
+         * Formats the currency pair as a string (e.g. "EURUSD" or "^EURUSD").
+         *
+         * @public
+         * @param {boolean=} useCarat - If true, a carat is used as a prefix to the resulting string.
+         * @returns {string}
+         */
+        formatPair(useCarat) {
+          assert.argumentIsOptional(useCarat, "useCarat", Boolean);
+          return `${useCarat ? "^" : ""}${this.#numerator.code}${this.#denominator.code}`;
+        }
+        /**
+         * Returns the Barchart symbol for the exchange rate.
+         *
+         * @public
+         * @return {string}
+         */
+        getSymbol() {
+          return `^${this.denominator.code}${this.numerator.code}`;
+        }
+        /**
+         * Creates a {@link Rate} instance, when given a value
+         *
+         * @public
+         * @static
+         * @param {number|string|Decimal} value - The rate.
+         * @param {string} symbol - A string that can be parsed as a currency pair.
+         * @returns {Rate}
+         */
+        static fromPair(value, symbol) {
+          assert.argumentIsRequired(symbol, "symbol", String);
+          const pair = parsePair(symbol);
+          return new _Rate(value, import_Currency.default.parse(pair.numerator), import_Currency.default.parse(pair.denominator));
+        }
+        /**
+         * Given a {@link Decimal} value in a known currency, output
+         * a {@link Decimal} converted to an alternate currency.
+         *
+         * @public
+         * @static
+         * @param {Decimal} amount - The amount to convert.
+         * @param {Currency} currency - The currency of the amount.
+         * @param {Currency} desiredCurrency - The currency to convert to.
+         * @param {...Rate} rates - A list of exchange rates to be used for the conversion.
+         * @returns {Decimal}
+         */
+        static convert(amount, currency, desiredCurrency, ...rates) {
+          assert.argumentIsRequired(amount, "amount", import_Decimal.default, "Decimal");
+          assert.argumentIsRequired(currency, "currency", import_Currency.default, "Currency");
+          assert.argumentIsRequired(desiredCurrency, "desiredCurrency", import_Currency.default, "Currency");
+          if (currency === desiredCurrency) {
+            return amount;
+          }
+          if (currency === import_Currency.default.GBX) {
+            const gbp = convert(amount, import_Currency.default.GBX, import_Currency.default.GBP, [GBPGBX]);
+            return convert(gbp, import_Currency.default.GBP, desiredCurrency, rates);
+          }
+          if (desiredCurrency === import_Currency.default.GBX) {
+            const gbp = convert(amount, currency, import_Currency.default.GBP, [GBXGBP, ...rates]);
+            return convert(gbp, import_Currency.default.GBP, import_Currency.default.GBX, [GBXGBP]);
+          }
+          return convert(amount, currency, desiredCurrency, rates);
+        }
+        /**
+         * Returns a list of rates which do no change.
+         *
+         * @public
+         * @static
+         * @returns {Rate[]}
+         */
+        static getStaticRates() {
+          return [new _Rate(GBXGBP.float, GBXGBP.numerator, GBXGBP.denominator)];
+        }
+        /**
+         * Returns a string representation.
+         *
+         * @public
+         * @returns {string}
+         */
+        toString() {
+          return `[Rate]`;
+        }
+      };
+      var pairExpression = /^\^?([A-Z]{3})([A-Z]{3})$/;
+      var parsePair = memoize.simple((symbol) => {
+        const match = symbol.match(pairExpression);
+        if (match === null) {
+          throw new Error('The "pair" argument cannot be parsed.');
+        }
+        return {
+          numerator: match[2],
+          denominator: match[1]
+        };
+      });
+      function convert(amount, currency, desiredCurrency, rates) {
+        if (currency === desiredCurrency) {
+          return amount;
+        }
+        const numerator = desiredCurrency;
+        const denominator = currency;
+        let rate = rates.find((r) => r.numerator === numerator && r.denominator === denominator || r.numerator === denominator && r.denominator === numerator);
+        if (rate && rate.numerator === denominator) {
+          rate = rate.invert();
+        }
+        if (!rate) {
+          throw new Error("Unable to perform conversion, given the rates provided.");
+        }
+        return amount.multiply(rate.decimal);
+      }
+      var GBPGBX = Rate.fromPair(100, "^GBPGBX");
+      var GBXGBP = Rate.fromPair(0.01, "^GBXGBP");
+      {
+        const cjsExports = module.exports;
+        const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
+        if (cjsDefaultExport && (typeof cjsDefaultExport === "function" || typeof cjsDefaultExport === "object")) {
+          Object.keys(cjsExports).forEach((key) => {
+            if (key !== "default" && key !== "__esModule") {
+              cjsDefaultExport[key] = cjsExports[key];
+            }
+          });
+        }
+        module.exports = cjsDefaultExport;
+      }
+    }
+  });
+
   // node_modules/@barchart/common-js/dist/cjs/collections/Tree.js
   var require_Tree = __commonJS({
     "node_modules/@barchart/common-js/dist/cjs/collections/Tree.js"(exports, module) {
@@ -7697,7 +7147,7 @@
       var assert = require_assert();
       var Currency5 = require_Currency();
       var is = require_is();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       var PositionLevelType5 = require_PositionLevelType();
       module.exports = (() => {
         "use strict";
@@ -7886,12 +7336,12 @@
            * @returns {String}
            */
           static getKeyForAssetClassGroup(type, currency) {
-            assert.argumentIsRequired(type, "type", InstrumentType5, "InstrumentType");
+            assert.argumentIsRequired(type, "type", InstrumentType6, "InstrumentType");
             assert.argumentIsRequired(currency, "currency", Currency5, "Currency");
             return `${type.code}|${currency.code}`;
           }
           static getDescriptionForAssetClassGroup(type, currency, defaultCurrency) {
-            assert.argumentIsRequired(type, "type", InstrumentType5, "InstrumentType");
+            assert.argumentIsRequired(type, "type", InstrumentType6, "InstrumentType");
             assert.argumentIsRequired(currency, "currency", Currency5, "Currency");
             assert.argumentIsOptional(defaultCurrency, "defaultCurrency", Currency5, "Currency");
             return `${type.alternateDescription}${currency === (defaultCurrency || Currency5.CAD) ? "" : ` (${currency.alternateDescription})`}`;
@@ -7965,6 +7415,618 @@
           }
         }
         return PositionTreeDefinitions;
+      })();
+    }
+  });
+
+  // node_modules/@barchart/common-js/dist/cjs/collections/graph/Edge.js
+  var require_Edge = __commonJS({
+    "node_modules/@barchart/common-js/dist/cjs/collections/graph/Edge.js"(exports, module) {
+      var __defProp = Object.defineProperty;
+      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+      var __getOwnPropNames2 = Object.getOwnPropertyNames;
+      var __hasOwnProp = Object.prototype.hasOwnProperty;
+      var __export = (target, all) => {
+        for (var name in all)
+          __defProp(target, name, { get: all[name], enumerable: true });
+      };
+      var __copyProps = (to, from, except, desc) => {
+        if (from && typeof from === "object" || typeof from === "function") {
+          for (let key of __getOwnPropNames2(from))
+            if (!__hasOwnProp.call(to, key) && key !== except)
+              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+        }
+        return to;
+      };
+      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+      var Edge_exports = {};
+      __export(Edge_exports, {
+        default: () => Edge
+      });
+      module.exports = __toCommonJS(Edge_exports);
+      var Edge = class {
+        #from;
+        #to;
+        #data;
+        /**
+         * @param {Vertex} from
+         * @param {Vertex} to
+         * @param {*=} data
+         */
+        constructor(from, to, data) {
+          this.#from = from;
+          this.#to = to;
+          this.#data = data || null;
+        }
+        /**
+         * The starting vertex.
+         *
+         * @public
+         * @returns {Vertex}
+         */
+        get from() {
+          return this.#from;
+        }
+        /**
+         * The end vertex.
+         *
+         * @public
+         * @returns {Vertex}
+         */
+        get to() {
+          return this.#to;
+        }
+        /**
+         * Ad hoc data associated with the edge (in other words the "value"
+         * of the edge).
+         *
+         * @public
+         * @returns {*|null}
+         */
+        get data() {
+          return this.#data;
+        }
+        /**
+         * Returns a string representation.
+         *
+         * @public
+         * @returns {string}
+         */
+        toString() {
+          return `[Edge (from=${this.from.data.toString()}, to=${this.to.data.toString()}})]`;
+        }
+      };
+      {
+        const cjsExports = module.exports;
+        const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
+        if (cjsDefaultExport && (typeof cjsDefaultExport === "function" || typeof cjsDefaultExport === "object")) {
+          Object.keys(cjsExports).forEach((key) => {
+            if (key !== "default" && key !== "__esModule") {
+              cjsDefaultExport[key] = cjsExports[key];
+            }
+          });
+        }
+        module.exports = cjsDefaultExport;
+      }
+    }
+  });
+
+  // node_modules/@barchart/common-js/dist/cjs/collections/graph/Vertex.js
+  var require_Vertex = __commonJS({
+    "node_modules/@barchart/common-js/dist/cjs/collections/graph/Vertex.js"(exports, module) {
+      var __create = Object.create;
+      var __defProp = Object.defineProperty;
+      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+      var __getOwnPropNames2 = Object.getOwnPropertyNames;
+      var __getProtoOf = Object.getPrototypeOf;
+      var __hasOwnProp = Object.prototype.hasOwnProperty;
+      var __export = (target, all) => {
+        for (var name in all)
+          __defProp(target, name, { get: all[name], enumerable: true });
+      };
+      var __copyProps = (to, from, except, desc) => {
+        if (from && typeof from === "object" || typeof from === "function") {
+          for (let key of __getOwnPropNames2(from))
+            if (!__hasOwnProp.call(to, key) && key !== except)
+              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+        }
+        return to;
+      };
+      var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+        // If the importer is in node compatibility mode or this is not an ESM
+        // file that has been converted to a CommonJS file using a Babel-
+        // compatible transform (i.e. "__esModule" has not been set), then set
+        // "default" to the CommonJS "module.exports" for node compatibility.
+        isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+        mod
+      ));
+      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+      var Vertex_exports = {};
+      __export(Vertex_exports, {
+        default: () => Vertex
+      });
+      module.exports = __toCommonJS(Vertex_exports);
+      var assert = __toESM(require_assert());
+      var import_Edge = __toESM(require_Edge());
+      var Vertex = class _Vertex {
+        #data;
+        #edges;
+        /**
+         * @param {*=} data
+         */
+        constructor(data) {
+          this.#data = data || null;
+          this.#edges = [];
+        }
+        /**
+         * Ad hoc data associated with the vertex (in other words the "value"
+         * of the vertex).
+         *
+         * @public
+         * @returns {*}
+         */
+        get data() {
+          return this.#data;
+        }
+        /**
+         * Returns all edges from this vertex to other vertices.
+         *
+         * @public
+         * @returns {Edge[]}
+         */
+        getEdges() {
+          return this.#edges;
+        }
+        /**
+         * Adds an edge.
+         *
+         * @public
+         * @param {Vertex} other
+         * @param {*=} data
+         * @returns {Edge}
+         */
+        addEdge(other, data) {
+          assert.argumentIsRequired(other, "other", _Vertex, "Vertex");
+          if (other === this) {
+            throw new Error("Graph vertex cannot connect to itself.");
+          }
+          if (this.hasEdge(other)) {
+            throw new Error(`Graph already has edge between [ ${this.data.toString()} ] and [ ${other.data.toString()} ]`);
+          }
+          const edge = new import_Edge.default(this, other, data);
+          this.#edges.push(edge);
+          return edge;
+        }
+        /**
+         * Locates an edge.
+         *
+         * @public
+         * @param {Vertex} other
+         * @returns {Edge|null}
+         */
+        getEdge(other) {
+          return this.#edges.find((e) => e.to === other) || null;
+        }
+        /**
+         * Indicates if this vertex has an edge.
+         *
+         * @public
+         * @param {Vertex} other
+         * @returns {boolean}
+         */
+        hasEdge(other) {
+          return this.getEdge(other) !== null;
+        }
+        /**
+         * Finds all possible paths from this vertex (node) to another vertex (node).
+         *
+         * @public
+         * @param {Vertex} other
+         * @param {Edge[]=} walk
+         * @returns {Edge[][]}
+         */
+        getPaths(other, walk) {
+          if (walk && this === other) {
+            return [walk];
+          }
+          if (walk && walk.some((edge) => edge.from === this)) {
+            return [];
+          }
+          let paths = [];
+          this.#edges.forEach((edge) => {
+            let current;
+            if (walk) {
+              current = walk.slice(0);
+            } else {
+              current = [];
+            }
+            current.push(edge);
+            paths = paths.concat(edge.to.getPaths(other, current));
+          });
+          return paths;
+        }
+        /**
+         * Returns a string representation.
+         *
+         * @public
+         * @returns {string}
+         */
+        toString() {
+          return `[Vertex (data=${this.data.toString()})]`;
+        }
+      };
+      {
+        const cjsExports = module.exports;
+        const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
+        if (cjsDefaultExport && (typeof cjsDefaultExport === "function" || typeof cjsDefaultExport === "object")) {
+          Object.keys(cjsExports).forEach((key) => {
+            if (key !== "default" && key !== "__esModule") {
+              cjsDefaultExport[key] = cjsExports[key];
+            }
+          });
+        }
+        module.exports = cjsDefaultExport;
+      }
+    }
+  });
+
+  // node_modules/@barchart/common-js/dist/cjs/lang/CurrencyTranslator.js
+  var require_CurrencyTranslator = __commonJS({
+    "node_modules/@barchart/common-js/dist/cjs/lang/CurrencyTranslator.js"(exports, module) {
+      var __create = Object.create;
+      var __defProp = Object.defineProperty;
+      var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+      var __getOwnPropNames2 = Object.getOwnPropertyNames;
+      var __getProtoOf = Object.getPrototypeOf;
+      var __hasOwnProp = Object.prototype.hasOwnProperty;
+      var __export = (target, all) => {
+        for (var name in all)
+          __defProp(target, name, { get: all[name], enumerable: true });
+      };
+      var __copyProps = (to, from, except, desc) => {
+        if (from && typeof from === "object" || typeof from === "function") {
+          for (let key of __getOwnPropNames2(from))
+            if (!__hasOwnProp.call(to, key) && key !== except)
+              __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+        }
+        return to;
+      };
+      var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+        // If the importer is in node compatibility mode or this is not an ESM
+        // file that has been converted to a CommonJS file using a Babel-
+        // compatible transform (i.e. "__esModule" has not been set), then set
+        // "default" to the CommonJS "module.exports" for node compatibility.
+        isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+        mod
+      ));
+      var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+      var CurrencyTranslator_exports = {};
+      __export(CurrencyTranslator_exports, {
+        default: () => CurrencyTranslator2
+      });
+      module.exports = __toCommonJS(CurrencyTranslator_exports);
+      var assert = __toESM(require_assert());
+      var array = __toESM(require_array());
+      var comparators = __toESM(require_comparators());
+      var memoize = __toESM(require_memoize());
+      var import_Currency = __toESM(require_Currency());
+      var import_Decimal = __toESM(require_Decimal());
+      var import_Rate = __toESM(require_Rate());
+      var import_ComparatorBuilder = __toESM(require_ComparatorBuilder());
+      var import_Edge = __toESM(require_Edge());
+      var import_Vertex = __toESM(require_Vertex());
+      var CurrencyTranslator2 = class {
+        #translators;
+        #maps;
+        /**
+         * @param {string[]} symbols - Forex symbols which will be used for translations.
+         */
+        constructor(symbols) {
+          assert.argumentIsArray(symbols, "symbols", String);
+          this.#translators = solve(symbols);
+          this.#maps = {};
+          this.#maps.rates = /* @__PURE__ */ new Map();
+          this.#maps.translation = /* @__PURE__ */ new Map();
+          this.#translators.forEach((translator) => {
+            const path = translator.path;
+            path.forEach((edge) => {
+              const from = edge.from.data;
+              const to = edge.to.data;
+              if (!this.#maps.rates.has(from)) {
+                this.#maps.rates.set(from, /* @__PURE__ */ new Map());
+              }
+              if (!this.#maps.rates.get(from).has(to)) {
+                this.#maps.rates.get(from).set(to, { edge, translators: [] });
+              }
+              this.#maps.rates.get(from).get(to).translators.push(translator);
+            });
+          });
+          this.#translators.forEach((translator) => {
+            const from = translator.from;
+            const to = translator.to;
+            if (!this.#maps.translation.has(from)) {
+              this.#maps.translation.set(from, /* @__PURE__ */ new Map());
+            }
+            this.#maps.translation.get(from).set(to, translator);
+          });
+        }
+        /**
+         * Updates the calculator with new rates.
+         *
+         * @public
+         * @param {Rate[]} rates
+         */
+        setRates(rates) {
+          rates.forEach((rate) => {
+            this.setRate(rate);
+          });
+        }
+        /**
+         * Updates the calculator with a new rate.
+         *
+         * @public
+         * @param {Rate} rate
+         */
+        setRate(rate) {
+          assert.argumentIsRequired(rate, "rate", import_Rate.default, "Rate");
+          this.#updateRate(rate);
+          this.#updateRate(rate.invert());
+        }
+        /**
+         * Performs a currency translation, using the rates previously supplied to
+         * the calculator.
+         *
+         * @public
+         * @param {number|Decimal} amount
+         * @param {Currency} current
+         * @param {Currency} desired
+         * @returns {number|Decimal}
+         */
+        translate(amount, current, desired) {
+          assert.argumentIsRequired(current, "current", import_Currency.default, "Currency");
+          assert.argumentIsRequired(desired, "desired", import_Currency.default, "Currency");
+          if (current === desired) {
+            return amount;
+          }
+          return this.#maps.translation.get(current).get(desired).translate(amount);
+        }
+        /**
+         * Returns a string representation.
+         *
+         * @public
+         * @returns {string}
+         */
+        toString() {
+          return `[CurrencyTranslator]`;
+        }
+        #updateRate(rate) {
+          const from = rate.base;
+          const to = rate.quote;
+          const data = this.#maps.rates.get(from).get(to);
+          const current = data.edge.data.rate;
+          if (current !== null && current === rate.float) {
+            return;
+          }
+          data.edge.data.rate = rate.float;
+          data.translators.forEach((t) => t.clear());
+        }
+      };
+      var pairExpression = /^\^?([A-Z]{3})([A-Z]{3})$/;
+      var parsePair = memoize.simple((symbol) => {
+        const match = symbol.match(pairExpression);
+        if (match === null) {
+          throw new Error('The "pair" argument cannot be parsed.');
+        }
+        return {
+          quote: import_Currency.default.parse(match[1]),
+          base: import_Currency.default.parse(match[2])
+        };
+      });
+      var solve = (symbols) => {
+        const vertices = /* @__PURE__ */ new Map();
+        const getVertex = (currency, create) => {
+          if (create && !vertices.has(currency)) {
+            vertices.set(currency, new import_Vertex.default(currency));
+          }
+          return vertices.get(currency) || null;
+        };
+        const graph = (currencyA, currencyB) => {
+          const vertexA = getVertex(currencyA, true);
+          const vertexB = getVertex(currencyB, true);
+          if (!vertexA.hasEdge(vertexB)) {
+            vertexA.addEdge(vertexB, { rate: null });
+          }
+        };
+        const currencies = /* @__PURE__ */ new Set();
+        symbols.forEach((symbol) => {
+          const pair = parsePair(symbol);
+          currencies.add(pair.quote);
+          currencies.add(pair.base);
+          graph(pair.quote, pair.base);
+          graph(pair.base, pair.quote);
+        });
+        const translators = [];
+        currencies.forEach((currencyA) => {
+          currencies.forEach((currencyB) => {
+            if (currencyA === currencyB) {
+              return;
+            }
+            const vertexA = getVertex(currencyA, false);
+            const vertexB = getVertex(currencyB, false);
+            const candidates = vertexA.getPaths(vertexB);
+            if (candidates.length === 0) {
+              console.warn(`Unable to find path for [ ${currencyA.code} ] to [ ${currencyB.code} ]`);
+              return;
+            }
+            candidates.sort(pathComparator);
+            translators.push(new Translator(candidates[0]));
+          });
+        });
+        return translators;
+      };
+      var Translator = class {
+        #path;
+        #factors;
+        constructor(path) {
+          assert.argumentIsArray(path, "path", import_Edge.default, "Edge");
+          this.#path = path;
+          this.#factors = {};
+          this.#factors.float = null;
+          this.#factors.decimal = null;
+        }
+        /**
+         * The currency of the input value.
+         *
+         * @public
+         * @returns {Currency}
+         */
+        get from() {
+          return array.first(this.#path).from.data;
+        }
+        /**
+         * The currency of the output value.
+         *
+         * @public
+         * @returns {Currency}
+         */
+        get to() {
+          return array.last(this.#path).to.data;
+        }
+        /**
+         * The graph edges (steps) used to convert from the source
+         * currency to the desired currency.
+         *
+         * @public
+         * @returns {Edge[]}
+         */
+        get path() {
+          return this.#path.slice(0);
+        }
+        /**
+         * Clears the cached factor used to convert values.
+         *
+         * @public
+         */
+        clear() {
+          this.#factors.float = null;
+          this.#factors.decimal = null;
+        }
+        /**
+         * Translates an amount in the source currency to the desired currency.
+         *
+         * @public
+         * @param {number|Decimal} amount
+         * @returns {number|Decimal}
+         */
+        translate(amount) {
+          const ready = this.#checkFactors();
+          if (!ready) {
+            throw new Error(`Unable to translate from [ ${this.from.code} ] to [ ${this.to.code} ], exchange rate is unknown.`);
+          }
+          if (amount instanceof import_Decimal.default) {
+            return amount.multiply(this.#factors.decimal);
+          } else {
+            return amount * this.#factors.float;
+          }
+        }
+        toString() {
+          return `[Translator (path=${this.#path.map((edge) => `${edge.from.code} > ${edge.to.code}`).join()})]`;
+        }
+        #checkFactors() {
+          if (this.#factors.float !== null) {
+            return true;
+          }
+          let factor = 1;
+          for (let i = 0; i < this.#path.length; i++) {
+            const edge = this.#path[i];
+            if (edge.data.rate === null) {
+              return false;
+            }
+            factor = factor * edge.data.rate;
+          }
+          this.#factors.float = factor;
+          this.#factors.decimal = import_Decimal.default.parse(factor);
+          return true;
+        }
+      };
+      var pathComparator = import_ComparatorBuilder.default.startWith((a, b) => comparators.compareNumbers(a.length, b.length)).toComparator();
+      {
+        const cjsExports = module.exports;
+        const cjsDefaultExport = cjsExports && cjsExports.__esModule ? cjsExports.default : cjsExports;
+        if (cjsDefaultExport && (typeof cjsDefaultExport === "function" || typeof cjsDefaultExport === "object")) {
+          Object.keys(cjsExports).forEach((key) => {
+            if (key !== "default" && key !== "__esModule") {
+              cjsDefaultExport[key] = cjsExports[key];
+            }
+          });
+        }
+        module.exports = cjsDefaultExport;
+      }
+    }
+  });
+
+  // lib/processing/ExpandableCurrencyTranslator.js
+  var require_ExpandableCurrencyTranslator = __commonJS({
+    "lib/processing/ExpandableCurrencyTranslator.js"(exports, module) {
+      var array = require_array();
+      var CurrencyTranslator2 = require_CurrencyTranslator();
+      var Decimal8 = require_Decimal();
+      var Rate = require_Rate();
+      module.exports = (() => {
+        "use strict";
+        class ExpandableCurrencyTranslator {
+          constructor(symbols, rates) {
+            this._symbols = array.unique(symbols);
+            this._rates = /* @__PURE__ */ new Map();
+            rates.forEach((rate) => {
+              this._rates.set(rate.getSymbol(), rate);
+            });
+            rebuildCurrencyTranslator.call(this);
+          }
+          /**
+           * Registers an additional forex symbol.
+           *
+           * @public
+           * @param {String} symbol
+           */
+          addSymbol(symbol) {
+            if (this._symbols.includes(symbol)) {
+              return;
+            }
+            this._symbols.push(symbol);
+            if (!this._rates.has(symbol)) {
+              this._rates.set(symbol, Rate.fromPair(Decimal8.ONE, symbol));
+            }
+            rebuildCurrencyTranslator.call(this);
+          }
+          /**
+           * Updates the translator with a new rate.
+           *
+           * @public
+           * @param {Rate} rate
+           */
+          setRate(rate) {
+            this._rates.set(rate.getSymbol(), rate);
+            this._translator.setRate(rate);
+          }
+          /**
+           * Translates an amount from one currency to another.
+           *
+           * @public
+           * @param {Number|Decimal} amount
+           * @param {Currency} current
+           * @param {Currency} desired
+           * @returns {Number|Decimal}
+           */
+          translate(amount, current, desired) {
+            return this._translator.translate(amount, current, desired);
+          }
+        }
+        function rebuildCurrencyTranslator() {
+          this._translator = new CurrencyTranslator2(this._symbols);
+          this._translator.setRates([...this._rates.values()]);
+        }
+        return ExpandableCurrencyTranslator;
       })();
     }
   });
@@ -8255,7 +8317,7 @@
       var formatter = require_formatter();
       var is = require_is();
       var fractionFormatter = require_fraction();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       var FilterMode2 = require_FilterMode();
       var PositionLevelDefinition5 = require_PositionLevelDefinition();
       var PositionLevelType5 = require_PositionLevelType();
@@ -9042,7 +9104,7 @@
           if (instrument && value !== null) {
             const type = instrument.type;
             const code = instrument.code;
-            if (code && code.supportsFractions && (type === InstrumentType5.FUTURE || type === InstrumentType5.FUTURE_OPTION)) {
+            if (code && code.supportsFractions && (type === InstrumentType6.FUTURE || type === InstrumentType6.FUTURE_OPTION)) {
               const rounded = code.roundToNearestTick(decimal ? value.toFloat() : value, instrument.future ? instrument.future.tick : instrument.option.tick, true);
               return fractionFormatter(rounded, code.fractionFactor, code.fractionDigits, "-", true);
             }
@@ -9098,7 +9160,7 @@
           };
           const updates = items.reduce((updates2, item) => {
             updates2.basis = updates2.basis.add(translate(item, item.data.basis));
-            if (item.position.instrument.type === InstrumentType5.FUTURE) {
+            if (item.position.instrument.type === InstrumentType6.FUTURE) {
               if (group.single) {
                 updates2.basis2 = null;
               }
@@ -9117,7 +9179,7 @@
             updates2.periodIncome = updates2.periodIncome.add(translate(item, item.data.periodIncome));
             updates2.periodRealized = updates2.periodRealized.add(translate(item, item.data.periodRealized));
             updates2.periodUnrealized = updates2.periodUnrealized.add(translate(item, item.data.periodUnrealized));
-            if (item.position.instrument.type === InstrumentType5.CASH) {
+            if (item.position.instrument.type === InstrumentType6.CASH) {
               updates2.cashTotal = updates2.cashTotal.add(translate(item, item.data.market));
             }
             updates2.totalDivisor = updates2.totalDivisor.add(translate(item, item.data.totalDivisor));
@@ -9184,7 +9246,7 @@
           const holdingItem = group.single && items.length === 1 ? items[0] : null;
           actual.daysHeld = holdingItem === null ? null : holdingItem.data.daysHeld;
           actual.weeksHeld = holdingItem === null ? null : holdingItem.data.weeksHeld;
-          const nonCashItems = items.filter((item) => item.position.instrument.type !== InstrumentType5.CASH);
+          const nonCashItems = items.filter((item) => item.position.instrument.type !== InstrumentType6.CASH);
           actual.holdingPeriodComplete = nonCashItems.length !== 0 && nonCashItems.every((item) => item.data.daysHeld !== null);
           actual.annualizedDaysHeld = nonCashItems.reduce((daysHeld, item) => {
             if (item.data.daysHeld === null) {
@@ -9305,7 +9367,7 @@
             const items = group._consideredItems;
             updates = items.reduce((updates2, item2) => {
               updates2.market = updates2.market.add(translate(item2, item2.data.market));
-              if (item2.position.instrument.type === InstrumentType5.FUTURE) {
+              if (item2.position.instrument.type === InstrumentType6.FUTURE) {
                 updates2.market2 = updates2.market2.add(translate(item2, item2.data.unrealized));
               } else {
                 updates2.market2 = updates2.market2.add(translate(item2, item2.data.market));
@@ -9339,7 +9401,7 @@
           } else {
             updates = {};
             updates.market = actual.market.add(translate(item, item.data.marketChange));
-            if (item.position.instrument.type === InstrumentType5.FUTURE) {
+            if (item.position.instrument.type === InstrumentType6.FUTURE) {
               updates.market2 = actual.market2.add(translate(item, item.data.unrealizedChange));
             } else {
               updates.market2 = actual.market2.add(translate(item, item.data.marketChange));
@@ -9587,7 +9649,7 @@
       var Disposable = require_Disposable();
       var Event = require_Event();
       var is = require_is();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       var PositionDirection2 = require_PositionDirection();
       var OptionsValuationType = require_OptionsValuationType();
       var AveragePriceCalculator2 = require_AveragePriceCalculator();
@@ -10070,11 +10132,11 @@
           const position = item.position;
           const snapshot = getSnapshot(position, item.currentSummary, item._reporting);
           const data = item._data;
-          const worthless = data.expired && (position.instrument.type === InstrumentType5.EQUITY_OPTION || position.instrument.type === InstrumentType5.FUTURE_OPTION);
+          const worthless = data.expired && (position.instrument.type === InstrumentType6.EQUITY_OPTION || position.instrument.type === InstrumentType6.FUTURE_OPTION);
           let market;
-          if (position.instrument.type === InstrumentType5.OTHER) {
+          if (position.instrument.type === InstrumentType6.OTHER) {
             market = snapshot.value;
-          } else if (position.instrument.type === InstrumentType5.CASH) {
+          } else if (position.instrument.type === InstrumentType6.CASH) {
             market = snapshot.open;
           } else {
             let priceToUse;
@@ -10165,7 +10227,7 @@
           const weekToDateSummary = item._periodSummaries.weekToDate || null;
           const monthToDateSummary = item._periodSummaries.monthToDate || null;
           let currentPriceToUse = null;
-          if (currentSummary && position.instrument.type !== InstrumentType5.CASH) {
+          if (currentSummary && position.instrument.type !== InstrumentType6.CASH) {
             let priceToUse;
             if (worthless) {
               priceToUse = Decimal8.ZERO;
@@ -10227,7 +10289,7 @@
             data.weekToDateGainChange = Decimal8.ZERO;
             data.monthToDateGainChange = Decimal8.ZERO;
           }
-          if (position.instrument.type !== InstrumentType5.CASH) {
+          if (position.instrument.type !== InstrumentType6.CASH) {
             if (currentPriceToUse === null) {
               if (worthless) {
                 currentPriceToUse = Decimal8.ZERO;
@@ -10279,7 +10341,7 @@
         function calculatePeriodGain(instrument, direction, currentSummary, previousSummary, overridePrice, useCurrentStart) {
           let returnRef;
           const type = instrument.type;
-          if (currentSummary && type !== InstrumentType5.CASH) {
+          if (currentSummary && type !== InstrumentType6.CASH) {
             let startValue;
             if (previousSummary) {
               startValue = previousSummary.end.value;
@@ -10305,7 +10367,7 @@
         }
         function calculatePeriodDivisor(type, direction, currentSummary, previousSummary, useCurrentStart) {
           let returnRef;
-          if (currentSummary && type !== InstrumentType5.CASH) {
+          if (currentSummary && type !== InstrumentType6.CASH) {
             let startValue;
             if (previousSummary) {
               startValue = previousSummary.end.value;
@@ -10326,7 +10388,7 @@
         }
         function calculatePeriodUnrealized(type, periodGain, periodRealized, periodIncome) {
           let returnRef;
-          if (type !== InstrumentType5.CASH) {
+          if (type !== InstrumentType6.CASH) {
             returnRef = periodRealized.add(periodIncome).subtract(periodGain).opposite();
           } else {
             returnRef = Decimal8.ZERO;
@@ -10334,7 +10396,7 @@
           return returnRef;
         }
         function calculateTotalDivisor(type, direction, position) {
-          if (type === InstrumentType5.CASH) {
+          if (type === InstrumentType6.CASH) {
             return Decimal8.ZERO;
           }
           let divisor;
@@ -10351,7 +10413,7 @@
           return divisor.getIsApproximate(Decimal8.ZERO, 4) ? Decimal8.ZERO : gain.divide(divisor);
         }
         function calculateAnnualizedReturnPercent(type, totalPercent, totalDivisor, daysHeld) {
-          if (type === InstrumentType5.CASH || totalDivisor.getIsApproximate(Decimal8.ZERO, 4) || daysHeld === null || daysHeld < DAYS_PER_YEAR || totalPercent.toFloat() < -1) {
+          if (type === InstrumentType6.CASH || totalDivisor.getIsApproximate(Decimal8.ZERO, 4) || daysHeld === null || daysHeld < DAYS_PER_YEAR || totalPercent.toFloat() < -1) {
             return null;
           }
           const annualizedReturn = Math.pow(1 + totalPercent.toFloat(), DAYS_PER_YEAR / daysHeld) - 1;
@@ -10379,9 +10441,9 @@
           assert.argumentIsRequired(position, "position");
           const type = position.instrument.type;
           let expiration;
-          if (type === InstrumentType5.FUTURE) {
+          if (type === InstrumentType6.FUTURE) {
             expiration = position.instrument.future.expiration;
-          } else if (type === InstrumentType5.FUTURE_OPTION || type === InstrumentType5.EQUITY_OPTION) {
+          } else if (type === InstrumentType6.FUTURE_OPTION || type === InstrumentType6.EQUITY_OPTION) {
             expiration = position.instrument.option.expiration;
           } else {
             expiration = null;
@@ -10460,7 +10522,6 @@
       var ComparatorBuilder = require_ComparatorBuilder();
       var comparators = require_comparators();
       var Currency5 = require_Currency();
-      var CurrencyTranslator2 = require_CurrencyTranslator();
       var Day7 = require_Day();
       var Decimal8 = require_Decimal();
       var Disposable = require_Disposable();
@@ -10473,6 +10534,7 @@
       var PositionLevelDefinition5 = require_PositionLevelDefinition();
       var PositionLevelType5 = require_PositionLevelType();
       var PositionTreeDefinition3 = require_PositionTreeDefinition();
+      var ExpandableCurrencyTranslator = require_ExpandableCurrencyTranslator();
       var PositionGroup2 = require_PositionGroup();
       var PositionItem3 = require_PositionItem();
       module.exports = (() => {
@@ -10522,6 +10584,7 @@
             this._useBarchartPriceFormattingRules = false;
             this._positionSymbolAddedEvent = new Event(this);
             this._positionSymbolRemovedEvent = new Event(this);
+            this._forexSymbolAddedEvent = new Event(this);
             this._exchanges = {};
             this._portfolios = portfolios.reduce((map, portfolio) => {
               map[portfolio.portfolio] = portfolio;
@@ -10594,11 +10657,25 @@
                 return symbols;
               }, []);
             }
-            this._currencyTranslator = new CurrencyTranslator2(this._forexSymbols.concat(STATIC_RATES.map((r) => r.getSymbol())));
+            const requiredCurrencies = positions.map((position) => position.instrument.currency).concat(portfolios.reduce((currencies, portfolio) => {
+              if (portfolio.defaults && portfolio.defaults.currency) {
+                currencies.push(portfolio.defaults.currency);
+              }
+              return currencies;
+            }, []));
+            requiredCurrencies.forEach((currency) => {
+              const symbol = getForexSymbolForCurrency(currency);
+              if (symbol !== null && !this._forexSymbols.includes(symbol)) {
+                this._forexSymbols.push(symbol);
+              }
+            });
             const forexQuotes = this._forexSymbols.map((symbol) => {
               return Rate.fromPair(Decimal8.ONE, symbol);
             });
-            this._currencyTranslator.setRates(forexQuotes.concat(STATIC_RATES));
+            this._currencyTranslator = new ExpandableCurrencyTranslator(
+              this._forexSymbols.concat(STATIC_RATES.map((r) => r.getSymbol())),
+              forexQuotes.concat(STATIC_RATES)
+            );
             this._nodes = {};
             this._trees = this._definitions.reduce((map, treeDefinition) => {
               const tree = new BindingTree2();
@@ -10703,6 +10780,7 @@
             if (this.hasPortfolio(portfolio)) {
               return;
             }
+            ensurePortfolioCurrency.call(this, portfolio);
             const key = portfolio.portfolio;
             this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio });
             this._portfolioBindings.push(portfolio);
@@ -10753,6 +10831,7 @@
             if (!this.hasPortfolio(portfolio)) {
               return;
             }
+            ensurePortfolioCurrency.call(this, portfolio);
             this._portfolios[portfolio.portfolio] = portfolio;
             const portfolioIndex = this._portfolioBindings.findIndex((candidate) => candidate.portfolio === portfolio.portfolio);
             if (!(portfolioIndex < 0)) {
@@ -10804,6 +10883,7 @@
             if (!this._portfolios.hasOwnProperty(position.portfolio)) {
               return;
             }
+            ensureForexCurrency.call(this, position.instrument.currency);
             const existingBarchartSymbols = this.getPositionSymbols(false, false);
             let exchangeCode = extractExchangeCode(position);
             let exchange = null;
@@ -11237,6 +11317,17 @@
             return this._positionSymbolRemovedEvent.register(handler);
           }
           /**
+           * Registers an observer for forex symbol addition (this occurs when a position or
+           * portfolio uses a currency that was not registered when the container was created).
+           *
+           * @public
+           * @param {Function} handler
+           * @returns {Disposable}
+           */
+          registerForexSymbolAddedHandler(handler) {
+            return this._forexSymbolAddedEvent.register(handler);
+          }
+          /**
            * Changes rules for price formatting.
            *
            * @public
@@ -11257,6 +11348,27 @@
         }
         function findNode(tree, keys) {
           return keys.reduce((tree2, key) => tree2.findChild((group) => group.key === key), tree);
+        }
+        function getForexSymbolForCurrency(currency) {
+          if (!(currency instanceof Currency5) || currency === DEFAULT_CURRENCY) {
+            return null;
+          }
+          const currencyToUse = currency === Currency5.GBX ? Currency5.GBP : currency;
+          return `^${DEFAULT_CURRENCY.code}${currencyToUse.code}`;
+        }
+        function ensurePortfolioCurrency(portfolio) {
+          if (portfolio.defaults && portfolio.defaults.currency) {
+            ensureForexCurrency.call(this, portfolio.defaults.currency);
+          }
+        }
+        function ensureForexCurrency(currency) {
+          const symbol = getForexSymbolForCurrency(currency);
+          if (symbol === null || this._forexSymbols.includes(symbol)) {
+            return;
+          }
+          this._forexSymbols.push(symbol);
+          this._currencyTranslator.addSymbol(symbol);
+          this._forexSymbolAddedEvent.fire(symbol);
         }
         function findParentGroup(group, predicate) {
           const groupNode = this._nodes[group.id];
@@ -11520,7 +11632,7 @@
     "test/utils/processing/PositionTestFactory.js"(exports, module) {
       var Currency5 = require_Currency();
       var Decimal8 = require_Decimal();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       var PositionDirection2 = require_PositionDirection();
       var positionCounter = 0;
       function resetPositionCounter() {
@@ -11541,7 +11653,7 @@
               barchart: symbol
             },
             currency: currency || Currency5.USD,
-            type: InstrumentType5.EQUITY
+            type: InstrumentType6.EQUITY
           },
           snapshot: {
             basis: new Decimal8(123),
@@ -18428,7 +18540,7 @@
       var Enum = require_Enum();
       var SchemaBuilder = require_SchemaBuilder();
       var UnitCode = require_UnitCode();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       var OptionSide = require_OptionSide();
       var PositionDirection2 = require_PositionDirection();
       var ValuationType = require_ValuationType();
@@ -18493,13 +18605,13 @@
           }
         }
         const complete = new PositionSchema2(
-          SchemaBuilder.withName("complete").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING, true).withField("legacy.position", DataType.STRING, true).withField("system.version", DataType.NUMBER, true).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("root", DataType.STRING, true).schema
+          SchemaBuilder.withName("complete").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING, true).withField("legacy.position", DataType.STRING, true).withField("system.version", DataType.NUMBER, true).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("root", DataType.STRING, true).schema
         );
         const client = new PositionSchema2(
-          SchemaBuilder.withName("client").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("previous", DataType.NUMBER, true).schema
+          SchemaBuilder.withName("client").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("previous", DataType.NUMBER, true).schema
         );
         const update = new PositionSchema2(
-          SchemaBuilder.withName("update").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("mapping.name", DataType.STRING, true).withField("mapping.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("mapping.currency", DataType.forEnum(Currency5, "Currency"), true).withField("mapping.symbol.barchart", DataType.STRING, true).withField("mapping.symbol.display", DataType.STRING, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName("update").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("mapping.name", DataType.STRING, true).withField("mapping.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("mapping.currency", DataType.forEnum(Currency5, "Currency"), true).withField("mapping.symbol.barchart", DataType.STRING, true).withField("mapping.symbol.display", DataType.STRING, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).schema
         );
         const simple = new PositionSchema2(
           SchemaBuilder.withName("simple").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).schema
@@ -18517,7 +18629,7 @@
       var DataType = require_DataType();
       var Enum = require_Enum();
       var SchemaBuilder = require_SchemaBuilder();
-      var InstrumentType5 = require_InstrumentType();
+      var InstrumentType6 = require_InstrumentType();
       var PositionDirection2 = require_PositionDirection();
       var TransactionType4 = require_TransactionType();
       module.exports = (() => {
@@ -18618,7 +18730,7 @@
           SchemaBuilder.withName("client").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.NUMBER, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).schema
         );
         const buy = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.BUY.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType4.BUY.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
         );
         const sell = new TransactionSchema2(
           SchemaBuilder.withName(TransactionType4.SELL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL, true).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).withField("close", DataType.BOOLEAN, true).schema
@@ -18627,16 +18739,16 @@
           SchemaBuilder.withName(TransactionType4.BUY_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL, true).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).withField("close", DataType.BOOLEAN, true).schema
         );
         const sellShort = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.SELL_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType4.SELL_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
         );
         const fee = new TransactionSchema2(
           SchemaBuilder.withName(TransactionType4.FEE.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("fee", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const deposit = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.DEPOSIT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType4.DEPOSIT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const withdrawal = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.WITHDRAWAL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType5, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType4.WITHDRAWAL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const valuation = new TransactionSchema2(
           SchemaBuilder.withName(TransactionType4.VALUATION.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("rate", DataType.DECIMAL, true).withField("value", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).schema
@@ -19845,6 +19957,7 @@
 
   // test/specs/processing/PositionContainerSpec.js
   var Currency = require_Currency();
+  var InstrumentType4 = require_InstrumentType();
   var PositionSummaryFrame2 = require_PositionSummaryFrame();
   var PositionContainer = require_PositionContainer();
   var PositionLevelDefinition = require_PositionLevelDefinition();
@@ -19964,6 +20077,77 @@
           });
         });
       });
+    });
+  });
+  describe("When a position container uses currencies outside its default currency list", () => {
+    "use strict";
+    const treeName = "positions";
+    const createDefinitions = () => {
+      return [
+        new PositionTreeDefinition(treeName, [
+          new PositionLevelDefinition("Total", PositionLevelType.OTHER, (x) => "totals", (x) => "Total", (x) => Currency.USD),
+          new PositionLevelDefinition("Portfolio", PositionLevelType.PORTFOLIO, (x) => x.portfolio.portfolio, (x) => x.portfolio.name, (x) => Currency.USD),
+          new PositionLevelDefinition("Position", PositionLevelType.POSITION, (x) => x.position.position, (x) => x.position.instrument.symbol.barchart, (x) => x.position.instrument.currency)
+        ])
+      ];
+    };
+    const createAssetDefinitions = () => {
+      return [
+        new PositionTreeDefinition(treeName, [
+          new PositionLevelDefinition("Total", PositionLevelType.OTHER, (x) => "totals", (x) => "Total", (x) => Currency.USD),
+          new PositionLevelDefinition("Portfolio", PositionLevelType.PORTFOLIO, (x) => x.portfolio.portfolio, (x) => x.portfolio.name, (x) => Currency.USD),
+          new PositionLevelDefinition("Asset", PositionLevelType.OTHER, (x) => PositionLevelDefinition.getKeyForAssetClassGroup(x.position.instrument.type, x.position.instrument.currency), (x) => `${x.position.instrument.type.alternateDescription} (${x.position.instrument.currency.code})`, (x) => x.position.instrument.currency),
+          new PositionLevelDefinition("Position", PositionLevelType.POSITION, (x) => x.position.position, (x) => x.position.instrument.symbol.barchart, (x) => x.position.instrument.currency)
+        ])
+      ];
+    };
+    beforeEach(() => {
+      positionTestFactory.resetPositionCounter();
+    });
+    it("should register the forex symbol required by an initial ILS position", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const position = positionTestFactory.createPosition(portfolio.portfolio, "ILS", Currency.ILS);
+      const container = new PositionContainer(createDefinitions(), [portfolio], [position], []);
+      expect(container.getForexSymbols()).toContain("^USDILS");
+    });
+    it("should notify observers when an SGD position is added after construction", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const container = new PositionContainer(createDefinitions(), [portfolio], [], []);
+      const symbols = [];
+      container.registerForexSymbolAddedHandler((symbol) => symbols.push(symbol));
+      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "SGD", Currency.SGD), []);
+      expect(symbols).toEqual(["^USDSGD"]);
+    });
+    it("should expose a new ILS asset group through existing bindings when a position is added", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const initialPosition = positionTestFactory.createPosition(portfolio.portfolio, "USD", Currency.USD);
+      const container = new PositionContainer(createAssetDefinitions(), [portfolio], [initialPosition], []);
+      const assetGroups = container.getGroups(treeName, ["totals", portfolio.portfolio]);
+      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "ILS", Currency.ILS), []);
+      expect(assetGroups.map((group) => ({ key: group.data.key, description: group.data.description }))).toContain({
+        key: PositionLevelDefinition.getKeyForAssetClassGroup(InstrumentType4.EQUITY, Currency.ILS),
+        description: "Equities (ILS)"
+      });
+    });
+    it("should notify observers only once for multiple positions using the same new currency", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const container = new PositionContainer(createDefinitions(), [portfolio], [], []);
+      const symbols = [];
+      container.registerForexSymbolAddedHandler((symbol) => symbols.push(symbol));
+      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "SGD-1", Currency.SGD), []);
+      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "SGD-2", Currency.SGD), []);
+      expect(symbols.length).toEqual(1);
+    });
+    it("should preserve known exchange rates when a new currency is registered", () => {
+      const firstPortfolio = positionTestFactory.createPortfolio("first", "First");
+      const secondPortfolio = positionTestFactory.createPortfolio("second", "Second");
+      const firstPosition = positionTestFactory.createPosition(firstPortfolio.portfolio, "ILS", Currency.ILS);
+      const container = new PositionContainer(createDefinitions(), [firstPortfolio, secondPortfolio], [firstPosition], []);
+      container.setQuotes([], [{ symbol: "^USDILS", lastPrice: 4 }]);
+      container.updatePosition(positionTestFactory.createPosition(secondPortfolio.portfolio, "SGD", Currency.SGD), []);
+      container.setQuotes([], [{ symbol: "^USDILS", lastPrice: 4 }]);
+      const firstPortfolioGroup = container.getGroup(treeName, ["totals", firstPortfolio.portfolio]);
+      expect(firstPortfolioGroup.formatted.market).toEqual("114.00");
     });
   });
 
@@ -20283,7 +20467,7 @@
   // test/specs/processing/PositionItemSpec.js
   var Day4 = require_Day();
   var Decimal6 = require_Decimal();
-  var InstrumentType4 = require_InstrumentType();
+  var InstrumentType5 = require_InstrumentType();
   var PositionDirection = require_PositionDirection();
   var PositionSummaryFrame4 = require_PositionSummaryFrame();
   var PositionItem2 = require_PositionItem();
@@ -20517,7 +20701,7 @@
     it("should not annualize CASH positions", () => {
       const today = new Day4(2026, 7, 16);
       position.opening = { date: today.subtractDays(365) };
-      position.instrument.type = InstrumentType4.CASH;
+      position.instrument.type = InstrumentType5.CASH;
       item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, false, today);
       expect({
         annualizedReturnPercent: item.data.annualizedReturnPercent,

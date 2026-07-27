@@ -1,6 +1,7 @@
 const Currency = require('@barchart/common-js/lang/Currency');
 
-const PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
+const InstrumentType = require('./../../../lib/data/InstrumentType'),
+	PositionSummaryFrame = require('./../../../lib/data/PositionSummaryFrame');
 
 const PositionContainer = require('./../../../lib/processing/PositionContainer'),
 	PositionLevelDefinition = require('./../../../lib/processing/definitions/PositionLevelDefinition'),
@@ -148,5 +149,96 @@ describe('When a position container data is gathered', () => {
 				});
 			});
 		});
+	});
+});
+
+describe('When a position container uses currencies outside its default currency list', () => {
+	'use strict';
+
+	const treeName = 'positions';
+
+	const createDefinitions = () => {
+		return [
+			new PositionTreeDefinition(treeName, [
+				new PositionLevelDefinition('Total', PositionLevelType.OTHER, x => 'totals', x => 'Total', x => Currency.USD),
+				new PositionLevelDefinition('Portfolio', PositionLevelType.PORTFOLIO, x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.USD),
+				new PositionLevelDefinition('Position', PositionLevelType.POSITION, x => x.position.position, x => x.position.instrument.symbol.barchart, x => x.position.instrument.currency)
+			])
+		];
+	};
+
+	const createAssetDefinitions = () => {
+		return [
+			new PositionTreeDefinition(treeName, [
+				new PositionLevelDefinition('Total', PositionLevelType.OTHER, x => 'totals', x => 'Total', x => Currency.USD),
+				new PositionLevelDefinition('Portfolio', PositionLevelType.PORTFOLIO, x => x.portfolio.portfolio, x => x.portfolio.name, x => Currency.USD),
+				new PositionLevelDefinition('Asset', PositionLevelType.OTHER, x => PositionLevelDefinition.getKeyForAssetClassGroup(x.position.instrument.type, x.position.instrument.currency), x => `${x.position.instrument.type.alternateDescription} (${x.position.instrument.currency.code})`, x => x.position.instrument.currency),
+				new PositionLevelDefinition('Position', PositionLevelType.POSITION, x => x.position.position, x => x.position.instrument.symbol.barchart, x => x.position.instrument.currency)
+			])
+		];
+	};
+
+	beforeEach(() => {
+		positionTestFactory.resetPositionCounter();
+	});
+
+	it('should register the forex symbol required by an initial ILS position', () => {
+		const portfolio = positionTestFactory.createPortfolio('portfolio', 'Portfolio');
+		const position = positionTestFactory.createPosition(portfolio.portfolio, 'ILS', Currency.ILS);
+		const container = new PositionContainer(createDefinitions(), [ portfolio ], [ position ], [ ]);
+
+		expect(container.getForexSymbols()).toContain('^USDILS');
+	});
+
+	it('should notify observers when an SGD position is added after construction', () => {
+		const portfolio = positionTestFactory.createPortfolio('portfolio', 'Portfolio');
+		const container = new PositionContainer(createDefinitions(), [ portfolio ], [ ], [ ]);
+		const symbols = [ ];
+
+		container.registerForexSymbolAddedHandler(symbol => symbols.push(symbol));
+		container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, 'SGD', Currency.SGD), [ ]);
+
+		expect(symbols).toEqual([ '^USDSGD' ]);
+	});
+
+	it('should expose a new ILS asset group through existing bindings when a position is added', () => {
+		const portfolio = positionTestFactory.createPortfolio('portfolio', 'Portfolio');
+		const initialPosition = positionTestFactory.createPosition(portfolio.portfolio, 'USD', Currency.USD);
+		const container = new PositionContainer(createAssetDefinitions(), [ portfolio ], [ initialPosition ], [ ]);
+		const assetGroups = container.getGroups(treeName, [ 'totals', portfolio.portfolio ]);
+
+		container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, 'ILS', Currency.ILS), [ ]);
+
+		expect(assetGroups.map(group => ({ key: group.data.key, description: group.data.description }))).toContain({
+			key: PositionLevelDefinition.getKeyForAssetClassGroup(InstrumentType.EQUITY, Currency.ILS),
+			description: 'Equities (ILS)'
+		});
+	});
+
+	it('should notify observers only once for multiple positions using the same new currency', () => {
+		const portfolio = positionTestFactory.createPortfolio('portfolio', 'Portfolio');
+		const container = new PositionContainer(createDefinitions(), [ portfolio ], [ ], [ ]);
+		const symbols = [ ];
+
+		container.registerForexSymbolAddedHandler(symbol => symbols.push(symbol));
+		container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, 'SGD-1', Currency.SGD), [ ]);
+		container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, 'SGD-2', Currency.SGD), [ ]);
+
+		expect(symbols.length).toEqual(1);
+	});
+
+	it('should preserve known exchange rates when a new currency is registered', () => {
+		const firstPortfolio = positionTestFactory.createPortfolio('first', 'First');
+		const secondPortfolio = positionTestFactory.createPortfolio('second', 'Second');
+		const firstPosition = positionTestFactory.createPosition(firstPortfolio.portfolio, 'ILS', Currency.ILS);
+		const container = new PositionContainer(createDefinitions(), [ firstPortfolio, secondPortfolio ], [ firstPosition ], [ ]);
+
+		container.setQuotes([ ], [ { symbol: '^USDILS', lastPrice: 4 } ]);
+		container.updatePosition(positionTestFactory.createPosition(secondPortfolio.portfolio, 'SGD', Currency.SGD), [ ]);
+		container.setQuotes([ ], [ { symbol: '^USDILS', lastPrice: 4 } ]);
+
+		const firstPortfolioGroup = container.getGroup(treeName, [ 'totals', firstPortfolio.portfolio ]);
+
+		expect(firstPortfolioGroup.formatted.market).toEqual('114.00');
 	});
 });
