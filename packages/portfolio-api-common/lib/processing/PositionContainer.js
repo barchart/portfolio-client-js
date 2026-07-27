@@ -3,7 +3,6 @@ const array = require('@barchart/common-js/lang/array'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Currency = require('@barchart/common-js/lang/Currency'),
-	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
@@ -20,7 +19,8 @@ const PositionLevelDefinition = require('./definitions/PositionLevelDefinition')
 	PositionLevelType = require('./definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
 
-const PositionGroup = require('./PositionGroup'),
+const ExpandableCurrencyTranslator = require('./ExpandableCurrencyTranslator'),
+	PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
 
 module.exports = (() => {
@@ -100,6 +100,7 @@ module.exports = (() => {
 
 			this._positionSymbolAddedEvent = new Event(this);
 			this._positionSymbolRemovedEvent = new Event(this);
+			this._forexSymbolAddedEvent = new Event(this);
 
 			this._exchanges = { };
 
@@ -205,13 +206,31 @@ module.exports = (() => {
 				}, [ ]);
 			}
 
-			this._currencyTranslator = new CurrencyTranslator(this._forexSymbols.concat(STATIC_RATES.map(r => r.getSymbol())));
+			const requiredCurrencies = positions.map(position => position.instrument.currency)
+				.concat(portfolios.reduce((currencies, portfolio) => {
+					if (portfolio.defaults && portfolio.defaults.currency) {
+						currencies.push(portfolio.defaults.currency);
+					}
+
+					return currencies;
+				}, [ ]));
+
+			requiredCurrencies.forEach((currency) => {
+				const symbol = getForexSymbolForCurrency(currency);
+
+				if (symbol !== null && !this._forexSymbols.includes(symbol)) {
+					this._forexSymbols.push(symbol);
+				}
+			});
 
 			const forexQuotes = this._forexSymbols.map((symbol) => {
 				return Rate.fromPair(Decimal.ONE, symbol);
 			});
 
-			this._currencyTranslator.setRates(forexQuotes.concat(STATIC_RATES));
+			this._currencyTranslator = new ExpandableCurrencyTranslator(
+				this._forexSymbols.concat(STATIC_RATES.map(r => r.getSymbol())),
+				forexQuotes.concat(STATIC_RATES)
+			);
 
 			this._nodes = { };
 
@@ -347,6 +366,8 @@ module.exports = (() => {
 				return;
 			}
 
+			ensurePortfolioCurrency.call(this, portfolio);
+
 			const key = portfolio.portfolio;
 
 			this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio });
@@ -411,6 +432,8 @@ module.exports = (() => {
 			if (!this.hasPortfolio(portfolio)) {
 				return;
 			}
+
+			ensurePortfolioCurrency.call(this, portfolio);
 
 			this._portfolios[portfolio.portfolio] = portfolio;
 
@@ -477,6 +500,8 @@ module.exports = (() => {
 			if (!this._portfolios.hasOwnProperty(position.portfolio)) {
 				return;
 			}
+
+			ensureForexCurrency.call(this, position.instrument.currency);
 
 			const existingBarchartSymbols = this.getPositionSymbols(false, false);
 
@@ -1011,6 +1036,18 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Registers an observer for forex symbol addition (this occurs when a position or
+		 * portfolio uses a currency that was not registered when the container was created).
+		 *
+		 * @public
+		 * @param {Function} handler
+		 * @returns {Disposable}
+		 */
+		registerForexSymbolAddedHandler(handler) {
+			return this._forexSymbolAddedEvent.register(handler);
+		}
+
+		/**
 		 * Changes rules for price formatting.
 		 *
 		 * @public
@@ -1035,6 +1072,34 @@ module.exports = (() => {
 
 	function findNode(tree, keys) {
 		return keys.reduce((tree, key) => tree.findChild(group => group.key === key), tree);
+	}
+
+	function getForexSymbolForCurrency(currency) {
+		if (!(currency instanceof Currency) || currency === DEFAULT_CURRENCY) {
+			return null;
+		}
+
+		const currencyToUse = currency === Currency.GBX ? Currency.GBP : currency;
+
+		return `^${DEFAULT_CURRENCY.code}${currencyToUse.code}`;
+	}
+
+	function ensurePortfolioCurrency(portfolio) {
+		if (portfolio.defaults && portfolio.defaults.currency) {
+			ensureForexCurrency.call(this, portfolio.defaults.currency);
+		}
+	}
+
+	function ensureForexCurrency(currency) {
+		const symbol = getForexSymbolForCurrency(currency);
+
+		if (symbol === null || this._forexSymbols.includes(symbol)) {
+			return;
+		}
+
+		this._forexSymbols.push(symbol);
+		this._currencyTranslator.addSymbol(symbol);
+		this._forexSymbolAddedEvent.fire(symbol);
 	}
 
 	function findParentGroup(group, predicate) {
