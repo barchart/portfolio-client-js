@@ -1238,10 +1238,27 @@ module.exports = (() => {
 
 		const compositeGroups = populatedGroups.concat(emptyGroups);
 
+		const comparator = createGroupComparator(levelDefinition.requiredGroups);
+
+		compositeGroups.forEach((group) => {
+			const childTree = parentTree.addChild(group, comparator);
+
+			this._nodes[group.id] = childTree;
+
+			group.setParentGroup(this.getParentGroup(group));
+			group.setPortfolioGroup(this.getParentGroupForPortfolio(group));
+
+			initializeGroupObservers.call(this, childTree, treeDefinition);
+
+			createGroups.call(this, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
+		});
+	}
+
+	function createGroupComparator(requiredGroups) {
 		let builder;
 
-		if (requiredGroupsToUse.length !== 0) {
-			const ordering = requiredGroupsToUse.reduce((map, group, index) => {
+		if (requiredGroups.length !== 0) {
+			const ordering = requiredGroups.reduce((map, group, index) => {
 				map[group.description] = index;
 
 				return map;
@@ -1266,20 +1283,7 @@ module.exports = (() => {
 			});
 		}
 
-		compositeGroups.sort(builder.toComparator());
-
-		compositeGroups.forEach((group) => {
-			const childTree = parentTree.addChild(group);
-
-			this._nodes[group.id] = childTree;
-
-			group.setParentGroup(this.getParentGroup(group));
-			group.setPortfolioGroup(this.getParentGroupForPortfolio(group));
-
-			initializeGroupObservers.call(this, childTree, treeDefinition);
-
-			createGroups.call(this, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
-		});
+		return builder.toComparator();
 	}
 
 	function updateEmptyPortfolioGroups(portfolio) {

@@ -6,7 +6,7 @@ module.exports = (() => {
 	/**
 	 * A tree data structure. Each instance represents a node, holding
 	 * an item, a reference to the parent node, and a reference to
-	 * children nodes. Children are stored in insertion order.
+	 * children nodes. Child nodes and their binding values are kept in the same order.
 	 *
 	 * @public
 	 * @param {*} value - The value of the node.
@@ -29,11 +29,28 @@ module.exports = (() => {
 			return this._children2;
 		}
 
-		addChild(value) {
+		/**
+		 * Adds a child node, optionally inserting it according to a comparator.
+		 *
+		 * @public
+		 * @param {*} value - The value of the child.
+		 * @param {Function=} comparator - The comparator used to order child values.
+		 * @returns {BindingTree}
+		 */
+		addChild(value, comparator) {
 			const returnRef = new BindingTree(value, this);
+			let index = this._children.length;
 
-			this._children.push(returnRef);
-			this._children2.push(value.binding);
+			if (comparator) {
+				const insertionIndex = this._children.findIndex(child => comparator(value, child.getValue()) < 0);
+
+				if (insertionIndex !== -1) {
+					index = insertionIndex;
+				}
+			}
+
+			this._children.splice(index, 0, returnRef);
+			this._children2.splice(index, 0, value.binding);
 
 			return returnRef;
 		}
