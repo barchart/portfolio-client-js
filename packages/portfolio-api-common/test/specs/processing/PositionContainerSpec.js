@@ -292,7 +292,6 @@ describe('When a position container uses currencies outside its default currency
 
 		container.setQuotes([ ], [ { symbol: '^USDILS', lastPrice: 4 } ]);
 		container.updatePosition(positionTestFactory.createPosition(secondPortfolio.portfolio, 'SGD', Currency.SGD), [ ]);
-		container.setQuotes([ ], [ { symbol: '^USDILS', lastPrice: 4 } ]);
 
 		const firstPortfolioGroup = container.getGroup(treeName, [ 'totals', firstPortfolio.portfolio ]);
 
