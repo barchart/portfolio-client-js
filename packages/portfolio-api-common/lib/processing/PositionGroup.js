@@ -261,10 +261,12 @@ module.exports = (() => {
 			this._dataFormat.periodPricePrevious = null;
 
 			this._dataActual.periodIncome = null;
+			this._dataActual.periodIncomePrevious = null;
 			this._dataActual.periodRealized = null;
 			this._dataActual.periodUnrealized = null;
 
 			this._dataFormat.periodIncome = null;
+			this._dataFormat.periodIncomePrevious = null;
 			this._dataFormat.periodRealized = null;
 			this._dataFormat.periodUnrealized = null;
 
@@ -1090,6 +1092,7 @@ module.exports = (() => {
 			updates.marketPrevious2 = updates.marketPrevious2.add(translate(item, item.data.marketPrevious2));
 
 			updates.periodIncome = updates.periodIncome.add(translate(item, item.data.periodIncome));
+			updates.periodIncomePrevious = updates.periodIncomePrevious.add(translate(item, item.data.periodIncomePrevious));
 			updates.periodRealized = updates.periodRealized.add(translate(item, item.data.periodRealized));
 			updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
 
@@ -1124,6 +1127,7 @@ module.exports = (() => {
 			marketPrevious: Decimal.ZERO,
 			marketPrevious2: Decimal.ZERO,
 			periodIncome: Decimal.ZERO,
+			periodIncomePrevious: Decimal.ZERO,
 			periodRealized: Decimal.ZERO,
 			periodUnrealized: Decimal.ZERO,
 			cashTotal: Decimal.ZERO,
@@ -1150,6 +1154,7 @@ module.exports = (() => {
 		actual.marketPrevious = updates.marketPrevious;
 		actual.marketPrevious2 = updates.marketPrevious2;
 		actual.periodIncome = updates.periodIncome;
+		actual.periodIncomePrevious = updates.periodIncomePrevious;
 		actual.periodRealized = updates.periodRealized;
 		actual.periodUnrealized = updates.periodUnrealized;
 		actual.cashTotal = updates.cashTotal;
@@ -1208,6 +1213,7 @@ module.exports = (() => {
 		format.marketPrevious = formatCurrency(updates.marketPrevious, currency);
 		format.marketPrevious2 = formatCurrency(updates.marketPrevious2, currency);
 		format.periodIncome = formatCurrency(updates.periodIncome, currency);
+		format.periodIncomePrevious = formatCurrency(updates.periodIncomePrevious, currency);
 		format.periodRealized = formatCurrency(updates.periodRealized, currency);
 		format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);

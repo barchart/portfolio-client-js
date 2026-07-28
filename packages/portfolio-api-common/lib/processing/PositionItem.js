@@ -104,6 +104,7 @@ module.exports = (() => {
 			this._data.unrealizedPrice = null;
 
 			this._data.periodIncome = null;
+			this._data.periodIncomePrevious = null;
 			this._data.periodRealized = null;
 
 			this._data.periodUnrealized = null;
@@ -565,6 +566,7 @@ module.exports = (() => {
 		data.periodGainPrevious2 = calculatePeriodGain(position.instrument, data.initiate, previousSummary2, previousSummary3);
 
 		data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal.ZERO;
+		data.periodIncomePrevious = previousSummary1 !== null ? previousSummary1.period.income : Decimal.ZERO;
 		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
 		data.periodUnrealized = calculatePeriodUnrealized(position.instrument.type, data.periodGain, data.periodRealized, data.periodIncome);
 
