@@ -7135,7 +7135,8 @@
            * @returns {BindingTree}
            */
           addChild(value, comparator) {
-            const returnRef = new BindingTree2(value, this);
+            const childOriginal = new BindingTree2(value, this);
+            const childBinding = value.binding;
             let index = this._children.length;
             if (comparator) {
               const insertionIndex = this._children.findIndex((child) => comparator(value, child.getValue()) < 0);
@@ -7143,9 +7144,9 @@
                 index = insertionIndex;
               }
             }
-            this._children.splice(index, 0, returnRef);
-            this._children2.splice(index, 0, value.binding);
-            return returnRef;
+            this._children.splice(index, 0, childOriginal);
+            this._children2.splice(index, 0, childBinding);
+            return childOriginal;
           }
           /**
            * Removes a child node.
@@ -23469,6 +23470,17 @@
       const container = new PositionContainer(createDefinitions(), [portfolio], [position], []);
       expect(container.getForexSymbols()).toContain("^USDILS");
     });
+    it("should use a configured indirect translation for an initial ILS position", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const position = positionTestFactory.createPosition(portfolio.portfolio, "ILS", Currency.ILS);
+      const currencyPairs = [
+        [Currency.USD, Currency.EUR],
+        [Currency.EUR, Currency.ILS],
+        [Currency.USD, Currency.GBP]
+      ];
+      const container = new PositionContainer(createDefinitions(), [portfolio], [position], [], void 0, void 0, currencyPairs);
+      expect(container.getForexSymbols()).not.toContain("^USDILS");
+    });
     it("should notify observers when an SGD position is added after construction", () => {
       const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
       const container = new PositionContainer(createDefinitions(), [portfolio], [], []);
@@ -23476,6 +23488,19 @@
       container.registerForexSymbolAddedHandler((symbol) => symbols.push(symbol));
       container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "SGD", Currency.SGD), []);
       expect(symbols).toEqual(["^USDSGD"]);
+    });
+    it("should not notify observers when an indirect translation supports a position currency", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const currencyPairs = [
+        [Currency.USD, Currency.EUR],
+        [Currency.EUR, Currency.ILS],
+        [Currency.USD, Currency.GBP]
+      ];
+      const container = new PositionContainer(createDefinitions(), [portfolio], [], [], void 0, void 0, currencyPairs);
+      const symbols = [];
+      container.registerForexSymbolAddedHandler((symbol) => symbols.push(symbol));
+      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "ILS", Currency.ILS), []);
+      expect(symbols).toEqual([]);
     });
     it("should expose a new ILS asset group through existing bindings when a position is added", () => {
       const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
