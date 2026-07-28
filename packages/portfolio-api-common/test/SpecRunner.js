@@ -7044,10 +7044,25 @@
           getChildren2() {
             return this._children2;
           }
-          addChild(value) {
+          /**
+           * Adds a child node, optionally inserting it according to a comparator.
+           *
+           * @public
+           * @param {*} value - The value of the child.
+           * @param {Function=} comparator - The comparator used to order child values.
+           * @returns {BindingTree}
+           */
+          addChild(value, comparator) {
             const returnRef = new BindingTree2(value, this);
-            this._children.push(returnRef);
-            this._children2.push(value.binding);
+            let index = this._children.length;
+            if (comparator) {
+              const insertionIndex = this._children.findIndex((child) => comparator(value, child.getValue()) < 0);
+              if (insertionIndex !== -1) {
+                index = insertionIndex;
+              }
+            }
+            this._children.splice(index, 0, returnRef);
+            this._children2.splice(index, 0, value.binding);
             return returnRef;
           }
           /**
@@ -11468,9 +11483,20 @@
             return empty;
           });
           const compositeGroups = populatedGroups.concat(emptyGroups);
+          const comparator = createGroupComparator(levelDefinition.requiredGroups);
+          compositeGroups.forEach((group) => {
+            const childTree = parentTree.addChild(group, comparator);
+            this._nodes[group.id] = childTree;
+            group.setParentGroup(this.getParentGroup(group));
+            group.setPortfolioGroup(this.getParentGroupForPortfolio(group));
+            initializeGroupObservers.call(this, childTree, treeDefinition);
+            createGroups.call(this, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
+          });
+        }
+        function createGroupComparator(requiredGroups) {
           let builder;
-          if (requiredGroupsToUse.length !== 0) {
-            const ordering = requiredGroupsToUse.reduce((map, group, index) => {
+          if (requiredGroups.length !== 0) {
+            const ordering = requiredGroups.reduce((map, group, index) => {
               map[group.description] = index;
               return map;
             }, {});
@@ -11491,15 +11517,7 @@
               return comparators.compareStrings(a.description, b.description);
             });
           }
-          compositeGroups.sort(builder.toComparator());
-          compositeGroups.forEach((group) => {
-            const childTree = parentTree.addChild(group);
-            this._nodes[group.id] = childTree;
-            group.setParentGroup(this.getParentGroup(group));
-            group.setPortfolioGroup(this.getParentGroupForPortfolio(group));
-            initializeGroupObservers.call(this, childTree, treeDefinition);
-            createGroups.call(this, childTree, group.items, treeDefinition, array.dropLeft(levelDefinitions));
-          });
+          return builder.toComparator();
         }
         function updateEmptyPortfolioGroups(portfolio) {
           Object.keys(this._trees).forEach((key) => {
@@ -20129,6 +20147,51 @@
         description: "Equities (ILS)"
       });
     });
+    it("should sort asset groups when a position creates a group after construction", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const initialPosition = positionTestFactory.createPosition(portfolio.portfolio, "USD", Currency.USD);
+      const container = new PositionContainer(createAssetDefinitions(), [portfolio], [initialPosition], []);
+      const assetGroups = container.getGroups(treeName, ["totals", portfolio.portfolio]);
+      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "ILS", Currency.ILS), []);
+      expect(assetGroups.map((group) => group.data.description)).toEqual(["Equities (ILS)", "Equities (USD)"]);
+    });
+    it("should sort position groups when a position is added after construction", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const initialPosition = positionTestFactory.createPosition(portfolio.portfolio, "USD", Currency.USD);
+      const container = new PositionContainer(createAssetDefinitions(), [portfolio], [initialPosition], []);
+      const assetKey = PositionLevelDefinition.getKeyForAssetClassGroup(InstrumentType4.EQUITY, Currency.USD);
+      const positionGroups = container.getGroups(treeName, ["totals", portfolio.portfolio, assetKey]);
+      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "AA", Currency.USD), []);
+      expect(positionGroups.map((group) => group.data.description)).toEqual(["AA", "USD"]);
+    });
+    it("should preserve position group ordering when an existing position is updated", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const firstPosition = positionTestFactory.createPosition(portfolio.portfolio, "AA", Currency.USD);
+      const secondPosition = positionTestFactory.createPosition(portfolio.portfolio, "USD", Currency.USD);
+      const container = new PositionContainer(createAssetDefinitions(), [portfolio], [firstPosition, secondPosition], []);
+      const assetKey = PositionLevelDefinition.getKeyForAssetClassGroup(InstrumentType4.EQUITY, Currency.USD);
+      const positionGroups = container.getGroups(treeName, ["totals", portfolio.portfolio, assetKey]);
+      container.updatePosition(firstPosition, []);
+      expect(positionGroups.map((group) => group.data.description)).toEqual(["AA", "USD"]);
+    });
+    it("should preserve required group ordering when a position creates a group after construction", () => {
+      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
+      const requiredGroups = [
+        { key: Currency.USD.code, description: "Z USD", currency: Currency.USD },
+        { key: Currency.CAD.code, description: "Y CAD", currency: Currency.CAD }
+      ];
+      const definitions = [
+        new PositionTreeDefinition(treeName, [
+          new PositionLevelDefinition("Total", PositionLevelType.OTHER, (x) => "totals", (x) => "Total", (x) => Currency.USD),
+          new PositionLevelDefinition("Currency", PositionLevelType.OTHER, (x) => x.position.instrument.currency.code, (x) => `Z ${x.position.instrument.currency.code}`, (x) => x.position.instrument.currency, requiredGroups)
+        ])
+      ];
+      const initialPosition = positionTestFactory.createPosition(portfolio.portfolio, "USD", Currency.USD);
+      const container = new PositionContainer(definitions, [portfolio], [initialPosition], []);
+      const groups = container.getGroups(treeName, ["totals"]);
+      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "ILS", Currency.ILS), []);
+      expect(groups.map((group) => group.data.description)).toEqual(["Z USD", "Y CAD", "Z ILS"]);
+    });
     it("should notify observers only once for multiple positions using the same new currency", () => {
       const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
       const container = new PositionContainer(createDefinitions(), [portfolio], [], []);
@@ -20766,6 +20829,29 @@
         children: [childA, childB],
         bindings: [valueA.binding, valueB.binding]
       });
+    });
+    it("should insert child nodes and child bindings in sorted order", () => {
+      const tree = new BindingTree();
+      const valueA = createValue("a");
+      const valueB = createValue("b");
+      const comparator = (a, b) => a.key.localeCompare(b.key);
+      const childB = tree.addChild(valueB, comparator);
+      const childA = tree.addChild(valueA, comparator);
+      expect({
+        children: tree.getChildren(),
+        bindings: tree.getChildren2()
+      }).toEqual({
+        children: [childA, childB],
+        bindings: [valueA.binding, valueB.binding]
+      });
+    });
+    it("should retain the child bindings array when children are inserted in sorted order", () => {
+      const tree = new BindingTree();
+      const bindings = tree.getChildren2();
+      const comparator = (a, b) => a.key.localeCompare(b.key);
+      tree.addChild(createValue("b"), comparator);
+      tree.addChild(createValue("a"), comparator);
+      expect(tree.getChildren2()).toBe(bindings);
     });
     it("should remove the matching binding when a child node is removed", () => {
       const tree = new BindingTree();

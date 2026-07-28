@@ -29,6 +29,35 @@ describe('When a binding tree is used', () => {
 		});
 	});
 
+	it('should insert child nodes and child bindings in sorted order', () => {
+		const tree = new BindingTree();
+		const valueA = createValue('a');
+		const valueB = createValue('b');
+		const comparator = (a, b) => a.key.localeCompare(b.key);
+
+		const childB = tree.addChild(valueB, comparator);
+		const childA = tree.addChild(valueA, comparator);
+
+		expect({
+			children: tree.getChildren(),
+			bindings: tree.getChildren2()
+		}).toEqual({
+			children: [ childA, childB ],
+			bindings: [ valueA.binding, valueB.binding ]
+		});
+	});
+
+	it('should retain the child bindings array when children are inserted in sorted order', () => {
+		const tree = new BindingTree();
+		const bindings = tree.getChildren2();
+		const comparator = (a, b) => a.key.localeCompare(b.key);
+
+		tree.addChild(createValue('b'), comparator);
+		tree.addChild(createValue('a'), comparator);
+
+		expect(tree.getChildren2()).toBe(bindings);
+	});
+
 	it('should remove the matching binding when a child node is removed', () => {
 		const tree = new BindingTree();
 		const value = createValue('a');
