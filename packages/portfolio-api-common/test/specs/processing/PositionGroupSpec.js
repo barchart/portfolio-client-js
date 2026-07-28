@@ -67,6 +67,18 @@ describe('When a position group is used', () => {
 		return item;
 	}
 
+	function createIncomeItem(symbol, currentIncome, previousIncome) {
+		const portfolio = positionTestFactory.createPortfolio(`${symbol} Portfolio`, `${symbol} Portfolio`);
+		const position = positionTestFactory.createPosition(portfolio.portfolio, symbol);
+		const currentSummary = positionTestFactory.createSummaries(position, PositionSummaryFrame.YTD, 1)[0];
+		const previousSummaries = positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3);
+
+		currentSummary.period.income = currentIncome;
+		previousSummaries[previousSummaries.length - 1].period.income = previousIncome;
+
+		return new PositionItem(portfolio, position, currentSummary, previousSummaries);
+	}
+
 	function createDefinition(type) {
 		return new PositionLevelDefinition(
 			type.description,
@@ -294,6 +306,21 @@ describe('When a position group is used', () => {
 			daysHeldFormatted: '365',
 			weeksHeldActual: 52,
 			weeksHeldFormatted: '52'
+		});
+	});
+
+	it('should aggregate current and previous annual income', () => {
+		const group = createGroup(PositionLevelType.OTHER, [
+			createIncomeItem('AAPL', new Decimal(10), new Decimal(30)),
+			createIncomeItem('MSFT', new Decimal(20), new Decimal(40))
+		]);
+
+		expect({
+			current: group.data.periodIncome,
+			previous: group.data.periodIncomePrevious
+		}).toEqual({
+			current: '30.00',
+			previous: '70.00'
 		});
 	});
 

@@ -8535,9 +8535,11 @@
             this._dataFormat.periodPrice = null;
             this._dataFormat.periodPricePrevious = null;
             this._dataActual.periodIncome = null;
+            this._dataActual.periodIncomePrevious = null;
             this._dataActual.periodRealized = null;
             this._dataActual.periodUnrealized = null;
             this._dataFormat.periodIncome = null;
+            this._dataFormat.periodIncomePrevious = null;
             this._dataFormat.periodRealized = null;
             this._dataFormat.periodUnrealized = null;
             this._dataActual.totalPercent = null;
@@ -9192,6 +9194,7 @@
             updates2.marketPrevious = updates2.marketPrevious.add(translate(item, item.data.marketPrevious));
             updates2.marketPrevious2 = updates2.marketPrevious2.add(translate(item, item.data.marketPrevious2));
             updates2.periodIncome = updates2.periodIncome.add(translate(item, item.data.periodIncome));
+            updates2.periodIncomePrevious = updates2.periodIncomePrevious.add(translate(item, item.data.periodIncomePrevious));
             updates2.periodRealized = updates2.periodRealized.add(translate(item, item.data.periodRealized));
             updates2.periodUnrealized = updates2.periodUnrealized.add(translate(item, item.data.periodUnrealized));
             if (item.position.instrument.type === InstrumentType6.CASH) {
@@ -9222,6 +9225,7 @@
             marketPrevious: Decimal8.ZERO,
             marketPrevious2: Decimal8.ZERO,
             periodIncome: Decimal8.ZERO,
+            periodIncomePrevious: Decimal8.ZERO,
             periodRealized: Decimal8.ZERO,
             periodUnrealized: Decimal8.ZERO,
             cashTotal: Decimal8.ZERO,
@@ -9247,6 +9251,7 @@
           actual.marketPrevious = updates.marketPrevious;
           actual.marketPrevious2 = updates.marketPrevious2;
           actual.periodIncome = updates.periodIncome;
+          actual.periodIncomePrevious = updates.periodIncomePrevious;
           actual.periodRealized = updates.periodRealized;
           actual.periodUnrealized = updates.periodUnrealized;
           actual.cashTotal = updates.cashTotal;
@@ -9296,6 +9301,7 @@
           format.marketPrevious = formatCurrency(updates.marketPrevious, currency);
           format.marketPrevious2 = formatCurrency(updates.marketPrevious2, currency);
           format.periodIncome = formatCurrency(updates.periodIncome, currency);
+          format.periodIncomePrevious = formatCurrency(updates.periodIncomePrevious, currency);
           format.periodRealized = formatCurrency(updates.periodRealized, currency);
           format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
           format.cashTotal = formatCurrency(updates.cashTotal, currency);
@@ -9721,6 +9727,7 @@
             this._data.basisPrice = null;
             this._data.unrealizedPrice = null;
             this._data.periodIncome = null;
+            this._data.periodIncomePrevious = null;
             this._data.periodRealized = null;
             this._data.periodUnrealized = null;
             this._data.periodUnrealizedChange = null;
@@ -10095,6 +10102,7 @@
           data.periodGainPrevious = calculatePeriodGain(position.instrument, data.initiate, previousSummary1, previousSummary2);
           data.periodGainPrevious2 = calculatePeriodGain(position.instrument, data.initiate, previousSummary2, previousSummary3);
           data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal8.ZERO;
+          data.periodIncomePrevious = previousSummary1 !== null ? previousSummary1.period.income : Decimal8.ZERO;
           data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal8.ZERO;
           data.periodUnrealized = calculatePeriodUnrealized(position.instrument.type, data.periodGain, data.periodRealized, data.periodIncome);
           data.periodDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, currentSummary, previousSummary1);
@@ -20269,6 +20277,15 @@
       });
       return item;
     }
+    function createIncomeItem(symbol, currentIncome, previousIncome) {
+      const portfolio = positionTestFactory2.createPortfolio(`${symbol} Portfolio`, `${symbol} Portfolio`);
+      const position = positionTestFactory2.createPosition(portfolio.portfolio, symbol);
+      const currentSummary = positionTestFactory2.createSummaries(position, PositionSummaryFrame3.YTD, 1)[0];
+      const previousSummaries = positionTestFactory2.createSummaries(position, PositionSummaryFrame3.YEARLY, 3);
+      currentSummary.period.income = currentIncome;
+      previousSummaries[previousSummaries.length - 1].period.income = previousIncome;
+      return new PositionItem(portfolio, position, currentSummary, previousSummaries);
+    }
     function createDefinition(type) {
       return new PositionLevelDefinition2(
         type.description,
@@ -20469,6 +20486,19 @@
         daysHeldFormatted: "365",
         weeksHeldActual: 52,
         weeksHeldFormatted: "52"
+      });
+    });
+    it("should aggregate current and previous annual income", () => {
+      const group = createGroup(PositionLevelType2.OTHER, [
+        createIncomeItem("AAPL", new Decimal5(10), new Decimal5(30)),
+        createIncomeItem("MSFT", new Decimal5(20), new Decimal5(40))
+      ]);
+      expect({
+        current: group.data.periodIncome,
+        previous: group.data.periodIncomePrevious
+      }).toEqual({
+        current: "30.00",
+        previous: "70.00"
       });
     });
     it("should aggregate return data without exposing a group holding period", () => {
