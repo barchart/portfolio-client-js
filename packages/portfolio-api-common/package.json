@@ -15,6 +15,7 @@
     }
   ],
   "scripts": {
+    "release": "release-it",
     "build:test-bundle": "node tools/build-test-bundle.mjs",
     "lint": "jshint lib test/specs test/utils",
     "test": "yarn build:test-bundle && jasmine --config=jasmine.json"
@@ -31,7 +32,8 @@
   "devDependencies": {
     "esbuild": "^0.25.0",
     "jasmine": "^2.99.0",
-    "jshint": "^2.10.3"
+    "jshint": "^2.10.3",
+    "release-it": "^20.2.1"
   },
   "license": "MIT"
 }
