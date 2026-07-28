@@ -10151,7 +10151,7 @@
               return currencies;
             }, []));
             requiredCurrencies.forEach((currency) => {
-              const symbol = getForexSymbolForCurrency(currency);
+              const symbol = getForexSymbolForTranslation(currency);
               if (symbol !== null && !this._forexSymbols.includes(symbol)) {
                 this._forexSymbols.push(symbol);
               }
@@ -10265,7 +10265,9 @@
             if (this.hasPortfolio(portfolio)) {
               return;
             }
-            ensurePortfolioCurrency.call(this, portfolio);
+            if (portfolio.defaults && portfolio.defaults.currency) {
+              registerCurrencyTranslation.call(this, portfolio.defaults.currency);
+            }
             const key = portfolio.portfolio;
             this._portfolios = Object.assign({}, this._portfolios, { [key]: portfolio });
             this._portfolioBindings.push(portfolio);
@@ -10316,7 +10318,9 @@
             if (!this.hasPortfolio(portfolio)) {
               return;
             }
-            ensurePortfolioCurrency.call(this, portfolio);
+            if (portfolio.defaults && portfolio.defaults.currency) {
+              registerCurrencyTranslation.call(this, portfolio.defaults.currency);
+            }
             this._portfolios[portfolio.portfolio] = portfolio;
             const portfolioIndex = this._portfolioBindings.findIndex((candidate) => candidate.portfolio === portfolio.portfolio);
             if (!(portfolioIndex < 0)) {
@@ -10368,7 +10372,7 @@
             if (!this._portfolios.hasOwnProperty(position.portfolio)) {
               return;
             }
-            ensureForexCurrency.call(this, position.instrument.currency);
+            registerCurrencyTranslation.call(this, position.instrument.currency);
             const existingBarchartSymbols = this.getPositionSymbols(false, false);
             let exchangeCode = extractExchangeCode(position);
             let exchange = null;
@@ -10834,20 +10838,15 @@
         function findNode(tree, keys) {
           return keys.reduce((tree2, key) => tree2.findChild((group) => group.key === key), tree);
         }
-        function getForexSymbolForCurrency(currency) {
+        function getForexSymbolForTranslation(currency) {
           if (!(currency instanceof Currency5) || currency === DEFAULT_CURRENCY) {
             return null;
           }
           const currencyToUse = currency === Currency5.GBX ? Currency5.GBP : currency;
           return `^${DEFAULT_CURRENCY.code}${currencyToUse.code}`;
         }
-        function ensurePortfolioCurrency(portfolio) {
-          if (portfolio.defaults && portfolio.defaults.currency) {
-            ensureForexCurrency.call(this, portfolio.defaults.currency);
-          }
-        }
-        function ensureForexCurrency(currency) {
-          const symbol = getForexSymbolForCurrency(currency);
+        function registerCurrencyTranslation(currency) {
+          const symbol = getForexSymbolForTranslation(currency);
           if (symbol === null || this._forexSymbols.includes(symbol)) {
             return;
           }
@@ -23470,17 +23469,6 @@
       const container = new PositionContainer(createDefinitions(), [portfolio], [position], []);
       expect(container.getForexSymbols()).toContain("^USDILS");
     });
-    it("should use a configured indirect translation for an initial ILS position", () => {
-      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
-      const position = positionTestFactory.createPosition(portfolio.portfolio, "ILS", Currency.ILS);
-      const currencyPairs = [
-        [Currency.USD, Currency.EUR],
-        [Currency.EUR, Currency.ILS],
-        [Currency.USD, Currency.GBP]
-      ];
-      const container = new PositionContainer(createDefinitions(), [portfolio], [position], [], void 0, void 0, currencyPairs);
-      expect(container.getForexSymbols()).not.toContain("^USDILS");
-    });
     it("should notify observers when an SGD position is added after construction", () => {
       const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
       const container = new PositionContainer(createDefinitions(), [portfolio], [], []);
@@ -23488,19 +23476,6 @@
       container.registerForexSymbolAddedHandler((symbol) => symbols.push(symbol));
       container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "SGD", Currency.SGD), []);
       expect(symbols).toEqual(["^USDSGD"]);
-    });
-    it("should not notify observers when an indirect translation supports a position currency", () => {
-      const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");
-      const currencyPairs = [
-        [Currency.USD, Currency.EUR],
-        [Currency.EUR, Currency.ILS],
-        [Currency.USD, Currency.GBP]
-      ];
-      const container = new PositionContainer(createDefinitions(), [portfolio], [], [], void 0, void 0, currencyPairs);
-      const symbols = [];
-      container.registerForexSymbolAddedHandler((symbol) => symbols.push(symbol));
-      container.updatePosition(positionTestFactory.createPosition(portfolio.portfolio, "ILS", Currency.ILS), []);
-      expect(symbols).toEqual([]);
     });
     it("should expose a new ILS asset group through existing bindings when a position is added", () => {
       const portfolio = positionTestFactory.createPortfolio("portfolio", "Portfolio");

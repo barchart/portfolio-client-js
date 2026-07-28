@@ -216,7 +216,7 @@ module.exports = (() => {
 				}, [ ]));
 
 			requiredCurrencies.forEach((currency) => {
-				const symbol = getForexSymbolForCurrency(currency);
+				const symbol = getForexSymbolForTranslation(currency);
 
 				if (symbol !== null && !this._forexSymbols.includes(symbol)) {
 					this._forexSymbols.push(symbol);
@@ -364,7 +364,9 @@ module.exports = (() => {
 				return;
 			}
 
-			ensurePortfolioCurrency.call(this, portfolio);
+			if (portfolio.defaults && portfolio.defaults.currency) {
+				registerCurrencyTranslation.call(this, portfolio.defaults.currency);
+			}
 
 			const key = portfolio.portfolio;
 
@@ -431,7 +433,9 @@ module.exports = (() => {
 				return;
 			}
 
-			ensurePortfolioCurrency.call(this, portfolio);
+			if (portfolio.defaults && portfolio.defaults.currency) {
+				registerCurrencyTranslation.call(this, portfolio.defaults.currency);
+			}
 
 			this._portfolios[portfolio.portfolio] = portfolio;
 
@@ -499,7 +503,7 @@ module.exports = (() => {
 				return;
 			}
 
-			ensureForexCurrency.call(this, position.instrument.currency);
+			registerCurrencyTranslation.call(this, position.instrument.currency);
 
 			const existingBarchartSymbols = this.getPositionSymbols(false, false);
 
@@ -1072,7 +1076,7 @@ module.exports = (() => {
 		return keys.reduce((tree, key) => tree.findChild(group => group.key === key), tree);
 	}
 
-	function getForexSymbolForCurrency(currency) {
+	function getForexSymbolForTranslation(currency) {
 		if (!(currency instanceof Currency) || currency === DEFAULT_CURRENCY) {
 			return null;
 		}
@@ -1082,14 +1086,8 @@ module.exports = (() => {
 		return `^${DEFAULT_CURRENCY.code}${currencyToUse.code}`;
 	}
 
-	function ensurePortfolioCurrency(portfolio) {
-		if (portfolio.defaults && portfolio.defaults.currency) {
-			ensureForexCurrency.call(this, portfolio.defaults.currency);
-		}
-	}
-
-	function ensureForexCurrency(currency) {
-		const symbol = getForexSymbolForCurrency(currency);
+	function registerCurrencyTranslation(currency) {
+		const symbol = getForexSymbolForTranslation(currency);
 
 		if (symbol === null || this._forexSymbols.includes(symbol)) {
 			return;
