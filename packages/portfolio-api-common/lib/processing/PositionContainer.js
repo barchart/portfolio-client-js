@@ -3,6 +3,7 @@ const array = require('@barchart/common-js/lang/array'),
 	ComparatorBuilder = require('@barchart/common-js/collections/sorting/ComparatorBuilder'),
 	comparators = require('@barchart/common-js/collections/sorting/comparators'),
 	Currency = require('@barchart/common-js/lang/Currency'),
+	CurrencyTranslator = require('@barchart/common-js/lang/CurrencyTranslator'),
 	Day = require('@barchart/common-js/lang/Day'),
 	Decimal = require('@barchart/common-js/lang/Decimal'),
 	Disposable = require('@barchart/common-js/lang/Disposable'),
@@ -19,8 +20,7 @@ const PositionLevelDefinition = require('./definitions/PositionLevelDefinition')
 	PositionLevelType = require('./definitions/PositionLevelType'),
 	PositionTreeDefinition = require('./definitions/PositionTreeDefinition');
 
-const ExpandableCurrencyTranslator = require('./ExpandableCurrencyTranslator'),
-	PositionGroup = require('./PositionGroup'),
+const PositionGroup = require('./PositionGroup'),
 	PositionItem = require('./PositionItem');
 
 module.exports = (() => {
@@ -227,10 +227,8 @@ module.exports = (() => {
 				return Rate.fromPair(Decimal.ONE, symbol);
 			});
 
-			this._currencyTranslator = new ExpandableCurrencyTranslator(
-				this._forexSymbols.concat(STATIC_RATES.map(r => r.getSymbol())),
-				forexQuotes.concat(STATIC_RATES)
-			);
+			this._currencyTranslator = new CurrencyTranslator(this._forexSymbols.concat(STATIC_RATES.map(r => r.getSymbol())));
+			this._currencyTranslator.setRates(forexQuotes.concat(STATIC_RATES));
 
 			this._nodes = { };
 
@@ -1098,7 +1096,10 @@ module.exports = (() => {
 		}
 
 		this._forexSymbols.push(symbol);
+
 		this._currencyTranslator.addSymbol(symbol);
+		this._currencyTranslator.setRate(Rate.fromPair(Decimal.ONE, symbol));
+
 		this._forexSymbolAddedEvent.fire(symbol);
 	}
 
