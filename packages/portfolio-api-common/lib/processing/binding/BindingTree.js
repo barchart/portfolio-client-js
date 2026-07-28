@@ -38,7 +38,9 @@ module.exports = (() => {
 		 * @returns {BindingTree}
 		 */
 		addChild(value, comparator) {
-			const returnRef = new BindingTree(value, this);
+			const childOriginal = new BindingTree(value, this);
+			const childBinding = value.binding;
+
 			let index = this._children.length;
 
 			if (comparator) {
@@ -49,10 +51,10 @@ module.exports = (() => {
 				}
 			}
 
-			this._children.splice(index, 0, returnRef);
-			this._children2.splice(index, 0, value.binding);
+			this._children.splice(index, 0, childOriginal);
+			this._children2.splice(index, 0, childBinding);
 
-			return returnRef;
+			return childOriginal;
 		}
 
 		/**
