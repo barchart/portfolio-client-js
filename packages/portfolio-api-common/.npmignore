@@ -1,0 +1,8 @@
+*
+
+tools/
+
+!lib/**
+!LICENSE
+!package.json
+!README.md

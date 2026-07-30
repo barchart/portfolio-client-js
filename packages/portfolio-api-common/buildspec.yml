@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22.x
+
+  pre_build:
+    commands:
+      - yarn install
+
+  build:
+    commands:
+      - yarn lint
+      - yarn test

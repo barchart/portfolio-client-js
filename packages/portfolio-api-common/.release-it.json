@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
+  "git": {
+    "requireBranch": "master",
+    "commitMessage": "Release. Bump version number ${version}",
+    "tagName": "${version}",
+    "tagAnnotation": "Release ${version}",
+    "push": true
+  },
+  "npm": {
+    "publish": false
+  },
+  "hooks": {
+    "before:init": [
+      "yarn lint",
+      "yarn test"
+    ]
+  }
+}
