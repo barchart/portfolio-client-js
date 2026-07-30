@@ -1,8 +1,7 @@
 {
-  "name": "@barchart/portfolio-client-js",
-  "version": "13.0.0",
-  "description": "JavaScript SDK for the Barchart Portfolio Service",
-  "homepage": "https://docs.barchart.com/portfolio/#/",
+  "name": "@barchart/portfolio-public-monorepo",
+  "private": true,
+  "description": "Public JavaScript packages for the Barchart Portfolio Service",
   "author": {
     "name": "Bryan Ingle",
     "email": "bryan.ingle@barchart.com",
@@ -15,55 +14,22 @@
       "url": "https://www.barchart.com"
     }
   ],
-  "scripts": {
-    "clean": "rm -rf node_modules",
-    "test": "echo \"Error: Please use gulp to run tests\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/barchart/portfolio-client-js.git"
-  },
-  "directories": {
-    "test": "test"
-  },
-  "bugs": {
-    "url": "https://github.com/barchart/portfolio-client-js/issues"
-  },
-  "keywords": [
-    "Barchart",
-    "Portfolio",
-    "JavaScript",
-    "SDK"
+  "workspaces": [
+    "packages/*"
   ],
-  "dependencies": {
-    "@barchart/common-js": "^4.73.0",
-    "@barchart/portfolio-api-common": "10.0.0"
+  "scripts": {
+    "clean": "lerna clean --yes && rm -rf node_modules",
+    "lint": "lerna run lint --stream",
+    "test": "lerna run test --stream",
+    "publish": "lerna run publish:npm --stream --concurrency 1",
+    "preversion": "git diff --exit-code",
+    "release": "lerna version -m 'Release. Bump version number %v' --tag-version-prefix='' --force-publish --sign-git-tag --sign-git-commit"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.1",
-    "babelify": "^10.0.0",
-    "browserify": "^16.5.2",
-    "git-get-status": "^1.0.5",
-    "glob": "^6.0.1",
-    "gulp": "^4.0.2",
-    "gulp-awspublish": "^4.1.2",
-    "gulp-git": "^2.9.0",
-    "gulp-jasmine": "^2.2.1",
-    "gulp-jsdoc3": "^1.0.1",
-    "gulp-jshint": "~2.1.0",
-    "gulp-prompt": "^1.2.0",
-    "gulp-rename": "^1.4.0",
-    "gulp-replace": "^0.5.4",
-    "jshint": "^2.12.0",
-    "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0"
-  },
-  "browserify": {
-    "transform": [
-      [
-        "babelify"
-      ]
-    ]
-  },
-  "license": "MIT"
+    "@eslint/js": "^9.39.1",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.39.1",
+    "globals": "^14.0.0",
+    "lerna": "^9.0.7"
+  }
 }

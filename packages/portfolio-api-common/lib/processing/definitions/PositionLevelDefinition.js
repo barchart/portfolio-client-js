@@ -1,0 +1,309 @@
+const assert = require('@barchart/common-js/lang/assert'),
+	Currency = require('@barchart/common-js/lang/Currency'),
+	is = require('@barchart/common-js/lang/is');
+
+const InstrumentType = require('./../../data/InstrumentType');
+
+const PositionLevelType = require('./PositionLevelType');
+
+module.exports = (() => {
+	'use strict';
+
+	/**
+	 * Defines a grouping level within a tree of positions. A level could represent a
+	 * group of multiple positions (e.g. all equities or all positions for a portfolio).
+	 * Alternately, a level could also represent a single position.
+	 *
+	 * @public
+	 * @param {String} name
+	 * @param {PositionLevelType} type
+	 * @param {PositionLevelDefinition~keySelector} keySelector
+	 * @param {PositionLevelDefinition~descriptionSelector} descriptionSelector
+	 * @param {PositionLevelDefinition~currencySelector} currencySelector
+	 * @param {PositionLevelDefinition~RequiredGroup[]=} requiredGroups
+	 * @param {Function=} requiredGroupGenerator
+	 */
+	class PositionLevelDefinition {
+		constructor(name, type, keySelector, descriptionSelector, currencySelector, requiredGroups, requiredGroupGenerator) {
+			assert.argumentIsRequired(name, 'name', String);
+			assert.argumentIsRequired(type, 'type', PositionLevelType, 'PositionLevelType');
+			assert.argumentIsRequired(keySelector, 'keySelector', Function);
+			assert.argumentIsRequired(descriptionSelector, 'descriptionSelector', Function);
+			assert.argumentIsRequired(currencySelector, 'currencySelector', Function);
+
+			if (requiredGroups) {
+				assert.argumentIsArray(requiredGroups, 'requiredGroups', validateRequiredGroup, 'RequiredGroup');
+			}
+
+			assert.argumentIsOptional(requiredGroupGenerator, 'requiredGroupGenerator', Function);
+
+			this._name = name;
+			this._type = type;
+
+			this._keySelector = keySelector;
+			this._descriptionSelector = descriptionSelector;
+			this._currencySelector = currencySelector;
+
+			this._requiredGroups = requiredGroups || [ ];
+
+			this._single = type === PositionLevelType.POSITION;
+			this._homogeneous = type === PositionLevelType.INSTRUMENT;
+
+			this._requiredGroupGenerator = requiredGroupGenerator || (input => null);
+		}
+
+		/**
+		 * The name of the grouping level.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get name() {
+			return this._name;
+		}
+
+		/**
+		 * A general description of the type of items grouped together.
+		 *
+		 * @public
+		 * @returns {PositionLevelType}
+		 */
+		get type() {
+			return this._type;
+		}
+
+		/**
+		 * A function, when given a {@link PositionItem}, returns a string that is used
+		 * to group {@link PositionItem} instances into different groups.
+		 *
+		 * @public
+		 * @returns {PositionLevelDefinition~keySelector}
+		 */
+		get keySelector() {
+			return this._keySelector;
+		}
+
+		/**
+		 * A function, when given a {@link PositionItem}, returns a string used to describe the
+		 * group.
+		 *
+		 * @public
+		 * @returns {PositionLevelDefinition~descriptionSelector}
+		 */
+		get descriptionSelector() {
+			return this._descriptionSelector;
+		}
+
+		/**
+		 * A function, when given a {@link PositionItem}, returns the {@link Currency} used to
+		 * display values for the group.
+		 *
+		 * @public
+		 * @returns {PositionLevelDefinition~currencySelector}
+		 */
+		get currencySelector() {
+			return this._currencySelector;
+		}
+
+		/**
+		 * Indicates the required groups. This allows for the creation of empty
+		 * groups.
+		 *
+		 * @public
+		 * @returns {PositionLevelDefinition~RequiredGroup[]}
+		 */
+		get requiredGroups() {
+			return this._requiredGroups;
+		}
+
+		/**
+		 * Indicates if the grouping level is meant to only contain a single item.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get single() {
+			return this._single;
+		}
+
+		/**
+		 * Indicates if the grouping level only contains items for the same instrument.
+		 *
+		 * @public
+		 * @return {Boolean}
+		 */
+		get homogeneous() {
+			return this._homogeneous;
+		}
+
+		/**
+		 * Given an input, potentially creates a new {@link PositionLevelDefinition~RequiredGroup}.
+		 *
+		 * @public
+		 * @param {*} input
+		 * @returns {PositionLevelDefinition~RequiredGroup|null}
+		 */
+		generateRequiredGroup(input) {
+			const requiredGroup = this._requiredGroupGenerator(input);
+
+			if (requiredGroup !== null) {
+				validateRequiredGroup(requiredGroup, 'requiredGroup');
+
+				this._requiredGroups.push(requiredGroup);
+			}
+
+			return requiredGroup;
+		}
+
+		/**
+		 * Builds a {@link PositionLevelDefinition~RequiredGroup} for a portfolio.
+		 *
+		 * @public
+		 * @static
+		 * @param {Object} portfolio
+		 * @param {Currency=} currency
+		 * @returns {PositionLevelDefinition~RequiredGroup}
+		 */
+		static buildRequiredGroupForPortfolio(portfolio, currency) {
+			assert.argumentIsOptional(currency, 'currency', Currency, 'Currency');
+
+			return {
+				key: PositionLevelDefinition.getKeyForPortfolioGroup(portfolio),
+				description: PositionLevelDefinition.getDescriptionForPortfolioGroup(portfolio),
+				currency: (currency || Currency.CAD)
+			};
+		}
+
+		/**
+		 * Generates the key for a {@link PositionGroup}, representing a portfolio, held
+		 * within a {@link PositionContainer}.
+		 *
+		 * @public
+		 * @static
+		 * @param {Object} portfolio
+		 * @returns {String}
+		 */
+		static getKeyForPortfolioGroup(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+
+			return portfolio.portfolio;
+		}
+
+		static getDescriptionForPortfolioGroup(portfolio) {
+			assert.argumentIsRequired(portfolio, 'portfolio', Object);
+
+			return portfolio.name;
+		}
+
+		static getRequiredGroupGeneratorForPortfolio(currency) {
+			return (portfolio) => {
+				let requiredGroup;
+
+				if (is.object(portfolio) && is.string(portfolio.portfolio) && is.string(portfolio.name)) {
+					requiredGroup = PositionLevelDefinition.buildRequiredGroupForPortfolio(portfolio, currency);
+				} else {
+					requiredGroup = null;
+				}
+
+				return requiredGroup;
+			};
+		}
+
+		/**
+		 * Builds a {@link PositionLevelDefinition~RequiredGroup} for an asset class.
+		 *
+		 * @public
+		 * @static
+		 * @param {InstrumentType} type
+		 * @param {Currency} currency
+		 * @param {Currency=} defaultCurrency
+		 * @returns {PositionLevelDefinition~RequiredGroup}
+		 */
+		static buildRequiredGroupForAssetClass(type, currency, defaultCurrency) {
+			return {
+				key: PositionLevelDefinition.getKeyForAssetClassGroup(type, currency),
+				description: PositionLevelDefinition.getDescriptionForAssetClassGroup(type, currency, defaultCurrency),
+				currency: currency
+			};
+		}
+
+		/**
+		 * Generates the key for a {@link PositionGroup}, representing a grouping of positions
+		 * by asset class, held within a {@link PositionContainer}.
+		 *
+		 * @public
+		 * @static
+		 * @param {InstrumentType} type
+		 * @param {Currency} currency
+		 * @returns {String}
+		 */
+		static getKeyForAssetClassGroup(type, currency) {
+			assert.argumentIsRequired(type, 'type', InstrumentType, 'InstrumentType');
+			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+
+			return `${type.code}|${currency.code}`;
+		}
+
+		static getDescriptionForAssetClassGroup(type, currency, defaultCurrency) {
+			assert.argumentIsRequired(type, 'type', InstrumentType, 'InstrumentType');
+			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+			assert.argumentIsOptional(defaultCurrency, 'defaultCurrency', Currency, 'Currency');
+
+			return `${type.alternateDescription}${currency === (defaultCurrency || Currency.CAD) ? '' : ` (${currency.alternateDescription})`}`;
+		}
+
+		toString() {
+			return '[PositionLevelDefinition]';
+		}
+	}
+
+	function validateRequiredGroup(requiredGroup, variableName) {
+		assert.argumentIsRequired(requiredGroup, variableName, Object);
+		assert.argumentIsRequired(requiredGroup.key, `${variableName}.key`, String);
+		assert.argumentIsRequired(requiredGroup.description, `${variableName}.description`, String);
+		assert.argumentIsRequired(requiredGroup.currency, `${variableName}.currency`, Currency, 'Currency');
+	}
+
+	/**
+	 * A callback used to determine the eligibility for membership of a {@link PositionItem}
+	 * within a group.
+	 *
+	 * @public
+	 * @callback PositionLevelDefinition~keySelector
+	 * @param {PositionItem} item
+	 * @returns {String}
+	 */
+
+	/**
+	 * A callback used to determine the human-readable name of a group. This function should
+	 * return the same value for any {@link PositionItem} in the group.
+	 *
+	 * @public
+	 * @callback PositionLevelDefinition~descriptionSelector
+	 * @param {PositionItem} item
+	 * @returns {String}
+	 */
+
+	/**
+	 * A callback used to determine the display {@link Currency} for the group. This function should
+	 * return the same value for any {@link PositionItem} in the group.
+	 *
+	 * @public
+	 * @callback PositionLevelDefinition~currencySelector
+	 * @param {PositionItem} item
+	 * @returns {Currency}
+	 */
+
+	/**
+	 * The data required to construct a group.
+	 *
+	 * @public
+	 * @typedef PositionLevelDefinition~RequiredGroup
+	 * @type {Object}
+	 * @property {String} key
+	 * @property {String} description
+	 * @property {Currency} currency
+	 */
+
+	return PositionLevelDefinition;
+})();

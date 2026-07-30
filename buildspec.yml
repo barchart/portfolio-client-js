@@ -12,9 +12,9 @@ phases:
   pre_build:
     commands:
       - echo -e $'\n'//registry.npmjs.org/:_authToken=$NPM_READONLY_TOKEN >> .npmrc
-      - npm install
+      - yarn install
 
   build:
     commands:
-      - ./node_modules/.bin/gulp lint
-      - ./node_modules/.bin/gulp test
+      - yarn lint
+      - yarn test

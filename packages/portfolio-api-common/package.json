@@ -1,0 +1,37 @@
+{
+  "name": "@barchart/portfolio-api-common",
+  "version": "14.0.0",
+  "description": "Common JavaScript code used by Barchart's Portfolio Service",
+  "author": {
+    "name": "Bryan Ingle",
+    "email": "bryan.ingle@barchart.com",
+    "url": "https://www.barchart.com"
+  },
+  "contributors": [
+    {
+      "name": "Luka Sotra",
+      "email": "luka.sotra@barchart.com",
+      "url": "https://www.barchart.com"
+    }
+  ],
+  "scripts": {
+    "build:test-bundle": "node ../../tools/build-test-bundle.mjs",
+    "lint": "eslint .",
+    "publish:npm": "npm publish",
+    "test": "yarn build:test-bundle && jasmine --config=jasmine.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/barchart/portfolio-public.git",
+    "directory": "packages/portfolio-api-common"
+  },
+  "dependencies": {
+    "@barchart/common-js": "^4.76.0",
+    "@barchart/marketdata-api-js": "^6.2.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "jasmine": "^2.99.0"
+  },
+  "license": "MIT"
+}
