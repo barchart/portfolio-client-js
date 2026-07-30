@@ -18,7 +18,7 @@ At present, only three currencies are defined:
 
 ## InstrumentType
 
-The [```@barchart/portfolio-api-common/lib/data/InstrumentType```](https://github.com/barchart/portfolio-api-common/blob/master/lib/data/InstrumentType.js) enumeration defines supported asset classes. Each position references a single instrument and each instrument is classified using one of the following types:
+The [```@barchart/portfolio-api-common/lib/data/InstrumentType```](https://github.com/barchart/portfolio-public/blob/master/packages/portfolio-api-common/lib/data/InstrumentType.js) enumeration defines supported asset classes. Each position references a single instrument and each instrument is classified using one of the following types:
 
 | Enumeration Item (SDK)      | String Code (API) | Description                          | Has Dividends | Exchange Traded |
 |-----------------------------|-------------------|--------------------------------------|---------------|-----------------|
@@ -31,7 +31,7 @@ The [```@barchart/portfolio-api-common/lib/data/InstrumentType```](https://githu
 
 ## PositionDirection
 
-Broadly speaking, the [```@barchart/portfolio-api-common/lib/data/PositionDirection```](https://github.com/barchart/portfolio-api-common/blob/master/lib/data/PositionDirection.js) enumeration defines whether the investor would benefit as the price of the instrument increases or decreases. Each [```PositionSnapshot```](/content/sdk/lib-data?id=schemapositionsnapshot) indicates the current direction of the position.
+Broadly speaking, the [```@barchart/portfolio-api-common/lib/data/PositionDirection```](https://github.com/barchart/portfolio-public/blob/master/packages/portfolio-api-common/lib/data/PositionDirection.js) enumeration defines whether the investor would benefit as the price of the instrument increases or decreases. Each [```PositionSnapshot```](/content/sdk/lib-data?id=schemapositionsnapshot) indicates the current direction of the position.
 
 | Enumeration Item (SDK)        | String Code (API) | Investor Benefits   | Position Quantity |
 |-------------------------------|-------------------|---------------------|-------------------|

@@ -1,8 +1,11 @@
-.awspublish-barchart-examples
-.awspublish-docs.barchart.com
-.DS_Store
-.gitignore
-npm-debug.log
-
 .idea
 node_modules
+
+.DS_Store
+npm-debug.log
+
+.awspublish-barchart-examples
+.awspublish-docs.barchart.com
+
+yarn.lock
+package-lock.json

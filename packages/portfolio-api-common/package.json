@@ -1,6 +1,6 @@
 {
   "name": "@barchart/portfolio-api-common",
-  "version": "10.0.0",
+  "version": "14.0.0",
   "description": "Common JavaScript code used by Barchart's Portfolio Service",
   "author": {
     "name": "Bryan Ingle",
@@ -15,14 +15,15 @@
     }
   ],
   "scripts": {
-    "release": "release-it",
-    "build:test-bundle": "node tools/build-test-bundle.mjs",
-    "lint": "jshint lib test/specs test/utils",
+    "build:test-bundle": "node ../../tools/build-test-bundle.mjs",
+    "lint": "eslint .",
+    "publish:npm": "npm publish",
     "test": "yarn build:test-bundle && jasmine --config=jasmine.json"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/barchart/portfolio-api-common.git"
+    "url": "git+ssh://git@github.com/barchart/portfolio-public.git",
+    "directory": "packages/portfolio-api-common"
   },
   "dependencies": {
     "@barchart/common-js": "^4.76.0",
@@ -30,10 +31,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0",
-    "jasmine": "^2.99.0",
-    "jshint": "^2.10.3",
-    "release-it": "^20.2.1"
+    "jasmine": "^2.99.0"
   },
   "license": "MIT"
 }

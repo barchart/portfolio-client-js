@@ -1,0 +1,50 @@
+{
+  "name": "@barchart/portfolio-client-js",
+  "version": "14.0.0",
+  "description": "JavaScript SDK for the Barchart Portfolio Service",
+  "homepage": "https://docs.barchart.com/portfolio/#/",
+  "author": {
+    "name": "Bryan Ingle",
+    "email": "bryan.ingle@barchart.com",
+    "url": "https://www.barchart.com"
+  },
+  "contributors": [
+    {
+      "name": "Luka Sotra",
+      "email": "luka.sotra@barchart.com",
+      "url": "https://www.barchart.com"
+    }
+  ],
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "lint": "eslint .",
+    "publish:npm": "npm publish",
+    "test": "jasmine --config=jasmine.json",
+    "version": "node ../../tools/embed-package-version.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/barchart/portfolio-public.git",
+    "directory": "packages/portfolio-client-js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "bugs": {
+    "url": "https://github.com/barchart/portfolio-public/issues"
+  },
+  "keywords": [
+    "Barchart",
+    "Portfolio",
+    "JavaScript",
+    "SDK"
+  ],
+  "dependencies": {
+    "@barchart/common-js": "^4.73.0",
+    "@barchart/portfolio-api-common": "14.0.0"
+  },
+  "devDependencies": {
+    "jasmine": "^2.99.0"
+  },
+  "license": "MIT"
+}
