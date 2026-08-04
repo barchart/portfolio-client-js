@@ -38,6 +38,7 @@ describe('When positions are serialized', () => {
 					"gain": "0",
 					"basis": "0",
 					"income": "0",
+					"dividends": "0",
 					"value": "0"
 				},
 				latest: {
