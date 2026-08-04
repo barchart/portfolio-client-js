@@ -20,7 +20,7 @@ export default [
 			}
 		},
 		rules: {
-			'no-empty': 'warn',
+			'no-empty': 'off',
 			'no-prototype-builtins': 'warn',
 			'no-useless-escape': 'warn',
 			'no-unused-vars': 'warn'

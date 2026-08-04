@@ -921,13 +921,21 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} name
 		 * @param {String[]} keys
-		 * @returns {PositionGroupBinding}
+		 * @param {Boolean=} actual
+		 * @returns {PositionGroupBinding|PositionGroup}
 		 */
-		getGroup(name, keys) {
+		getGroup(name, keys, actual) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', String);
+			assert.argumentIsOptional(actual, 'actual', Boolean);
 
-			return findNode(this._trees[name], keys).getValue().binding;
+			const group = findNode(this._trees[name], keys).getValue();
+
+			if (is.boolean(actual) && actual) {
+				return group;
+			} else {
+				return group.binding;
+			}
 		}
 
 		/**
@@ -937,13 +945,21 @@ module.exports = (() => {
 		 * @public
 		 * @param {String} name
 		 * @param {String[]} keys
-		 * @returns {PositionGroupBinding[]}
+		 * @param {Boolean=} actual
+		 * @returns {PositionGroupBinding[]|PositionGroupBinding}
 		 */
-		getGroups(name, keys) {
+		getGroups(name, keys, actual) {
 			assert.argumentIsRequired(name, 'name', String);
 			assert.argumentIsArray(keys, 'keys', String);
+			assert.argumentIsOptional(actual, 'actual', Boolean);
 
-			return findNode(this._trees[name], keys).getChildren2();
+			const node = findNode(this._trees[name], keys);
+
+			if (is.boolean(actual) && actual) {
+				return node.getChildren().map(node => node.getValue());
+			} else {
+				return node.getChildren2();
+			}
 		}
 
 		/**
