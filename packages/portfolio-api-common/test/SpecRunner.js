@@ -4258,8 +4258,8 @@
       var Enum = require_Enum();
       module.exports = (() => {
         "use strict";
-        class TransactionType4 extends Enum {
-          constructor(code, description, display, sequence, purchase, sale, income2, opening, closing, fee2, corporateAction, initial, terminal, significant, chaining, chained, transfer) {
+        class TransactionType5 extends Enum {
+          constructor(code, description, display, sequence, purchase, sale, income2, opening, closing, fee2, corporateAction, initial, terminal, significant, chaining, chained, transfer, dividend2) {
             super(code, description);
             assert.argumentIsRequired(display, "display", String);
             assert.argumentIsRequired(sequence, "sequence", Number);
@@ -4276,6 +4276,7 @@
             assert.argumentIsRequired(chaining, "chaining", Boolean);
             assert.argumentIsRequired(chained, "chained", Boolean);
             assert.argumentIsRequired(transfer, "transfer", Boolean);
+            assert.argumentIsRequired(dividend2, "dividend", Boolean);
             this._display = display;
             this._sequence = sequence;
             this._purchase = purchase;
@@ -4291,6 +4292,7 @@
             this._chaining = chaining;
             this._chained = chained;
             this._transfer = transfer;
+            this._dividend = dividend2;
           }
           /**
            * A human-readable description of the transaction type.
@@ -4440,6 +4442,16 @@
            */
           get transfer() {
             return this._transfer;
+          }
+          /**
+           * Indicates if the transaction represents a dividend or distribution (and
+           * should be included in an aggregation of dividends).
+           *
+           * @public
+           * @returns {Boolean}
+           */
+          get dividend() {
+            return this._dividend;
           }
           /**
            * A purchase.
@@ -4688,37 +4700,37 @@
            * @returns {TransactionType|null}
            */
           static parse(code) {
-            return Enum.fromCode(TransactionType4, code);
+            return Enum.fromCode(TransactionType5, code);
           }
           toString() {
             return `[TransactionType (code=${this.code})]`;
           }
         }
-        const buy = new TransactionType4("B", "Buy", "Buy", 0, true, false, false, true, false, false, false, true, false, true, false, false, false);
-        const sell = new TransactionType4("S", "Sell", "Sell", 0, false, true, false, false, true, false, false, false, false, true, false, false, false);
-        const buyShort = new TransactionType4("BS", "Buy To Cover", "Buy To Cover", 0, true, false, false, false, true, false, false, false, false, true, false, false, false);
-        const sellShort = new TransactionType4("SS", "Sell Short", "Sell Short", 0, false, true, false, true, false, false, false, true, false, true, false, false, false);
-        const dividend = new TransactionType4("DV", "Dividend", "Dividend", 1, false, false, true, false, false, false, true, false, false, false, false, false, false);
-        const dividendReinvest = new TransactionType4("DX", "Dividend (Reinvested)", "Dividend Reinvest", 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
-        const dividendStock = new TransactionType4("DS", "Dividend (Stock)", "Dividend Stock", 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
-        const split = new TransactionType4("SP", "Split", "Split", 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
-        const fee = new TransactionType4("F", "Fee", "Fee", 0, false, false, false, false, false, true, false, false, false, false, false, false, false);
-        const feeUnits = new TransactionType4("FU", "Fee Units", "Fee", 0, false, false, false, false, true, false, false, false, false, false, false, false, false);
-        const delist = new TransactionType4("DL", "Delist", "Delist", 1, false, false, false, false, false, false, true, false, true, false, false, false, false);
-        const mergerClose = new TransactionType4("MC", "Merger Close", "Merger Close", 1, false, false, false, false, true, false, true, false, true, false, true, false, false);
-        const mergerOpen = new TransactionType4("MO", "Merger Open", "Merger Open", 1, false, false, false, true, false, false, true, true, false, true, false, true, true);
-        const spinoff = new TransactionType4("SPF", "Spinoff", "Spinoff", 1, false, false, false, false, false, false, true, false, false, false, true, false, false);
-        const spinoffOpen = new TransactionType4("SPFO", "Spinoff Open", "Spinoff Open", 1, false, false, false, true, false, false, true, true, false, true, false, true, true);
-        const distributionCash = new TransactionType4("DC", "Distribution (Cash)", "Cash Distribution", 1, false, false, true, false, false, false, true, false, false, false, false, false, false);
-        const distributionReinvest = new TransactionType4("DY", "Distribution (Reinvested)", "Distribution Reinvest", 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
-        const distributionFund = new TransactionType4("DF", "Distribution (Units)", "Unit Distribution", 1, false, false, false, true, false, false, true, false, false, false, false, false, false);
-        const deposit = new TransactionType4("D", "Deposit", "Deposit", 0, false, false, false, false, false, false, false, true, false, true, false, false, false);
-        const withdrawal = new TransactionType4("W", "Withdrawal", "Withdrawal", 0, false, false, false, false, false, false, false, true, false, true, false, false, false);
-        const debit = new TransactionType4("DR", "Debit", "Debit", 0, false, false, false, false, false, false, false, true, false, true, false, false, false);
-        const credit = new TransactionType4("CR", "Credit", "Credit", 0, false, false, false, false, false, false, false, true, false, true, false, false, false);
-        const valuation = new TransactionType4("V", "Valuation", "Valuation", 0, false, false, false, false, false, false, false, false, false, false, false, false, false);
-        const income = new TransactionType4("I", "Income", "Income", 0, false, false, true, false, false, false, false, false, false, false, false, false, false);
-        return TransactionType4;
+        const buy = new TransactionType5("B", "Buy", "Buy", 0, true, false, false, true, false, false, false, true, false, true, false, false, false, false);
+        const sell = new TransactionType5("S", "Sell", "Sell", 0, false, true, false, false, true, false, false, false, false, true, false, false, false, false);
+        const buyShort = new TransactionType5("BS", "Buy To Cover", "Buy To Cover", 0, true, false, false, false, true, false, false, false, false, true, false, false, false, false);
+        const sellShort = new TransactionType5("SS", "Sell Short", "Sell Short", 0, false, true, false, true, false, false, false, true, false, true, false, false, false, false);
+        const dividend = new TransactionType5("DV", "Dividend", "Dividend", 1, false, false, true, false, false, false, true, false, false, false, false, false, false, true);
+        const dividendReinvest = new TransactionType5("DX", "Dividend (Reinvested)", "Dividend Reinvest", 1, false, false, false, true, false, false, true, false, false, false, false, false, false, true);
+        const dividendStock = new TransactionType5("DS", "Dividend (Stock)", "Dividend Stock", 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
+        const split = new TransactionType5("SP", "Split", "Split", 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
+        const fee = new TransactionType5("F", "Fee", "Fee", 0, false, false, false, false, false, true, false, false, false, false, false, false, false, false);
+        const feeUnits = new TransactionType5("FU", "Fee Units", "Fee", 0, false, false, false, false, true, false, false, false, false, false, false, false, false, false);
+        const delist = new TransactionType5("DL", "Delist", "Delist", 1, false, false, false, false, false, false, true, false, true, false, false, false, false, false);
+        const mergerClose = new TransactionType5("MC", "Merger Close", "Merger Close", 1, false, false, false, false, true, false, true, false, true, false, true, false, false, false);
+        const mergerOpen = new TransactionType5("MO", "Merger Open", "Merger Open", 1, false, false, false, true, false, false, true, true, false, true, false, true, true, false);
+        const spinoff = new TransactionType5("SPF", "Spinoff", "Spinoff", 1, false, false, false, false, false, false, true, false, false, false, true, false, false, false);
+        const spinoffOpen = new TransactionType5("SPFO", "Spinoff Open", "Spinoff Open", 1, false, false, false, true, false, false, true, true, false, true, false, true, true, false);
+        const distributionCash = new TransactionType5("DC", "Distribution (Cash)", "Cash Distribution", 1, false, false, true, false, false, false, true, false, false, false, false, false, false, true);
+        const distributionReinvest = new TransactionType5("DY", "Distribution (Reinvested)", "Distribution Reinvest", 1, false, false, false, true, false, false, true, false, false, false, false, false, false, true);
+        const distributionFund = new TransactionType5("DF", "Distribution (Units)", "Unit Distribution", 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
+        const deposit = new TransactionType5("D", "Deposit", "Deposit", 0, false, false, false, false, false, false, false, true, false, true, false, false, false, false);
+        const withdrawal = new TransactionType5("W", "Withdrawal", "Withdrawal", 0, false, false, false, false, false, false, false, true, false, true, false, false, false, false);
+        const debit = new TransactionType5("DR", "Debit", "Debit", 0, false, false, false, false, false, false, false, true, false, true, false, false, false, false);
+        const credit = new TransactionType5("CR", "Credit", "Credit", 0, false, false, false, false, false, false, false, true, false, true, false, false, false, false);
+        const valuation = new TransactionType5("V", "Valuation", "Valuation", 0, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
+        const income = new TransactionType5("I", "Income", "Income", 0, false, false, true, false, false, false, false, false, false, false, false, false, false, false);
+        return TransactionType5;
       })();
     }
   });
@@ -4863,7 +4875,7 @@
       var is = require_is();
       var InstrumentType6 = require_InstrumentType();
       var PositionDirection2 = require_PositionDirection();
-      var TransactionType4 = require_TransactionType();
+      var TransactionType5 = require_TransactionType();
       module.exports = (() => {
         "use strict";
         class TransactionValidator2 {
@@ -5059,7 +5071,7 @@
            * @returns {Boolean}
            */
           static validateTransactionType(instrumentType, transactionType, userInitiated) {
-            assert.argumentIsRequired(transactionType, "transactionType", TransactionType4, "TransactionType");
+            assert.argumentIsRequired(transactionType, "transactionType", TransactionType5, "TransactionType");
             const transactionTypes = TransactionValidator2.getTransactionTypesFor(instrumentType, userInitiated);
             return transactionTypes.some((t) => t === transactionType);
           }
@@ -5115,58 +5127,58 @@
           }
           validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [PositionDirection2.LONG, PositionDirection2.SHORT, PositionDirection2.EVEN] });
         }
-        associateTypes(InstrumentType6.CRYPTO, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.CRYPTO, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.CRYPTO, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.CRYPTO, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.FEE, true, [PositionDirection2.LONG, PositionDirection2.SHORT]);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.DIVIDEND, false);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.DIVIDEND_REINVEST, false);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.DIVIDEND_STOCK, false);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.SPLIT, false);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.DELIST, false);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.MERGER_OPEN, false);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.MERGER_CLOSE, false);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.SPINOFF, false);
-        associateTypes(InstrumentType6.EQUITY, TransactionType4.SPINOFF_OPEN, false);
-        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType6.FUND, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.FUND, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.FUND, TransactionType4.FEE, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.FUND, TransactionType4.FEE_UNITS, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.DISTRIBUTION_CASH, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.DISTRIBUTION_REINVEST, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.DISTRIBUTION_FUND, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.SPLIT, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.DELIST, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.MERGER_OPEN, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.MERGER_CLOSE, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.SPINOFF, false);
-        associateTypes(InstrumentType6.FUND, TransactionType4.SPINOFF_OPEN, false);
-        associateTypes(InstrumentType6.FUTURE, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.FUTURE, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.FUTURE, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.FUTURE, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType4.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType4.BUY_SHORT, true, [PositionDirection2.SHORT]);
-        associateTypes(InstrumentType6.OTHER, TransactionType4.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
-        associateTypes(InstrumentType6.OTHER, TransactionType4.SELL, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.OTHER, TransactionType4.INCOME, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.OTHER, TransactionType4.FEE, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.OTHER, TransactionType4.VALUATION, true, [PositionDirection2.LONG]);
-        associateTypes(InstrumentType6.CASH, TransactionType4.DEPOSIT, true);
-        associateTypes(InstrumentType6.CASH, TransactionType4.WITHDRAWAL, true);
-        associateTypes(InstrumentType6.CASH, TransactionType4.DEBIT, false);
-        associateTypes(InstrumentType6.CASH, TransactionType4.CREDIT, false);
+        associateTypes(InstrumentType6.CRYPTO, TransactionType5.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.CRYPTO, TransactionType5.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.CRYPTO, TransactionType5.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.CRYPTO, TransactionType5.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.FEE, true, [PositionDirection2.LONG, PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.DIVIDEND, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.DIVIDEND_REINVEST, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.DIVIDEND_STOCK, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.SPLIT, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.DELIST, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.MERGER_OPEN, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.MERGER_CLOSE, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.SPINOFF, false);
+        associateTypes(InstrumentType6.EQUITY, TransactionType5.SPINOFF_OPEN, false);
+        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType5.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType5.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType5.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.EQUITY_OPTION, TransactionType5.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.FUND, TransactionType5.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUND, TransactionType5.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.FUND, TransactionType5.FEE, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.FUND, TransactionType5.FEE_UNITS, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.DISTRIBUTION_CASH, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.DISTRIBUTION_REINVEST, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.DISTRIBUTION_FUND, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.SPLIT, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.DELIST, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.MERGER_OPEN, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.MERGER_CLOSE, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.SPINOFF, false);
+        associateTypes(InstrumentType6.FUND, TransactionType5.SPINOFF_OPEN, false);
+        associateTypes(InstrumentType6.FUTURE, TransactionType5.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUTURE, TransactionType5.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.FUTURE, TransactionType5.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUTURE, TransactionType5.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType5.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType5.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType5.SELL_SHORT, true, [PositionDirection2.SHORT, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.FUTURE_OPTION, TransactionType5.BUY_SHORT, true, [PositionDirection2.SHORT]);
+        associateTypes(InstrumentType6.OTHER, TransactionType5.BUY, true, [PositionDirection2.LONG, PositionDirection2.EVEN]);
+        associateTypes(InstrumentType6.OTHER, TransactionType5.SELL, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.OTHER, TransactionType5.INCOME, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.OTHER, TransactionType5.FEE, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.OTHER, TransactionType5.VALUATION, true, [PositionDirection2.LONG]);
+        associateTypes(InstrumentType6.CASH, TransactionType5.DEPOSIT, true);
+        associateTypes(InstrumentType6.CASH, TransactionType5.WITHDRAWAL, true);
+        associateTypes(InstrumentType6.CASH, TransactionType5.DEBIT, false);
+        associateTypes(InstrumentType6.CASH, TransactionType5.CREDIT, false);
         const validDirections = {};
         function associateDirections(instrumentType, positionDirection) {
           const instrumentTypeCode = instrumentType.code;
@@ -10705,12 +10717,19 @@
            * @public
            * @param {String} name
            * @param {String[]} keys
-           * @returns {PositionGroupBinding}
+           * @param {Boolean=} actual
+           * @returns {PositionGroupBinding|PositionGroup}
            */
-          getGroup(name, keys) {
+          getGroup(name, keys, actual) {
             assert.argumentIsRequired(name, "name", String);
             assert.argumentIsArray(keys, "keys", String);
-            return findNode(this._trees[name], keys).getValue().binding;
+            assert.argumentIsOptional(actual, "actual", Boolean);
+            const group = findNode(this._trees[name], keys).getValue();
+            if (is.boolean(actual) && actual) {
+              return group;
+            } else {
+              return group.binding;
+            }
           }
           /**
            * Returns all child groups from a level of grouping within one of
@@ -10719,12 +10738,19 @@
            * @public
            * @param {String} name
            * @param {String[]} keys
-           * @returns {PositionGroupBinding[]}
+           * @param {Boolean=} actual
+           * @returns {PositionGroupBinding[]|PositionGroupBinding}
            */
-          getGroups(name, keys) {
+          getGroups(name, keys, actual) {
             assert.argumentIsRequired(name, "name", String);
             assert.argumentIsArray(keys, "keys", String);
-            return findNode(this._trees[name], keys).getChildren2();
+            assert.argumentIsOptional(actual, "actual", Boolean);
+            const node = findNode(this._trees[name], keys);
+            if (is.boolean(actual) && actual) {
+              return node.getChildren().map((node2) => node2.getValue());
+            } else {
+              return node.getChildren2();
+            }
           }
           /**
            * Returns the immediate parent {@link PositionGroup} of a {@link PositionGroup}.
@@ -21964,10 +21990,10 @@
           }
         }
         const complete = new PositionSchema2(
-          SchemaBuilder.withName("complete").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING, true).withField("legacy.position", DataType.STRING, true).withField("system.version", DataType.NUMBER, true).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("root", DataType.STRING, true).schema
+          SchemaBuilder.withName("complete").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING, true).withField("legacy.position", DataType.STRING, true).withField("system.version", DataType.NUMBER, true).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("root", DataType.STRING, true).schema
         );
         const client = new PositionSchema2(
-          SchemaBuilder.withName("client").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("previous", DataType.NUMBER, true).schema
+          SchemaBuilder.withName("client").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("previous", DataType.NUMBER, true).schema
         );
         const update = new PositionSchema2(
           SchemaBuilder.withName("update").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("mapping.name", DataType.STRING, true).withField("mapping.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("mapping.currency", DataType.forEnum(Currency5, "Currency"), true).withField("mapping.symbol.barchart", DataType.STRING, true).withField("mapping.symbol.display", DataType.STRING, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).schema
@@ -21990,7 +22016,7 @@
       var SchemaBuilder = require_SchemaBuilder();
       var InstrumentType6 = require_InstrumentType();
       var PositionDirection2 = require_PositionDirection();
-      var TransactionType4 = require_TransactionType();
+      var TransactionType5 = require_TransactionType();
       module.exports = (() => {
         "use strict";
         class TransactionSchema2 extends Enum {
@@ -22018,7 +22044,7 @@
            */
           static forCreate(transactionType) {
             let code;
-            if (transactionType instanceof TransactionType4) {
+            if (transactionType instanceof TransactionType5) {
               code = transactionType.code;
             } else {
               code = transactionType;
@@ -22083,40 +22109,40 @@
           }
         }
         const complete = new TransactionSchema2(
-          SchemaBuilder.withName("complete").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.STRING, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING).withField("legacy.position", DataType.STRING, true).withField("legacy.transaction", DataType.STRING, true).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("dividend.reference", DataType.STRING, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).withField("system.sequence", DataType.NUMBER).withField("system.version", DataType.STRING).withField("system.timestamp", DataType.TIMESTAMP).schema
+          SchemaBuilder.withName("complete").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.STRING, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING).withField("legacy.position", DataType.STRING, true).withField("legacy.transaction", DataType.STRING, true).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("dividend.reference", DataType.STRING, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).withField("system.sequence", DataType.NUMBER).withField("system.version", DataType.STRING).withField("system.timestamp", DataType.TIMESTAMP).schema
         );
         const client = new TransactionSchema2(
-          SchemaBuilder.withName("client").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.NUMBER, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).schema
+          SchemaBuilder.withName("client").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.NUMBER, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).schema
         );
         const buy = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.BUY.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.BUY.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
         );
         const sell = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.SELL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL, true).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).withField("close", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.SELL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL, true).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).withField("close", DataType.BOOLEAN, true).schema
         );
         const buyShort = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.BUY_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL, true).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).withField("close", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.BUY_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL, true).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).withField("close", DataType.BOOLEAN, true).schema
         );
         const sellShort = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.SELL_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.SELL_SHORT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
         );
         const fee = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.FEE.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("fee", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.FEE.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("fee", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const deposit = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.DEPOSIT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.DEPOSIT.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const withdrawal = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.WITHDRAWAL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.WITHDRAWAL.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("date", DataType.DAY).withField("amount", DataType.DECIMAL).withField("force", DataType.BOOLEAN, true).schema
         );
         const valuation = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.VALUATION.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("rate", DataType.DECIMAL, true).withField("value", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.VALUATION.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("rate", DataType.DECIMAL, true).withField("value", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).schema
         );
         const delist = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.DELIST.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.DELIST.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("force", DataType.BOOLEAN, true).schema
         );
         const income = new TransactionSchema2(
-          SchemaBuilder.withName(TransactionType4.INCOME.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType4, "TransactionType")).withField("date", DataType.DAY).withField("income", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).schema
+          SchemaBuilder.withName(TransactionType5.INCOME.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("income", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("force", DataType.BOOLEAN, true).schema
         );
         return TransactionSchema2;
       })();
@@ -23003,16 +23029,40 @@
     });
   });
 
+  // test/specs/data/TransactionTypeSpec.js
+  var TransactionType2 = require_TransactionType();
+  describe("When transaction types identify dividend income", () => {
+    "use strict";
+    it("cash dividends should be identified", () => {
+      expect(TransactionType2.DIVIDEND.dividend).toBe(true);
+    });
+    it("reinvested dividends should be identified", () => {
+      expect(TransactionType2.DIVIDEND_REINVEST.dividend).toBe(true);
+    });
+    it("cash distributions should be identified", () => {
+      expect(TransactionType2.DISTRIBUTION_CASH.dividend).toBe(true);
+    });
+    it("reinvested distributions should be identified", () => {
+      expect(TransactionType2.DISTRIBUTION_REINVEST.dividend).toBe(true);
+    });
+    it("stock dividends should not be identified as dividend income", () => {
+      expect(TransactionType2.DIVIDEND_STOCK.dividend).toBe(false);
+    });
+    it("unit distributions should not be identified as dividend income", () => {
+      expect(TransactionType2.DISTRIBUTION_FUND.dividend).toBe(false);
+    });
+  });
+
   // test/specs/data/TransactionValidatorSpec.js
   var Day2 = require_Day();
   var Decimal4 = require_Decimal();
-  var TransactionType2 = require_TransactionType();
+  var TransactionType3 = require_TransactionType();
   var TransactionValidator = require_TransactionValidator();
   var InstrumentType3 = require_InstrumentType();
   describe("When validating transaction order", () => {
     "use strict";
     const build = (sequence, day, type) => {
-      return { sequence, date: Day2.parse(day), type: type || TransactionType2.BUY };
+      return { sequence, date: Day2.parse(day), type: type || TransactionType3.BUY };
     };
     it("An array of zero transactions should be valid", () => {
       expect(TransactionValidator.validateOrder([])).toEqual(true);
@@ -23021,16 +23071,16 @@
       expect(TransactionValidator.validateOrder([build(1, "2018-04-30"), build(2, "2018-04-30"), build(3, "2018-04-30")])).toEqual(true);
     });
     it("An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs last, should be valid", () => {
-      expect(TransactionValidator.validateOrder([build(1, "2018-04-30"), build(2, "2018-04-30", TransactionType2.DIVIDEND)])).toEqual(true);
+      expect(TransactionValidator.validateOrder([build(1, "2018-04-30"), build(2, "2018-04-30", TransactionType3.DIVIDEND)])).toEqual(true);
     });
     it("An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs first, in strict mode, should not be valid", () => {
-      expect(TransactionValidator.validateOrder([build(1, "2018-04-30", TransactionType2.DIVIDEND), build(2, "2018-04-30")], true)).toEqual(false);
+      expect(TransactionValidator.validateOrder([build(1, "2018-04-30", TransactionType3.DIVIDEND), build(2, "2018-04-30")], true)).toEqual(false);
     });
     it("An array of transactions with ordered sequences, on the same day should be valid, where a dividend occurs first, in non-strict mode, should be valid", () => {
-      expect(TransactionValidator.validateOrder([build(1, "2018-04-30", TransactionType2.DIVIDEND), build(2, "2018-04-30")], false)).toEqual(true);
+      expect(TransactionValidator.validateOrder([build(1, "2018-04-30", TransactionType3.DIVIDEND), build(2, "2018-04-30")], false)).toEqual(true);
     });
     it("An array of transactions with ordered sequences, on the sequential days should be valid", () => {
-      expect(TransactionValidator.validateOrder([build(1, "2018-04-30"), build(2, "2018-05-01"), build(3, "2018-05-02", TransactionType2.DIVIDEND)])).toEqual(true);
+      expect(TransactionValidator.validateOrder([build(1, "2018-04-30"), build(2, "2018-05-01"), build(3, "2018-05-02", TransactionType3.DIVIDEND)])).toEqual(true);
     });
     it("An array of transactions with ordered sequences (starting after one), on the same day should not be valid", () => {
       expect(TransactionValidator.validateOrder([build(3, "2018-04-30"), build(4, "2018-04-30"), build(5, "2018-04-30")])).toEqual(false);
@@ -23083,9 +23133,9 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.BUY, quantity: new Decimal4(1) },
-          { type: TransactionType2.BUY, quantity: new Decimal4(2) },
-          { type: TransactionType2.BUY, quantity: new Decimal4(3) }
+          { type: TransactionType3.BUY, quantity: new Decimal4(1) },
+          { type: TransactionType3.BUY, quantity: new Decimal4(2) },
+          { type: TransactionType3.BUY, quantity: new Decimal4(3) }
         ];
       });
       it("No transaction should be identified which switches the position direction", () => {
@@ -23096,9 +23146,9 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(2) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(3) }
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(2) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(3) }
         ];
       });
       it("No transaction should be identified which switches the position direction", () => {
@@ -23109,9 +23159,9 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(2) },
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(3) }
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(2) },
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(3) }
         ];
       });
       it("No transaction should be identified which switches the position direction", () => {
@@ -23122,8 +23172,8 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.BUY, quantity: new Decimal4(100) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(50) }
+          { type: TransactionType3.BUY, quantity: new Decimal4(100) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(50) }
         ];
       });
       it("No transaction should be identified", () => {
@@ -23134,8 +23184,8 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(100) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(50) }
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(100) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(50) }
         ];
       });
       it("No transaction should be identified", () => {
@@ -23146,9 +23196,9 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(100) },
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(50) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(150) }
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(100) },
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(50) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(150) }
         ];
       });
       it("No transaction should be identified", () => {
@@ -23159,8 +23209,8 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.BUY, quantity: new Decimal4(100) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(200) }
+          { type: TransactionType3.BUY, quantity: new Decimal4(100) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(200) }
         ];
       });
       it("The second transaction should be identified as switching the direction", () => {
@@ -23171,9 +23221,9 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(100) },
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(50) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(151) }
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(100) },
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(50) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(151) }
         ];
       });
       it("The third transaction should be identified as switching the direction", () => {
@@ -23188,8 +23238,8 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.BUY, quantity: new Decimal4(1) },
-          { type: TransactionType2.BUY, quantity: new Decimal4(2) }
+          { type: TransactionType3.BUY, quantity: new Decimal4(1) },
+          { type: TransactionType3.BUY, quantity: new Decimal4(2) }
         ];
       });
       it("Should return -1 (no violations)", () => {
@@ -23200,8 +23250,8 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(2) }
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(2) }
         ];
       });
       it("Should detect violation at index 0", () => {
@@ -23212,8 +23262,8 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.BUY, quantity: new Decimal4(10) },
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(5) }
+          { type: TransactionType3.BUY, quantity: new Decimal4(10) },
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(5) }
         ];
       });
       it("Should detect violation at index 1", () => {
@@ -23224,9 +23274,9 @@
       let transactions;
       beforeEach(() => {
         transactions = [
-          { type: TransactionType2.BUY, quantity: new Decimal4(10) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(10) },
-          { type: TransactionType2.SELL_SHORT, quantity: new Decimal4(5) }
+          { type: TransactionType3.BUY, quantity: new Decimal4(10) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(10) },
+          { type: TransactionType3.SELL_SHORT, quantity: new Decimal4(5) }
         ];
       });
       it("Should return -1 (no violations)", () => {
@@ -23243,8 +23293,8 @@
           }
         };
         transactions = [
-          { type: TransactionType2.BUY, quantity: new Decimal4(20) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(50) }
+          { type: TransactionType3.BUY, quantity: new Decimal4(20) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(50) }
         ];
       });
       it("Should return -1 (no violations)", () => {
@@ -23259,7 +23309,7 @@
           snapshot: { open: new Decimal4(-50) }
         };
         transactions = [
-          { type: TransactionType2.BUY, quantity: new Decimal4(10) }
+          { type: TransactionType3.BUY, quantity: new Decimal4(10) }
         ];
       });
       it("Should detect violation at index 0", () => {
@@ -23276,13 +23326,13 @@
           }
         };
         transactions = [
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(1) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(1) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(1) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(1) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(1) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(1) },
-          { type: TransactionType2.BUY_SHORT, quantity: new Decimal4(1) }
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(1) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(1) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(1) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(1) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(1) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(1) },
+          { type: TransactionType3.BUY_SHORT, quantity: new Decimal4(1) }
         ];
       });
       it("The sixth transaction should be identified as switching the direction", () => {
@@ -23299,13 +23349,13 @@
           }
         };
         transactions = [
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) },
-          { type: TransactionType2.SELL, quantity: new Decimal4(1) }
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) },
+          { type: TransactionType3.SELL, quantity: new Decimal4(1) }
         ];
       });
       it("The sixth transaction should be identified as switching the direction", () => {
@@ -24514,6 +24564,7 @@
             "gain": "0",
             "basis": "0",
             "income": "0",
+            "dividends": "0",
             "value": "0"
           },
           latest: {
@@ -24556,10 +24607,20 @@
   // test/specs/serialization/TransactionSchemaSpec.js
   var Day6 = require_Day();
   var Decimal7 = require_Decimal();
-  var TransactionType3 = require_TransactionType();
+  var TransactionType4 = require_TransactionType();
   var TransactionSchema = require_TransactionSchema();
   describe("When transactions are serialized", () => {
     "use strict";
+    describe("using a snapshot schema", () => {
+      it("the complete schema should include dividends", () => {
+        const fields = TransactionSchema.COMPLETE.schema.fields.map((field) => field.name);
+        expect(fields).toContain("snapshot.dividends");
+      });
+      it("the client schema should include dividends", () => {
+        const fields = TransactionSchema.CLIENT.schema.fields.map((field) => field.name);
+        expect(fields).toContain("snapshot.dividends");
+      });
+    });
     function normalizeTransaction(transaction) {
       return {
         cash: transaction.cash,
@@ -24582,7 +24643,7 @@
         transaction.portfolio = "063e00ea-8d1b-4faa-aedf-f43bdf23590e";
         transaction.position = "c2eefcde-f8d0-438d-9414-28f307d7b544";
         transaction.sequence = 1;
-        transaction.type = TransactionType3.BUY;
+        transaction.type = TransactionType4.BUY;
         transaction.date = new Day6(2018, 7, 9);
         transaction.price = new Decimal7(15.92);
         transaction.quantity = new Decimal7(100);

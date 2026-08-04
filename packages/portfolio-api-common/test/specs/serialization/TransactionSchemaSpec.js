@@ -8,6 +8,20 @@ const TransactionSchema = require('./../../../lib/serialization/TransactionSchem
 describe('When transactions are serialized', () => {
 	'use strict';
 
+	describe('using a snapshot schema', () => {
+		it('the complete schema should include dividends', () => {
+			const fields = TransactionSchema.COMPLETE.schema.fields.map(field => field.name);
+
+			expect(fields).toContain('snapshot.dividends');
+		});
+
+		it('the client schema should include dividends', () => {
+			const fields = TransactionSchema.CLIENT.schema.fields.map(field => field.name);
+
+			expect(fields).toContain('snapshot.dividends');
+		});
+	});
+
 	function normalizeTransaction(transaction) {
 		return {
 			cash: transaction.cash,
