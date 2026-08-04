@@ -26,10 +26,10 @@ module.exports = (() => {
 	 * @param {Boolean} chaining
 	 * @param {Boolean} chained
 	 * @param {Boolean} transfer
-	 * @param {Boolean} dividends
- 	 */
+	 * @param {Boolean} dividend
+	 */
 	class TransactionType extends Enum {
-		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, terminal, significant, chaining, chained, transfer, dividends) {
+		constructor(code, description, display, sequence, purchase, sale, income, opening, closing, fee, corporateAction, initial, terminal, significant, chaining, chained, transfer, dividend) {
 			super(code, description);
 
 			assert.argumentIsRequired(display, 'display', String);
@@ -47,7 +47,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(chaining, 'chaining', Boolean);
 			assert.argumentIsRequired(chained, 'chained', Boolean);
 			assert.argumentIsRequired(transfer, 'transfer', Boolean);
-			assert.argumentIsRequired(dividends, 'dividends', Boolean);
+			assert.argumentIsRequired(dividend, 'dividend', Boolean);
 			
 			this._display = display;
 			this._sequence = sequence;
@@ -64,7 +64,7 @@ module.exports = (() => {
 			this._chaining = chaining;
 			this._chained = chained;
 			this._transfer = transfer;
-			this._dividends = dividends;
+			this._dividend = dividend;
 		}
 
 		/**
@@ -239,8 +239,8 @@ module.exports = (() => {
 		 * @public
 		 * @returns {Boolean}
 		 */
-		get dividends() {
-			return this._dividends;
+		get dividend() {
+			return this._dividend;
 		}
 
 		/**
@@ -541,7 +541,7 @@ module.exports = (() => {
 	const spinoffOpen = new TransactionType('SPFO', 'Spinoff Open', 'Spinoff Open', 1, false, false, false, true, false, false, true, true, false, true, false, true, true, false);
 
 	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false, false, false, false, false, true);
-	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, true);
+	const ee = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, true);
 	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
 
 	const deposit = new TransactionType('D', 'Deposit', 'Deposit', 0, false, false, false, false, false, false, false, true, false, true, false, false, false, false);
