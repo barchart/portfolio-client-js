@@ -526,8 +526,8 @@ module.exports = (() => {
 	const sell = new TransactionType('S', 'Sell', 'Sell', 0, false, true, false, false, true, false, false, false, false, true, false, false, false, false);
 	const buyShort = new TransactionType('BS', 'Buy To Cover', 'Buy To Cover', 0, true, false, false, false, true, false, false, false, false, true, false, false, false, false);
 	const sellShort = new TransactionType('SS', 'Sell Short', 'Sell Short', 0, false, true, false, true, false, false, false, true, false, true, false, false, false, false);
-	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 1, false, false, true, false, false, false, true, false, false, false, false, false, false, false);
-	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
+	const dividend = new TransactionType('DV', 'Dividend', 'Dividend', 1, false, false, true, false, false, false, true, false, false, false, false, false, false, true);
+	const dividendReinvest = new TransactionType('DX', 'Dividend (Reinvested)', 'Dividend Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, true);
 	const dividendStock = new TransactionType('DS', 'Dividend (Stock)', 'Dividend Stock', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
 	const split = new TransactionType('SP', 'Split', 'Split', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
 	const fee = new TransactionType('F', 'Fee', 'Fee', 0, false, false, false, false, false, true, false, false, false, false, false, false, false, false);
@@ -540,8 +540,8 @@ module.exports = (() => {
 	const spinoff = new TransactionType('SPF', 'Spinoff', 'Spinoff', 1, false, false, false, false, false, false, true, false, false, false, true, false, false, false);
 	const spinoffOpen = new TransactionType('SPFO', 'Spinoff Open', 'Spinoff Open', 1, false, false, false, true, false, false, true, true, false, true, false, true, true, false);
 
-	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false, false, false, false, false, false);
-	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
+	const distributionCash = new TransactionType('DC', 'Distribution (Cash)', 'Cash Distribution', 1, false, false, true, false, false, false, true, false, false, false, false, false, false, true);
+	const distributionReinvest = new TransactionType('DY', 'Distribution (Reinvested)', 'Distribution Reinvest', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, true);
 	const distributionFund = new TransactionType('DF', 'Distribution (Units)', 'Unit Distribution', 1, false, false, false, true, false, false, true, false, false, false, false, false, false, false);
 
 	const deposit = new TransactionType('D', 'Deposit', 'Deposit', 0, false, false, false, false, false, false, false, true, false, true, false, false, false, false);
