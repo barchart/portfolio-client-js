@@ -4,13 +4,16 @@ import globals from 'globals';
 export default [
 	{
 		ignores: [
-			'node_modules/**'
+			'**/node_modules/**',
+			'packages/*/dist/**',
+			'packages/*/test/SpecRunner.js',
+			'packages/*/test/dist/**'
 		]
 	},
 	js.configs.recommended,
 	{
-		files: ['**/*.js'],
-		ignores: ['test/specs/**'],
+		files: ['packages/*/**/*.js'],
+		ignores: ['**/test/specs/**'],
 		languageOptions: {
 			ecmaVersion: 'latest',
 			sourceType: 'commonjs',
@@ -27,7 +30,7 @@ export default [
 		}
 	},
 	{
-		files: ['test/specs/**/*.js'],
+		files: ['packages/*/test/specs/**/*.js'],
 		languageOptions: {
 			ecmaVersion: 'latest',
 			sourceType: 'commonjs',

@@ -1,6 +1,7 @@
 {
   "name": "@barchart/portfolio-public-monorepo",
   "private": true,
+  "type": "module",
   "description": "Public JavaScript packages for the Barchart Portfolio Service",
   "author": {
     "name": "Bryan Ingle",
@@ -19,7 +20,7 @@
   ],
   "scripts": {
     "clean": "lerna clean --yes && rm -rf node_modules",
-    "lint": "lerna run lint --stream",
+    "lint": "eslint eslint.config.js packages",
     "test": "lerna run test --stream",
     "publish": "lerna run publish:npm --stream --concurrency 1",
     "preversion": "git diff --exit-code",
