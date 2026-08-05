@@ -172,6 +172,7 @@ module.exports = (() => {
 			this._dataActual.realized = null;
 			this._dataActual.realizedToday = null;
 			this._dataActual.income = null;
+			this._dataActual.dividends = null;
 			this._dataActual.market = null;
 			this._dataActual.market2 = null;
 			this._dataActual.marketPercent = null;
@@ -219,6 +220,7 @@ module.exports = (() => {
 			this._dataFormat.realizedTodayPositive = false;
 			this._dataFormat.realizedTodayNegative = false;
 			this._dataFormat.income = null;
+			this._dataFormat.dividends = null;
 			this._dataFormat.market = null;
 			this._dataFormat.market2 = null;
 			this._dataFormat.marketPercent = null;
@@ -262,11 +264,15 @@ module.exports = (() => {
 
 			this._dataActual.periodIncome = null;
 			this._dataActual.periodIncomePrevious = null;
+			this._dataActual.periodDividends = null;
+			this._dataActual.periodDividendsPrevious = null;
 			this._dataActual.periodRealized = null;
 			this._dataActual.periodUnrealized = null;
 
 			this._dataFormat.periodIncome = null;
 			this._dataFormat.periodIncomePrevious = null;
+			this._dataFormat.periodDividends = null;
+			this._dataFormat.periodDividendsPrevious = null;
 			this._dataFormat.periodRealized = null;
 			this._dataFormat.periodUnrealized = null;
 
@@ -1069,6 +1075,13 @@ module.exports = (() => {
 
 			return currencyTranslator.translate(value, item.currency, currency);
 		};
+		const aggregateOptional = (total, item, value) => {
+			if (total === null || value === null) {
+				return null;
+			}
+
+			return total.add(translate(item, value));
+		};
 
 		const updates = items.reduce((updates, item) => {
 			updates.basis = updates.basis.add(translate(item, item.data.basis));
@@ -1085,6 +1098,7 @@ module.exports = (() => {
 			updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 			updates.realizedToday = updates.realizedToday.add(translate(item, item.data.realizedToday));
 			updates.income = updates.income.add(translate(item, item.data.income));
+			updates.dividends = aggregateOptional(updates.dividends, item, item.data.dividends);
 			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.periodGain));
 			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.periodGainPrevious));
 			updates.summaryTotalPrevious2 = updates.summaryTotalPrevious2.add(translate(item, item.data.periodGainPrevious2));
@@ -1093,6 +1107,8 @@ module.exports = (() => {
 
 			updates.periodIncome = updates.periodIncome.add(translate(item, item.data.periodIncome));
 			updates.periodIncomePrevious = updates.periodIncomePrevious.add(translate(item, item.data.periodIncomePrevious));
+			updates.periodDividends = aggregateOptional(updates.periodDividends, item, item.data.periodDividends);
+			updates.periodDividendsPrevious = aggregateOptional(updates.periodDividendsPrevious, item, item.data.periodDividendsPrevious);
 			updates.periodRealized = updates.periodRealized.add(translate(item, item.data.periodRealized));
 			updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
 
@@ -1121,6 +1137,7 @@ module.exports = (() => {
 			unrealized: Decimal.ZERO,
 			realizedToday: Decimal.ZERO,
 			income: Decimal.ZERO,
+			dividends: Decimal.ZERO,
 			summaryTotalCurrent: Decimal.ZERO,
 			summaryTotalPrevious: Decimal.ZERO,
 			summaryTotalPrevious2: Decimal.ZERO,
@@ -1128,6 +1145,8 @@ module.exports = (() => {
 			marketPrevious2: Decimal.ZERO,
 			periodIncome: Decimal.ZERO,
 			periodIncomePrevious: Decimal.ZERO,
+			periodDividends: Decimal.ZERO,
+			periodDividendsPrevious: Decimal.ZERO,
 			periodRealized: Decimal.ZERO,
 			periodUnrealized: Decimal.ZERO,
 			cashTotal: Decimal.ZERO,
@@ -1148,6 +1167,7 @@ module.exports = (() => {
 		actual.unrealized = updates.unrealized;
 		actual.realizedToday = updates.realizedToday;
 		actual.income = updates.income;
+		actual.dividends = updates.dividends;
 		actual.summaryTotalCurrent = updates.summaryTotalCurrent;
 		actual.summaryTotalPrevious = updates.summaryTotalPrevious;
 		actual.summaryTotalPrevious2 = updates.summaryTotalPrevious2;
@@ -1155,6 +1175,8 @@ module.exports = (() => {
 		actual.marketPrevious2 = updates.marketPrevious2;
 		actual.periodIncome = updates.periodIncome;
 		actual.periodIncomePrevious = updates.periodIncomePrevious;
+		actual.periodDividends = updates.periodDividends;
+		actual.periodDividendsPrevious = updates.periodDividendsPrevious;
 		actual.periodRealized = updates.periodRealized;
 		actual.periodUnrealized = updates.periodUnrealized;
 		actual.cashTotal = updates.cashTotal;
@@ -1201,6 +1223,7 @@ module.exports = (() => {
 		format.realizedTodayPositive = actual.realizedToday.getIsPositive();
 		format.realizedTodayNegative = actual.realizedToday.getIsNegative();
 		format.income = formatCurrency(actual.income, currency);
+		format.dividends = formatCurrency(actual.dividends, currency);
 		format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
 		format.summaryTotalCurrentPositive = updates.summaryTotalCurrent.getIsPositive();
 		format.summaryTotalCurrentNegative = updates.summaryTotalCurrent.getIsNegative();
@@ -1214,6 +1237,8 @@ module.exports = (() => {
 		format.marketPrevious2 = formatCurrency(updates.marketPrevious2, currency);
 		format.periodIncome = formatCurrency(updates.periodIncome, currency);
 		format.periodIncomePrevious = formatCurrency(updates.periodIncomePrevious, currency);
+		format.periodDividends = formatCurrency(updates.periodDividends, currency);
+		format.periodDividendsPrevious = formatCurrency(updates.periodDividendsPrevious, currency);
 		format.periodRealized = formatCurrency(updates.periodRealized, currency);
 		format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
 		format.cashTotal = formatCurrency(updates.cashTotal, currency);
