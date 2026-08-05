@@ -90,6 +90,7 @@ module.exports = (() => {
 		.withField('period.buys', DataType.DECIMAL)
 		.withField('period.sells', DataType.DECIMAL)
 		.withField('period.income', DataType.DECIMAL)
+		.withField('period.dividends', DataType.DECIMAL, true)
 		.withField('period.realized', DataType.DECIMAL)
 		.withField('period.unrealized', DataType.DECIMAL)
 		.withField('system.sequence', DataType.NUMBER)
@@ -117,6 +118,7 @@ module.exports = (() => {
 		.withField('period.buys', DataType.DECIMAL)
 		.withField('period.sells', DataType.DECIMAL)
 		.withField('period.income', DataType.DECIMAL)
+		.withField('period.dividends', DataType.DECIMAL, true)
 		.withField('period.realized', DataType.DECIMAL)
 		.withField('period.unrealized', DataType.DECIMAL)
 		.schema
