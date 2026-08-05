@@ -7926,6 +7926,7 @@
             this._dataActual.realized = null;
             this._dataActual.realizedToday = null;
             this._dataActual.income = null;
+            this._dataActual.dividends = null;
             this._dataActual.market = null;
             this._dataActual.market2 = null;
             this._dataActual.marketPercent = null;
@@ -7972,6 +7973,7 @@
             this._dataFormat.realizedTodayPositive = false;
             this._dataFormat.realizedTodayNegative = false;
             this._dataFormat.income = null;
+            this._dataFormat.dividends = null;
             this._dataFormat.market = null;
             this._dataFormat.market2 = null;
             this._dataFormat.marketPercent = null;
@@ -8012,10 +8014,14 @@
             this._dataFormat.periodPricePrevious = null;
             this._dataActual.periodIncome = null;
             this._dataActual.periodIncomePrevious = null;
+            this._dataActual.periodDividends = null;
+            this._dataActual.periodDividendsPrevious = null;
             this._dataActual.periodRealized = null;
             this._dataActual.periodUnrealized = null;
             this._dataFormat.periodIncome = null;
             this._dataFormat.periodIncomePrevious = null;
+            this._dataFormat.periodDividends = null;
+            this._dataFormat.periodDividendsPrevious = null;
             this._dataFormat.periodRealized = null;
             this._dataFormat.periodUnrealized = null;
             this._dataActual.totalPercent = null;
@@ -8651,6 +8657,12 @@
             }
             return currencyTranslator.translate(value, item.currency, currency);
           };
+          const aggregateOptional = (total, item, value) => {
+            if (total === null || value === null) {
+              return null;
+            }
+            return total.add(translate(item, value));
+          };
           const updates = items.reduce((updates2, item) => {
             updates2.basis = updates2.basis.add(translate(item, item.data.basis));
             if (item.position.instrument.type === InstrumentType6.FUTURE) {
@@ -8664,6 +8676,7 @@
             updates2.unrealized = updates2.unrealized.add(translate(item, item.data.unrealized));
             updates2.realizedToday = updates2.realizedToday.add(translate(item, item.data.realizedToday));
             updates2.income = updates2.income.add(translate(item, item.data.income));
+            updates2.dividends = aggregateOptional(updates2.dividends, item, item.data.dividends);
             updates2.summaryTotalCurrent = updates2.summaryTotalCurrent.add(translate(item, item.data.periodGain));
             updates2.summaryTotalPrevious = updates2.summaryTotalPrevious.add(translate(item, item.data.periodGainPrevious));
             updates2.summaryTotalPrevious2 = updates2.summaryTotalPrevious2.add(translate(item, item.data.periodGainPrevious2));
@@ -8671,6 +8684,8 @@
             updates2.marketPrevious2 = updates2.marketPrevious2.add(translate(item, item.data.marketPrevious2));
             updates2.periodIncome = updates2.periodIncome.add(translate(item, item.data.periodIncome));
             updates2.periodIncomePrevious = updates2.periodIncomePrevious.add(translate(item, item.data.periodIncomePrevious));
+            updates2.periodDividends = aggregateOptional(updates2.periodDividends, item, item.data.periodDividends);
+            updates2.periodDividendsPrevious = aggregateOptional(updates2.periodDividendsPrevious, item, item.data.periodDividendsPrevious);
             updates2.periodRealized = updates2.periodRealized.add(translate(item, item.data.periodRealized));
             updates2.periodUnrealized = updates2.periodUnrealized.add(translate(item, item.data.periodUnrealized));
             if (item.position.instrument.type === InstrumentType6.CASH) {
@@ -8695,6 +8710,7 @@
             unrealized: Decimal8.ZERO,
             realizedToday: Decimal8.ZERO,
             income: Decimal8.ZERO,
+            dividends: Decimal8.ZERO,
             summaryTotalCurrent: Decimal8.ZERO,
             summaryTotalPrevious: Decimal8.ZERO,
             summaryTotalPrevious2: Decimal8.ZERO,
@@ -8702,6 +8718,8 @@
             marketPrevious2: Decimal8.ZERO,
             periodIncome: Decimal8.ZERO,
             periodIncomePrevious: Decimal8.ZERO,
+            periodDividends: Decimal8.ZERO,
+            periodDividendsPrevious: Decimal8.ZERO,
             periodRealized: Decimal8.ZERO,
             periodUnrealized: Decimal8.ZERO,
             cashTotal: Decimal8.ZERO,
@@ -8721,6 +8739,7 @@
           actual.unrealized = updates.unrealized;
           actual.realizedToday = updates.realizedToday;
           actual.income = updates.income;
+          actual.dividends = updates.dividends;
           actual.summaryTotalCurrent = updates.summaryTotalCurrent;
           actual.summaryTotalPrevious = updates.summaryTotalPrevious;
           actual.summaryTotalPrevious2 = updates.summaryTotalPrevious2;
@@ -8728,6 +8747,8 @@
           actual.marketPrevious2 = updates.marketPrevious2;
           actual.periodIncome = updates.periodIncome;
           actual.periodIncomePrevious = updates.periodIncomePrevious;
+          actual.periodDividends = updates.periodDividends;
+          actual.periodDividendsPrevious = updates.periodDividendsPrevious;
           actual.periodRealized = updates.periodRealized;
           actual.periodUnrealized = updates.periodUnrealized;
           actual.cashTotal = updates.cashTotal;
@@ -8765,6 +8786,7 @@
           format.realizedTodayPositive = actual.realizedToday.getIsPositive();
           format.realizedTodayNegative = actual.realizedToday.getIsNegative();
           format.income = formatCurrency(actual.income, currency);
+          format.dividends = formatCurrency(actual.dividends, currency);
           format.summaryTotalCurrent = formatCurrency(updates.summaryTotalCurrent, currency);
           format.summaryTotalCurrentPositive = updates.summaryTotalCurrent.getIsPositive();
           format.summaryTotalCurrentNegative = updates.summaryTotalCurrent.getIsNegative();
@@ -8778,6 +8800,8 @@
           format.marketPrevious2 = formatCurrency(updates.marketPrevious2, currency);
           format.periodIncome = formatCurrency(updates.periodIncome, currency);
           format.periodIncomePrevious = formatCurrency(updates.periodIncomePrevious, currency);
+          format.periodDividends = formatCurrency(updates.periodDividends, currency);
+          format.periodDividendsPrevious = formatCurrency(updates.periodDividendsPrevious, currency);
           format.periodRealized = formatCurrency(updates.periodRealized, currency);
           format.periodUnrealized = formatCurrency(updates.periodUnrealized, currency);
           format.cashTotal = formatCurrency(updates.cashTotal, currency);
@@ -9200,10 +9224,13 @@
             this._data.quantityPrevious = null;
             this._data.realized = null;
             this._data.income = null;
+            this._data.dividends = null;
             this._data.basisPrice = null;
             this._data.unrealizedPrice = null;
             this._data.periodIncome = null;
             this._data.periodIncomePrevious = null;
+            this._data.periodDividends = null;
+            this._data.periodDividendsPrevious = null;
             this._data.periodRealized = null;
             this._data.periodUnrealized = null;
             this._data.periodUnrealizedChange = null;
@@ -9571,6 +9598,7 @@
           data.realized = snapshot.gain;
           data.unrealized = Decimal8.ZERO;
           data.income = snapshot.income;
+          data.dividends = snapshot.dividends || null;
           data.marketPrevious = previousSummary1 === null ? Decimal8.ZERO : previousSummary1.end.value;
           data.marketPrevious2 = previousSummary2 === null ? Decimal8.ZERO : previousSummary2.end.value;
           data.quantityPrevious = previousSummary1 === null ? Decimal8.ZERO : previousSummary1.end.open;
@@ -9579,6 +9607,8 @@
           data.periodGainPrevious2 = calculatePeriodGain(position.instrument, data.initiate, previousSummary2, previousSummary3);
           data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal8.ZERO;
           data.periodIncomePrevious = previousSummary1 !== null ? previousSummary1.period.income : Decimal8.ZERO;
+          data.periodDividends = currentSummary === null ? Decimal8.ZERO : currentSummary.period.dividends || null;
+          data.periodDividendsPrevious = previousSummary1 === null ? Decimal8.ZERO : previousSummary1.period.dividends || null;
           data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal8.ZERO;
           data.periodUnrealized = calculatePeriodUnrealized(position.instrument.type, data.periodGain, data.periodRealized, data.periodIncome);
           data.periodDivisor = calculatePeriodDivisor(position.instrument.type, data.initiate, currentSummary, previousSummary1);
@@ -9961,6 +9991,7 @@
             snapshot.gain = currentSummary.period.realized;
             snapshot.basis = currentSummary.end.basis;
             snapshot.income = currentSummary.period.income;
+            snapshot.dividends = currentSummary.period.dividends || null;
             snapshot.value = currentSummary.end.value;
           } else {
             snapshot = position.snapshot;
@@ -23668,6 +23699,16 @@
       previousSummaries[previousSummaries.length - 1].period.income = previousIncome;
       return new PositionItem(portfolio, position, currentSummary, previousSummaries);
     }
+    function createDividendItem(symbol, dividends, currentDividends, previousDividends) {
+      const portfolio = positionTestFactory2.createPortfolio(`${symbol} Portfolio`, `${symbol} Portfolio`);
+      const position = positionTestFactory2.createPosition(portfolio.portfolio, symbol);
+      const currentSummary = positionTestFactory2.createSummaries(position, PositionSummaryFrame3.YTD, 1)[0];
+      const previousSummaries = positionTestFactory2.createSummaries(position, PositionSummaryFrame3.YEARLY, 3);
+      position.snapshot.dividends = dividends;
+      currentSummary.period.dividends = currentDividends;
+      previousSummaries[previousSummaries.length - 1].period.dividends = previousDividends;
+      return new PositionItem(portfolio, position, currentSummary, previousSummaries);
+    }
     function createDefinition(type) {
       return new PositionLevelDefinition2(
         type.description,
@@ -23883,6 +23924,36 @@
         previous: "70.00"
       });
     });
+    it("should aggregate position and summary dividends", () => {
+      const group = createGroup(PositionLevelType2.OTHER, [
+        createDividendItem("AAPL", new Decimal5(50), new Decimal5(10), new Decimal5(30)),
+        createDividendItem("MSFT", new Decimal5(70), new Decimal5(20), new Decimal5(40))
+      ]);
+      expect({
+        current: group.data.periodDividends,
+        inception: group.data.dividends,
+        previous: group.data.periodDividendsPrevious
+      }).toEqual({
+        current: "30.00",
+        inception: "120.00",
+        previous: "70.00"
+      });
+    });
+    it("should leave group dividends unavailable when a position is missing dividend data", () => {
+      const group = createGroup(PositionLevelType2.OTHER, [
+        createDividendItem("AAPL", new Decimal5(50), new Decimal5(10), new Decimal5(30)),
+        createItem("MSFT")
+      ]);
+      expect({
+        current: group.data.periodDividends,
+        inception: group.data.dividends,
+        previous: group.data.periodDividendsPrevious
+      }).toEqual({
+        current: "\u2014",
+        inception: "\u2014",
+        previous: "\u2014"
+      });
+    });
     it("should aggregate return data without exposing a group holding period", () => {
       const firstItem = createReturnItem("AAPL", 365);
       const secondItem = createReturnItem("MSFT", 730);
@@ -23976,6 +24047,37 @@
         position,
         previousSummaries
       });
+    });
+    it("should expose position and summary dividend values", () => {
+      position.snapshot.dividends = new Decimal6(100);
+      currentSummary.period.dividends = new Decimal6(20);
+      previousSummaries[previousSummaries.length - 1].period.dividends = new Decimal6(30);
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries);
+      expect({
+        dividends: item.data.dividends,
+        periodDividends: item.data.periodDividends,
+        periodDividendsPrevious: item.data.periodDividendsPrevious
+      }).toEqual({
+        dividends: new Decimal6(100),
+        periodDividends: new Decimal6(20),
+        periodDividendsPrevious: new Decimal6(30)
+      });
+    });
+    it("should leave optional dividend values unavailable when they are absent", () => {
+      expect({
+        dividends: item.data.dividends,
+        periodDividends: item.data.periodDividends,
+        periodDividendsPrevious: item.data.periodDividendsPrevious
+      }).toEqual({
+        dividends: null,
+        periodDividends: null,
+        periodDividendsPrevious: null
+      });
+    });
+    it("should expose summary dividends as position dividends while reporting", () => {
+      currentSummary.period.dividends = new Decimal6(20);
+      item = new PositionItem2(portfolio, position, currentSummary, previousSummaries, true, currentSummary.end.date);
+      expect(item.data.dividends).toEqual(new Decimal6(20));
     });
     it("should update quote state and notify quote observers", () => {
       const changes = [];
