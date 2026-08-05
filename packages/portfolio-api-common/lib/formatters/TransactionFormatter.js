@@ -52,7 +52,7 @@ module.exports = (() => {
 			const list = transactions.reduce((accumulator, transaction) => {
 				const position = transaction.position;
 
-				if (instruments.hasOwnProperty(position)) {
+				if (Object.prototype.hasOwnProperty.call(instruments, position)) {
 					let instrument = instruments[position];
 					let formatted = { instrument, raw: { } };
 

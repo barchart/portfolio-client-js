@@ -345,7 +345,7 @@ module.exports = (() => {
 
 			const key = portfolio.portfolio;
 
-			return this._portfolios.hasOwnProperty(key);
+			return Object.prototype.hasOwnProperty.call(this._portfolios, key);
 		}
 
 		/**
@@ -499,7 +499,7 @@ module.exports = (() => {
 			assert.argumentIsRequired(position.portfolio, 'position.portfolio', String);
 			assert.argumentIsArray(summaries, 'summaries');
 
-			if (!this._portfolios.hasOwnProperty(position.portfolio)) {
+			if (!Object.prototype.hasOwnProperty.call(this._portfolios, position.portfolio)) {
 				return;
 			}
 
@@ -775,7 +775,7 @@ module.exports = (() => {
 					const symbol = quote.symbol;
 
 					if (symbol) {
-						if (this._symbols.hasOwnProperty(symbol)) {
+						if (Object.prototype.hasOwnProperty.call(this._symbols, symbol)) {
 							this._symbols[symbol].forEach(item => item.setQuote(quote, force || false));
 						}
 					}
@@ -823,7 +823,7 @@ module.exports = (() => {
 
 			let price;
 
-			if (this._symbols.hasOwnProperty(symbol) && this._symbols[symbol].length > 0) {
+			if (Object.prototype.hasOwnProperty.call(this._symbols, symbol) && this._symbols[symbol].length > 0) {
 				price = this._symbols[symbol][0].currentPrice;
 			} else {
 				price = null;
@@ -844,7 +844,7 @@ module.exports = (() => {
 
 			let code;
 
-			if (this._symbols.hasOwnProperty(symbol) && this._symbols[symbol].length > 0) {
+			if (Object.prototype.hasOwnProperty.call(this._symbols, symbol) && this._symbols[symbol].length > 0) {
 				code = extractExchangeCode(this._symbols[symbol][0].position);
 			} else {
 				code = null;
@@ -884,7 +884,7 @@ module.exports = (() => {
 				map = this._symbols;
 			}
 
-			if (map.hasOwnProperty(symbol)) {
+			if (Object.prototype.hasOwnProperty.call(map, symbol)) {
 				map[symbol].forEach(item => item.setPositionFundamentalData(data));
 			}
 		}
@@ -910,7 +910,7 @@ module.exports = (() => {
 				map = this._symbols;
 			}
 
-			if (map.hasOwnProperty(symbol)) {
+			if (Object.prototype.hasOwnProperty.call(map, symbol)) {
 				map[symbol].forEach(item => item.setNewsArticleExists(exists));
 			}
 		}
@@ -1158,7 +1158,7 @@ module.exports = (() => {
 	function addGroupObserver(group, disposable) {
 		const id = group.id;
 
-		if (!this._groupObservers.hasOwnProperty(id)) {
+		if (!Object.prototype.hasOwnProperty.call(this._groupObservers, id)) {
 			this._groupObservers[id] = new DisposableStack();
 		}
 
@@ -1185,7 +1185,7 @@ module.exports = (() => {
 
 			if (treeDefinition.exclusionDependencies.length > 0) {
 				const dependantTrees = treeDefinition.exclusionDependencies.reduce((trees, name) => {
-					if (this._trees.hasOwnProperty(name)) {
+					if (Object.prototype.hasOwnProperty.call(this._trees, name)) {
 						trees.push(this._trees[name]);
 					}
 
@@ -1280,7 +1280,7 @@ module.exports = (() => {
 			}, { });
 
 			const getIndex = (description) => {
-				if (ordering.hasOwnProperty(description)) {
+				if (Object.prototype.hasOwnProperty.call(ordering, description)) {
 					return ordering[description];
 				} else {
 					return Number.MAX_VALUE;
@@ -1337,7 +1337,7 @@ module.exports = (() => {
 		if (summary.frame === previousSummaryFrame) {
 			const key = summary.position;
 
-			if (!map.hasOwnProperty(key)) {
+			if (!Object.prototype.hasOwnProperty.call(map, key)) {
 				map[key] = getSummaryArray(previousSummaryRanges);
 			}
 
@@ -1359,7 +1359,7 @@ module.exports = (() => {
 		const barchartSymbol = extractSymbolForBarchart(item.position);
 
 		if (barchartSymbol) {
-			if (!map.hasOwnProperty(barchartSymbol)) {
+			if (!Object.prototype.hasOwnProperty.call(map, barchartSymbol)) {
 				map[barchartSymbol] = [ ];
 			}
 
@@ -1371,7 +1371,7 @@ module.exports = (() => {
 		const displaySymbol = extractSymbolForDisplay(item.position);
 
 		if (displaySymbol) {
-			if (!map.hasOwnProperty(displaySymbol)) {
+			if (!Object.prototype.hasOwnProperty.call(map, displaySymbol)) {
 				map[displaySymbol] = [ ];
 			}
 
@@ -1413,13 +1413,13 @@ module.exports = (() => {
 
 		const barchartSymbol = extractSymbolForBarchart(positionItem.position);
 
-		if (this._symbols.hasOwnProperty(barchartSymbol)) {
+		if (Object.prototype.hasOwnProperty.call(this._symbols, barchartSymbol)) {
 			array.remove(this._symbols[barchartSymbol], i => i === positionItem);
 		}
 
 		const displaySymbol = extractSymbolForDisplay(positionItem.position);
 
-		if (this._symbolsDisplay.hasOwnProperty(displaySymbol)) {
+		if (Object.prototype.hasOwnProperty.call(this._symbolsDisplay, displaySymbol)) {
 			array.remove(this._symbolsDisplay[displaySymbol], i => i === positionItem);
 		}
 
@@ -1440,7 +1440,7 @@ module.exports = (() => {
 		groupNodeToSever.walk(group => {
 			delete this._nodes[group.id];
 
-			if (this._groupObservers.hasOwnProperty(group.id)) {
+			if (Object.prototype.hasOwnProperty.call(this._groupObservers, group.id)) {
 				const disposable = this._groupObservers[group.id];
 
 				delete this._groupObservers[group.id];

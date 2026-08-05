@@ -74,7 +74,7 @@ module.exports = (() => {
 					const root = t.reference.root;
 					const transaction = t.reference.transaction;
 
-					if (!references.hasOwnProperty(root)) {
+					if (!Object.prototype.hasOwnProperty.call(references, root)) {
 						references[root] = [ ];
 					}
 
@@ -312,7 +312,7 @@ module.exports = (() => {
 	function associateTypes(instrumentType, transactionType, userInitiated, directions) {
 		const instrumentTypeCode = instrumentType.code;
 
-		if (!validTransactionTypes.hasOwnProperty(instrumentTypeCode)) {
+		if (!Object.prototype.hasOwnProperty.call(validTransactionTypes, instrumentTypeCode)) {
 			validTransactionTypes[instrumentTypeCode] = [ ];
 		}
 
@@ -384,7 +384,7 @@ module.exports = (() => {
 	function associateDirections(instrumentType, positionDirection) {
 		const instrumentTypeCode = instrumentType.code;
 
-		if (!validDirections.hasOwnProperty(instrumentTypeCode)) {
+		if (!Object.prototype.hasOwnProperty.call(validDirections, instrumentTypeCode)) {
 			validDirections[instrumentTypeCode] = [ ];
 		}
 

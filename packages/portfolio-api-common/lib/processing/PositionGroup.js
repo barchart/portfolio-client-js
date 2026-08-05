@@ -1310,7 +1310,7 @@ module.exports = (() => {
 
 		const refresh = (is.boolean(forceRefresh) && forceRefresh) || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
 
-		if (!refresh && group._excludedItemMap.hasOwnProperty(item.position.position)) {
+		if (!refresh && Object.prototype.hasOwnProperty.call(group._excludedItemMap, item.position.position)) {
 			return;
 		}
 
