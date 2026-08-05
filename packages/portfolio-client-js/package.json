@@ -21,7 +21,7 @@
     "lint:fix": "eslint --fix .",
     "publish:npm": "npm publish",
     "test": "jasmine --config=jasmine.json",
-    "version": "node ../../tools/embed-package-version.mjs"
+    "version": "node ../../tools/embed-package-version.mjs && git add lib/index.js"
   },
   "repository": {
     "type": "git",

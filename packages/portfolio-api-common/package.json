@@ -19,7 +19,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "publish:npm": "npm publish",
-    "test": "yarn build:test-bundle && jasmine --config=jasmine.json"
+    "test": "yarn build:test-bundle && jasmine --config=jasmine.json",
+    "version": "yarn build:test-bundle && git add test/SpecRunner.js"
   },
   "repository": {
     "type": "git",
