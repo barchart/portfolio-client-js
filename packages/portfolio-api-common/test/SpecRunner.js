@@ -4927,7 +4927,7 @@
               if (is.object(t.reference) && is.string(t.reference.root) && is.string(t.reference.transaction)) {
                 const root = t.reference.root;
                 const transaction = t.reference.transaction;
-                if (!references.hasOwnProperty(root)) {
+                if (!Object.prototype.hasOwnProperty.call(references, root)) {
                   references[root] = [];
                 }
                 const transactions2 = references[root];
@@ -5122,7 +5122,7 @@
         const validTransactionTypes = {};
         function associateTypes(instrumentType, transactionType, userInitiated, directions) {
           const instrumentTypeCode = instrumentType.code;
-          if (!validTransactionTypes.hasOwnProperty(instrumentTypeCode)) {
+          if (!Object.prototype.hasOwnProperty.call(validTransactionTypes, instrumentTypeCode)) {
             validTransactionTypes[instrumentTypeCode] = [];
           }
           validTransactionTypes[instrumentTypeCode].push({ type: transactionType, user: userInitiated, directions: directions || [PositionDirection2.LONG, PositionDirection2.SHORT, PositionDirection2.EVEN] });
@@ -5182,7 +5182,7 @@
         const validDirections = {};
         function associateDirections(instrumentType, positionDirection) {
           const instrumentTypeCode = instrumentType.code;
-          if (!validDirections.hasOwnProperty(instrumentTypeCode)) {
+          if (!Object.prototype.hasOwnProperty.call(validDirections, instrumentTypeCode)) {
             validDirections[instrumentTypeCode] = [];
           }
           validDirections[instrumentTypeCode].push(positionDirection);
@@ -8849,7 +8849,7 @@
           const actual = group._dataActual;
           const format = group._dataFormat;
           const refresh = is.boolean(forceRefresh) && forceRefresh || (actual.market === null || actual.unrealizedToday === null || actual.total === null);
-          if (!refresh && group._excludedItemMap.hasOwnProperty(item.position.position)) {
+          if (!refresh && Object.prototype.hasOwnProperty.call(group._excludedItemMap, item.position.position)) {
             return;
           }
           const currencyTranslator = group._currencyTranslator;
@@ -10261,7 +10261,7 @@
             assert.argumentIsRequired(portfolio, "portfolio", Object);
             assert.argumentIsRequired(portfolio.portfolio, "portfolio.portfolio", String);
             const key = portfolio.portfolio;
-            return this._portfolios.hasOwnProperty(key);
+            return Object.prototype.hasOwnProperty.call(this._portfolios, key);
           }
           /**
            * Adds a new portfolio to the container, injecting it into aggregation
@@ -10381,7 +10381,7 @@
             assert.argumentIsRequired(position.position, "position.position", String);
             assert.argumentIsRequired(position.portfolio, "position.portfolio", String);
             assert.argumentIsArray(summaries, "summaries");
-            if (!this._portfolios.hasOwnProperty(position.portfolio)) {
+            if (!Object.prototype.hasOwnProperty.call(this._portfolios, position.portfolio)) {
               return;
             }
             registerCurrencyTranslation.call(this, position.instrument.currency);
@@ -10594,7 +10594,7 @@
               positionQuotes.forEach((quote) => {
                 const symbol = quote.symbol;
                 if (symbol) {
-                  if (this._symbols.hasOwnProperty(symbol)) {
+                  if (Object.prototype.hasOwnProperty.call(this._symbols, symbol)) {
                     this._symbols[symbol].forEach((item) => item.setQuote(quote, force || false));
                   }
                 }
@@ -10634,7 +10634,7 @@
           getCurrentPrice(symbol) {
             assert.argumentIsRequired(symbol, "symbol", String);
             let price;
-            if (this._symbols.hasOwnProperty(symbol) && this._symbols[symbol].length > 0) {
+            if (Object.prototype.hasOwnProperty.call(this._symbols, symbol) && this._symbols[symbol].length > 0) {
               price = this._symbols[symbol][0].currentPrice;
             } else {
               price = null;
@@ -10651,7 +10651,7 @@
           getExchangeCode(symbol) {
             assert.argumentIsRequired(symbol, "symbol", String);
             let code;
-            if (this._symbols.hasOwnProperty(symbol) && this._symbols[symbol].length > 0) {
+            if (Object.prototype.hasOwnProperty.call(this._symbols, symbol) && this._symbols[symbol].length > 0) {
               code = extractExchangeCode(this._symbols[symbol][0].position);
             } else {
               code = null;
@@ -10685,7 +10685,7 @@
             } else {
               map = this._symbols;
             }
-            if (map.hasOwnProperty(symbol)) {
+            if (Object.prototype.hasOwnProperty.call(map, symbol)) {
               map[symbol].forEach((item) => item.setPositionFundamentalData(data));
             }
           }
@@ -10707,7 +10707,7 @@
             } else {
               map = this._symbols;
             }
-            if (map.hasOwnProperty(symbol)) {
+            if (Object.prototype.hasOwnProperty.call(map, symbol)) {
               map[symbol].forEach((item) => item.setNewsArticleExists(exists));
             }
           }
@@ -10911,7 +10911,7 @@
         }
         function addGroupObserver(group, disposable) {
           const id = group.id;
-          if (!this._groupObservers.hasOwnProperty(id)) {
+          if (!Object.prototype.hasOwnProperty.call(this._groupObservers, id)) {
             this._groupObservers[id] = new DisposableStack();
           }
           this._groupObservers[id].push(disposable);
@@ -10932,7 +10932,7 @@
             }, false);
             if (treeDefinition.exclusionDependencies.length > 0) {
               const dependantTrees = treeDefinition.exclusionDependencies.reduce((trees, name) => {
-                if (this._trees.hasOwnProperty(name)) {
+                if (Object.prototype.hasOwnProperty.call(this._trees, name)) {
                   trees.push(this._trees[name]);
                 }
                 return trees;
@@ -10997,7 +10997,7 @@
               return map;
             }, {});
             const getIndex = (description) => {
-              if (ordering.hasOwnProperty(description)) {
+              if (Object.prototype.hasOwnProperty.call(ordering, description)) {
                 return ordering[description];
               } else {
                 return Number.MAX_VALUE;
@@ -11044,7 +11044,7 @@
         function addSummaryPrevious(map, summary, previousSummaryFrame, previousSummaryRanges) {
           if (summary.frame === previousSummaryFrame) {
             const key = summary.position;
-            if (!map.hasOwnProperty(key)) {
+            if (!Object.prototype.hasOwnProperty.call(map, key)) {
               map[key] = getSummaryArray(previousSummaryRanges);
             }
             const index = previousSummaryRanges.findIndex((r) => r.start.getIsEqual(summary.start.date) && r.end.getIsEqual(summary.end.date));
@@ -11061,7 +11061,7 @@
         function addBarchartSymbol(map, item) {
           const barchartSymbol = extractSymbolForBarchart(item.position);
           if (barchartSymbol) {
-            if (!map.hasOwnProperty(barchartSymbol)) {
+            if (!Object.prototype.hasOwnProperty.call(map, barchartSymbol)) {
               map[barchartSymbol] = [];
             }
             map[barchartSymbol].push(item);
@@ -11070,7 +11070,7 @@
         function addDisplaySymbol(map, item) {
           const displaySymbol = extractSymbolForDisplay(item.position);
           if (displaySymbol) {
-            if (!map.hasOwnProperty(displaySymbol)) {
+            if (!Object.prototype.hasOwnProperty.call(map, displaySymbol)) {
               map[displaySymbol] = [];
             }
             map[displaySymbol].push(item);
@@ -11101,11 +11101,11 @@
           delete this._summariesMonthToDate[positionItem.position.position];
           array.remove(this._items, (i) => i === positionItem);
           const barchartSymbol = extractSymbolForBarchart(positionItem.position);
-          if (this._symbols.hasOwnProperty(barchartSymbol)) {
+          if (Object.prototype.hasOwnProperty.call(this._symbols, barchartSymbol)) {
             array.remove(this._symbols[barchartSymbol], (i) => i === positionItem);
           }
           const displaySymbol = extractSymbolForDisplay(positionItem.position);
-          if (this._symbolsDisplay.hasOwnProperty(displaySymbol)) {
+          if (Object.prototype.hasOwnProperty.call(this._symbolsDisplay, displaySymbol)) {
             array.remove(this._symbolsDisplay[displaySymbol], (i) => i === positionItem);
           }
           Object.keys(this._trees).forEach((key) => {
@@ -11121,7 +11121,7 @@
           groupNodeToSever.sever();
           groupNodeToSever.walk((group) => {
             delete this._nodes[group.id];
-            if (this._groupObservers.hasOwnProperty(group.id)) {
+            if (Object.prototype.hasOwnProperty.call(this._groupObservers, group.id)) {
               const disposable = this._groupObservers[group.id];
               delete this._groupObservers[group.id];
               disposable.dispose();
@@ -21990,10 +21990,10 @@
           }
         }
         const complete = new PositionSchema2(
-          SchemaBuilder.withName("complete").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING, true).withField("legacy.position", DataType.STRING, true).withField("system.version", DataType.NUMBER, true).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("root", DataType.STRING, true).schema
+          SchemaBuilder.withName("complete").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL, true).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING, true).withField("legacy.position", DataType.STRING, true).withField("system.version", DataType.NUMBER, true).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("root", DataType.STRING, true).schema
         );
         const client = new PositionSchema2(
-          SchemaBuilder.withName("client").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("previous", DataType.NUMBER, true).schema
+          SchemaBuilder.withName("client").withField("user", DataType.STRING).withField("portfolio", DataType.STRING).withField("instrument.id", DataType.STRING).withField("instrument.name", DataType.STRING).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType")).withField("instrument.code", DataType.forEnum(UnitCode, "UnitCode"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency")).withField("instrument.exchange", DataType.STRING, true).withField("instrument.delist", DataType.DAY, true).withField("instrument.future.expiration", DataType.DAY, true).withField("instrument.future.tick", DataType.DECIMAL, true).withField("instrument.future.value", DataType.DECIMAL, true).withField("instrument.option.expiration", DataType.DAY, true).withField("instrument.option.side", DataType.forEnum(OptionSide, "OptionSide"), true).withField("instrument.option.strike", DataType.DECIMAL, true).withField("instrument.option.multiplier", DataType.DECIMAL, true).withField("instrument.option.tick", DataType.DECIMAL, true).withField("instrument.option.value", DataType.DECIMAL, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("position", DataType.STRING).withField("transaction", DataType.NUMBER).withField("opening.date", DataType.DAY, true).withField("closing.date", DataType.DAY, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).withField("valuation", DataType.forEnum(ValuationType, "ValuationType")).withField("snapshot.date", DataType.DAY).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL, true).withField("snapshot.value", DataType.DECIMAL).withField("snapshot.initial", DataType.forEnum(PositionDirection2, "PositionDirection"), true).withField("latest.date", DataType.DAY).withField("latest.gain", DataType.DECIMAL).withField("system.calculate.processors", DataType.NUMBER, true).withField("system.locked", DataType.BOOLEAN, true).withField("previous", DataType.NUMBER, true).schema
         );
         const update = new PositionSchema2(
           SchemaBuilder.withName("update").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("mapping.name", DataType.STRING, true).withField("mapping.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("mapping.currency", DataType.forEnum(Currency5, "Currency"), true).withField("mapping.symbol.barchart", DataType.STRING, true).withField("mapping.symbol.display", DataType.STRING, true).withField("cash", DataType.BOOLEAN, true).withField("reinvest", DataType.BOOLEAN, true).schema
@@ -22109,10 +22109,10 @@
           }
         }
         const complete = new TransactionSchema2(
-          SchemaBuilder.withName("complete").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.STRING, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING).withField("legacy.position", DataType.STRING, true).withField("legacy.transaction", DataType.STRING, true).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("dividend.reference", DataType.STRING, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).withField("system.sequence", DataType.NUMBER).withField("system.version", DataType.STRING).withField("system.timestamp", DataType.TIMESTAMP).schema
+          SchemaBuilder.withName("complete").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.STRING, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL, true).withField("snapshot.value", DataType.DECIMAL).withField("legacy.system", DataType.STRING, true).withField("legacy.user", DataType.STRING, true).withField("legacy.portfolio", DataType.STRING).withField("legacy.position", DataType.STRING, true).withField("legacy.transaction", DataType.STRING, true).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("dividend.reference", DataType.STRING, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).withField("system.sequence", DataType.NUMBER).withField("system.version", DataType.STRING).withField("system.timestamp", DataType.TIMESTAMP).schema
         );
         const client = new TransactionSchema2(
-          SchemaBuilder.withName("client").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.NUMBER, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL).withField("snapshot.value", DataType.DECIMAL).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).schema
+          SchemaBuilder.withName("client").withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("transaction", DataType.STRING).withField("sequence", DataType.NUMBER).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("date", DataType.DAY).withField("description", DataType.STRING, true).withField("amount", DataType.DECIMAL).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("gain", DataType.DECIMAL).withField("reference.position", DataType.STRING, true).withField("reference.transaction", DataType.NUMBER, true).withField("snapshot.open", DataType.DECIMAL).withField("snapshot.direction", DataType.forEnum(PositionDirection2, "PositionDirection")).withField("snapshot.buys", DataType.DECIMAL).withField("snapshot.sells", DataType.DECIMAL).withField("snapshot.gain", DataType.DECIMAL).withField("snapshot.basis", DataType.DECIMAL).withField("snapshot.income", DataType.DECIMAL).withField("snapshot.dividends", DataType.DECIMAL, true).withField("snapshot.value", DataType.DECIMAL).withField("trade.price", DataType.DECIMAL, true).withField("dividend.rate", DataType.DECIMAL, true).withField("dividend.effective", DataType.DAY, true).withField("dividend.price", DataType.DECIMAL, true).withField("dividend.amount", DataType.DECIMAL, true).withField("split.numerator", DataType.DECIMAL, true).withField("split.denominator", DataType.DECIMAL, true).withField("split.effective", DataType.DAY, true).withField("split.reference", DataType.STRING, true).withField("merger.numerator", DataType.DECIMAL, true).withField("merger.denominator", DataType.DECIMAL, true).withField("spinoff.numerator", DataType.DECIMAL, true).withField("spinoff.denominator", DataType.DECIMAL, true).withField("charge.amount", DataType.DECIMAL, true).withField("income.amount", DataType.DECIMAL, true).withField("valuation.rate", DataType.DECIMAL, true).withField("valuation.value", DataType.DECIMAL, true).schema
         );
         const buy = new TransactionSchema2(
           SchemaBuilder.withName(TransactionType5.BUY.code).withField("portfolio", DataType.STRING).withField("position", DataType.STRING).withField("sequence", DataType.NUMBER, true).withField("type", DataType.forEnum(TransactionType5, "TransactionType")).withField("instrument.id", DataType.STRING, true).withField("instrument.name", DataType.STRING, true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.code", DataType.NUMBER, true).withField("instrument.type", DataType.forEnum(InstrumentType6, "InstrumentType"), true).withField("instrument.currency", DataType.forEnum(Currency5, "Currency"), true).withField("instrument.exchange", DataType.STRING, true).withField("instrument.symbol.barchart", DataType.STRING, true).withField("instrument.symbol.display", DataType.STRING, true).withField("date", DataType.DAY).withField("price", DataType.DECIMAL, true).withField("quantity", DataType.DECIMAL).withField("fee", DataType.DECIMAL, true).withField("reinvest", DataType.BOOLEAN, true).withField("cash", DataType.BOOLEAN, true).withField("force", DataType.BOOLEAN, true).schema
