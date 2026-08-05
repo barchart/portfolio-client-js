@@ -16,6 +16,8 @@
   ],
   "scripts": {
     "build:test-bundle": "node ../../tools/build-test-bundle.mjs",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "publish:npm": "npm publish",
     "test": "yarn build:test-bundle && jasmine --config=jasmine.json"
   },

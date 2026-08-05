@@ -17,6 +17,8 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "publish:npm": "npm publish",
     "test": "jasmine --config=jasmine.json",
     "version": "node ../../tools/embed-package-version.mjs"
