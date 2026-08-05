@@ -63,15 +63,15 @@ describe('When a position item is used', () => {
 		});
 	});
 
-	it('should leave optional dividend values unavailable when they are absent', () => {
+	it('should expose zero dividend values when they are absent', () => {
 		expect({
 			dividends: item.data.dividends,
 			periodDividends: item.data.periodDividends,
 			periodDividendsPrevious: item.data.periodDividendsPrevious
 		}).toEqual({
-			dividends: null,
-			periodDividends: null,
-			periodDividendsPrevious: null
+			dividends: Decimal.ZERO,
+			periodDividends: Decimal.ZERO,
+			periodDividendsPrevious: Decimal.ZERO
 		});
 	});
 

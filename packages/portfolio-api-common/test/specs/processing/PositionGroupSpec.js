@@ -354,7 +354,7 @@ describe('When a position group is used', () => {
 		});
 	});
 
-	it('should leave group dividends unavailable when a position is missing dividend data', () => {
+	it('should aggregate group dividends when a position is missing dividend data', () => {
 		const group = createGroup(PositionLevelType.OTHER, [
 			createDividendItem('AAPL', new Decimal(50), new Decimal(10), new Decimal(30)),
 			createItem('MSFT')
@@ -365,9 +365,9 @@ describe('When a position group is used', () => {
 			inception: group.data.dividends,
 			previous: group.data.periodDividendsPrevious
 		}).toEqual({
-			current: '—',
-			inception: '—',
-			previous: '—'
+			current: '10.00',
+			inception: '50.00',
+			previous: '30.00'
 		});
 	});
 

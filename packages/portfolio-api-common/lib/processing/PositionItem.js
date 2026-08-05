@@ -559,7 +559,7 @@ module.exports = (() => {
 		data.unrealized = Decimal.ZERO;
 
 		data.income = snapshot.income;
-		data.dividends = snapshot.dividends || null;
+		data.dividends = snapshot.dividends || Decimal.ZERO;
 
 		data.marketPrevious = previousSummary1 === null ? Decimal.ZERO : previousSummary1.end.value;
 		data.marketPrevious2 = previousSummary2 === null ? Decimal.ZERO : previousSummary2.end.value;
@@ -571,8 +571,8 @@ module.exports = (() => {
 
 		data.periodIncome = currentSummary !== null ? currentSummary.period.income : Decimal.ZERO;
 		data.periodIncomePrevious = previousSummary1 !== null ? previousSummary1.period.income : Decimal.ZERO;
-		data.periodDividends = currentSummary === null ? Decimal.ZERO : (currentSummary.period.dividends || null);
-		data.periodDividendsPrevious = previousSummary1 === null ? Decimal.ZERO : (previousSummary1.period.dividends || null);
+		data.periodDividends = currentSummary === null ? Decimal.ZERO : (currentSummary.period.dividends || Decimal.ZERO);
+		data.periodDividendsPrevious = previousSummary1 === null ? Decimal.ZERO : (previousSummary1.period.dividends || Decimal.ZERO);
 		data.periodRealized = currentSummary !== null ? currentSummary.period.realized : Decimal.ZERO;
 		data.periodUnrealized = calculatePeriodUnrealized(position.instrument.type, data.periodGain, data.periodRealized, data.periodIncome);
 
@@ -1092,7 +1092,7 @@ module.exports = (() => {
 			snapshot.gain = currentSummary.period.realized;
 			snapshot.basis = currentSummary.end.basis;
 			snapshot.income = currentSummary.period.income;
-			snapshot.dividends = currentSummary.period.dividends || null;
+			snapshot.dividends = currentSummary.period.dividends || Decimal.ZERO;
 			snapshot.value = currentSummary.end.value;
 		} else {
 			snapshot = position.snapshot;

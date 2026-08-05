@@ -1075,14 +1075,6 @@ module.exports = (() => {
 
 			return currencyTranslator.translate(value, item.currency, currency);
 		};
-		const aggregateOptional = (total, item, value) => {
-			if (total === null || value === null) {
-				return null;
-			}
-
-			return total.add(translate(item, value));
-		};
-
 		const updates = items.reduce((updates, item) => {
 			updates.basis = updates.basis.add(translate(item, item.data.basis));
 
@@ -1098,7 +1090,7 @@ module.exports = (() => {
 			updates.unrealized = updates.unrealized.add(translate(item, item.data.unrealized));
 			updates.realizedToday = updates.realizedToday.add(translate(item, item.data.realizedToday));
 			updates.income = updates.income.add(translate(item, item.data.income));
-			updates.dividends = aggregateOptional(updates.dividends, item, item.data.dividends);
+			updates.dividends = updates.dividends.add(translate(item, item.data.dividends));
 			updates.summaryTotalCurrent = updates.summaryTotalCurrent.add(translate(item, item.data.periodGain));
 			updates.summaryTotalPrevious = updates.summaryTotalPrevious.add(translate(item, item.data.periodGainPrevious));
 			updates.summaryTotalPrevious2 = updates.summaryTotalPrevious2.add(translate(item, item.data.periodGainPrevious2));
@@ -1107,8 +1099,8 @@ module.exports = (() => {
 
 			updates.periodIncome = updates.periodIncome.add(translate(item, item.data.periodIncome));
 			updates.periodIncomePrevious = updates.periodIncomePrevious.add(translate(item, item.data.periodIncomePrevious));
-			updates.periodDividends = aggregateOptional(updates.periodDividends, item, item.data.periodDividends);
-			updates.periodDividendsPrevious = aggregateOptional(updates.periodDividendsPrevious, item, item.data.periodDividendsPrevious);
+			updates.periodDividends = updates.periodDividends.add(translate(item, item.data.periodDividends));
+			updates.periodDividendsPrevious = updates.periodDividendsPrevious.add(translate(item, item.data.periodDividendsPrevious));
 			updates.periodRealized = updates.periodRealized.add(translate(item, item.data.periodRealized));
 			updates.periodUnrealized = updates.periodUnrealized.add(translate(item, item.data.periodUnrealized));
 
