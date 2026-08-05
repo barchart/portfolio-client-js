@@ -7,6 +7,6 @@ module.exports = (() => {
 	return {
 		JwtProvider: JwtProvider,
 		PortfolioGateway: PortfolioGateway,
-		version: '14.0.1'
+		version: '14.1.0'
 	};
 })();
