@@ -79,6 +79,19 @@ describe('When a position group is used', () => {
 		return new PositionItem(portfolio, position, currentSummary, previousSummaries);
 	}
 
+	function createDividendItem(symbol, dividends, currentDividends, previousDividends) {
+		const portfolio = positionTestFactory.createPortfolio(`${symbol} Portfolio`, `${symbol} Portfolio`);
+		const position = positionTestFactory.createPosition(portfolio.portfolio, symbol);
+		const currentSummary = positionTestFactory.createSummaries(position, PositionSummaryFrame.YTD, 1)[0];
+		const previousSummaries = positionTestFactory.createSummaries(position, PositionSummaryFrame.YEARLY, 3);
+
+		position.snapshot.dividends = dividends;
+		currentSummary.period.dividends = currentDividends;
+		previousSummaries[previousSummaries.length - 1].period.dividends = previousDividends;
+
+		return new PositionItem(portfolio, position, currentSummary, previousSummaries);
+	}
+
 	function createDefinition(type) {
 		return new PositionLevelDefinition(
 			type.description,
@@ -321,6 +334,40 @@ describe('When a position group is used', () => {
 		}).toEqual({
 			current: '30.00',
 			previous: '70.00'
+		});
+	});
+
+	it('should aggregate position and summary dividends', () => {
+		const group = createGroup(PositionLevelType.OTHER, [
+			createDividendItem('AAPL', new Decimal(50), new Decimal(10), new Decimal(30)),
+			createDividendItem('MSFT', new Decimal(70), new Decimal(20), new Decimal(40))
+		]);
+
+		expect({
+			current: group.data.periodDividends,
+			inception: group.data.dividends,
+			previous: group.data.periodDividendsPrevious
+		}).toEqual({
+			current: '30.00',
+			inception: '120.00',
+			previous: '70.00'
+		});
+	});
+
+	it('should leave group dividends unavailable when a position is missing dividend data', () => {
+		const group = createGroup(PositionLevelType.OTHER, [
+			createDividendItem('AAPL', new Decimal(50), new Decimal(10), new Decimal(30)),
+			createItem('MSFT')
+		]);
+
+		expect({
+			current: group.data.periodDividends,
+			inception: group.data.dividends,
+			previous: group.data.periodDividendsPrevious
+		}).toEqual({
+			current: '—',
+			inception: '—',
+			previous: '—'
 		});
 	});
 

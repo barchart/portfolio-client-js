@@ -45,6 +45,44 @@ describe('When a position item is used', () => {
 		});
 	});
 
+	it('should expose position and summary dividend values', () => {
+		position.snapshot.dividends = new Decimal(100);
+		currentSummary.period.dividends = new Decimal(20);
+		previousSummaries[previousSummaries.length - 1].period.dividends = new Decimal(30);
+
+		item = new PositionItem(portfolio, position, currentSummary, previousSummaries);
+
+		expect({
+			dividends: item.data.dividends,
+			periodDividends: item.data.periodDividends,
+			periodDividendsPrevious: item.data.periodDividendsPrevious
+		}).toEqual({
+			dividends: new Decimal(100),
+			periodDividends: new Decimal(20),
+			periodDividendsPrevious: new Decimal(30)
+		});
+	});
+
+	it('should leave optional dividend values unavailable when they are absent', () => {
+		expect({
+			dividends: item.data.dividends,
+			periodDividends: item.data.periodDividends,
+			periodDividendsPrevious: item.data.periodDividendsPrevious
+		}).toEqual({
+			dividends: null,
+			periodDividends: null,
+			periodDividendsPrevious: null
+		});
+	});
+
+	it('should expose summary dividends as position dividends while reporting', () => {
+		currentSummary.period.dividends = new Decimal(20);
+
+		item = new PositionItem(portfolio, position, currentSummary, previousSummaries, true, currentSummary.end.date);
+
+		expect(item.data.dividends).toEqual(new Decimal(20));
+	});
+
 	it('should update quote state and notify quote observers', () => {
 		const changes = [ ];
 		const firstQuote = { lastPrice: 200, symbol: 'AAPL' };
